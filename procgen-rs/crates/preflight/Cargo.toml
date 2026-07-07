@@ -1,0 +1,9 @@
+[package]
+name = "asha-procgen-preflight"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "asha-procgen-preflight"
+path = "src/main.rs"

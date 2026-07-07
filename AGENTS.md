@@ -1,0 +1,155 @@
+# AGENTS.md
+
+## Project Role
+
+`asha-procgen` is an ASHA downstream project.
+
+Dungeon procgen incubator for richer ASHA generated-level experiments.
+
+It consumes ASHA through public package roots, generated contracts, documented
+runtime/session surfaces, and reproducible evidence. It does **not** own generic
+ASHA engine authority, generated contracts, runtime bridge internals, native
+transports, renderer backends, or upstream Rust authority crates.
+
+Preferred sibling checkout shape:
+
+```text
+/home/dev/
+  asha-engine/      # upstream engine authority and public ASHA packages
+  asha-procgen/    # this downstream project
+```
+
+Do not silently edit `../asha-engine` as part of normal work in this repo.
+
+## Source Of Truth
+
+Use this priority order when facts conflict:
+
+1. Current code, tests, fixtures, and generated evidence in this repo.
+2. Current README/docs in this repo.
+3. `asha-engine` public docs and package metadata.
+4. Historical notes, stale plans, TODO prose, and scratch files.
+
+## ASHA Architecture Contract
+
+> Rust owns authority. TypeScript owns expression and projection. Generated
+> contracts define the border.
+
+- Generic ASHA authority lives upstream in `asha-engine`.
+- Downstream TypeScript may author content, collect inputs, project readouts,
+  and submit typed proposals.
+- Downstream TypeScript must not mutate authoritative runtime state.
+- Generated ASHA files are never hand-edited.
+- Missing public ASHA capability is an upstream gap, not permission to import
+  internals or recreate engine authority locally.
+
+## Allowed ASHA Usage
+
+Prefer package roots and documented public subpaths, for example:
+
+```ts
+import type { ProjectBundle } from '@asha/contracts';
+import { createRuntimeSessionFacade } from '@asha/runtime-bridge';
+```
+
+Common public roots include:
+
+- `@asha/contracts`
+- `@asha/runtime-bridge`
+- `@asha/runtime-session`
+- `@asha/game-workspace`
+- `@asha/catalog-core`
+- `@asha/render-projection`
+- `@asha/renderer-host`
+- `@asha/command-registry`
+- `@asha/ui-dom`
+
+Use `../asha-engine/harness/public-surface/ts-packages.json` as the live policy
+source when adding ASHA package dependencies.
+
+## Forbidden Shortcuts
+
+Do not import or depend on:
+
+- ASHA package `src/*` paths.
+- ASHA package `dist/generated/*` paths.
+- Rust crate internals from `../asha-engine/engine-rs`.
+- Private generated files or copied DTO forks.
+- Raw native/WASM transports as product shortcuts.
+- Arbitrary JSON command tunnels.
+- Renderer buffers, DOM state, or local UI state as substitutes for runtime
+  authority.
+
+## Local Rust Lane
+
+`procgen-rs/` is for downstream preflight tooling, fixtures, and prototype
+experiments. It may produce evidence that helps decide what should move
+upstream.
+
+Keep generic ASHA authority upstream:
+
+- RuntimeSession lifecycle and canonical state application.
+- Collision, pathfinding, spatial queries, and render projection formats.
+- Protocol/codegen and generated TypeScript contracts.
+- Native/wasm/runtime bridge provider contracts.
+- Replay and deterministic session hashes.
+
+If local Rust work proves broadly useful, extract the generic part into an
+upstream `asha-engine` task/PR and keep this repo on public surfaces.
+
+## Local Commands
+
+```bash
+npm install
+npm run verify
+npm run check:asha-boundary
+npm run typecheck
+npm run rust:check
+npm run rust:test
+```
+
+Relevant upstream gates, from `/home/dev/asha-engine`, include:
+
+```bash
+./harness/ci/check-all.sh
+./harness/ci/check-rust.sh
+./harness/ci/check-ts.sh
+./harness/ci/check-depgraph.sh
+./harness/ci/check-contracts.sh
+./harness/ci/check-bridge.sh
+./harness/ci/check-vocabulary.sh
+```
+
+Use upstream gates when changing upstream work. They do not replace this repo's
+own checks.
+
+## Evidence Posture
+
+- Run the narrowest relevant check first, then `npm run verify` before handoff
+  when practical.
+- Keep fixtures and generated proof artifacts reproducible.
+- Prefer one command that rebuilds/checks evidence over manual screenshots or
+  cached files.
+- Record exact commands and results in handoffs.
+- Do not claim native runtime, GPU, browser, deployment, or performance proof
+  unless the command actually exercised that surface.
+
+## Coding Style
+
+- Prefer explicit, deterministic code over clever abstractions.
+- Make boundaries visible in imports, function names, and tests.
+- Keep mutation local and obvious.
+- Avoid hidden global registries, ambient state, generic event buses, and broad
+  manager classes.
+- Use named intermediate values for meaningful decisions.
+- Add tests for behavior and fail-closed boundary cases.
+
+## Review Checklist
+
+- [ ] Imports use approved public ASHA package roots or documented subpaths.
+- [ ] No ASHA internals, generated-path imports, raw transports, or JSON command
+      tunnels were added.
+- [ ] Missing public ASHA surfaces were recorded as upstream gaps.
+- [ ] Project checks ran with real output.
+- [ ] Generated evidence, if any, was regenerated by documented commands.
+- [ ] Docs changed when setup, commands, public surfaces, or limitations changed.

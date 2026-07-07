@@ -1,0 +1,23 @@
+{
+  "name": "asha-procgen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Dungeon procgen incubator for richer ASHA generated-level experiments.",
+  "scripts": {
+    "check:asha-boundary": "node scripts/check-asha-boundary.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "rust:check": "cargo check --manifest-path procgen-rs/Cargo.toml",
+    "rust:test": "cargo test --manifest-path procgen-rs/Cargo.toml",
+    "test": "npm run check:asha-boundary && npm run typecheck && npm run rust:test",
+    "verify": "npm run check:asha-boundary && npm run typecheck && npm run rust:check && npm run rust:test"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "ashaDownstream": {
+    "template": "asha-downstream-template",
+    "engineSource": "../asha-engine",
+    "consumerPolicy": "asha-demo"
+  }
+}

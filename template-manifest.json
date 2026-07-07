@@ -1,0 +1,9 @@
+{
+  "template": "asha-downstream-template",
+  "templateVersion": "0.1.0",
+  "templateCommit": "705c0a8",
+  "copiedAt": "2026-07-07",
+  "project": "asha-procgen",
+  "rustDir": "procgen-rs",
+  "localDeviations": []
+}

@@ -2,12 +2,15 @@
   "kind": "asha_procgen.selection_report.v1",
   "schemaVersion": 1,
   "batchId": "batch.v2.5201",
+  "profileId": "asha_procgen.batch_profile.v2_sample",
+  "profileRef": "fixtures/batch-profiles/v2-sample.json",
   "seed": 5201,
   "requestedCount": 10,
   "generatedCount": 10,
   "accepted": [
     {
       "candidateId": "candidate.first_slice.5701",
+      "profileSequence": "full-v2-stack",
       "artifactRef": "artifacts/samples/batch-v2/candidate-005/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-005/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-005/score.graph.json",
@@ -54,6 +57,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5501",
+      "profileSequence": "hub-hazard-boss",
       "artifactRef": "artifacts/samples/batch-v2/candidate-003/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-003/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-003/score.graph.json",
@@ -99,6 +103,7 @@
     },
     {
       "candidateId": "candidate.first_slice.6101",
+      "profileSequence": "hub-hazard-boss",
       "artifactRef": "artifacts/samples/batch-v2/candidate-009/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-009/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-009/score.graph.json",
@@ -144,6 +149,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5201",
+      "profileSequence": "hub-merge",
       "artifactRef": "artifacts/samples/batch-v2/candidate-000/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-000/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-000/score.graph.json",
@@ -188,6 +194,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5801",
+      "profileSequence": "hub-merge",
       "artifactRef": "artifacts/samples/batch-v2/candidate-006/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-006/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-006/score.graph.json",
@@ -232,6 +239,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5401",
+      "profileSequence": "hazard-treasure-merge",
       "artifactRef": "artifacts/samples/batch-v2/candidate-002/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-002/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-002/score.graph.json",
@@ -276,6 +284,7 @@
     },
     {
       "candidateId": "candidate.first_slice.6001",
+      "profileSequence": "hazard-treasure-merge",
       "artifactRef": "artifacts/samples/batch-v2/candidate-008/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-008/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-008/score.graph.json",
@@ -320,6 +329,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5601",
+      "profileSequence": "nested-treasure-merge",
       "artifactRef": "artifacts/samples/batch-v2/candidate-004/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-004/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-004/score.graph.json",
@@ -362,6 +372,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5301",
+      "profileSequence": "nested-boss",
       "artifactRef": "artifacts/samples/batch-v2/candidate-001/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-001/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-001/score.graph.json",
@@ -400,6 +411,7 @@
     },
     {
       "candidateId": "candidate.first_slice.5901",
+      "profileSequence": "nested-boss",
       "artifactRef": "artifacts/samples/batch-v2/candidate-007/accepted.json",
       "validationRef": "artifacts/samples/batch-v2/candidate-007/validation.graph.json",
       "scoreRef": "artifacts/samples/batch-v2/candidate-007/score.graph.json",

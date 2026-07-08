@@ -53,8 +53,14 @@ Important files:
 - `candidate-000/score.graph.json`
 - `candidate-000/transcript.jsonl`
 
-The sample command currently generates 10 candidates from fixed profiles and
-sorts accepted entries by deterministic score.
+The sample command generates 10 candidates from:
+
+```text
+fixtures/batch-profiles/v2-sample.json
+```
+
+The selection report records the profile id/ref, the profile sequence used for
+each candidate, and sorts accepted entries by deterministic score.
 
 ## Manual CLI Sequence
 
@@ -85,6 +91,18 @@ npm run procgen -- score graph \
 
 Use `npm run procgen -- graph summarize --state <candidate>` to print a compact
 agent-readable graph summary.
+
+Fork before trying alternate plans:
+
+```bash
+npm run procgen -- graph fork \
+  --state artifacts/manual/candidate-001-lock_key_loop.json \
+  --label boss-prep-attempt \
+  --seed 4201 \
+  --out artifacts/manual/candidate-001a-boss-prep-fork.json \
+  --receipt artifacts/manual/receipt-001a-fork.json \
+  --transcript artifacts/manual/transcript.jsonl
+```
 
 For machine-readable planning context:
 
@@ -152,6 +170,18 @@ Expected fatal diagnostic code:
 required_item_unavailable
 ```
 
+To turn diagnostics into an advisory repair artifact:
+
+```bash
+npm run procgen -- repair suggest \
+  --state fixtures/candidates/invalid-missing-key.candidate.json \
+  --out artifacts/manual/invalid.repair.json
+```
+
+Repair reports preserve validator diagnostics and add `suggestedActions`.
+Suggestions are planning aids only; validate repaired candidates before scoring
+or accepting them.
+
 ## LAN Viewer
 
 Use `den-serve` so the viewer is reachable from another machine on the LAN:
@@ -178,6 +208,10 @@ Viewer API routes:
 - `/api/artifacts/first-run`
 - `/api/batches/v2`
 - `/api/artifacts/by-path?path=<artifact-ref-from-selection-report>`
+
+The batch viewer shows candidate scores, profile sequence, artifact refs,
+validation status, provenance steps, and any diagnostics/repair hints for the
+selected artifact.
 
 ## Verification
 

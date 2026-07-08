@@ -25,12 +25,14 @@ Already available:
 ```bash
 npm run procgen -- init --intent <intent.json> --seed <u64> --out <candidate.json> --receipt <receipt.json>
 npm run procgen -- graph apply-rule --state <candidate.json> --rule <rule_id> --seed <u64> --out <candidate.json> --receipt <receipt.json>
+npm run procgen -- graph fork --state <candidate.json> --label <name> --seed <u64> --out <candidate.json> --receipt <receipt.json>
 npm run procgen -- graph summarize --state <candidate.json>
 npm run procgen -- validate graph --state <candidate.json> --out <validation.json>
 npm run procgen -- score graph --state <candidate.json> --out <score.json>
 npm run procgen -- embed 2d --state <candidate.json> --seed <u64> --out <layout.json> --receipt <receipt.json>
 npm run procgen -- accept --candidate <candidate.json> --layout <layout.json> --validation <validation.json> --score <score.json> --out <accepted.json> --receipt <receipt.json>
 npm run procgen -- batch generate --out-dir <dir> --seed <u64> --count <n>
+npm run procgen -- batch generate --profile fixtures/batch-profiles/v2-sample.json --out-dir <dir> --seed <u64> --count <n>
 ```
 
 Implemented graph rules:
@@ -91,7 +93,7 @@ candidates.
 
 ### Candidate Fork
 
-Goal command:
+Implemented command:
 
 ```bash
 npm run procgen -- graph fork --state <candidate.json> --label <name> --seed <u64> --out <candidate.json> --receipt <receipt.json>
@@ -103,7 +105,7 @@ copying candidates when trying alternate plans.
 
 ### Repair Report
 
-Goal command:
+Implemented command:
 
 ```bash
 npm run procgen -- repair suggest --state <candidate.json> --out <repair.json>
@@ -115,14 +117,13 @@ Artifact kind:
 asha_procgen.repair_report.v1
 ```
 
-The report should sort validation diagnostics by severity, preserve
-`repairHint`, and optionally include known next tool actions such as
-`apply lock_key_loop before nested_lock_key_chain`. Suggestions are advisory:
-they do not replace validation.
+The report sorts validation diagnostics by severity, preserves `repairHint`,
+and includes known next tool actions where the workbench can suggest one.
+Suggestions are advisory: they do not replace validation.
 
 ### Batch Profile Fixture
 
-Goal command:
+Implemented command:
 
 ```bash
 npm run procgen -- batch generate --profile fixtures/batch-profiles/v2-sample.json --out-dir <dir> --seed <u64> --count <n>
@@ -134,13 +135,14 @@ Artifact kind:
 asha_procgen.batch_profile.v1
 ```
 
-Profiles should move rule sequences, weights, and selection labels into JSON so
-external agents can propose generation strategies without editing Rust.
+Profiles move rule sequences and selection labels into JSON so external agents
+can propose generation strategies without editing Rust. Selection reports record
+the profile id/ref and each accepted/rejected candidate's profile sequence.
 
 ### Viewer Context Panes
 
 The static viewer should remain LAN-first through `den-serve`. The next viewer
-layer should show, for the selected batch candidate:
+layer now shows, for the selected batch candidate:
 
 - provenance steps;
 - validation diagnostics and repair hints;

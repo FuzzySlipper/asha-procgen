@@ -213,6 +213,8 @@ body {
 
 .diagnostics {
   margin-top: 18px;
+  display: grid;
+  gap: 12px;
 }
 
 .diagnostic-empty {
@@ -221,20 +223,72 @@ body {
   font-size: 12px;
 }
 
-.diagnostic-list {
-  margin: 0;
-  padding-left: 18px;
+.context-section {
+  border: 1px solid #d6dee4;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 10px;
 }
 
-.diagnostic-list li {
-  margin-bottom: 10px;
+.context-section h2 {
+  margin: 0 0 8px;
+  color: #596273;
   font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.diagnostic-list small {
+.context-line,
+.diagnostic-line,
+.ref-line {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.context-line small,
+.diagnostic-line small {
   display: block;
   color: #607080;
   margin-top: 2px;
+}
+
+.ref-line {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.ref-line strong {
+  color: #596273;
+}
+
+.ref-line span {
+  overflow-wrap: anywhere;
+}
+
+.status-ok,
+.status-fail {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.status-ok {
+  color: #235b48;
+}
+
+.status-fail,
+.diagnostic-line.fatal strong {
+  color: #9b2f3a;
+}
+
+.diagnostic-line.warning strong {
+  color: #7b5d1d;
+}
+
+.diagnostic-line.info strong {
+  color: #607080;
 }
 
 @media (max-width: 760px) {

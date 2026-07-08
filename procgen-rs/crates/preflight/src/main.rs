@@ -34,6 +34,8 @@ enum Command {
     Graph(GraphCommand),
     /// Validate candidates.
     Validate(ValidateCommand),
+    /// Suggest repair actions for invalid or warning-heavy candidates.
+    Repair(RepairCommand),
     /// Score candidates.
     Score(ScoreCommand),
     /// Embed candidates into inspectable layouts.
@@ -75,6 +77,7 @@ struct GraphCommand {
 #[derive(Subcommand)]
 enum GraphSubcommand {
     ApplyRule(ApplyRuleArgs),
+    Fork(ForkArgs),
     Rules(RuleMetadataArgs),
     Summarize(SummarizeArgs),
 }
@@ -85,6 +88,22 @@ struct ApplyRuleArgs {
     state: PathBuf,
     #[arg(long)]
     rule: GraphRule,
+    #[arg(long)]
+    seed: u64,
+    #[arg(long)]
+    out: PathBuf,
+    #[arg(long)]
+    receipt: PathBuf,
+    #[arg(long)]
+    transcript: Option<PathBuf>,
+}
+
+#[derive(Args)]
+struct ForkArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    label: String,
     #[arg(long)]
     seed: u64,
     #[arg(long)]
@@ -137,6 +156,17 @@ struct ValidateCommand {
 #[derive(Subcommand)]
 enum ValidateSubcommand {
     Graph(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct RepairCommand {
+    #[command(subcommand)]
+    command: RepairSubcommand,
+}
+
+#[derive(Subcommand)]
+enum RepairSubcommand {
+    Suggest(ReportOutArgs),
 }
 
 #[derive(Args)]
@@ -247,11 +277,15 @@ enum BatchSubcommand {
 struct BatchGenerateArgs {
     #[arg(long)]
     out_dir: PathBuf,
+    #[arg(long)]
+    profile: Option<PathBuf>,
     #[arg(long, default_value_t = 5201)]
     seed: u64,
     #[arg(long, default_value_t = 10)]
     count: usize,
 }
+
+const DEFAULT_BATCH_PROFILE: &str = "fixtures/batch-profiles/v2-sample.json";
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -466,6 +500,30 @@ struct GraphSummaryReport {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct RepairReport {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    validation_ok: bool,
+    fatal_count: usize,
+    suggestions: Vec<RepairSuggestion>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RepairSuggestion {
+    code: String,
+    severity: Severity,
+    node: Option<String>,
+    edge: Option<String>,
+    detail: String,
+    repair_hint: Option<String>,
+    suggested_actions: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct NodeSummary {
     id: String,
     kind: NodeKind,
@@ -541,6 +599,8 @@ struct SelectionReport {
     kind: String,
     schema_version: u32,
     batch_id: String,
+    profile_id: String,
+    profile_ref: String,
     seed: u64,
     requested_count: usize,
     generated_count: usize,
@@ -552,6 +612,7 @@ struct SelectionReport {
 #[serde(rename_all = "camelCase")]
 struct SelectionEntry {
     candidate_id: String,
+    profile_sequence: String,
     artifact_ref: String,
     validation_ref: String,
     score_ref: String,
@@ -565,8 +626,26 @@ struct SelectionEntry {
 #[serde(rename_all = "camelCase")]
 struct SelectionRejection {
     candidate_id: String,
+    profile_sequence: String,
     candidate_ref: String,
     diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BatchProfile {
+    kind: String,
+    schema_version: u32,
+    profile_id: String,
+    description: String,
+    sequences: Vec<BatchProfileSequence>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BatchProfileSequence {
+    label: String,
+    rules: Vec<GraphRule>,
 }
 
 fn run(cli: Cli) -> Result<(), String> {
@@ -575,11 +654,15 @@ fn run(cli: Cli) -> Result<(), String> {
         Command::Init(args) => init_candidate(args),
         Command::Graph(command) => match command.command {
             GraphSubcommand::ApplyRule(args) => apply_rule(args),
+            GraphSubcommand::Fork(args) => fork_command(args),
             GraphSubcommand::Rules(args) => graph_rules_command(args),
             GraphSubcommand::Summarize(args) => summarize_candidate(args),
         },
         Command::Validate(command) => match command.command {
             ValidateSubcommand::Graph(args) => validate_graph_command(args),
+        },
+        Command::Repair(command) => match command.command {
+            RepairSubcommand::Suggest(args) => repair_suggest_command(args),
         },
         Command::Score(command) => match command.command {
             ScoreSubcommand::Graph(args) => score_graph_command(args),
@@ -771,6 +854,51 @@ fn apply_rule(args: ApplyRuleArgs) -> Result<(), String> {
     } else {
         Err("graph rule was rejected; see receipt diagnostics".to_owned())
     }
+}
+
+fn fork_command(args: ForkArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    let input_hash = hash_file(&args.state)?;
+    let forked = fork_candidate(candidate, &args.label, args.seed);
+    write_json(&args.out, &forked)?;
+    let receipt = receipt(
+        "graph fork",
+        Some(args.seed),
+        Some(&input_hash),
+        Some(&hash_json(&forked)?),
+        Some(&args.out),
+        Vec::new(),
+    );
+    write_json(&args.receipt, &receipt)?;
+    append_transcript(
+        args.transcript.as_deref(),
+        "graph fork",
+        Some(&args.out),
+        Some(&args.receipt),
+        Some(args.seed),
+        json!({
+            "state": display_path(&args.state),
+            "label": args.label
+        }),
+    )?;
+    Ok(())
+}
+
+fn fork_candidate(mut candidate: Candidate, label: &str, seed: u64) -> Candidate {
+    let source_id = candidate.candidate_id.clone();
+    let label_slug = slugify_label(label);
+    candidate.candidate_id = format!("{}.fork.{}.{}", source_id, label_slug, seed);
+    candidate.seed = seed;
+    candidate.provenance.push(ProvenanceStep {
+        step: candidate.provenance.len() as u32 + 1,
+        command: "graph fork".to_owned(),
+        seed: Some(seed),
+        summary: format!(
+            "Forked {source_id} as {} with label {label_slug}",
+            candidate.candidate_id
+        ),
+    });
+    candidate
 }
 
 fn apply_graph_rule(candidate: &mut Candidate, rule: GraphRule, seed: u64) -> Vec<Diagnostic> {
@@ -1738,6 +1866,113 @@ fn validate_graph_command(args: ReportOutArgs) -> Result<(), String> {
     }
 }
 
+fn repair_suggest_command(args: ReportOutArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    let report = repair_report(&candidate)?;
+    write_json(&args.out, &report)
+}
+
+fn repair_report(candidate: &Candidate) -> Result<RepairReport, String> {
+    let validation = validate_graph(candidate);
+    let mut suggestions: Vec<RepairSuggestion> = validation
+        .diagnostics
+        .iter()
+        .map(repair_suggestion_for_diagnostic)
+        .collect();
+    suggestions.sort_by(|left, right| {
+        severity_rank(left.severity)
+            .cmp(&severity_rank(right.severity))
+            .then_with(|| left.code.cmp(&right.code))
+            .then_with(|| left.node.cmp(&right.node))
+            .then_with(|| left.edge.cmp(&right.edge))
+    });
+    Ok(RepairReport {
+        kind: "asha_procgen.repair_report.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        validation_ok: validation.ok,
+        fatal_count: validation.fatal_count,
+        suggestions,
+    })
+}
+
+fn repair_suggestion_for_diagnostic(diagnostic: &Diagnostic) -> RepairSuggestion {
+    RepairSuggestion {
+        code: diagnostic.code.clone(),
+        severity: diagnostic.severity,
+        node: diagnostic.node.clone(),
+        edge: diagnostic.edge.clone(),
+        detail: diagnostic.detail.clone(),
+        repair_hint: diagnostic.repair_hint.clone(),
+        suggested_actions: suggested_actions_for_diagnostic(diagnostic),
+    }
+}
+
+fn severity_rank(severity: Severity) -> u8 {
+    match severity {
+        Severity::Fatal => 0,
+        Severity::Warning => 1,
+        Severity::Info => 2,
+    }
+}
+
+fn suggested_actions_for_diagnostic(diagnostic: &Diagnostic) -> Vec<String> {
+    match diagnostic.code.as_str() {
+        "required_item_unavailable" => vec![
+            "Inspect graph rules for a key/resource provider that grants the required item."
+                .to_owned(),
+            "Fork the candidate before adding or moving a provider branch.".to_owned(),
+        ],
+        "locked_edge_never_traversed" => vec![
+            "Move the provider branch before the locked edge or add an open route to the provider."
+                .to_owned(),
+            "Run validate graph again before scoring.".to_owned(),
+        ],
+        "goal_unreachable" => vec![
+            "Reconnect the critical path from start to goal under current lock constraints."
+                .to_owned(),
+            "Use graph summarize --json to inspect dead ends and locked items.".to_owned(),
+        ],
+        "missing_required_pattern" => vec![
+            "Run graph rules and apply the prerequisite pattern before retrying this rule."
+                .to_owned(),
+            "Fork from an earlier candidate if the prerequisite would conflict with current structure."
+                .to_owned(),
+        ],
+        "hub_incident_edges_low" | "hub_missing_return_or_rejoin" => vec![
+            "Add or repair hub spokes so at least one branch returns or rejoins.".to_owned(),
+            "Prefer hub_spoke_cluster on a fork when the current hub is too sparse.".to_owned(),
+        ],
+        "hub_missing_wayfinding_anchor" => {
+            vec!["Tag the hub as wayfinding_anchor or replace it with hub_spoke_cluster.".to_owned()]
+        }
+        "boss_missing_preparation" | "boss_preparation_missing_return" => vec![
+            "Add a reachable preparation resource before the boss approach.".to_owned(),
+            "Ensure the preparation branch returns or rejoins at the boss gate.".to_owned(),
+        ],
+        "hazard_missing_rejoin" => {
+            vec!["Add a rejoin/return edge after the hazard or remove the terminal pressure branch."
+                .to_owned()]
+        }
+        "merge_upstream_routes_low" => {
+            vec!["Add a second upstream branch route before treating this node as a merge.".to_owned()]
+        }
+        "non_goal_dead_end" => vec![
+            "Add a return/rejoin edge unless this is an intentional terminal reward.".to_owned(),
+        ],
+        "orphan_node" => vec!["Add an incoming approach or branch edge from a reachable node.".to_owned()],
+        "rule_already_applied" => {
+            vec!["Fork from an earlier candidate or choose a rule with seed-derived ids.".to_owned()]
+        }
+        _ => diagnostic
+            .repair_hint
+            .iter()
+            .map(|hint| format!("Use repair hint: {hint}"))
+            .collect(),
+    }
+}
+
 fn validate_graph(candidate: &Candidate) -> ValidationReport {
     let mut diagnostics = Vec::new();
     let node_ids: BTreeSet<&str> = candidate
@@ -2457,9 +2692,15 @@ fn baseline_command(args: BaselineArgs) -> Result<(), String> {
 fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
     fs::create_dir_all(&args.out_dir)
         .map_err(|error| format!("failed to create {}: {error}", args.out_dir.display()))?;
+    let profile_path = args
+        .profile
+        .clone()
+        .unwrap_or_else(|| PathBuf::from(DEFAULT_BATCH_PROFILE));
+    let profile = load_batch_profile(&profile_path)?;
     let mut accepted = Vec::new();
     let mut rejected = Vec::new();
     for index in 0..args.count {
+        let sequence = batch_profile_sequence(&profile, index)?;
         let candidate_seed = args.seed + index as u64 * 100;
         let run_dir = args.out_dir.join(format!("candidate-{index:03}"));
         fs::create_dir_all(&run_dir)
@@ -2479,7 +2720,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             transcript: Some(transcript.clone()),
         })?;
 
-        for (rule_index, rule) in batch_profile(index).into_iter().enumerate() {
+        for (rule_index, rule) in sequence.rules.iter().copied().enumerate() {
             let next = run_dir.join(format!(
                 "candidate-{:03}-{}.json",
                 rule_index + 1,
@@ -2516,6 +2757,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         if !validation.ok {
             rejected.push(SelectionRejection {
                 candidate_id: candidate.candidate_id,
+                profile_sequence: sequence.label.clone(),
                 candidate_ref: display_path(&current),
                 diagnostics: validation.diagnostics,
             });
@@ -2555,6 +2797,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
 
         accepted.push(SelectionEntry {
             candidate_id: candidate.candidate_id.clone(),
+            profile_sequence: sequence.label.clone(),
             artifact_ref: display_path(&artifact_path),
             validation_ref: display_path(&validation_path),
             score_ref: display_path(&score_path),
@@ -2576,6 +2819,8 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         kind: "asha_procgen.selection_report.v1".to_owned(),
         schema_version: 1,
         batch_id: format!("batch.v2.{}", args.seed),
+        profile_id: profile.profile_id,
+        profile_ref: display_path(&profile_path),
         seed: args.seed,
         requested_count: args.count,
         generated_count: accepted.len() + rejected.len(),
@@ -2592,47 +2837,41 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
     Ok(())
 }
 
-fn batch_profile(index: usize) -> Vec<GraphRule> {
-    let profiles: &[&[GraphRule]] = &[
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::BranchMergeShortcut,
-        ],
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::NestedLockKeyChain,
-            GraphRule::BossPreparationLoop,
-        ],
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-        ],
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::BossPreparationLoop,
-        ],
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::NestedLockKeyChain,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-        ],
-        &[
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::NestedLockKeyChain,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::BossPreparationLoop,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-        ],
-    ];
-    profiles[index % profiles.len()].to_vec()
+fn load_batch_profile(path: &Path) -> Result<BatchProfile, String> {
+    let profile: BatchProfile = read_json(path)?;
+    if profile.kind != "asha_procgen.batch_profile.v1" {
+        return Err(format!(
+            "batch profile {} has unsupported kind {}",
+            path.display(),
+            profile.kind
+        ));
+    }
+    if profile.sequences.is_empty() {
+        return Err(format!(
+            "batch profile {} must contain at least one sequence",
+            path.display()
+        ));
+    }
+    for sequence in &profile.sequences {
+        if sequence.rules.is_empty() {
+            return Err(format!(
+                "batch profile {} sequence {} has no rules",
+                path.display(),
+                sequence.label
+            ));
+        }
+    }
+    Ok(profile)
+}
+
+fn batch_profile_sequence(
+    profile: &BatchProfile,
+    index: usize,
+) -> Result<&BatchProfileSequence, String> {
+    profile
+        .sequences
+        .get(index % profile.sequences.len())
+        .ok_or_else(|| "batch profile has no sequences".to_owned())
 }
 
 fn collect_tags(candidate: &Candidate) -> Vec<String> {
@@ -2744,6 +2983,28 @@ fn fnv1a64(bytes: &[u8]) -> u64 {
 
 fn stable_suffix(seed: u64) -> String {
     format!("{:04x}", seed & 0xffff)
+}
+
+fn slugify_label(label: &str) -> String {
+    let mut slug = String::new();
+    let mut last_was_separator = false;
+    for character in label.chars().flat_map(char::to_lowercase) {
+        if character.is_ascii_alphanumeric() {
+            slug.push(character);
+            last_was_separator = false;
+        } else if !last_was_separator && !slug.is_empty() {
+            slug.push('_');
+            last_was_separator = true;
+        }
+    }
+    while slug.ends_with('_') {
+        slug.pop();
+    }
+    if slug.is_empty() {
+        "fork".to_owned()
+    } else {
+        slug
+    }
 }
 
 fn fatal(
@@ -2877,7 +3138,9 @@ mod tests {
             .iter()
             .find(|rule| rule.id == "nested_lock_key_chain")
             .expect("nested lock metadata should exist");
-        assert!(nested.required_patterns.contains(&"lock_key_loop".to_owned()));
+        assert!(nested
+            .required_patterns
+            .contains(&"lock_key_loop".to_owned()));
         assert!(nested
             .compatibility_hints
             .iter()
@@ -2923,12 +3186,45 @@ mod tests {
         assert_eq!(summary.kind, "asha_procgen.graph_summary.v1");
         assert!(summary.validation_ok);
         assert_eq!(summary.node_count, candidate.graph.nodes.len());
-        assert!(summary
-            .locked_items
-            .contains(&"item.gate_key_1".to_owned()));
+        assert!(summary.locked_items.contains(&"item.gate_key_1".to_owned()));
         assert!(summary.tags.contains(&"critical".to_owned()));
         assert_eq!(summary.provenance_tail.len(), 2);
         assert!(summary.metrics.contains_key("lockedEdgeCount"));
+    }
+
+    #[test]
+    fn fork_candidate_preserves_graph_and_adds_provenance() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "fork".to_owned(),
+            title: "Fork".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 41);
+        candidate.provenance.push(ProvenanceStep {
+            step: 1,
+            command: "init".to_owned(),
+            seed: Some(41),
+            summary: "Initialized fork source".to_owned(),
+        });
+        apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 42);
+        let source_id = candidate.candidate_id.clone();
+        let source_graph = candidate.graph.clone();
+        let forked = fork_candidate(candidate, "Boss Prep Attempt!", 77);
+        assert_eq!(
+            forked.candidate_id,
+            format!("{source_id}.fork.boss_prep_attempt.77")
+        );
+        assert_eq!(forked.seed, 77);
+        assert_eq!(forked.graph.nodes.len(), source_graph.nodes.len());
+        assert_eq!(forked.graph.edges.len(), source_graph.edges.len());
+        assert_eq!(forked.provenance.len(), 2);
+        let fork_step = forked.provenance.last().expect("fork step should exist");
+        assert_eq!(fork_step.command, "graph fork");
+        assert_eq!(fork_step.seed, Some(77));
+        assert!(fork_step.summary.contains(&source_id));
     }
 
     #[test]
@@ -3051,6 +3347,124 @@ mod tests {
         assert!(report.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "boss_missing_preparation" && diagnostic.repair_hint.is_some()
         }));
+    }
+
+    #[test]
+    fn repair_report_prioritizes_missing_provider_actions() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "repair".to_owned(),
+            title: "Repair".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 51);
+        candidate.graph.edges[0].required_item = Some("missing.key".to_owned());
+        candidate.graph.edges[0].traversal = TraversalKind::Locked;
+        let report = repair_report(&candidate).expect("repair report should encode");
+        assert_eq!(report.kind, "asha_procgen.repair_report.v1");
+        assert!(!report.validation_ok);
+        let suggestion = report
+            .suggestions
+            .iter()
+            .find(|suggestion| suggestion.code == "required_item_unavailable")
+            .expect("missing provider suggestion should exist");
+        assert_eq!(suggestion.severity, Severity::Fatal);
+        assert!(suggestion.repair_hint.is_some());
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("provider")));
+    }
+
+    #[test]
+    fn repair_mapping_covers_missing_required_pattern() {
+        let diagnostic = fatal_with_hint(
+            "missing_required_pattern",
+            Some("gate.locked_1"),
+            None,
+            "nested_lock_key_chain requires an existing first lock/key loop.",
+            "Apply lock_key_loop before nested_lock_key_chain.",
+        );
+        let suggestion = repair_suggestion_for_diagnostic(&diagnostic);
+        assert_eq!(suggestion.code, "missing_required_pattern");
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("prerequisite pattern")));
+    }
+
+    #[test]
+    fn repair_report_maps_v2_structural_hints() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "repair-structural".to_owned(),
+            title: "Repair Structural".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 52);
+        candidate.graph.nodes.push(Node {
+            id: "gate.boss_broken".to_owned(),
+            kind: NodeKind::Gate,
+            label: "Unprepared Boss".to_owned(),
+            tags: vec!["boss".to_owned()],
+            grants_item: None,
+        });
+        candidate.graph.edges.extend([
+            Edge {
+                id: "edge.start.boss_broken".to_owned(),
+                from: "start".to_owned(),
+                to: "gate.boss_broken".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["approach".to_owned()],
+            },
+            Edge {
+                id: "edge.boss_broken.goal".to_owned(),
+                from: "gate.boss_broken".to_owned(),
+                to: "goal".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["boss".to_owned()],
+            },
+        ]);
+        let report = repair_report(&candidate).expect("repair report should encode");
+        let suggestion = report
+            .suggestions
+            .iter()
+            .find(|suggestion| suggestion.code == "boss_missing_preparation")
+            .expect("boss preparation suggestion should exist");
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("preparation")));
+    }
+
+    #[test]
+    fn loads_default_batch_profile_fixture() {
+        let profile_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_BATCH_PROFILE);
+        let profile = load_batch_profile(&profile_path).expect("default profile should load");
+        assert_eq!(profile.kind, "asha_procgen.batch_profile.v1");
+        assert_eq!(profile.sequences.len(), 6);
+        let first = batch_profile_sequence(&profile, 0).expect("first sequence");
+        assert_eq!(first.label, "hub-merge");
+        assert_eq!(
+            first.rules,
+            vec![
+                GraphRule::LockKeyLoop,
+                GraphRule::HubSpokeCluster,
+                GraphRule::BranchMergeShortcut
+            ]
+        );
+        let cycled = batch_profile_sequence(&profile, 6).expect("cycled sequence");
+        assert_eq!(cycled.label, "hub-merge");
     }
 
     #[test]

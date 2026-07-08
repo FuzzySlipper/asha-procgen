@@ -1,0 +1,63 @@
+{
+  "kind": "asha_procgen.batch_profile.v1",
+  "schemaVersion": 1,
+  "profileId": "asha_procgen.batch_profile.v2_sample",
+  "description": "Default v2 sample profile cycling through richer graph grammar combinations.",
+  "sequences": [
+    {
+      "label": "hub-merge",
+      "rules": [
+        "lock_key_loop",
+        "hub_spoke_cluster",
+        "branch_merge_shortcut"
+      ]
+    },
+    {
+      "label": "nested-boss",
+      "rules": [
+        "lock_key_loop",
+        "nested_lock_key_chain",
+        "boss_preparation_loop"
+      ]
+    },
+    {
+      "label": "hazard-treasure-merge",
+      "rules": [
+        "lock_key_loop",
+        "hazard_resource_tradeoff",
+        "gated_treasure_branch",
+        "branch_merge_shortcut"
+      ]
+    },
+    {
+      "label": "hub-hazard-boss",
+      "rules": [
+        "lock_key_loop",
+        "hub_spoke_cluster",
+        "hazard_resource_tradeoff",
+        "boss_preparation_loop"
+      ]
+    },
+    {
+      "label": "nested-treasure-merge",
+      "rules": [
+        "lock_key_loop",
+        "nested_lock_key_chain",
+        "gated_treasure_branch",
+        "branch_merge_shortcut"
+      ]
+    },
+    {
+      "label": "full-v2-stack",
+      "rules": [
+        "lock_key_loop",
+        "hub_spoke_cluster",
+        "nested_lock_key_chain",
+        "hazard_resource_tradeoff",
+        "boss_preparation_loop",
+        "gated_treasure_branch",
+        "branch_merge_shortcut"
+      ]
+    }
+  ]
+}

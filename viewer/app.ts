@@ -4,8 +4,21 @@ interface AcceptedArtifact {
   readonly layoutHash: string;
   readonly validationRef: string;
   readonly scoreRef: string;
+  readonly candidate: CandidateArtifact;
   readonly layout: LayoutArtifact;
   readonly scoreSummary: ScoreReport;
+}
+
+interface CandidateArtifact {
+  readonly candidateId: string;
+  readonly provenance: readonly ProvenanceStep[];
+}
+
+interface ProvenanceStep {
+  readonly step: number;
+  readonly command: string;
+  readonly seed: number | null;
+  readonly summary: string;
 }
 
 interface LayoutArtifact {
@@ -41,6 +54,8 @@ interface ScoreReport {
 
 interface SelectionReport {
   readonly batchId: string;
+  readonly profileId?: string;
+  readonly profileRef?: string;
   readonly requestedCount: number;
   readonly generatedCount: number;
   readonly accepted: readonly SelectionEntry[];
@@ -49,6 +64,7 @@ interface SelectionReport {
 
 interface SelectionEntry {
   readonly candidateId: string;
+  readonly profileSequence?: string;
   readonly artifactRef: string;
   readonly validationRef: string;
   readonly scoreRef: string;
@@ -60,7 +76,14 @@ interface SelectionEntry {
 
 interface SelectionRejection {
   readonly candidateId: string;
+  readonly profileSequence?: string;
   readonly candidateRef: string;
+  readonly diagnostics: readonly Diagnostic[];
+}
+
+interface ValidationReport {
+  readonly ok: boolean;
+  readonly fatalCount: number;
   readonly diagnostics: readonly Diagnostic[];
 }
 
@@ -91,9 +114,10 @@ const initialSelection = batch.accepted[0] ?? null;
 
 if (initialSelection === null) {
   const artifact = await fetchArtifact('/api/artifacts/first-run');
+  const validation = await fetchValidation(artifactUrl(artifact.validationRef));
   renderBatchList(batchPanel, batch, null, selectEntry);
   renderSummary(summaryPanel, artifact, null, batch);
-  renderDiagnostics(diagnosticsPanel, batch);
+  renderContext(diagnosticsPanel, artifact, null, batch, validation);
   renderLayout(layoutSvg, artifact.layout);
 } else {
   await selectEntry(initialSelection);
@@ -101,9 +125,10 @@ if (initialSelection === null) {
 
 async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
+  const validation = await fetchValidation(artifactUrl(entry.validationRef));
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
-  renderDiagnostics(diagnosticsPanel, batch);
+  renderContext(diagnosticsPanel, artifact, entry, batch, validation);
   renderLayout(layoutSvg, artifact.layout);
 }
 
@@ -127,6 +152,14 @@ async function fetchArtifact(url: string): Promise<AcceptedArtifact> {
     throw new Error(`failed to load artifact: ${response.status}`);
   }
   return (await response.json()) as AcceptedArtifact;
+}
+
+async function fetchValidation(url: string): Promise<ValidationReport> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`failed to load validation: ${response.status}`);
+  }
+  return (await response.json()) as ValidationReport;
 }
 
 function artifactUrl(path: string): string {
@@ -190,40 +223,112 @@ function renderSummary(
     metric('Loops', String(metrics.loopCount ?? 0)),
     metric('Hubs', String(metrics.hubCount ?? 0)),
     metric('Pressure', String(metrics.pressureEdgeCount ?? 0)),
+    metric('Profile', selection?.profileSequence ?? 'first-run'),
     metric('Rejected', String(report.rejected.length)),
     metric('Tags', topTags),
   );
 }
 
-function renderDiagnostics(target: HTMLElement, report: SelectionReport): void {
+function renderContext(
+  target: HTMLElement,
+  artifact: AcceptedArtifact,
+  selection: SelectionEntry | null,
+  report: SelectionReport,
+  validation: ValidationReport,
+): void {
+  target.replaceChildren(
+    contextSection('Artifact Refs', [
+      refLine('artifact', selection?.artifactRef ?? '/api/artifacts/first-run'),
+      refLine('validation', artifact.validationRef),
+      refLine('score', artifact.scoreRef),
+      refLine('layout', selection?.layoutRef ?? artifact.layout.layoutId),
+      refLine('profile', report.profileRef ?? 'first-run'),
+    ]),
+    contextSection('Validation', validationLines(validation)),
+    contextSection('Provenance', provenanceLines(artifact.candidate.provenance)),
+    contextSection('Batch Rejections', rejectionLines(report)),
+  );
+}
+
+function validationLines(validation: ValidationReport): readonly HTMLElement[] {
+  const status = document.createElement('p');
+  status.className = validation.ok ? 'status-ok' : 'status-fail';
+  status.textContent = validation.ok
+    ? 'ok'
+    : `${validation.fatalCount} fatal diagnostic(s)`;
+  const diagnostics = validation.diagnostics.map(diagnosticLine);
+  if (diagnostics.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'diagnostic-empty';
+    empty.textContent = 'No validation diagnostics for the selected candidate.';
+    return [status, empty];
+  }
+  return [status, ...diagnostics];
+}
+
+function provenanceLines(provenance: readonly ProvenanceStep[]): readonly HTMLElement[] {
+  return provenance.slice(-8).map((step) => {
+    const item = document.createElement('p');
+    item.className = 'context-line';
+    const seedText = step.seed === null ? '' : ` seed ${step.seed}`;
+    item.textContent = `${step.step}. ${step.command}${seedText}`;
+    const detail = document.createElement('small');
+    detail.textContent = step.summary;
+    item.append(detail);
+    return item;
+  });
+}
+
+function rejectionLines(report: SelectionReport): readonly HTMLElement[] {
   if (report.rejected.length === 0) {
     const empty = document.createElement('p');
     empty.className = 'diagnostic-empty';
     empty.textContent = 'No rejected candidates in the current sample batch.';
-    target.replaceChildren(empty);
-    return;
+    return [empty];
   }
-
-  const items = report.rejected.flatMap((rejection) =>
+  return report.rejected.flatMap((rejection) =>
     rejection.diagnostics.map((diagnostic) => {
-      const item = document.createElement('li');
-      const code = document.createElement('strong');
-      code.textContent = diagnostic.code;
-      const detail = document.createElement('span');
-      detail.textContent = ` ${diagnostic.detail}`;
-      item.append(code, detail);
-      if (diagnostic.repairHint !== undefined) {
-        const repair = document.createElement('small');
-        repair.textContent = diagnostic.repairHint;
-        item.append(repair);
-      }
-      return item;
+      const line = diagnosticLine(diagnostic);
+      line.prepend(`${shortCandidate(rejection.candidateId)} `);
+      return line;
     }),
   );
-  const list = document.createElement('ul');
-  list.className = 'diagnostic-list';
-  list.append(...items);
-  target.replaceChildren(list);
+}
+
+function diagnosticLine(diagnostic: Diagnostic): HTMLElement {
+  const item = document.createElement('p');
+  item.className = `diagnostic-line ${diagnostic.severity}`;
+  const code = document.createElement('strong');
+  code.textContent = diagnostic.code;
+  const detail = document.createElement('span');
+  detail.textContent = ` ${diagnostic.detail}`;
+  item.append(code, detail);
+  if (diagnostic.repairHint !== undefined) {
+    const repair = document.createElement('small');
+    repair.textContent = diagnostic.repairHint;
+    item.append(repair);
+  }
+  return item;
+}
+
+function contextSection(title: string, children: readonly HTMLElement[]): HTMLElement {
+  const section = document.createElement('section');
+  section.className = 'context-section';
+  const heading = document.createElement('h2');
+  heading.textContent = title;
+  section.append(heading, ...children);
+  return section;
+}
+
+function refLine(label: string, value: string): HTMLElement {
+  const line = document.createElement('p');
+  line.className = 'ref-line';
+  const labelElement = document.createElement('strong');
+  labelElement.textContent = label;
+  const valueElement = document.createElement('span');
+  valueElement.textContent = value;
+  line.append(labelElement, valueElement);
+  return line;
 }
 
 function metric(label: string, value: string): HTMLElement {

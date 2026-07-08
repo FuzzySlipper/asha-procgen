@@ -8,7 +8,7 @@
     "check:asha-boundary": "node scripts/check-asha-boundary.mjs",
     "procgen": "cargo run --quiet --manifest-path procgen-rs/Cargo.toml --bin asha-procgen --",
     "baseline": "npm run procgen -- baseline --out-dir artifacts/samples/first-run --seed 4103",
-    "batch:sample": "npm run procgen -- batch generate --out-dir artifacts/samples/batch-v2 --seed 5201 --count 10",
+    "batch:sample": "npm run procgen -- batch generate --profile fixtures/batch-profiles/v2-sample.json --out-dir artifacts/samples/batch-v2 --seed 5201 --count 10",
     "build:viewer": "tsc -p tsconfig.json",
     "viewer:serve": "npm run baseline && npm run batch:sample && npm run build:viewer && node scripts/serve-viewer.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",

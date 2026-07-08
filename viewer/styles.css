@@ -143,7 +143,7 @@ body {
 
 .view-tabs {
   display: inline-grid;
-  grid-template-columns: repeat(2, minmax(112px, 1fr));
+  grid-template-columns: repeat(3, minmax(112px, 1fr));
   gap: 6px;
   margin-bottom: 12px;
 }
@@ -328,6 +328,84 @@ body {
   fill: var(--text-muted);
   font-size: 14px;
   text-anchor: middle;
+}
+
+.build-grid-line {
+  stroke: #26323e;
+  stroke-width: 1;
+}
+
+.build-cell.floor {
+  fill: #253341;
+}
+
+.build-cell.room {
+  fill: #2d3a47;
+  stroke: #10151c;
+  stroke-width: 1;
+}
+
+.build-cell.corridor {
+  fill: #49616f;
+}
+
+.build-cell.start,
+.build-marker.start {
+  fill: #60b67b;
+}
+
+.build-cell.goal,
+.build-marker.goal {
+  fill: #d8a94f;
+}
+
+.build-cell.gate,
+.build-cell.boss-gate,
+.build-marker.locked-gate,
+.build-marker.boss-threshold {
+  fill: #cf665f;
+}
+
+.build-cell.pressure,
+.build-marker.hazard {
+  fill: #b56f60;
+}
+
+.build-cell.reward,
+.build-marker.reward-cache,
+.build-marker.key-pickup {
+  fill: #ccb949;
+}
+
+.build-cell.landmark-hub {
+  fill: #47708b;
+}
+
+.build-marker.secret-route-marker,
+.build-marker.shortcut-marker {
+  fill: #9d75bd;
+}
+
+.build-marker,
+.build-marker.resource-clue {
+  fill: #74a582;
+}
+
+.build-label {
+  fill: #eff8ff;
+  font-size: 11px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #10151c;
+  stroke-width: 3px;
+}
+
+.build-marker-label {
+  fill: #071018;
+  font-size: 10px;
+  font-weight: 900;
+  text-anchor: middle;
+  pointer-events: none;
 }
 
 .diagnostics {

@@ -346,8 +346,9 @@ npm run preview:smoke
 This builds the viewer, starts the local preview server on `127.0.0.1`, checks
 the sample batch and intermediate artifact API, verifies the dark theme CSS, and
 checks the top generated standalone HTML preview for dark styling, SVG room and
-corridor elements, and required content labels. It uses Chromium to write
-layout/intermediate/standalone-preview screenshots plus a report under:
+corridor elements, and required content labels. It also checks the viewer Build
+tab for rendered grid cells and markers. It uses Chromium to write
+layout/intermediate/build/standalone-preview screenshots plus a report under:
 
 ```text
 /tmp/asha-procgen-viewer-smoke/

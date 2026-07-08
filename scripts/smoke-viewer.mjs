@@ -70,6 +70,12 @@ try {
 
   const chromium = await findChromium();
   const previewUrl = `${baseUrl}/api/artifacts/by-path?path=${encodeURIComponent(top.htmlRef)}`;
+  const buildDom = await dumpDom(chromium, `${baseUrl}/#build`);
+  const buildCellCount = countOccurrences(buildDom, 'class="build-cell');
+  const buildMarkerCount = countOccurrences(buildDom, 'class="build-marker');
+  if (buildCellCount < 20 || buildMarkerCount < 2) {
+    throw new Error(`build tab rendered too little grid detail: cells=${buildCellCount}, markers=${buildMarkerCount}`);
+  }
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -85,6 +91,11 @@ try {
       name: 'intermediate-mobile.png',
       url: `${baseUrl}/#intermediate`,
       size: '390,800',
+    },
+    {
+      name: 'build-desktop.png',
+      url: `${baseUrl}/#build`,
+      size: '1100,780',
     },
     {
       name: 'standalone-preview-desktop.png',
@@ -128,6 +139,10 @@ try {
       corridors: previewCorridorCount,
       hasDarkBackground: true,
       requiredLabels: ['Key Pickup', 'Boss Threshold'],
+    },
+    buildTab: {
+      cells: buildCellCount,
+      markers: buildMarkerCount,
     },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };
@@ -175,6 +190,19 @@ async function fetchArtifact(path) {
 
 function countOccurrences(text, pattern) {
   return text.split(pattern).length - 1;
+}
+
+async function dumpDom(chromium, url) {
+  const { stdout } = await execFileAsync(chromium, [
+    '--headless',
+    '--no-sandbox',
+    '--disable-gpu',
+    '--run-all-compositor-stages-before-draw',
+    '--virtual-time-budget=3000',
+    '--dump-dom',
+    url,
+  ]);
+  return stdout;
 }
 
 async function findChromium() {

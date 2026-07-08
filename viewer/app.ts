@@ -74,6 +74,10 @@ interface SelectionEntry {
   readonly spatialIntentRef?: string;
   readonly intermediateBreakdownRef?: string;
   readonly intermediateValidationRef?: string;
+  readonly geometryRef?: string;
+  readonly geometryValidationRef?: string;
+  readonly htmlPreviewRef?: string;
+  readonly htmlRef?: string;
   readonly overall: number;
   readonly metrics: Record<string, number>;
   readonly tags: readonly string[];
@@ -151,6 +155,65 @@ interface IntermediateContext {
   readonly validation: ValidationReport | null;
 }
 
+interface Geometry2dArtifact {
+  readonly geometryId: string;
+  readonly candidateId: string;
+  readonly bounds: GeometryBounds;
+  readonly rooms: readonly GeometryRoom[];
+  readonly corridors: readonly GeometryCorridor[];
+  readonly contents: readonly GeometryContent[];
+}
+
+interface GeometryBounds {
+  readonly width: number;
+  readonly height: number;
+  readonly grid: number;
+}
+
+interface GeometryRoom {
+  readonly id: string;
+  readonly sourceRegion: string;
+  readonly sourceNodes: readonly string[];
+  readonly role: string;
+  readonly geometryRole: string;
+  readonly footprintClass: string;
+  readonly rect: GeometryRect;
+  readonly styleTags: readonly string[];
+}
+
+interface GeometryRect {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+interface GeometryCorridor {
+  readonly id: string;
+  readonly sourceConnector: string;
+  readonly sourceEdge: string;
+  readonly fromRoom: string;
+  readonly toRoom: string;
+  readonly traversalHint: string;
+  readonly semanticTags: readonly string[];
+  readonly width: number;
+  readonly points: readonly GeometryPoint[];
+}
+
+interface GeometryPoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+interface GeometryContent {
+  readonly id: string;
+  readonly roomId: string;
+  readonly sourceRef: string;
+  readonly kind: string;
+  readonly label: string;
+  readonly tags: readonly string[];
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -161,7 +224,7 @@ if (svg === null || summary === null || batchList === null || diagnostics === nu
   throw new Error('viewer mount elements are missing');
 }
 
-type ViewMode = 'layout' | 'intermediate';
+type ViewMode = 'layout' | 'intermediate' | 'build';
 
 const layoutSvg = svg;
 const summaryPanel = summary;
@@ -169,16 +232,17 @@ const batchPanel = batchList;
 const diagnosticsPanel = diagnostics;
 const batch = await fetchBatch();
 const initialSelection = batch.accepted[0] ?? null;
-let activeView: ViewMode = location.hash === '#intermediate' ? 'intermediate' : 'layout';
+let activeView: ViewMode = initialViewMode();
 let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
+let currentGeometry: Geometry2dArtifact | null = null;
 
 for (const tab of viewTabs) {
   tab.addEventListener('click', () => {
     const nextView = tab.dataset.view;
-    if (nextView === 'layout' || nextView === 'intermediate') {
+    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build') {
       activeView = nextView;
-      history.replaceState(null, '', activeView === 'intermediate' ? '#intermediate' : '#layout');
+      history.replaceState(null, '', `#${activeView}`);
       renderActiveView();
     }
   });
@@ -189,6 +253,7 @@ if (initialSelection === null) {
   const validation = await fetchValidation(artifactUrl(artifact.validationRef));
   currentLayout = artifact.layout;
   currentIntermediate = emptyIntermediateContext();
+  currentGeometry = null;
   renderBatchList(batchPanel, batch, null, selectEntry);
   renderSummary(summaryPanel, artifact, null, batch);
   renderContext(diagnosticsPanel, artifact, null, batch, validation, emptyIntermediateContext());
@@ -201,8 +266,10 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
+  const geometry = await fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef);
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
+  currentGeometry = geometry;
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
   renderContext(diagnosticsPanel, artifact, entry, batch, validation, intermediate);
@@ -265,6 +332,16 @@ function emptyIntermediateContext(): IntermediateContext {
     breakdown: null,
     validation: null,
   };
+}
+
+function initialViewMode(): ViewMode {
+  if (location.hash === '#intermediate') {
+    return 'intermediate';
+  }
+  if (location.hash === '#build') {
+    return 'build';
+  }
+  return 'layout';
 }
 
 function artifactUrl(path: string): string {
@@ -351,11 +428,27 @@ function renderContext(
       refLine('profile', report.profileRef ?? 'first-run'),
     ]),
     contextSection('Intermediate Refs', intermediateRefLines(selection)),
+    contextSection('Build Refs', buildRefLines(selection)),
     contextSection('Intermediate', intermediateLines(intermediate)),
     contextSection('Validation', validationLines(validation)),
     contextSection('Provenance', provenanceLines(artifact.candidate.provenance)),
     contextSection('Batch Rejections', rejectionLines(report)),
   );
+}
+
+function buildRefLines(selection: SelectionEntry | null): readonly HTMLElement[] {
+  if (selection === null || selection.geometryRef === undefined) {
+    const empty = document.createElement('p');
+    empty.className = 'diagnostic-empty';
+    empty.textContent = 'No geometry/build artifact refs are available for this selection.';
+    return [empty];
+  }
+  return [
+    refLine('geometry', selection.geometryRef),
+    refLine('gvalid', selection.geometryValidationRef ?? 'missing'),
+    refLine('preview', selection.htmlPreviewRef ?? 'missing'),
+    refLine('html', selection.htmlRef ?? 'missing'),
+  ];
 }
 
 function intermediateRefLines(selection: SelectionEntry | null): readonly HTMLElement[] {
@@ -523,6 +616,10 @@ function metric(label: string, value: string): HTMLElement {
 function renderActiveView(): void {
   for (const tab of viewTabs) {
     tab.dataset.selected = tab.dataset.view === activeView ? 'true' : 'false';
+  }
+  if (activeView === 'build') {
+    renderBuildGrid(layoutSvg, currentGeometry);
+    return;
   }
   if (activeView === 'intermediate') {
     renderIntermediate(layoutSvg, currentIntermediate.breakdown);
@@ -703,6 +800,239 @@ function renderIntermediate(
     anchor.textContent = region.anchorNode ?? region.anchorQuality ?? 'derived';
     group.append(anchor);
     target.append(group);
+  }
+}
+
+interface BuildCell {
+  readonly kind: 'room' | 'corridor';
+  readonly role: string;
+}
+
+interface BuildPlan {
+  readonly cellSize: number;
+  readonly cellPixels: number;
+  readonly columns: number;
+  readonly rows: number;
+  readonly cells: Map<string, BuildCell>;
+}
+
+function renderBuildGrid(target: SVGSVGElement, geometry: Geometry2dArtifact | null): void {
+  target.replaceChildren();
+  if (geometry === null) {
+    renderEmptySvg(target, 'No geometry build artifact loaded.');
+    return;
+  }
+
+  const plan = buildGridPlan(geometry);
+  const margin = 24;
+  const headerHeight = 54;
+  const width = margin * 2 + plan.columns * plan.cellPixels;
+  const height = margin * 2 + headerHeight + plan.rows * plan.cellPixels;
+  target.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+  const title = createSvg('text');
+  title.setAttribute('class', 'intermediate-role-label');
+  title.setAttribute('x', String(margin));
+  title.setAttribute('y', '28');
+  title.textContent = 'Build Grid';
+  target.append(title);
+
+  const stats = createSvg('text');
+  stats.setAttribute('class', 'intermediate-region-detail');
+  stats.setAttribute('x', String(margin));
+  stats.setAttribute('y', '48');
+  stats.textContent = `${plan.columns} x ${plan.rows} cells / ${geometry.rooms.length} rooms / ${geometry.corridors.length} corridors / ${geometry.contents.length} markers`;
+  target.append(stats);
+
+  const grid = createSvg('g');
+  grid.setAttribute('transform', `translate(${margin} ${margin + headerHeight})`);
+  target.append(grid);
+
+  const background = createSvg('rect');
+  background.setAttribute('x', '0');
+  background.setAttribute('y', '0');
+  background.setAttribute('width', String(plan.columns * plan.cellPixels));
+  background.setAttribute('height', String(plan.rows * plan.cellPixels));
+  background.setAttribute('fill', '#111820');
+  grid.append(background);
+
+  for (const [key, cell] of plan.cells) {
+    const [column, row] = key.split(',').map(Number);
+    const rect = createSvg('rect');
+    rect.setAttribute('class', `build-cell ${cell.kind} ${slugClass(cell.role)}`);
+    rect.setAttribute('x', String(column * plan.cellPixels));
+    rect.setAttribute('y', String(row * plan.cellPixels));
+    rect.setAttribute('width', String(plan.cellPixels));
+    rect.setAttribute('height', String(plan.cellPixels));
+    grid.append(rect);
+  }
+
+  for (let column = 0; column <= plan.columns; column += 1) {
+    const line = createSvg('line');
+    line.setAttribute('class', 'build-grid-line');
+    line.setAttribute('x1', String(column * plan.cellPixels));
+    line.setAttribute('y1', '0');
+    line.setAttribute('x2', String(column * plan.cellPixels));
+    line.setAttribute('y2', String(plan.rows * plan.cellPixels));
+    grid.append(line);
+  }
+  for (let row = 0; row <= plan.rows; row += 1) {
+    const line = createSvg('line');
+    line.setAttribute('class', 'build-grid-line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', String(row * plan.cellPixels));
+    line.setAttribute('x2', String(plan.columns * plan.cellPixels));
+    line.setAttribute('y2', String(row * plan.cellPixels));
+    grid.append(line);
+  }
+
+  for (const room of geometry.rooms) {
+    const centerPoint = rectCenter(room.rect);
+    const centerCell = pointToCell(centerPoint, plan.cellSize);
+    const label = createSvg('text');
+    label.setAttribute('class', 'build-label');
+    label.setAttribute('x', String(centerCell.column * plan.cellPixels + 3));
+    label.setAttribute('y', String(centerCell.row * plan.cellPixels + 12));
+    label.textContent = buildRoomLabel(room);
+    grid.append(label);
+  }
+
+  for (const [index, content] of geometry.contents.entries()) {
+    const room = geometry.rooms.find((candidate) => candidate.id === content.roomId);
+    if (room === undefined) {
+      continue;
+    }
+    const centerPoint = rectCenter(room.rect);
+    const centerCell = pointToCell(centerPoint, plan.cellSize);
+    const markerX = centerCell.column * plan.cellPixels + 8 + (index % 3) * 12;
+    const markerY = centerCell.row * plan.cellPixels + 25 + (index % 2) * 12;
+    const marker = createSvg('circle');
+    marker.setAttribute('class', `build-marker ${slugClass(content.kind)}`);
+    marker.setAttribute('cx', String(markerX));
+    marker.setAttribute('cy', String(markerY));
+    marker.setAttribute('r', '7');
+    grid.append(marker);
+
+    const label = createSvg('text');
+    label.setAttribute('class', 'build-marker-label');
+    label.setAttribute('x', String(markerX));
+    label.setAttribute('y', String(markerY + 3));
+    label.textContent = contentSymbol(content.kind);
+    grid.append(label);
+  }
+}
+
+function buildGridPlan(geometry: Geometry2dArtifact): BuildPlan {
+  const cellSize = 24;
+  const cellPixels = 16;
+  const columns = Math.ceil(geometry.bounds.width / cellSize) + 1;
+  const rows = Math.ceil(geometry.bounds.height / cellSize) + 1;
+  const cells = new Map<string, BuildCell>();
+
+  for (const room of geometry.rooms) {
+    const startColumn = Math.floor(room.rect.x / cellSize);
+    const endColumn = Math.ceil((room.rect.x + room.rect.width) / cellSize);
+    const startRow = Math.floor(room.rect.y / cellSize);
+    const endRow = Math.ceil((room.rect.y + room.rect.height) / cellSize);
+    for (let row = startRow; row < endRow; row += 1) {
+      for (let column = startColumn; column < endColumn; column += 1) {
+        setBuildCell(cells, column, row, { kind: 'room', role: room.role });
+      }
+    }
+  }
+
+  for (const corridor of geometry.corridors) {
+    for (let index = 0; index < corridor.points.length - 1; index += 1) {
+      digCorridorSegment(cells, corridor.points[index], corridor.points[index + 1], cellSize);
+    }
+  }
+
+  return { cellSize, cellPixels, columns, rows, cells };
+}
+
+function digCorridorSegment(
+  cells: Map<string, BuildCell>,
+  start: GeometryPoint,
+  end: GeometryPoint,
+  cellSize: number,
+): void {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / cellSize));
+  for (let step = 0; step <= steps; step += 1) {
+    const ratio = step / steps;
+    const point = {
+      x: start.x + dx * ratio,
+      y: start.y + dy * ratio,
+    };
+    const cell = pointToCell(point, cellSize);
+    const key = cellKey(cell.column, cell.row);
+    if (!cells.has(key)) {
+      cells.set(key, { kind: 'corridor', role: 'corridor' });
+    }
+  }
+}
+
+function setBuildCell(
+  cells: Map<string, BuildCell>,
+  column: number,
+  row: number,
+  cell: BuildCell,
+): void {
+  cells.set(cellKey(column, row), cell);
+}
+
+function pointToCell(
+  point: GeometryPoint,
+  cellSize: number,
+): { readonly column: number; readonly row: number } {
+  return {
+    column: Math.floor(point.x / cellSize),
+    row: Math.floor(point.y / cellSize),
+  };
+}
+
+function cellKey(column: number, row: number): string {
+  return `${column},${row}`;
+}
+
+function rectCenter(rect: GeometryRect): GeometryPoint {
+  return {
+    x: rect.x + rect.width / 2,
+    y: rect.y + rect.height / 2,
+  };
+}
+
+function buildRoomLabel(room: GeometryRoom): string {
+  const source = room.sourceNodes[0] ?? room.id;
+  if (room.role === 'start' || room.role === 'goal') {
+    return room.role.toUpperCase();
+  }
+  return source.replace('gate.', 'G.').replace('hazard.', 'H.').replace('treasure.', 'T.');
+}
+
+function contentSymbol(kind: string): string {
+  switch (kind) {
+    case 'key_pickup':
+      return 'K';
+    case 'locked_gate':
+      return 'L';
+    case 'boss_threshold':
+      return 'B';
+    case 'hazard':
+      return '!';
+    case 'reward_cache':
+      return '$';
+    case 'secret_route_marker':
+      return '?';
+    case 'shortcut_marker':
+      return 'S';
+    case 'start_marker':
+      return 'A';
+    case 'goal_marker':
+      return 'Z';
+    default:
+      return '*';
   }
 }
 

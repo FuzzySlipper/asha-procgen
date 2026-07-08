@@ -1,0 +1,405 @@
+{
+  "kind": "asha_procgen.accepted_artifact.v1",
+  "schemaVersion": 1,
+  "artifactId": "accepted.candidate.first_slice.4103",
+  "candidateHash": "fnv1a64:a515ae0bd865cd32",
+  "layoutHash": "fnv1a64:d01448b5d33379e5",
+  "validationRef": "artifacts/samples/first-run/validation.graph.json",
+  "scoreRef": "artifacts/samples/first-run/score.graph.json",
+  "candidate": {
+    "kind": "asha_procgen.candidate.v1",
+    "schemaVersion": 1,
+    "candidateId": "candidate.first_slice.4103",
+    "seed": 4103,
+    "dimensionModel": "topology_graph",
+    "sourceIntent": "first_slice",
+    "provenance": [
+      {
+        "step": 1,
+        "command": "init",
+        "seed": 4103,
+        "summary": "Initialized candidate.first_slice.4103 from first_slice"
+      },
+      {
+        "step": 2,
+        "command": "graph apply-rule lock_key_loop",
+        "seed": 4104,
+        "summary": "Applied lock_key_loop"
+      },
+      {
+        "step": 3,
+        "command": "graph apply-rule optional_treasure_detour",
+        "seed": 4105,
+        "summary": "Applied optional_treasure_detour"
+      },
+      {
+        "step": 4,
+        "command": "graph apply-rule one_way_shortcut",
+        "seed": 4106,
+        "summary": "Applied one_way_shortcut"
+      },
+      {
+        "step": 5,
+        "command": "graph apply-rule secret_bypass",
+        "seed": 4107,
+        "summary": "Applied secret_bypass"
+      }
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "start",
+          "label": "Start",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "goal",
+          "kind": "goal",
+          "label": "Goal",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "gate.locked_1",
+          "kind": "gate",
+          "label": "Locked Gate",
+          "tags": [
+            "lock",
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "key.gate_1",
+          "kind": "key",
+          "label": "Gate Key",
+          "tags": [
+            "key",
+            "branch"
+          ],
+          "grantsItem": "item.gate_key_1"
+        },
+        {
+          "id": "treasure.1009",
+          "kind": "treasure",
+          "label": "Optional Treasure",
+          "tags": [
+            "optional",
+            "reward"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "shortcut.return_1",
+          "kind": "shortcut",
+          "label": "Return Shortcut",
+          "tags": [
+            "shortcut"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "secret.bypass_1",
+          "kind": "secret",
+          "label": "Secret Bypass",
+          "tags": [
+            "secret",
+            "bypass"
+          ],
+          "grantsItem": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge.start.gate_1",
+          "from": "start",
+          "to": "gate.locked_1",
+          "kind": "critical_path",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "approach"
+          ]
+        },
+        {
+          "id": "edge.gate_1.goal",
+          "from": "gate.locked_1",
+          "to": "goal",
+          "kind": "critical_path",
+          "traversal": "locked",
+          "requiredItem": "item.gate_key_1",
+          "tags": [
+            "lock"
+          ]
+        },
+        {
+          "id": "edge.start.key_1",
+          "from": "start",
+          "to": "key.gate_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.key_1.gate_1",
+          "from": "key.gate_1",
+          "to": "gate.locked_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.start.treasure.1009",
+          "from": "start",
+          "to": "treasure.1009",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "detour"
+          ]
+        },
+        {
+          "id": "edge.treasure.1009.goal",
+          "from": "treasure.1009",
+          "to": "goal",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.goal.shortcut_1",
+          "from": "goal",
+          "to": "shortcut.return_1",
+          "kind": "shortcut",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "shortcut"
+          ]
+        },
+        {
+          "id": "edge.shortcut_1.start",
+          "from": "shortcut.return_1",
+          "to": "start",
+          "kind": "shortcut",
+          "traversal": "one_way_return",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.start.secret_1",
+          "from": "start",
+          "to": "secret.bypass_1",
+          "kind": "secret_bypass",
+          "traversal": "hidden",
+          "requiredItem": null,
+          "tags": [
+            "hidden"
+          ]
+        },
+        {
+          "id": "edge.secret_1.goal",
+          "from": "secret.bypass_1",
+          "to": "goal",
+          "kind": "secret_bypass",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "bypass"
+          ]
+        }
+      ]
+    }
+  },
+  "layout": {
+    "kind": "asha_procgen.layout_2d.v1",
+    "schemaVersion": 1,
+    "layoutId": "layout.candidate.first_slice.4103.4113",
+    "candidateId": "candidate.first_slice.4103",
+    "seed": 4113,
+    "rooms": [
+      {
+        "nodeId": "start",
+        "kind": "start",
+        "label": "Start",
+        "x": 80,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "x": 440,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "x": 260,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "x": 260,
+        "y": 190,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "treasure.1009",
+        "kind": "treasure",
+        "label": "Optional Treasure",
+        "x": 260,
+        "y": 300,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "shortcut.return_1",
+        "kind": "shortcut",
+        "label": "Return Shortcut",
+        "x": 620,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "secret.bypass_1",
+        "kind": "secret",
+        "label": "Secret Bypass",
+        "x": 260,
+        "y": 410,
+        "width": 116,
+        "height": 64
+      }
+    ],
+    "links": [
+      {
+        "edgeId": "edge.start.gate_1",
+        "fromNode": "start",
+        "toNode": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.gate_1.goal",
+        "fromNode": "gate.locked_1",
+        "toNode": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.gate_key_1"
+      },
+      {
+        "edgeId": "edge.start.key_1",
+        "fromNode": "start",
+        "toNode": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.key_1.gate_1",
+        "fromNode": "key.gate_1",
+        "toNode": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.treasure.1009",
+        "fromNode": "start",
+        "toNode": "treasure.1009",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.treasure.1009.goal",
+        "fromNode": "treasure.1009",
+        "toNode": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.goal.shortcut_1",
+        "fromNode": "goal",
+        "toNode": "shortcut.return_1",
+        "kind": "shortcut",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.shortcut_1.start",
+        "fromNode": "shortcut.return_1",
+        "toNode": "start",
+        "kind": "shortcut",
+        "traversal": "one_way_return",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.secret_1",
+        "fromNode": "start",
+        "toNode": "secret.bypass_1",
+        "kind": "secret_bypass",
+        "traversal": "hidden",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.secret_1.goal",
+        "fromNode": "secret.bypass_1",
+        "toNode": "goal",
+        "kind": "secret_bypass",
+        "traversal": "open",
+        "requiredItem": null
+      }
+    ]
+  },
+  "scoreSummary": {
+    "kind": "asha_procgen.score.graph.v1",
+    "schemaVersion": 1,
+    "stateHash": "fnv1a64:a515ae0bd865cd32",
+    "overall": 1.0,
+    "metrics": {
+      "criticalPathLength": 2.0,
+      "deadEndCount": 0.0,
+      "edgeCount": 10.0,
+      "lockedEdgeCount": 1.0,
+      "loopCount": 4.0,
+      "nodeCount": 7.0,
+      "optionalBranchCount": 4.0,
+      "shortcutCount": 2.0
+    },
+    "notes": [
+      "Graph score is a deterministic first-slice heuristic, not a human-quality verdict."
+    ]
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "kind": "asha_procgen.layout_2d.v1",
+  "schemaVersion": 1,
+  "layoutId": "layout.candidate.first_slice.4103.4113",
+  "candidateId": "candidate.first_slice.4103",
+  "seed": 4113,
+  "rooms": [
+    {
+      "nodeId": "start",
+      "kind": "start",
+      "label": "Start",
+      "x": 80,
+      "y": 80,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "goal",
+      "kind": "goal",
+      "label": "Goal",
+      "x": 440,
+      "y": 80,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "gate.locked_1",
+      "kind": "gate",
+      "label": "Locked Gate",
+      "x": 260,
+      "y": 80,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "key.gate_1",
+      "kind": "key",
+      "label": "Gate Key",
+      "x": 260,
+      "y": 190,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "treasure.1009",
+      "kind": "treasure",
+      "label": "Optional Treasure",
+      "x": 260,
+      "y": 300,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "shortcut.return_1",
+      "kind": "shortcut",
+      "label": "Return Shortcut",
+      "x": 620,
+      "y": 80,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "secret.bypass_1",
+      "kind": "secret",
+      "label": "Secret Bypass",
+      "x": 260,
+      "y": 410,
+      "width": 116,
+      "height": 64
+    }
+  ],
+  "links": [
+    {
+      "edgeId": "edge.start.gate_1",
+      "fromNode": "start",
+      "toNode": "gate.locked_1",
+      "kind": "critical_path",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.gate_1.goal",
+      "fromNode": "gate.locked_1",
+      "toNode": "goal",
+      "kind": "critical_path",
+      "traversal": "locked",
+      "requiredItem": "item.gate_key_1"
+    },
+    {
+      "edgeId": "edge.start.key_1",
+      "fromNode": "start",
+      "toNode": "key.gate_1",
+      "kind": "key_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.key_1.gate_1",
+      "fromNode": "key.gate_1",
+      "toNode": "gate.locked_1",
+      "kind": "key_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.start.treasure.1009",
+      "fromNode": "start",
+      "toNode": "treasure.1009",
+      "kind": "optional_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.treasure.1009.goal",
+      "fromNode": "treasure.1009",
+      "toNode": "goal",
+      "kind": "optional_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.goal.shortcut_1",
+      "fromNode": "goal",
+      "toNode": "shortcut.return_1",
+      "kind": "shortcut",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.shortcut_1.start",
+      "fromNode": "shortcut.return_1",
+      "toNode": "start",
+      "kind": "shortcut",
+      "traversal": "one_way_return",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.start.secret_1",
+      "fromNode": "start",
+      "toNode": "secret.bypass_1",
+      "kind": "secret_bypass",
+      "traversal": "hidden",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.secret_1.goal",
+      "fromNode": "secret.bypass_1",
+      "toNode": "goal",
+      "kind": "secret_bypass",
+      "traversal": "open",
+      "requiredItem": null
+    }
+  ]
+}

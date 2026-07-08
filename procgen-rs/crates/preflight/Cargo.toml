@@ -5,5 +5,10 @@ edition = "2021"
 publish = false
 
 [[bin]]
-name = "asha-procgen-preflight"
+name = "asha-procgen"
 path = "src/main.rs"
+
+[dependencies]
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

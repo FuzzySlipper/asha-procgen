@@ -1,0 +1,30 @@
+{
+  "kind": "asha_procgen.validation.graph.v1",
+  "schemaVersion": 1,
+  "stateHash": "fnv1a64:a0121d117852fb68",
+  "ok": false,
+  "fatalCount": 3,
+  "diagnostics": [
+    {
+      "code": "required_item_unavailable",
+      "severity": "fatal",
+      "node": null,
+      "edge": "edge.start.goal.locked_without_key",
+      "detail": "Edge requires item.missing_key, but no node grants it."
+    },
+    {
+      "code": "goal_unreachable",
+      "severity": "fatal",
+      "node": "goal",
+      "edge": null,
+      "detail": "Goal is not reachable under lock/key constraints."
+    },
+    {
+      "code": "locked_edge_never_traversed",
+      "severity": "fatal",
+      "node": null,
+      "edge": "edge.start.goal.locked_without_key",
+      "detail": "Locked edge could not be traversed after item collection."
+    }
+  ]
+}

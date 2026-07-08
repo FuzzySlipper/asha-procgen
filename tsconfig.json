@@ -3,15 +3,15 @@
     "allowJs": false,
     "declaration": true,
     "exactOptionalPropertyTypes": true,
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmitOnError": true,
     "outDir": "dist/ts",
-    "rootDir": "src",
+    "rootDir": ".",
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2022"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "viewer/**/*.ts"]
 }

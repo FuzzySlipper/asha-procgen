@@ -1,0 +1,12 @@
+{
+  "project": "asha-procgen",
+  "serve": {
+    "command": "npm run viewer:serve -- --host {host} --port {port}",
+    "preferredPort": 5183,
+    "healthUrl": "/health",
+    "readyText": "\"project\": \"asha-procgen\"",
+    "identityHeader": "X-Den-Project",
+    "reusePolicy": "broker_owned",
+    "startupTimeout": "45s"
+  }
+}

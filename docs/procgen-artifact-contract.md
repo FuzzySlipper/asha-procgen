@@ -1,0 +1,140 @@
+# Procgen Artifact Contract
+
+Status: first-slice contract for tasks #4824-#4830.
+
+The CLI workbench is file-oriented. Every command reads explicit inputs, writes
+explicit outputs, and produces structured JSON a human or agent can inspect.
+
+## Command Pattern
+
+```bash
+npm run procgen -- <command> --state <candidate.json> --out <output.json> --receipt <receipt.json> --seed <u64>
+```
+
+Use `--transcript <path>` on mutating commands when building an auditable run.
+
+Exit code `0` means the command completed successfully. Validation failures are
+written as JSON diagnostics; malformed input, IO failure, and rejected mutating
+operations return non-zero.
+
+## Candidate
+
+Kind: `asha_procgen.candidate.v1`
+
+The candidate is dimension-agnostic at the graph layer. The first implementation
+uses `dimensionModel: "topology_graph"` and later commands may add 2D or 3D
+layout artifacts without changing the graph contract.
+
+Important fields:
+
+- `candidateId`: stable generated id.
+- `seed`: source seed.
+- `sourceIntent`: seed-intent id.
+- `provenance`: ordered command history.
+- `graph.nodes`: intent nodes.
+- `graph.edges`: directed intent edges.
+
+Node kinds:
+
+- `start`
+- `goal`
+- `gate`
+- `key`
+- `treasure`
+- `shortcut`
+- `secret`
+- `hazard`
+- `resource`
+- `junction`
+
+Edge kinds:
+
+- `critical_path`
+- `key_branch`
+- `optional_branch`
+- `shortcut`
+- `secret_bypass`
+
+Traversal kinds:
+
+- `open`
+- `locked`
+- `one_way_return`
+- `hidden`
+
+Locked edges use `requiredItem`. Key nodes use `grantsItem`.
+
+## Receipt
+
+Kind: `asha_procgen.receipt.v1`
+
+Receipts record command status, seed, input/output hashes, output file refs, and
+diagnostics. Receipts are the primary tool-call evidence for agent transcripts.
+
+## Validation Report
+
+Kind: `asha_procgen.validation.graph.v1`
+
+Validation reports contain:
+
+- `ok`
+- `fatalCount`
+- `stateHash`
+- `diagnostics`
+
+Stable diagnostic codes in the first slice:
+
+- `start_count_invalid`
+- `goal_count_invalid`
+- `edge_from_missing`
+- `edge_to_missing`
+- `required_item_unavailable`
+- `goal_unreachable`
+- `locked_edge_never_traversed`
+- `non_goal_dead_end`
+- `orphan_node`
+
+Fatal diagnostics block acceptance. Warnings are advisory.
+
+## Score Report
+
+Kind: `asha_procgen.score.graph.v1`
+
+First-slice metrics:
+
+- `nodeCount`
+- `edgeCount`
+- `criticalPathLength`
+- `loopCount`
+- `optionalBranchCount`
+- `lockedEdgeCount`
+- `shortcutCount`
+- `deadEndCount`
+
+`overall` is a deterministic heuristic score, not a final design verdict.
+
+## Layout Artifact
+
+Kind: `asha_procgen.layout_2d.v1`
+
+The first layout artifact is an inspectable 2D embedding. It preserves graph
+node and edge IDs so diagnostics and viewer labels map back to intent. It is
+not a renderer or final tile map.
+
+## Accepted Artifact
+
+Kind: `asha_procgen.accepted_artifact.v1`
+
+Accepted artifacts bundle the candidate, layout, score summary, hashes, and
+validation/score refs. They are suitable for later catalog and shuffle-bag work.
+
+## Transcript
+
+Transcript files are JSONL. Each line is a `tool_event` with command, output
+state, receipt, seed, and args.
+
+Example:
+
+```json
+{"kind":"tool_event","command":"graph apply-rule","state":"artifacts/samples/first-run/candidate-001-lock_key_loop.json","receipt":"artifacts/samples/first-run/receipt-001-lock_key_loop.json","seed":4104,"args":{"rule":"lock_key_loop"}}
+```

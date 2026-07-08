@@ -1,0 +1,16 @@
+{
+  "kind": "asha_procgen.seed_intent.v1",
+  "id": "first_slice",
+  "title": "First Slice Lock-Key Loop",
+  "targetDimension": "topology_graph",
+  "desiredPatterns": [
+    "lock_key_loop",
+    "optional_treasure_detour",
+    "one_way_shortcut",
+    "secret_bypass"
+  ],
+  "notes": [
+    "Keep this fixture graph-first and dimension-agnostic.",
+    "The first embedding pass may be 2D, but this intent should not assume a tile grid."
+  ]
+}

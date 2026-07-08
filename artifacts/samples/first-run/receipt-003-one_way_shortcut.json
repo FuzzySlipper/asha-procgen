@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "graph apply-rule one_way_shortcut",
+  "status": "ok",
+  "seed": 4106,
+  "inputHash": "fnv1a64:adf32676691444fd",
+  "outputHash": "fnv1a64:6fd004993869d88e",
+  "outputRef": "artifacts/samples/first-run/candidate-003-one_way_shortcut.json",
+  "diagnostics": []
+}

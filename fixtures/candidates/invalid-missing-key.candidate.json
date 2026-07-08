@@ -1,0 +1,45 @@
+{
+  "kind": "asha_procgen.candidate.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.invalid_missing_key",
+  "seed": 13,
+  "dimensionModel": "topology_graph",
+  "sourceIntent": "first_slice",
+  "provenance": [
+    {
+      "step": 1,
+      "command": "fixture",
+      "seed": 13,
+      "summary": "Broken fixture: the only path to the goal requires an item nobody grants."
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "start",
+        "kind": "start",
+        "label": "Start",
+        "tags": ["critical"],
+        "grantsItem": null
+      },
+      {
+        "id": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "tags": ["critical"],
+        "grantsItem": null
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge.start.goal.locked_without_key",
+        "from": "start",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.missing_key",
+        "tags": ["broken_fixture"]
+      }
+    ]
+  }
+}

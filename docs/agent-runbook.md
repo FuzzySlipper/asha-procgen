@@ -71,17 +71,18 @@ analysis, compatible rules, spatial intent, intermediate breakdown, and
 intermediate validation artifacts.
 
 `npm run batch:sample` also emits the full generated dungeon preview stack for
-the top selected accepted candidate:
+each accepted candidate:
 
 ```text
-artifacts/samples/batch-v2/<top-candidate>/geometry-2d.json
-artifacts/samples/batch-v2/<top-candidate>/geometry-2d.validation.json
-artifacts/samples/batch-v2/<top-candidate>/geometry-2d.preview.html
-artifacts/samples/batch-v2/<top-candidate>/html-preview.json
+artifacts/samples/batch-v2/<candidate>/geometry-2d.json
+artifacts/samples/batch-v2/<candidate>/geometry-2d.validation.json
+artifacts/samples/batch-v2/<candidate>/geometry-2d.preview.html
+artifacts/samples/batch-v2/<candidate>/html-preview.json
 ```
 
-The top `accepted` entry in `selection-report.json` carries `geometryRef`,
-`geometryValidationRef`, `htmlPreviewRef`, and `htmlRef`.
+Each `accepted` entry in `selection-report.json` carries `geometryRef`,
+`geometryValidationRef`, `htmlPreviewRef`, and `htmlRef`, which powers the
+viewer Build tab when switching candidates.
 
 ## Manual CLI Sequence
 

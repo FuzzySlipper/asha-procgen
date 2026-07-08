@@ -267,8 +267,8 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             .unwrap_or(std::cmp::Ordering::Equal)
             .then_with(|| left.candidate_id.cmp(&right.candidate_id))
     });
-    if let Some(top_entry) = accepted.first_mut() {
-        write_top_selection_preview_artifacts(top_entry, args.seed + 9_100)?;
+    for (index, entry) in accepted.iter_mut().enumerate() {
+        write_selection_preview_artifacts(entry, args.seed + 9_100 + index as u64)?;
     }
     let report = SelectionReport {
         kind: "asha_procgen.selection_report.v1".to_owned(),
@@ -292,10 +292,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
     Ok(())
 }
 
-fn write_top_selection_preview_artifacts(
-    entry: &mut SelectionEntry,
-    seed: u64,
-) -> Result<(), String> {
+fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> Result<(), String> {
     let artifact_path = PathBuf::from(&entry.artifact_ref);
     let run_dir = artifact_path
         .parent()
@@ -333,8 +330,8 @@ fn write_top_selection_preview_artifacts(
     write_json(&geometry_validation_path, &geometry_validation)?;
     if !geometry_validation.ok {
         return Err(format!(
-            "top selection geometry validation failed with {} fatal diagnostic(s)",
-            geometry_validation.fatal_count
+            "selection {} geometry validation failed with {} fatal diagnostic(s)",
+            entry.candidate_id, geometry_validation.fatal_count
         ));
     }
 

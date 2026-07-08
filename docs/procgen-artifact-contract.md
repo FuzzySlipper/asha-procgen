@@ -64,6 +64,26 @@ Traversal kinds:
 
 Locked edges use `requiredItem`. Key nodes use `grantsItem`.
 
+## Rule Catalog
+
+Kind: `asha_procgen.rule_catalog.v1`
+
+The v2 graph grammar catalog lives at:
+
+```text
+fixtures/rule-catalog/v2-graph-patterns.json
+```
+
+The companion design document is:
+
+```text
+docs/v2-graph-grammar-catalog.md
+```
+
+Pattern ids in this catalog should match future `graph apply-rule --rule <id>`
+values. The catalog records required node/edge kinds, tags, validator
+invariants, scoring hints, repair hints, and 2D/3D embedding notes.
+
 ## Receipt
 
 Kind: `asha_procgen.receipt.v1`

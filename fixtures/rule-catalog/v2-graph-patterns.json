@@ -1,0 +1,165 @@
+{
+  "kind": "asha_procgen.rule_catalog.v1",
+  "schemaVersion": 1,
+  "catalogId": "asha_procgen.graph_patterns.v2",
+  "patterns": [
+    {
+      "id": "hub_spoke_cluster",
+      "intent": "Readable exploration hub with multiple branches and at least one return or rejoin path.",
+      "requiredNodeKinds": ["junction"],
+      "recommendedNodeTags": ["hub", "wayfinding_anchor"],
+      "requiredEdgeKinds": ["critical_path", "optional_branch"],
+      "requiredEdgeTags": ["branch", "return"],
+      "validatorInvariants": [
+        "hub_minimum_three_incident_edges",
+        "one_spoke_rejoins_or_returns",
+        "goal_remains_reachable"
+      ],
+      "scoringHints": ["branch_value", "wayfinding_value", "loop_value"],
+      "repairHints": [
+        "add_rejoin_edge_from_spoke",
+        "tag_hub_as_wayfinding_anchor",
+        "reduce_unmerged_dead_ends"
+      ],
+      "embedding2d": "Place hub centrally with short visible spokes.",
+      "embedding3d": "Spokes may become vertical connectors while hub remains an orientation anchor."
+    },
+    {
+      "id": "nested_lock_key_chain",
+      "intent": "Layered progression where a first solved branch unlocks a deeper gate or reveal.",
+      "requiredNodeKinds": ["gate", "key"],
+      "recommendedNodeTags": ["critical", "lock", "key"],
+      "requiredEdgeKinds": ["critical_path", "key_branch"],
+      "requiredEdgeTags": ["locked", "branch"],
+      "validatorInvariants": [
+        "every_locked_edge_has_provider",
+        "provider_reachable_before_gate",
+        "no_circular_lock_without_explicit_puzzle_cycle",
+        "goal_remains_reachable"
+      ],
+      "scoringHints": ["critical_path_depth", "loop_value", "pacing_value"],
+      "repairHints": [
+        "add_missing_key_provider",
+        "move_key_branch_before_gate",
+        "split_circular_lock_dependency"
+      ],
+      "embedding2d": "Place earlier key branches near the first gate reveal.",
+      "embedding3d": "Later gates may be visible through overlooks before becoming reachable."
+    },
+    {
+      "id": "hazard_resource_tradeoff",
+      "intent": "Risk/reward branch that asks the player to accept pressure for a resource or advantage.",
+      "requiredNodeKinds": ["hazard", "resource"],
+      "recommendedNodeTags": ["hazard", "preparation"],
+      "requiredEdgeKinds": ["optional_branch"],
+      "requiredEdgeTags": ["pressure", "rejoin"],
+      "validatorInvariants": [
+        "hazard_branch_optional_or_alternate_safe_route",
+        "resource_reachable_before_needed",
+        "hazard_branch_not_mandatory_dead_end"
+      ],
+      "scoringHints": ["risk_reward_value", "branch_value", "pacing_value"],
+      "repairHints": [
+        "add_merge_edge_after_hazard",
+        "add_resource_payoff",
+        "mark_branch_optional"
+      ],
+      "embedding2d": "Show risky and safer branches as parallel or visibly distinct paths.",
+      "embedding3d": "Hazard may later become drop, traversal challenge, or breakable-route cost."
+    },
+    {
+      "id": "boss_preparation_loop",
+      "intent": "Foreshadowed challenge with preparation branch and return to boss approach.",
+      "requiredNodeKinds": ["gate", "resource"],
+      "recommendedNodeTags": ["boss", "preparation"],
+      "requiredEdgeKinds": ["critical_path", "optional_branch"],
+      "requiredEdgeTags": ["approach", "return"],
+      "validatorInvariants": [
+        "preparation_reachable_before_boss",
+        "boss_on_critical_path_unless_optional",
+        "preparation_rejoins_boss_approach"
+      ],
+      "scoringHints": ["pacing_value", "loop_value", "critical_path_depth"],
+      "repairHints": [
+        "add_preparation_branch_before_boss",
+        "add_rejoin_to_boss_approach",
+        "tag_boss_and_preparation_consistently"
+      ],
+      "embedding2d": "Keep boss gate visible from an earlier approach when possible.",
+      "embedding3d": "Boss reveal can become overlook, sound cue, or vertical arena glimpse."
+    },
+    {
+      "id": "gated_treasure_branch",
+      "intent": "Optional locked or hidden reward branch that does not block main progression.",
+      "requiredNodeKinds": ["treasure"],
+      "recommendedNodeTags": ["optional", "reward"],
+      "requiredEdgeKinds": ["optional_branch"],
+      "requiredEdgeTags": ["branch"],
+      "validatorInvariants": [
+        "goal_reachable_without_branch",
+        "optional_locked_edge_has_provider",
+        "optional_endpoint_tagged_optional"
+      ],
+      "scoringHints": ["branch_value", "risk_reward_value"],
+      "repairHints": [
+        "mark_reward_branch_optional",
+        "add_missing_provider",
+        "add_rejoin_if_loop_intended"
+      ],
+      "embedding2d": "Place reward branch near main path with visible payoff.",
+      "embedding3d": "Reward can be visible through grate, drop, or overlook."
+    },
+    {
+      "id": "branch_merge_shortcut",
+      "intent": "Branch recombination or path compression that gives loops useful function.",
+      "requiredNodeKinds": ["junction"],
+      "recommendedNodeTags": ["merge"],
+      "requiredEdgeKinds": ["shortcut", "optional_branch"],
+      "requiredEdgeTags": ["rejoin", "shortcut"],
+      "validatorInvariants": [
+        "merge_has_two_distinct_upstream_routes",
+        "shortcut_does_not_unintentionally_bypass_lock",
+        "branch_identity_visible_after_merge"
+      ],
+      "scoringHints": ["loop_value", "branch_value", "wayfinding_value"],
+      "repairHints": [
+        "add_merge_node",
+        "add_shortcut_to_known_route",
+        "add_required_item_if_shortcut_bypasses_gate"
+      ],
+      "embedding2d": "Draw merge or shortcut visibly so loop function is readable.",
+      "embedding3d": "Shortcut can become drop, lift, ladder, one-way door, or breakable connection."
+    },
+    {
+      "id": "pacing_wayfinding_annotations",
+      "intent": "Metadata-only pattern for landmarks, pressure, preparation, reveals, and future disorientation budget.",
+      "requiredNodeKinds": [],
+      "recommendedNodeTags": ["wayfinding_anchor", "preparation"],
+      "requiredEdgeKinds": [],
+      "requiredEdgeTags": ["pressure"],
+      "validatorInvariants": [
+        "larger_graph_has_wayfinding_anchor",
+        "pressure_chain_within_budget",
+        "vertical_tags_remain_metadata_until_3d_embedding"
+      ],
+      "scoringHints": ["wayfinding_value", "pacing_value", "disorientation_budget"],
+      "repairHints": [
+        "add_wayfinding_anchor_to_hub",
+        "insert_preparation_before_pressure_chain",
+        "reduce_disorientation_tags_until_3d_validator_exists"
+      ],
+      "embedding2d": "Use viewer labels or color for anchors and pressure beats.",
+      "embedding3d": "Annotations become constraints for vertical connectors, overlooks, landmarks, and disorientation budget."
+    }
+  ],
+  "selectionGoals": [
+    "valid_reachability",
+    "meaningful_loop_count",
+    "bounded_dead_end_count",
+    "optional_branch_value",
+    "lock_key_order_sanity",
+    "wayfinding_anchor_presence",
+    "novelty_against_accepted_artifacts",
+    "future_3d_embedding_room"
+  ]
+}

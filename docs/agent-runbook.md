@@ -63,6 +63,18 @@ npm run procgen -- score graph \
 Use `npm run procgen -- graph summarize --state <candidate>` to print a compact
 agent-readable graph summary.
 
+## Pattern Catalog
+
+The next graph grammar vocabulary is documented in:
+
+```text
+docs/v2-graph-grammar-catalog.md
+fixtures/rule-catalog/v2-graph-patterns.json
+```
+
+Future `graph apply-rule --rule <id>` implementations should use the catalog
+ids and preserve the documented invariants, scoring hints, and repair hints.
+
 ## Broken Fixture Check
 
 This intentionally fails with stable diagnostics:

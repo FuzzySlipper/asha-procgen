@@ -59,8 +59,9 @@ fn assemble_piece_placement(
     let mut instances = Vec::new();
     let mut occupied_cells = Vec::new();
     let mut reserved_cells = Vec::new();
-    let mut cursor_x = 0;
-    for matched in &shape_match.matches {
+    let mut occupied_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    for (index, matched) in shape_match.matches.iter().enumerate() {
         let Some(requirement) = requirements.get(matched.piece_id.as_str()).copied() else {
             return Err(format!(
                 "shape match references missing requirement {}",
@@ -74,11 +75,22 @@ fn assemble_piece_placement(
             ));
         };
         let instance_id = format!("instance.{}", slugify_label(matched.piece_id.as_str()));
-        let origin = GridCell { x: cursor_x, y: 0 };
+        let desired_origin = desired_origin_for_requirement(requirement, index);
+        let origin = find_available_origin(
+            shape,
+            matched.transform.as_str(),
+            &desired_origin,
+            &occupied_positions,
+            &reserved_positions,
+        );
         let occupied = transform_cells(&shape.footprint, matched.transform.as_str(), &origin);
         let reserved = transform_cells(&shape.reserved_cells, matched.transform.as_str(), &origin);
-        let (width, _) = cell_bounds(&occupied);
-        cursor_x += width + 3;
+        for cell in &occupied {
+            occupied_positions.insert((cell.x, cell.y));
+        }
+        for cell in &reserved {
+            reserved_positions.insert((cell.x, cell.y));
+        }
 
         occupied_cells.extend(occupied.iter().map(|cell| PlacementCellRef {
             instance_id: instance_id.clone(),
@@ -128,6 +140,100 @@ fn assemble_piece_placement(
     };
     placement.glued_exits = derive_glued_exits(plan, &placement.instances);
     Ok(placement)
+}
+
+fn desired_origin_for_requirement(requirement: &PieceRequirement, index: usize) -> GridCell {
+    const GEOMETRY_CELL_SIZE: i32 = 24;
+    for hint in &requirement.placement_hints {
+        if let Some(rest) = hint.strip_prefix("geometryRect:") {
+            let values = parse_i32_parts(rest);
+            if values.len() == 4 {
+                return GridCell {
+                    x: values[0] / GEOMETRY_CELL_SIZE,
+                    y: values[1] / GEOMETRY_CELL_SIZE,
+                };
+            }
+        }
+        if let Some(rest) = hint.strip_prefix("segment:") {
+            let values = parse_i32_parts(rest);
+            if values.len() == 4 {
+                return GridCell {
+                    x: ((values[0] + values[2]) / 2) / GEOMETRY_CELL_SIZE,
+                    y: ((values[1] + values[3]) / 2) / GEOMETRY_CELL_SIZE,
+                };
+            }
+        }
+        if let Some(rest) = hint.strip_prefix("bend:").or_else(|| hint.strip_prefix("point:")) {
+            let values = parse_i32_parts(rest);
+            if values.len() == 2 {
+                return GridCell {
+                    x: values[0] / GEOMETRY_CELL_SIZE,
+                    y: values[1] / GEOMETRY_CELL_SIZE,
+                };
+            }
+        }
+    }
+    GridCell {
+        x: (index as i32 % 24) * 5,
+        y: (index as i32 / 24) * 5,
+    }
+}
+
+fn parse_i32_parts(value: &str) -> Vec<i32> {
+    value
+        .split(':')
+        .filter_map(|part| part.parse::<i32>().ok())
+        .collect()
+}
+
+fn find_available_origin(
+    shape: &CatalogShape,
+    transform: &str,
+    desired_origin: &GridCell,
+    occupied_positions: &BTreeSet<(i32, i32)>,
+    reserved_positions: &BTreeSet<(i32, i32)>,
+) -> GridCell {
+    for radius in 0_i32..=40 {
+        for dy in -radius..=radius {
+            for dx in -radius..=radius {
+                if dx.abs().max(dy.abs()) != radius {
+                    continue;
+                }
+                let origin = GridCell {
+                    x: desired_origin.x + dx,
+                    y: desired_origin.y + dy,
+                };
+                if origin_available(
+                    shape,
+                    transform,
+                    &origin,
+                    occupied_positions,
+                    reserved_positions,
+                ) {
+                    return origin;
+                }
+            }
+        }
+    }
+    desired_origin.clone()
+}
+
+fn origin_available(
+    shape: &CatalogShape,
+    transform: &str,
+    origin: &GridCell,
+    occupied_positions: &BTreeSet<(i32, i32)>,
+    reserved_positions: &BTreeSet<(i32, i32)>,
+) -> bool {
+    let occupied = transform_cells(&shape.footprint, transform, origin);
+    let reserved = transform_cells(&shape.reserved_cells, transform, origin);
+    occupied.iter().all(|cell| {
+        !occupied_positions.contains(&(cell.x, cell.y))
+            && !reserved_positions.contains(&(cell.x, cell.y))
+    }) && reserved.iter().all(|cell| {
+        !occupied_positions.contains(&(cell.x, cell.y))
+            && !reserved_positions.contains(&(cell.x, cell.y))
+    })
 }
 
 fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec<GluedExit> {
@@ -409,12 +515,4 @@ fn transform_cell(x: i32, y: i32, transform: &str) -> (i32, i32) {
         "mirrorY" => (x, -y),
         _ => (x, y),
     }
-}
-
-fn cell_bounds(cells: &[GridCell]) -> (i32, i32) {
-    let min_x = cells.iter().map(|cell| cell.x).min().unwrap_or(0);
-    let max_x = cells.iter().map(|cell| cell.x).max().unwrap_or(0);
-    let min_y = cells.iter().map(|cell| cell.y).min().unwrap_or(0);
-    let max_y = cells.iter().map(|cell| cell.y).max().unwrap_or(0);
-    (max_x - min_x + 1, max_y - min_y + 1)
 }

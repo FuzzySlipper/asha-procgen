@@ -284,7 +284,10 @@ fn emit_corridor_piece_requirements(
         required_exits: connector_exits(corridor, true),
         required_sockets: Vec::new(),
         tags: base_tags.clone(),
-        placement_hints: vec!["glue:from_room".to_owned()],
+        placement_hints: vec![
+            "glue:from_room".to_owned(),
+            format!("point:{}:{}", corridor.points[0].x, corridor.points[0].y),
+        ],
     });
     piece_ids.push(start_id);
 
@@ -366,6 +369,7 @@ fn emit_corridor_piece_requirements(
     }
 
     let end_id = format!("piece.connector.{}.end", slugify_label(corridor.id.as_str()));
+    let end_point = corridor.points.last().unwrap_or(&corridor.points[0]);
     requirements.push(PieceRequirement {
         piece_id: end_id.clone(),
         kind: "connector".to_owned(),
@@ -374,7 +378,10 @@ fn emit_corridor_piece_requirements(
         required_exits: connector_exits(corridor, false),
         required_sockets: Vec::new(),
         tags: base_tags,
-        placement_hints: vec!["glue:to_room".to_owned()],
+        placement_hints: vec![
+            "glue:to_room".to_owned(),
+            format!("point:{}:{}", end_point.x, end_point.y),
+        ],
     });
     piece_ids.push(end_id);
 

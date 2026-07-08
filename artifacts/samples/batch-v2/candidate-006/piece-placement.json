@@ -18,55 +18,55 @@
       "shapeId": "shape.room.standard.1_exit",
       "transform": "identity",
       "origin": {
-        "x": 0,
-        "y": 0
+        "x": 2,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 0,
-          "y": 0
-        },
-        {
-          "x": 1,
-          "y": 0
-        },
-        {
           "x": 2,
-          "y": 0
-        },
-        {
-          "x": 0,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 1
-        },
-        {
-          "x": 2,
-          "y": 1
-        },
-        {
-          "x": 0,
           "y": 2
         },
         {
-          "x": 1,
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 4,
           "y": 2
         },
         {
           "x": 2,
-          "y": 2
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 4
+        },
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 4
         }
       ],
       "reservedCells": [
         {
-          "x": 0,
-          "y": 0
+          "x": 2,
+          "y": 2
         },
         {
-          "x": 4,
-          "y": 0
+          "x": 6,
+          "y": 2
         }
       ],
       "exitMap": [
@@ -108,33 +108,33 @@
       "shapeId": "shape.threshold.locked_gate",
       "transform": "rotate180",
       "origin": {
-        "x": 6,
-        "y": 0
+        "x": 13,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 8,
-          "y": 1
+          "x": 15,
+          "y": 3
         },
         {
-          "x": 7,
-          "y": 1
+          "x": 14,
+          "y": 3
         },
         {
-          "x": 6,
-          "y": 1
+          "x": 13,
+          "y": 3
         },
         {
-          "x": 8,
-          "y": 0
+          "x": 15,
+          "y": 2
         },
         {
-          "x": 7,
-          "y": 0
+          "x": 14,
+          "y": 2
         },
         {
-          "x": 6,
-          "y": 0
+          "x": 13,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -183,127 +183,127 @@
       "shapeId": "shape.room.hub.4_exit",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 0
+        "x": 13,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 0
-        },
-        {
           "x": 13,
-          "y": 0
+          "y": 9
         },
         {
           "x": 14,
-          "y": 0
+          "y": 9
         },
         {
           "x": 15,
-          "y": 0
+          "y": 9
         },
         {
           "x": 16,
-          "y": 0
+          "y": 9
         },
         {
-          "x": 12,
-          "y": 1
+          "x": 17,
+          "y": 9
         },
         {
           "x": 13,
-          "y": 1
+          "y": 10
         },
         {
           "x": 14,
-          "y": 1
+          "y": 10
         },
         {
           "x": 15,
-          "y": 1
+          "y": 10
         },
         {
           "x": 16,
-          "y": 1
+          "y": 10
         },
         {
-          "x": 12,
-          "y": 2
+          "x": 17,
+          "y": 10
         },
         {
           "x": 13,
-          "y": 2
+          "y": 11
         },
         {
           "x": 14,
-          "y": 2
+          "y": 11
         },
         {
           "x": 15,
-          "y": 2
+          "y": 11
         },
         {
           "x": 16,
-          "y": 2
+          "y": 11
         },
         {
-          "x": 12,
-          "y": 3
+          "x": 17,
+          "y": 11
         },
         {
           "x": 13,
-          "y": 3
+          "y": 12
         },
         {
           "x": 14,
-          "y": 3
+          "y": 12
         },
         {
           "x": 15,
-          "y": 3
+          "y": 12
         },
         {
           "x": 16,
-          "y": 3
+          "y": 12
         },
         {
-          "x": 12,
-          "y": 4
+          "x": 17,
+          "y": 12
         },
         {
           "x": 13,
-          "y": 4
+          "y": 13
         },
         {
           "x": 14,
-          "y": 4
+          "y": 13
         },
         {
           "x": 15,
-          "y": 4
+          "y": 13
         },
         {
           "x": 16,
-          "y": 4
+          "y": 13
+        },
+        {
+          "x": 17,
+          "y": 13
         }
       ],
       "reservedCells": [
         {
-          "x": 15,
-          "y": 0
+          "x": 16,
+          "y": 9
         },
         {
-          "x": 18,
-          "y": 3
+          "x": 19,
+          "y": 12
         },
         {
-          "x": 15,
-          "y": 6
+          "x": 16,
+          "y": 15
         },
         {
-          "x": 12,
-          "y": 3
+          "x": 13,
+          "y": 12
         }
       ],
       "exitMap": [
@@ -351,127 +351,127 @@
       "shapeId": "shape.room.hub.4_exit",
       "transform": "rotate90",
       "origin": {
-        "x": 20,
-        "y": 0
+        "x": 12,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 24,
-          "y": 0
+          "x": 16,
+          "y": 16
         },
         {
-          "x": 24,
-          "y": 1
+          "x": 16,
+          "y": 17
         },
         {
-          "x": 24,
-          "y": 2
+          "x": 16,
+          "y": 18
         },
         {
-          "x": 24,
-          "y": 3
+          "x": 16,
+          "y": 19
         },
         {
-          "x": 24,
-          "y": 4
+          "x": 16,
+          "y": 20
         },
         {
-          "x": 23,
-          "y": 0
+          "x": 15,
+          "y": 16
         },
         {
-          "x": 23,
-          "y": 1
+          "x": 15,
+          "y": 17
         },
         {
-          "x": 23,
-          "y": 2
+          "x": 15,
+          "y": 18
         },
         {
-          "x": 23,
-          "y": 3
+          "x": 15,
+          "y": 19
         },
         {
-          "x": 23,
-          "y": 4
+          "x": 15,
+          "y": 20
         },
         {
-          "x": 22,
-          "y": 0
+          "x": 14,
+          "y": 16
         },
         {
-          "x": 22,
-          "y": 1
+          "x": 14,
+          "y": 17
         },
         {
-          "x": 22,
-          "y": 2
+          "x": 14,
+          "y": 18
         },
         {
-          "x": 22,
-          "y": 3
+          "x": 14,
+          "y": 19
         },
         {
-          "x": 22,
-          "y": 4
+          "x": 14,
+          "y": 20
         },
         {
-          "x": 21,
-          "y": 0
+          "x": 13,
+          "y": 16
         },
         {
-          "x": 21,
-          "y": 1
+          "x": 13,
+          "y": 17
         },
         {
-          "x": 21,
-          "y": 2
+          "x": 13,
+          "y": 18
         },
         {
-          "x": 21,
-          "y": 3
+          "x": 13,
+          "y": 19
         },
         {
-          "x": 21,
-          "y": 4
+          "x": 13,
+          "y": 20
         },
         {
-          "x": 20,
-          "y": 0
+          "x": 12,
+          "y": 16
         },
         {
-          "x": 20,
-          "y": 1
+          "x": 12,
+          "y": 17
         },
         {
-          "x": 20,
-          "y": 2
+          "x": 12,
+          "y": 18
         },
         {
-          "x": 20,
-          "y": 3
+          "x": 12,
+          "y": 19
         },
         {
-          "x": 20,
-          "y": 4
+          "x": 12,
+          "y": 20
         }
       ],
       "reservedCells": [
         {
-          "x": 26,
-          "y": 3
+          "x": 18,
+          "y": 19
         },
         {
-          "x": 23,
-          "y": 6
+          "x": 15,
+          "y": 22
         },
         {
-          "x": 20,
-          "y": 3
+          "x": 12,
+          "y": 19
         },
         {
-          "x": 23,
-          "y": 0
+          "x": 15,
+          "y": 16
         }
       ],
       "exitMap": [
@@ -518,25 +518,25 @@
       "shapeId": "shape.pocket.key_pickup",
       "transform": "rotate180",
       "origin": {
-        "x": 28,
-        "y": 0
+        "x": 13,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 29,
-          "y": 1
+          "x": 14,
+          "y": 23
         },
         {
-          "x": 28,
-          "y": 1
+          "x": 13,
+          "y": 23
         },
         {
-          "x": 29,
-          "y": 0
+          "x": 14,
+          "y": 22
         },
         {
-          "x": 28,
-          "y": 0
+          "x": 13,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -584,57 +584,57 @@
       "shapeId": "shape.room.standard.2_exit_opposed",
       "transform": "identity",
       "origin": {
-        "x": 33,
-        "y": 0
+        "x": 24,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 33,
-          "y": 0
-        },
-        {
-          "x": 34,
-          "y": 0
-        },
-        {
-          "x": 35,
-          "y": 0
-        },
-        {
-          "x": 36,
-          "y": 0
-        },
-        {
-          "x": 33,
-          "y": 1
-        },
-        {
-          "x": 34,
-          "y": 1
-        },
-        {
-          "x": 35,
-          "y": 1
-        },
-        {
-          "x": 36,
-          "y": 1
-        },
-        {
-          "x": 33,
+          "x": 24,
           "y": 2
         },
         {
-          "x": 34,
+          "x": 25,
           "y": 2
         },
         {
-          "x": 35,
+          "x": 26,
           "y": 2
         },
         {
-          "x": 36,
+          "x": 27,
           "y": 2
+        },
+        {
+          "x": 24,
+          "y": 3
+        },
+        {
+          "x": 25,
+          "y": 3
+        },
+        {
+          "x": 26,
+          "y": 3
+        },
+        {
+          "x": 27,
+          "y": 3
+        },
+        {
+          "x": 24,
+          "y": 4
+        },
+        {
+          "x": 25,
+          "y": 4
+        },
+        {
+          "x": 26,
+          "y": 4
+        },
+        {
+          "x": 27,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -683,41 +683,41 @@
       "shapeId": "shape.room.hazard_pressure",
       "transform": "identity",
       "origin": {
-        "x": 40,
-        "y": 0
+        "x": 24,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 40,
-          "y": 0
+          "x": 24,
+          "y": 9
         },
         {
-          "x": 41,
-          "y": 0
+          "x": 25,
+          "y": 9
         },
         {
-          "x": 42,
-          "y": 0
+          "x": 26,
+          "y": 9
         },
         {
-          "x": 43,
-          "y": 0
+          "x": 27,
+          "y": 9
         },
         {
-          "x": 40,
-          "y": 1
+          "x": 24,
+          "y": 10
         },
         {
-          "x": 41,
-          "y": 1
+          "x": 25,
+          "y": 10
         },
         {
-          "x": 42,
-          "y": 1
+          "x": 26,
+          "y": 10
         },
         {
-          "x": 43,
-          "y": 1
+          "x": 27,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -759,25 +759,25 @@
       "shapeId": "shape.pocket.reward_cache",
       "transform": "rotate180",
       "origin": {
-        "x": 47,
-        "y": 0
+        "x": 24,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 48,
-          "y": 1
+          "x": 25,
+          "y": 16
         },
         {
-          "x": 47,
-          "y": 1
+          "x": 24,
+          "y": 16
         },
         {
-          "x": 48,
-          "y": 0
+          "x": 25,
+          "y": 15
         },
         {
-          "x": 47,
-          "y": 0
+          "x": 24,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -819,33 +819,33 @@
       "shapeId": "shape.room.resource_clue",
       "transform": "identity",
       "origin": {
-        "x": 52,
-        "y": 0
+        "x": 24,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 52,
-          "y": 0
+          "x": 24,
+          "y": 22
         },
         {
-          "x": 53,
-          "y": 0
+          "x": 25,
+          "y": 22
         },
         {
-          "x": 54,
-          "y": 0
+          "x": 26,
+          "y": 22
         },
         {
-          "x": 52,
-          "y": 1
+          "x": 24,
+          "y": 23
         },
         {
-          "x": 53,
-          "y": 1
+          "x": 25,
+          "y": 23
         },
         {
-          "x": 54,
-          "y": 1
+          "x": 26,
+          "y": 23
         }
       ],
       "reservedCells": [],
@@ -887,21 +887,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 58,
-        "y": 0
+        "x": 7,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 58,
-          "y": 0
+          "x": 7,
+          "y": 4
         },
         {
-          "x": 59,
-          "y": 0
+          "x": 8,
+          "y": 4
         },
         {
-          "x": 60,
-          "y": 0
+          "x": 9,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -945,21 +945,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 64,
-        "y": 0
+        "x": 8,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 64,
-          "y": 0
+          "x": 8,
+          "y": 3
         },
         {
-          "x": 65,
-          "y": 0
+          "x": 9,
+          "y": 3
         },
         {
-          "x": 66,
-          "y": 0
+          "x": 10,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -1003,21 +1003,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 70,
-        "y": 0
+        "x": 10,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 71,
-          "y": 0
+          "x": 11,
+          "y": 4
         },
         {
-          "x": 71,
-          "y": 1
+          "x": 11,
+          "y": 5
         },
         {
-          "x": 70,
-          "y": 1
+          "x": 10,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1061,21 +1061,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 75,
-        "y": 0
+        "x": 9,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 75,
-          "y": 0
+          "x": 9,
+          "y": 5
         },
         {
-          "x": 75,
-          "y": 1
+          "x": 9,
+          "y": 6
         },
         {
-          "x": 75,
-          "y": 2
+          "x": 9,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -1119,21 +1119,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 79,
-        "y": 0
+        "x": 11,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 79,
-          "y": 1
+          "x": 11,
+          "y": 3
         },
         {
-          "x": 79,
-          "y": 0
+          "x": 11,
+          "y": 2
         },
         {
-          "x": 80,
-          "y": 0
+          "x": 12,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -1177,21 +1177,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 84,
-        "y": 0
+        "x": 12,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 84,
-          "y": 0
+          "x": 12,
+          "y": 4
         },
         {
-          "x": 85,
-          "y": 0
+          "x": 13,
+          "y": 4
         },
         {
-          "x": 86,
-          "y": 0
+          "x": 14,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -1235,21 +1235,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 90,
-        "y": 0
+        "x": 12,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 90,
-          "y": 0
+          "x": 12,
+          "y": 5
         },
         {
-          "x": 91,
-          "y": 0
+          "x": 13,
+          "y": 5
         },
         {
-          "x": 92,
-          "y": 0
+          "x": 14,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1293,21 +1293,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 96,
-        "y": 0
+        "x": 18,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 98,
-          "y": 0
+          "x": 20,
+          "y": 4
         },
         {
-          "x": 97,
-          "y": 0
+          "x": 19,
+          "y": 4
         },
         {
-          "x": 96,
-          "y": 0
+          "x": 18,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -1357,21 +1357,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 102,
-        "y": 0
+        "x": 18,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 104,
-          "y": 0
+          "x": 20,
+          "y": 3
         },
         {
-          "x": 103,
-          "y": 0
+          "x": 19,
+          "y": 3
         },
         {
-          "x": 102,
-          "y": 0
+          "x": 18,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -1421,21 +1421,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 108,
-        "y": 0
+        "x": 21,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 108,
-          "y": 0
+          "x": 21,
+          "y": 4
         },
         {
-          "x": 109,
-          "y": 0
+          "x": 22,
+          "y": 4
         },
         {
-          "x": 109,
-          "y": 1
+          "x": 22,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1485,21 +1485,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 113,
-        "y": 0
+        "x": 20,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 113,
-          "y": 0
+          "x": 20,
+          "y": 5
         },
         {
-          "x": 113,
-          "y": 1
+          "x": 20,
+          "y": 6
         },
         {
-          "x": 113,
-          "y": 2
+          "x": 20,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -1549,21 +1549,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 117,
-        "y": 0
+        "x": 21,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 118,
-          "y": 1
+          "x": 22,
+          "y": 6
         },
         {
-          "x": 117,
-          "y": 1
+          "x": 21,
+          "y": 6
         },
         {
-          "x": 117,
-          "y": 0
+          "x": 21,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1613,21 +1613,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 122,
-        "y": 0
+        "x": 21,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 122,
-          "y": 0
+          "x": 21,
+          "y": 3
         },
         {
-          "x": 123,
-          "y": 0
+          "x": 22,
+          "y": 3
         },
         {
-          "x": 124,
-          "y": 0
+          "x": 23,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -1677,21 +1677,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 128,
-        "y": 0
+        "x": 23,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 128,
-          "y": 0
+          "x": 23,
+          "y": 5
         },
         {
-          "x": 129,
-          "y": 0
+          "x": 24,
+          "y": 5
         },
         {
-          "x": 130,
-          "y": 0
+          "x": 25,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1741,21 +1741,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 134,
-        "y": 0
+        "x": 5,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 134,
-          "y": 0
+          "x": 5,
+          "y": 6
         },
         {
-          "x": 135,
-          "y": 0
+          "x": 6,
+          "y": 6
         },
         {
-          "x": 136,
-          "y": 0
+          "x": 7,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -1799,21 +1799,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 140,
-        "y": 0
+        "x": 6,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 140,
-          "y": 0
+          "x": 6,
+          "y": 5
         },
         {
-          "x": 141,
-          "y": 0
+          "x": 7,
+          "y": 5
         },
         {
-          "x": 142,
-          "y": 0
+          "x": 8,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1857,21 +1857,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 146,
-        "y": 0
+        "x": 10,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 146,
-          "y": 0
+          "x": 10,
+          "y": 6
         },
         {
-          "x": 147,
-          "y": 0
+          "x": 11,
+          "y": 6
         },
         {
-          "x": 147,
-          "y": 1
+          "x": 11,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -1915,21 +1915,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 151,
-        "y": 0
+        "x": 10,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 151,
-          "y": 0
+          "x": 10,
+          "y": 14
         },
         {
-          "x": 151,
-          "y": 1
+          "x": 10,
+          "y": 15
         },
         {
-          "x": 151,
-          "y": 2
+          "x": 10,
+          "y": 16
         }
       ],
       "reservedCells": [],
@@ -1973,21 +1973,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 155,
-        "y": 0
+        "x": 10,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 156,
-          "y": 1
+          "x": 11,
+          "y": 23
         },
         {
-          "x": 155,
-          "y": 1
+          "x": 10,
+          "y": 23
         },
         {
-          "x": 155,
-          "y": 0
+          "x": 10,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -2031,21 +2031,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 160,
-        "y": 0
+        "x": 11,
+        "y": 21
       },
       "occupiedCells": [
         {
-          "x": 160,
-          "y": 0
+          "x": 11,
+          "y": 21
         },
         {
-          "x": 161,
-          "y": 0
+          "x": 12,
+          "y": 21
         },
         {
-          "x": 162,
-          "y": 0
+          "x": 13,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -2089,21 +2089,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 166,
-        "y": 0
+        "x": 14,
+        "y": 21
       },
       "occupiedCells": [
         {
-          "x": 166,
-          "y": 0
+          "x": 14,
+          "y": 21
         },
         {
-          "x": 167,
-          "y": 0
+          "x": 15,
+          "y": 21
         },
         {
-          "x": 168,
-          "y": 0
+          "x": 16,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -2147,21 +2147,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 172,
-        "y": 0
+        "x": 16,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 174,
-          "y": 0
+          "x": 18,
+          "y": 22
         },
         {
-          "x": 173,
-          "y": 0
+          "x": 17,
+          "y": 22
         },
         {
-          "x": 172,
-          "y": 0
+          "x": 16,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -2207,21 +2207,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 178,
-        "y": 0
+        "x": 15,
+        "y": 23
       },
       "occupiedCells": [
         {
-          "x": 180,
-          "y": 0
+          "x": 17,
+          "y": 23
         },
         {
-          "x": 179,
-          "y": 0
+          "x": 16,
+          "y": 23
         },
         {
-          "x": 178,
-          "y": 0
+          "x": 15,
+          "y": 23
         }
       ],
       "reservedCells": [],
@@ -2267,21 +2267,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 184,
-        "y": 0
+        "x": 17,
+        "y": 20
       },
       "occupiedCells": [
         {
-          "x": 185,
-          "y": 0
+          "x": 18,
+          "y": 20
         },
         {
-          "x": 185,
-          "y": 1
+          "x": 18,
+          "y": 21
         },
         {
-          "x": 184,
-          "y": 1
+          "x": 17,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -2327,21 +2327,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 189,
-        "y": 0
+        "x": 17,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 189,
-          "y": 0
+          "x": 17,
+          "y": 14
         },
         {
-          "x": 189,
-          "y": 1
+          "x": 17,
+          "y": 15
         },
         {
-          "x": 189,
-          "y": 2
+          "x": 17,
+          "y": 16
         }
       ],
       "reservedCells": [],
@@ -2387,21 +2387,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 193,
-        "y": 0
+        "x": 15,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 193,
-          "y": 1
+          "x": 15,
+          "y": 7
         },
         {
-          "x": 193,
-          "y": 0
+          "x": 15,
+          "y": 6
         },
         {
-          "x": 194,
-          "y": 0
+          "x": 16,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -2447,21 +2447,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 198,
-        "y": 0
+        "x": 15,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 200,
-          "y": 0
+          "x": 17,
+          "y": 5
         },
         {
-          "x": 199,
-          "y": 0
+          "x": 16,
+          "y": 5
         },
         {
-          "x": 198,
-          "y": 0
+          "x": 15,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -2507,21 +2507,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 204,
-        "y": 0
+        "x": 16,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 206,
-          "y": 0
+          "x": 18,
+          "y": 7
         },
         {
-          "x": 205,
-          "y": 0
+          "x": 17,
+          "y": 7
         },
         {
-          "x": 204,
-          "y": 0
+          "x": 16,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -2567,21 +2567,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 210,
-        "y": 0
+        "x": 7,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 210,
-          "y": 0
+          "x": 7,
+          "y": 2
         },
         {
-          "x": 211,
-          "y": 0
+          "x": 8,
+          "y": 2
         },
         {
-          "x": 212,
-          "y": 0
+          "x": 9,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -2625,21 +2625,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 216,
-        "y": 0
+        "x": 6,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 216,
-          "y": 0
+          "x": 6,
+          "y": 1
         },
         {
-          "x": 217,
-          "y": 0
+          "x": 7,
+          "y": 1
         },
         {
-          "x": 218,
-          "y": 0
+          "x": 8,
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -2683,21 +2683,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 222,
-        "y": 0
+        "x": 12,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 222,
-          "y": 0
+          "x": 12,
+          "y": 6
         },
         {
-          "x": 223,
-          "y": 0
+          "x": 13,
+          "y": 6
         },
         {
-          "x": 223,
-          "y": 1
+          "x": 13,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -2741,21 +2741,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 227,
-        "y": 0
+        "x": 10,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 227,
-          "y": 0
+          "x": 10,
+          "y": 8
         },
         {
-          "x": 227,
-          "y": 1
+          "x": 10,
+          "y": 9
         },
         {
-          "x": 227,
-          "y": 2
+          "x": 10,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -2799,21 +2799,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 231,
-        "y": 0
+        "x": 10,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 232,
-          "y": 1
+          "x": 11,
+          "y": 12
         },
         {
-          "x": 231,
-          "y": 1
+          "x": 10,
+          "y": 12
         },
         {
-          "x": 231,
-          "y": 0
+          "x": 10,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -2857,21 +2857,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 236,
-        "y": 0
+        "x": 10,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 236,
-          "y": 0
+          "x": 10,
+          "y": 13
         },
         {
-          "x": 237,
-          "y": 0
+          "x": 11,
+          "y": 13
         },
         {
-          "x": 238,
-          "y": 0
+          "x": 12,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -2915,21 +2915,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 242,
-        "y": 0
+        "x": 11,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 242,
-          "y": 0
+          "x": 11,
+          "y": 8
         },
         {
-          "x": 243,
-          "y": 0
+          "x": 12,
+          "y": 8
         },
         {
-          "x": 244,
-          "y": 0
+          "x": 13,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -2973,21 +2973,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 248,
-        "y": 0
+        "x": 19,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 250,
-          "y": 0
+          "x": 21,
+          "y": 11
         },
         {
-          "x": 249,
-          "y": 0
+          "x": 20,
+          "y": 11
         },
         {
-          "x": 248,
-          "y": 0
+          "x": 19,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -3033,21 +3033,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 254,
-        "y": 0
+        "x": 19,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 256,
-          "y": 0
+          "x": 21,
+          "y": 10
         },
         {
-          "x": 255,
-          "y": 0
+          "x": 20,
+          "y": 10
         },
         {
-          "x": 254,
-          "y": 0
+          "x": 19,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -3093,21 +3093,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 260,
-        "y": 0
+        "x": 22,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 261,
-          "y": 0
+          "x": 23,
+          "y": 11
         },
         {
-          "x": 261,
-          "y": 1
+          "x": 23,
+          "y": 12
         },
         {
-          "x": 260,
-          "y": 1
+          "x": 22,
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -3153,21 +3153,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 265,
-        "y": 0
+        "x": 22,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 265,
-          "y": 0
+          "x": 22,
+          "y": 8
         },
         {
-          "x": 265,
-          "y": 1
+          "x": 22,
+          "y": 9
         },
         {
-          "x": 265,
-          "y": 2
+          "x": 22,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -3213,21 +3213,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 269,
-        "y": 0
+        "x": 23,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 269,
-          "y": 1
+          "x": 23,
+          "y": 7
         },
         {
-          "x": 269,
-          "y": 0
+          "x": 23,
+          "y": 6
         },
         {
-          "x": 270,
-          "y": 0
+          "x": 24,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -3273,21 +3273,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 274,
-        "y": 0
+        "x": 21,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 276,
-          "y": 0
+          "x": 23,
+          "y": 2
         },
         {
-          "x": 275,
-          "y": 0
+          "x": 22,
+          "y": 2
         },
         {
-          "x": 274,
-          "y": 0
+          "x": 21,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -3333,21 +3333,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 280,
-        "y": 0
+        "x": 26,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 282,
-          "y": 0
+          "x": 28,
+          "y": 5
         },
         {
-          "x": 281,
-          "y": 0
+          "x": 27,
+          "y": 5
         },
         {
-          "x": 280,
-          "y": 0
+          "x": 26,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -3393,21 +3393,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 286,
-        "y": 0
+        "x": 18,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 286,
-          "y": 0
+          "x": 18,
+          "y": 13
         },
         {
-          "x": 287,
-          "y": 0
+          "x": 19,
+          "y": 13
         },
         {
-          "x": 288,
-          "y": 0
+          "x": 20,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -3451,21 +3451,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 292,
-        "y": 0
+        "x": 18,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 292,
-          "y": 0
+          "x": 18,
+          "y": 14
         },
         {
-          "x": 293,
-          "y": 0
+          "x": 19,
+          "y": 14
         },
         {
-          "x": 294,
-          "y": 0
+          "x": 20,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -3509,21 +3509,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 298,
-        "y": 0
+        "x": 21,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 298,
-          "y": 0
+          "x": 21,
+          "y": 13
         },
         {
-          "x": 299,
-          "y": 0
+          "x": 22,
+          "y": 13
         },
         {
-          "x": 299,
-          "y": 1
+          "x": 22,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -3567,21 +3567,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 303,
-        "y": 0
+        "x": 21,
+        "y": 18
       },
       "occupiedCells": [
         {
-          "x": 303,
-          "y": 0
+          "x": 21,
+          "y": 18
         },
         {
-          "x": 303,
-          "y": 1
+          "x": 21,
+          "y": 19
         },
         {
-          "x": 303,
-          "y": 2
+          "x": 21,
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3625,21 +3625,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 307,
-        "y": 0
+        "x": 21,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 308,
-          "y": 1
+          "x": 22,
+          "y": 23
         },
         {
-          "x": 307,
-          "y": 1
+          "x": 21,
+          "y": 23
         },
         {
-          "x": 307,
-          "y": 0
+          "x": 21,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -3683,21 +3683,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 312,
-        "y": 0
+        "x": 22,
+        "y": 21
       },
       "occupiedCells": [
         {
-          "x": 312,
-          "y": 0
+          "x": 22,
+          "y": 21
         },
         {
-          "x": 313,
-          "y": 0
+          "x": 23,
+          "y": 21
         },
         {
-          "x": 314,
-          "y": 0
+          "x": 24,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -3741,21 +3741,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 318,
-        "y": 0
+        "x": 25,
+        "y": 21
       },
       "occupiedCells": [
         {
-          "x": 318,
-          "y": 0
+          "x": 25,
+          "y": 21
         },
         {
-          "x": 319,
-          "y": 0
+          "x": 26,
+          "y": 21
         },
         {
-          "x": 320,
-          "y": 0
+          "x": 27,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -3799,21 +3799,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 324,
-        "y": 0
+        "x": 27,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 326,
-          "y": 0
+          "x": 29,
+          "y": 22
         },
         {
-          "x": 325,
-          "y": 0
+          "x": 28,
+          "y": 22
         },
         {
-          "x": 324,
-          "y": 0
+          "x": 27,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -3859,21 +3859,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 330,
-        "y": 0
+        "x": 22,
+        "y": 20
       },
       "occupiedCells": [
         {
-          "x": 332,
-          "y": 0
+          "x": 24,
+          "y": 20
         },
         {
-          "x": 331,
-          "y": 0
+          "x": 23,
+          "y": 20
         },
         {
-          "x": 330,
-          "y": 0
+          "x": 22,
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3919,21 +3919,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 336,
-        "y": 0
+        "x": 20,
+        "y": 23
       },
       "occupiedCells": [
         {
-          "x": 337,
-          "y": 1
+          "x": 21,
+          "y": 24
         },
         {
-          "x": 336,
-          "y": 1
+          "x": 20,
+          "y": 24
         },
         {
-          "x": 336,
-          "y": 0
+          "x": 20,
+          "y": 23
         }
       ],
       "reservedCells": [],
@@ -3979,21 +3979,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 341,
-        "y": 0
+        "x": 20,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 341,
-          "y": 2
+          "x": 20,
+          "y": 19
         },
         {
-          "x": 341,
-          "y": 1
+          "x": 20,
+          "y": 18
         },
         {
-          "x": 341,
-          "y": 0
+          "x": 20,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -4039,21 +4039,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 345,
-        "y": 0
+        "x": 23,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 345,
-          "y": 0
+          "x": 23,
+          "y": 13
         },
         {
-          "x": 346,
-          "y": 0
+          "x": 24,
+          "y": 13
         },
         {
-          "x": 346,
-          "y": 1
+          "x": 24,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -4099,21 +4099,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 350,
-        "y": 0
+        "x": 18,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 352,
-          "y": 0
+          "x": 20,
+          "y": 15
         },
         {
-          "x": 351,
-          "y": 0
+          "x": 19,
+          "y": 15
         },
         {
-          "x": 350,
-          "y": 0
+          "x": 18,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -4159,21 +4159,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 356,
-        "y": 0
+        "x": 14,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 358,
-          "y": 0
+          "x": 16,
+          "y": 14
         },
         {
-          "x": 357,
-          "y": 0
+          "x": 15,
+          "y": 14
         },
         {
-          "x": 356,
-          "y": 0
+          "x": 14,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -4219,21 +4219,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 362,
-        "y": 0
+        "x": 18,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 364,
-          "y": 0
+          "x": 20,
+          "y": 9
         },
         {
-          "x": 363,
-          "y": 0
+          "x": 19,
+          "y": 9
         },
         {
-          "x": 362,
-          "y": 0
+          "x": 18,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -4280,21 +4280,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 368,
-        "y": 0
+        "x": 17,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 370,
-          "y": 0
+          "x": 19,
+          "y": 8
         },
         {
-          "x": 369,
-          "y": 0
+          "x": 18,
+          "y": 8
         },
         {
-          "x": 368,
-          "y": 0
+          "x": 17,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -4341,21 +4341,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 374,
-        "y": 0
+        "x": 24,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 375,
-          "y": 0
+          "x": 25,
+          "y": 11
         },
         {
-          "x": 375,
-          "y": 1
+          "x": 25,
+          "y": 12
         },
         {
-          "x": 374,
-          "y": 1
+          "x": 24,
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -4402,21 +4402,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 379,
-        "y": 0
+        "x": 23,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 379,
-          "y": 0
+          "x": 23,
+          "y": 8
         },
         {
-          "x": 379,
-          "y": 1
+          "x": 23,
+          "y": 9
         },
         {
-          "x": 379,
-          "y": 2
+          "x": 23,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -4463,21 +4463,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 383,
-        "y": 0
+        "x": 21,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 383,
-          "y": 1
+          "x": 21,
+          "y": 8
         },
         {
-          "x": 383,
-          "y": 0
+          "x": 21,
+          "y": 7
         },
         {
-          "x": 384,
-          "y": 0
+          "x": 22,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -4524,21 +4524,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 388,
-        "y": 0
+        "x": 24,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 388,
-          "y": 0
+          "x": 24,
+          "y": 8
         },
         {
-          "x": 389,
-          "y": 0
+          "x": 25,
+          "y": 8
         },
         {
-          "x": 390,
-          "y": 0
+          "x": 26,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -4585,21 +4585,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 394,
-        "y": 0
+        "x": 26,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 396,
-          "y": 0
+          "x": 28,
+          "y": 11
         },
         {
-          "x": 395,
-          "y": 0
+          "x": 27,
+          "y": 11
         },
         {
-          "x": 394,
-          "y": 0
+          "x": 26,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -4646,21 +4646,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 400,
-        "y": 0
+        "x": 27,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 400,
-          "y": 0
+          "x": 27,
+          "y": 8
         },
         {
-          "x": 401,
-          "y": 0
+          "x": 28,
+          "y": 8
         },
         {
-          "x": 402,
-          "y": 0
+          "x": 29,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -4706,21 +4706,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 406,
-        "y": 0
+        "x": 28,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 408,
-          "y": 0
+          "x": 30,
+          "y": 9
         },
         {
-          "x": 407,
-          "y": 0
+          "x": 29,
+          "y": 9
         },
         {
-          "x": 406,
-          "y": 0
+          "x": 28,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -4766,21 +4766,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 412,
-        "y": 0
+        "x": 29,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 413,
-          "y": 1
+          "x": 30,
+          "y": 11
         },
         {
-          "x": 412,
-          "y": 1
+          "x": 29,
+          "y": 11
         },
         {
-          "x": 412,
-          "y": 0
+          "x": 29,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -4826,21 +4826,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 417,
-        "y": 0
+        "x": 29,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 417,
-          "y": 2
+          "x": 29,
+          "y": 7
         },
         {
-          "x": 417,
-          "y": 1
+          "x": 29,
+          "y": 6
         },
         {
-          "x": 417,
-          "y": 0
+          "x": 29,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -4886,21 +4886,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 421,
-        "y": 0
+        "x": 27,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 421,
-          "y": 0
+          "x": 27,
+          "y": 6
         },
         {
-          "x": 422,
-          "y": 0
+          "x": 28,
+          "y": 6
         },
         {
-          "x": 422,
-          "y": 1
+          "x": 28,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -4946,21 +4946,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 426,
-        "y": 0
+        "x": 25,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 426,
-          "y": 0
+          "x": 25,
+          "y": 7
         },
         {
-          "x": 427,
-          "y": 0
+          "x": 26,
+          "y": 7
         },
         {
-          "x": 428,
-          "y": 0
+          "x": 27,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -5006,21 +5006,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 432,
-        "y": 0
+        "x": 28,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 432,
-          "y": 0
+          "x": 28,
+          "y": 4
         },
         {
-          "x": 433,
-          "y": 0
+          "x": 29,
+          "y": 4
         },
         {
-          "x": 434,
-          "y": 0
+          "x": 30,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -5066,21 +5066,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 438,
-        "y": 0
+        "x": 21,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 438,
-          "y": 0
+          "x": 21,
+          "y": 15
         },
         {
-          "x": 439,
-          "y": 0
+          "x": 22,
+          "y": 15
         },
         {
-          "x": 440,
-          "y": 0
+          "x": 23,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -5124,21 +5124,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 444,
-        "y": 0
+        "x": 17,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 444,
-          "y": 0
+          "x": 17,
+          "y": 6
         },
         {
-          "x": 445,
-          "y": 0
+          "x": 18,
+          "y": 6
         },
         {
-          "x": 446,
-          "y": 0
+          "x": 19,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -5182,21 +5182,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 450,
-        "y": 0
+        "x": 25,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 450,
-          "y": 0
+          "x": 25,
+          "y": 13
         },
         {
-          "x": 451,
-          "y": 0
+          "x": 26,
+          "y": 13
         },
         {
-          "x": 451,
-          "y": 1
+          "x": 26,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -5240,21 +5240,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 455,
-        "y": 0
+        "x": 22,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 455,
-          "y": 0
+          "x": 22,
+          "y": 16
         },
         {
-          "x": 455,
-          "y": 1
+          "x": 22,
+          "y": 17
         },
         {
-          "x": 455,
-          "y": 2
+          "x": 22,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -5298,21 +5298,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 459,
-        "y": 0
+        "x": 23,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 460,
-          "y": 1
+          "x": 24,
+          "y": 17
         },
         {
-          "x": 459,
-          "y": 1
+          "x": 23,
+          "y": 17
         },
         {
-          "x": 459,
-          "y": 0
+          "x": 23,
+          "y": 16
         }
       ],
       "reservedCells": [],
@@ -5356,21 +5356,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 464,
-        "y": 0
+        "x": 23,
+        "y": 18
       },
       "occupiedCells": [
         {
-          "x": 464,
-          "y": 0
+          "x": 23,
+          "y": 18
         },
         {
-          "x": 465,
-          "y": 0
+          "x": 24,
+          "y": 18
         },
         {
-          "x": 466,
-          "y": 0
+          "x": 25,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -5414,21 +5414,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 470,
-        "y": 0
+        "x": 25,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 470,
-          "y": 0
+          "x": 25,
+          "y": 17
         },
         {
-          "x": 471,
-          "y": 0
+          "x": 26,
+          "y": 17
         },
         {
-          "x": 472,
-          "y": 0
+          "x": 27,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -5472,21 +5472,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 476,
-        "y": 0
+        "x": 26,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 478,
-          "y": 0
+          "x": 28,
+          "y": 15
         },
         {
-          "x": 477,
-          "y": 0
+          "x": 27,
+          "y": 15
         },
         {
-          "x": 476,
-          "y": 0
+          "x": 26,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -5532,21 +5532,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 482,
-        "y": 0
+        "x": 22,
+        "y": 19
       },
       "occupiedCells": [
         {
-          "x": 484,
-          "y": 0
+          "x": 24,
+          "y": 19
         },
         {
-          "x": 483,
-          "y": 0
+          "x": 23,
+          "y": 19
         },
         {
-          "x": 482,
-          "y": 0
+          "x": 22,
+          "y": 19
         }
       ],
       "reservedCells": [],
@@ -5592,21 +5592,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 488,
-        "y": 0
+        "x": 19,
+        "y": 19
       },
       "occupiedCells": [
         {
-          "x": 489,
-          "y": 1
+          "x": 20,
+          "y": 20
         },
         {
-          "x": 488,
-          "y": 1
+          "x": 19,
+          "y": 20
         },
         {
-          "x": 488,
-          "y": 0
+          "x": 19,
+          "y": 19
         }
       ],
       "reservedCells": [],
@@ -5652,21 +5652,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 493,
-        "y": 0
+        "x": 19,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 493,
-          "y": 0
+          "x": 19,
+          "y": 16
         },
         {
-          "x": 493,
-          "y": 1
+          "x": 19,
+          "y": 17
         },
         {
-          "x": 493,
-          "y": 2
+          "x": 19,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -5712,21 +5712,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 497,
-        "y": 0
+        "x": 26,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 497,
-          "y": 0
+          "x": 26,
+          "y": 12
         },
         {
-          "x": 498,
-          "y": 0
+          "x": 27,
+          "y": 12
         },
         {
-          "x": 498,
-          "y": 1
+          "x": 27,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -5772,21 +5772,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 502,
-        "y": 0
+        "x": 14,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 504,
-          "y": 0
+          "x": 16,
+          "y": 8
         },
         {
-          "x": 503,
-          "y": 0
+          "x": 15,
+          "y": 8
         },
         {
-          "x": 502,
-          "y": 0
+          "x": 14,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -5832,21 +5832,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 508,
-        "y": 0
+        "x": 13,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 510,
-          "y": 0
+          "x": 15,
+          "y": 15
         },
         {
-          "x": 509,
-          "y": 0
+          "x": 14,
+          "y": 15
         },
         {
-          "x": 508,
-          "y": 0
+          "x": 13,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -5892,21 +5892,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 514,
-        "y": 0
+        "x": 4,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 514,
-          "y": 0
+          "x": 4,
+          "y": 7
         },
         {
-          "x": 515,
-          "y": 0
+          "x": 5,
+          "y": 7
         },
         {
-          "x": 516,
-          "y": 0
+          "x": 6,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -5950,21 +5950,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 520,
-        "y": 0
+        "x": 6,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 520,
-          "y": 0
+          "x": 6,
+          "y": 8
         },
         {
-          "x": 521,
-          "y": 0
+          "x": 7,
+          "y": 8
         },
         {
-          "x": 522,
-          "y": 0
+          "x": 8,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -6008,21 +6008,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 526,
-        "y": 0
+        "x": 7,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 526,
-          "y": 0
+          "x": 7,
+          "y": 9
         },
         {
-          "x": 527,
-          "y": 0
+          "x": 8,
+          "y": 9
         },
         {
-          "x": 527,
-          "y": 1
+          "x": 8,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -6066,21 +6066,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 531,
-        "y": 0
+        "x": 9,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 531,
-          "y": 0
+          "x": 9,
+          "y": 10
         },
         {
-          "x": 531,
-          "y": 1
+          "x": 9,
+          "y": 11
         },
         {
-          "x": 531,
-          "y": 2
+          "x": 9,
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -6124,21 +6124,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 535,
-        "y": 0
+        "x": 11,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 536,
-          "y": 1
+          "x": 12,
+          "y": 15
         },
         {
-          "x": 535,
-          "y": 1
+          "x": 11,
+          "y": 15
         },
         {
-          "x": 535,
-          "y": 0
+          "x": 11,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -6182,21 +6182,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 540,
-        "y": 0
+        "x": 9,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 540,
-          "y": 0
+          "x": 9,
+          "y": 17
         },
         {
-          "x": 541,
-          "y": 0
+          "x": 10,
+          "y": 17
         },
         {
-          "x": 542,
-          "y": 0
+          "x": 11,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -6240,21 +6240,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 546,
-        "y": 0
+        "x": 19,
+        "y": 21
       },
       "occupiedCells": [
         {
-          "x": 546,
-          "y": 0
+          "x": 19,
+          "y": 21
         },
         {
-          "x": 547,
-          "y": 0
+          "x": 20,
+          "y": 21
         },
         {
-          "x": 548,
-          "y": 0
+          "x": 21,
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -6298,21 +6298,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 552,
-        "y": 0
+        "x": 18,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 552,
-          "y": 0
+          "x": 18,
+          "y": 10
         },
         {
-          "x": 552,
-          "y": 1
+          "x": 18,
+          "y": 11
         },
         {
-          "x": 552,
-          "y": 2
+          "x": 18,
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -6358,21 +6358,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 556,
-        "y": 0
+        "x": 18,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 556,
-          "y": 0
+          "x": 18,
+          "y": 16
         },
         {
-          "x": 556,
-          "y": 1
+          "x": 18,
+          "y": 17
         },
         {
-          "x": 556,
-          "y": 2
+          "x": 18,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -6418,21 +6418,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 560,
-        "y": 0
+        "x": 17,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 560,
-          "y": 2
+          "x": 17,
+          "y": 19
         },
         {
-          "x": 560,
-          "y": 1
+          "x": 17,
+          "y": 18
         },
         {
-          "x": 560,
-          "y": 0
+          "x": 17,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -6478,21 +6478,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 564,
-        "y": 0
+        "x": 9,
+        "y": 18
       },
       "occupiedCells": [
         {
-          "x": 566,
-          "y": 0
+          "x": 11,
+          "y": 18
         },
         {
-          "x": 565,
-          "y": 0
+          "x": 10,
+          "y": 18
         },
         {
-          "x": 564,
-          "y": 0
+          "x": 9,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -6541,21 +6541,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 570,
-        "y": 0
+        "x": 25,
+        "y": 19
       },
       "occupiedCells": [
         {
-          "x": 570,
-          "y": 0
+          "x": 25,
+          "y": 19
         },
         {
-          "x": 571,
-          "y": 0
+          "x": 26,
+          "y": 19
         },
         {
-          "x": 572,
-          "y": 0
+          "x": 27,
+          "y": 19
         }
       ],
       "reservedCells": [],
@@ -6604,21 +6604,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 576,
-        "y": 0
+        "x": 27,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 577,
-          "y": 0
+          "x": 28,
+          "y": 13
         },
         {
-          "x": 577,
-          "y": 1
+          "x": 28,
+          "y": 14
         },
         {
-          "x": 576,
-          "y": 1
+          "x": 27,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -6667,21 +6667,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 581,
-        "y": 0
+        "x": 28,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 581,
-          "y": 0
+          "x": 28,
+          "y": 16
         },
         {
-          "x": 581,
-          "y": 1
+          "x": 28,
+          "y": 17
         },
         {
-          "x": 581,
-          "y": 2
+          "x": 28,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -6730,21 +6730,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 585,
-        "y": 0
+        "x": 17,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 585,
-          "y": 1
+          "x": 17,
+          "y": 3
         },
         {
-          "x": 585,
-          "y": 0
+          "x": 17,
+          "y": 2
         },
         {
-          "x": 586,
-          "y": 0
+          "x": 18,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -6793,21 +6793,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 590,
-        "y": 0
+        "x": 28,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 592,
-          "y": 0
+          "x": 30,
+          "y": 2
         },
         {
-          "x": 591,
-          "y": 0
+          "x": 29,
+          "y": 2
         },
         {
-          "x": 590,
-          "y": 0
+          "x": 28,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -6856,21 +6856,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 596,
-        "y": 0
+        "x": 28,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 598,
-          "y": 0
+          "x": 30,
+          "y": 3
         },
         {
-          "x": 597,
-          "y": 0
+          "x": 29,
+          "y": 3
         },
         {
-          "x": 596,
-          "y": 0
+          "x": 28,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -8525,2065 +8525,2065 @@
   "occupiedCells": [
     {
       "instanceId": "instance.piece_room_room_region_start",
-      "x": 0,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
-      "x": 1,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
       "x": 2,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
-      "x": 0,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
-      "x": 1,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
-      "x": 2,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_start",
-      "x": 0,
       "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_start",
-      "x": 1,
+      "x": 3,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 4,
       "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_start",
       "x": 2,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 2,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 3,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_start",
+      "x": 4,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "x": 15,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "x": 14,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "x": 13,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "x": 15,
       "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_gate_locked_1",
-      "x": 8,
-      "y": 1
+      "x": 14,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "x": 13,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 14,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 15,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 17,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 14,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 15,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 17,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 14,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 15,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 17,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 14,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 15,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 17,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 14,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 15,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 17,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 16,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 16,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 16,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 16,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 16,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 15,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 15,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 15,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 15,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 15,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 14,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 14,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 14,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 14,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 14,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 13,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 13,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 13,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 13,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 13,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 12,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 12,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 12,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 12,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "x": 12,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "x": 14,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "x": 13,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "x": 14,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "x": 13,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 24,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 25,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 26,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 27,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 24,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 25,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 26,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 27,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 24,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 25,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 26,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_goal",
+      "x": 27,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 24,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 25,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 26,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 27,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 24,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 25,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 26,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
+      "x": 27,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
+      "x": 25,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
+      "x": 24,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
+      "x": 25,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
+      "x": 24,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 24,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 25,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 26,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 24,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 25,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_resource_clue_1",
+      "x": 26,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
       "x": 7,
-      "y": 1
+      "y": 4
     },
     {
-      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
+      "x": 8,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
+      "x": 9,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
+      "x": 8,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
+      "x": 9,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
+      "x": 10,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
+      "x": 11,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
+      "x": 11,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
+      "x": 10,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
+      "x": 9,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
+      "x": 9,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
+      "x": 9,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
+      "x": 11,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 12,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 13,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 14,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
+      "x": 12,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
+      "x": 13,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
+      "x": 14,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
+      "x": 20,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
+      "x": 19,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
+      "x": 18,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
+      "x": 20,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
+      "x": 19,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
+      "x": 18,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
+      "x": 21,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
+      "x": 22,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
+      "x": 22,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
+      "x": 20,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
+      "x": 20,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
+      "x": 22,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
+      "x": 21,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
+      "x": 21,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
+      "x": 21,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
+      "x": 22,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
+      "x": 23,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
+      "x": 23,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
+      "x": 24,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
+      "x": 25,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 5,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 6,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 7,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
+      "x": 6,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
+      "x": 7,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
+      "x": 8,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 10,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 11,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 11,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
+      "x": 10,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
+      "x": 10,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
+      "x": 10,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
+      "x": 11,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
+      "x": 10,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
+      "x": 10,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 11,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 12,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 13,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
+      "x": 14,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
+      "x": 15,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
+      "x": 16,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
+      "x": 18,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
+      "x": 17,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
+      "x": 16,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 17,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 16,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 15,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "x": 18,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "x": 18,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "x": 17,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
+      "x": 17,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
+      "x": 17,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
+      "x": 17,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
+      "x": 15,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
+      "x": 15,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
+      "x": 16,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 17,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 15,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 18,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 17,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 16,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
+      "x": 7,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
+      "x": 8,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
+      "x": 9,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
       "x": 6,
       "y": 1
     },
     {
-      "instanceId": "instance.piece_room_room_region_gate_locked_1",
-      "x": 8,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
       "x": 7,
-      "y": 0
+      "y": 1
     },
     {
-      "instanceId": "instance.piece_room_room_region_gate_locked_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
+      "x": 8,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
+      "x": 12,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
+      "x": 13,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
+      "x": 13,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
+      "x": 10,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
+      "x": 10,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
+      "x": 10,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
+      "x": 10,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
+      "x": 10,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
+      "x": 12,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
+      "x": 11,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
+      "x": 12,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
+      "x": 13,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
+      "x": 21,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
+      "x": 20,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
+      "x": 19,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
+      "x": 21,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
+      "x": 20,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
+      "x": 19,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
+      "x": 23,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
+      "x": 23,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
+      "x": 22,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
+      "x": 22,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
+      "x": 22,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
+      "x": 22,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
+      "x": 23,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
+      "x": 23,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
+      "x": 24,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
+      "x": 23,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
+      "x": 22,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
+      "x": 21,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
+      "x": 28,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
+      "x": 27,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
+      "x": 26,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
+      "x": 19,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
+      "x": 20,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
+      "x": 18,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
+      "x": 19,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
+      "x": 20,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
+      "x": 21,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
+      "x": 22,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
+      "x": 22,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
+      "x": 21,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
+      "x": 21,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
+      "x": 21,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
+      "x": 22,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
+      "x": 21,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
+      "x": 21,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
+      "x": 22,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
+      "x": 23,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
+      "x": 24,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
+      "x": 25,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
+      "x": 26,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
+      "x": 27,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
+      "x": 29,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
+      "x": 28,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
+      "x": 27,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
+      "x": 24,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
+      "x": 23,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
+      "x": 22,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
+      "x": 21,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
+      "x": 20,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
+      "x": 20,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
+      "x": 20,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
+      "x": 20,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
+      "x": 20,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
+      "x": 23,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
+      "x": 24,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
+      "x": 24,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
+      "x": 20,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
+      "x": 19,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
+      "x": 18,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
+      "x": 16,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
+      "x": 15,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
+      "x": 14,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
+      "x": 20,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
+      "x": 19,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
+      "x": 18,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
+      "x": 19,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
+      "x": 18,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
+      "x": 17,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
+      "x": 25,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
+      "x": 25,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
+      "x": 24,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
+      "x": 23,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
+      "x": 23,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
+      "x": 23,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
+      "x": 21,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
+      "x": 21,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
+      "x": 22,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
+      "x": 24,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
+      "x": 25,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
+      "x": 26,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
+      "x": 28,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
+      "x": 27,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
+      "x": 26,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
+      "x": 27,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
+      "x": 28,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
+      "x": 29,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
+      "x": 30,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
+      "x": 29,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
+      "x": 28,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
+      "x": 30,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
+      "x": 29,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
+      "x": 29,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
+      "x": 29,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
+      "x": 29,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
+      "x": 29,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
+      "x": 27,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
+      "x": 28,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
+      "x": 28,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
+      "x": 25,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
+      "x": 26,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
+      "x": 27,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
+      "x": 28,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
+      "x": 29,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
+      "x": 30,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
+      "x": 21,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
+      "x": 22,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
+      "x": 23,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
+      "x": 17,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
+      "x": 18,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
+      "x": 19,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
+      "x": 25,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
+      "x": 26,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
+      "x": 26,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
+      "x": 22,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
+      "x": 22,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
+      "x": 22,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
+      "x": 24,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
+      "x": 23,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
+      "x": 23,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
+      "x": 23,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
+      "x": 24,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
+      "x": 25,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
+      "x": 26,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
+      "x": 27,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
+      "x": 28,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
+      "x": 27,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
+      "x": 26,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
+      "x": 24,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
+      "x": 23,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
+      "x": 22,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
+      "x": 20,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
+      "x": 19,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
+      "x": 19,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
+      "x": 19,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
+      "x": 19,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
+      "x": 19,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
+      "x": 26,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
+      "x": 27,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
+      "x": 27,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
+      "x": 16,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
+      "x": 15,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
+      "x": 14,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
+      "x": 15,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
+      "x": 14,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
+      "x": 13,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
+      "x": 4,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
+      "x": 5,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
       "x": 6,
-      "y": 0
+      "y": 7
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
+      "x": 6,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
+      "x": 7,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
+      "x": 8,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
+      "x": 7,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
+      "x": 8,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
+      "x": 8,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
+      "x": 9,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
+      "x": 9,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
+      "x": 9,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
       "x": 12,
-      "y": 0
+      "y": 15
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 13,
-      "y": 0
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
+      "x": 11,
+      "y": 15
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 14,
-      "y": 0
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
+      "x": 11,
+      "y": 14
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 0
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 9,
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 16,
-      "y": 0
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 10,
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 12,
-      "y": 1
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 11,
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 13,
-      "y": 1
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
+      "x": 19,
+      "y": 21
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 14,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 16,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 12,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 13,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 14,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 16,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 12,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 13,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 14,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 16,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 12,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 13,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 14,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 16,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 24,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 24,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 24,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 24,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 24,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 22,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 22,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 22,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 22,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 22,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 21,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 21,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 21,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 21,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 21,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
       "x": 20,
-      "y": 0
+      "y": 21
     },
     {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 20,
-      "y": 1
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
+      "x": 21,
+      "y": 21
     },
     {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 20,
-      "y": 2
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 18,
+      "y": 10
     },
     {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 20,
-      "y": 3
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 18,
+      "y": 11
     },
     {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 20,
-      "y": 4
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 18,
+      "y": 12
     },
     {
-      "instanceId": "instance.piece_room_room_region_key_gate_1",
-      "x": 29,
-      "y": 1
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
+      "x": 18,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
+      "x": 18,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
+      "x": 18,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 17,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 17,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 17,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 11,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 10,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 9,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 25,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 26,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 27,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
       "x": 28,
-      "y": 1
+      "y": 13
     },
     {
-      "instanceId": "instance.piece_room_room_region_key_gate_1",
-      "x": 29,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_key_gate_1",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
       "x": 28,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 33,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 34,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 35,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 36,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 33,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 34,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 35,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 36,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 33,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 34,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 35,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_goal",
-      "x": 36,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 40,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 41,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 42,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 43,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 40,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 41,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 42,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_hazard_watch_1",
-      "x": 43,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
-      "x": 48,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
-      "x": 47,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
-      "x": 48,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_treasure_cache_1",
-      "x": 47,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 52,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 53,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 54,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 52,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 53,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_resource_clue_1",
-      "x": 54,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
-      "x": 58,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
-      "x": 59,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_start",
-      "x": 60,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
-      "x": 64,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
-      "x": 65,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_1",
-      "x": 66,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
-      "x": 71,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
-      "x": 71,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_1",
-      "x": 70,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 75,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 75,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 75,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 79,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 79,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 80,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 84,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 85,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 86,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 90,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 91,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 92,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
-      "x": 98,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
-      "x": 97,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_start",
-      "x": 96,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
-      "x": 104,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
-      "x": 103,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_1",
-      "x": 102,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
-      "x": 108,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
-      "x": 109,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_1",
-      "x": 109,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
-      "x": 113,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
-      "x": 113,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_2",
-      "x": 113,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
-      "x": 118,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
-      "x": 117,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_goal_bend_2",
-      "x": 117,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
-      "x": 122,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
-      "x": 123,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_goal_segment_3",
-      "x": 124,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
-      "x": 128,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
-      "x": 129,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_goal_end",
-      "x": 130,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 134,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 135,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 136,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
-      "x": 140,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
-      "x": 141,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
-      "x": 142,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 146,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 147,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 147,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
-      "x": 151,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
-      "x": 151,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
-      "x": 151,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
-      "x": 156,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
-      "x": 155,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_2",
-      "x": 155,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
-      "x": 160,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
-      "x": 161,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
-      "x": 162,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 166,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 167,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 168,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
-      "x": 174,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
-      "x": 173,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
-      "x": 172,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 180,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 179,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 178,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 185,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 185,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 184,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 189,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 189,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 189,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 193,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 193,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 194,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 200,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 199,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 198,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 206,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 205,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 204,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
-      "x": 210,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
-      "x": 211,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_start",
-      "x": 212,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
-      "x": 216,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
-      "x": 217,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_1",
-      "x": 218,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
-      "x": 222,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
-      "x": 223,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_1",
-      "x": 223,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
-      "x": 227,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
-      "x": 227,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_2",
-      "x": 227,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
-      "x": 232,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
-      "x": 231,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_hub_1_bend_2",
-      "x": 231,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
-      "x": 236,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
-      "x": 237,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_hub_1_segment_3",
-      "x": 238,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
-      "x": 242,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
-      "x": 243,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_hub_1_end",
-      "x": 244,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
-      "x": 250,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
-      "x": 249,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_start",
-      "x": 248,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
-      "x": 256,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
-      "x": 255,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_1",
-      "x": 254,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
-      "x": 261,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
-      "x": 261,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_1",
-      "x": 260,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
-      "x": 265,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
-      "x": 265,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_2",
-      "x": 265,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
-      "x": 269,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
-      "x": 269,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_goal_bend_2",
-      "x": 270,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
-      "x": 276,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
-      "x": 275,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_goal_segment_3",
-      "x": 274,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
-      "x": 282,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
-      "x": 281,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_goal_end",
-      "x": 280,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
-      "x": 286,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
-      "x": 287,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_start",
-      "x": 288,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
-      "x": 292,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
-      "x": 293,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_1",
-      "x": 294,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
-      "x": 298,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
-      "x": 299,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_1",
-      "x": 299,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
-      "x": 303,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
-      "x": 303,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_2",
-      "x": 303,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
-      "x": 308,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
-      "x": 307,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_clue_1_bend_2",
-      "x": 307,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
-      "x": 312,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
-      "x": 313,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_clue_1_segment_3",
-      "x": 314,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
-      "x": 318,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
-      "x": 319,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_clue_1_end",
-      "x": 320,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
-      "x": 326,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
-      "x": 325,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_start",
-      "x": 324,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
-      "x": 332,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
-      "x": 331,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_1",
-      "x": 330,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
-      "x": 337,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
-      "x": 336,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_1",
-      "x": 336,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
-      "x": 341,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
-      "x": 341,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_2",
-      "x": 341,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
-      "x": 345,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
-      "x": 346,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_clue_1_hub_1_bend_2",
-      "x": 346,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
-      "x": 352,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
-      "x": 351,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_clue_1_hub_1_segment_3",
-      "x": 350,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
-      "x": 358,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
-      "x": 357,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_clue_1_hub_1_end",
-      "x": 356,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
-      "x": 364,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
-      "x": 363,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_start",
-      "x": 362,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
-      "x": 370,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
-      "x": 369,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_1",
-      "x": 368,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
-      "x": 375,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
-      "x": 375,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_1",
-      "x": 374,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
-      "x": 379,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
-      "x": 379,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_2",
-      "x": 379,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
-      "x": 383,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
-      "x": 383,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_watch_1_bend_2",
-      "x": 384,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
-      "x": 388,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
-      "x": 389,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_watch_1_segment_3",
-      "x": 390,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
-      "x": 396,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
-      "x": 395,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_watch_1_end",
-      "x": 394,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
-      "x": 400,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
-      "x": 401,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_start",
-      "x": 402,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
-      "x": 408,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
-      "x": 407,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_1",
-      "x": 406,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
-      "x": 413,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
-      "x": 412,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_1",
-      "x": 412,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
-      "x": 417,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
-      "x": 417,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_2",
-      "x": 417,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
-      "x": 421,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
-      "x": 422,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_watch_1_goal_bend_2",
-      "x": 422,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
-      "x": 426,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
-      "x": 427,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_watch_1_goal_segment_3",
-      "x": 428,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
-      "x": 432,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
-      "x": 433,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_watch_1_goal_end",
-      "x": 434,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
-      "x": 438,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
-      "x": 439,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_start",
-      "x": 440,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
-      "x": 444,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
-      "x": 445,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_1",
-      "x": 446,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
-      "x": 450,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
-      "x": 451,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_1",
-      "x": 451,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
-      "x": 455,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
-      "x": 455,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_2",
-      "x": 455,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
-      "x": 460,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
-      "x": 459,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_hub_1_cache_1_bend_2",
-      "x": 459,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
-      "x": 464,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
-      "x": 465,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_hub_1_cache_1_segment_3",
-      "x": 466,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
-      "x": 470,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
-      "x": 471,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_hub_1_cache_1_end",
-      "x": 472,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
-      "x": 478,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
-      "x": 477,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_start",
-      "x": 476,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
-      "x": 484,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
-      "x": 483,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_1",
-      "x": 482,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
-      "x": 489,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
-      "x": 488,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_1",
-      "x": 488,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
-      "x": 493,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
-      "x": 493,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_2",
-      "x": 493,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
-      "x": 497,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
-      "x": 498,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_cache_1_hub_1_bend_2",
-      "x": 498,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
-      "x": 504,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
-      "x": 503,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_cache_1_hub_1_segment_3",
-      "x": 502,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
-      "x": 510,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
-      "x": 509,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_cache_1_hub_1_end",
-      "x": 508,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 514,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 515,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 516,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
-      "x": 520,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
-      "x": 521,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
-      "x": 522,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
-      "x": 526,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
-      "x": 527,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
-      "x": 527,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 531,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 531,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 531,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 536,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 535,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 535,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 540,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 541,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 542,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 546,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 547,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 548,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 552,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 552,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 552,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 556,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 556,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 556,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 560,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 560,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 560,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
-      "x": 566,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
-      "x": 565,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
-      "x": 564,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
-      "x": 570,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
-      "x": 571,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
-      "x": 572,
-      "y": 0
+      "y": 14
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 577,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 577,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 576,
-      "y": 1
+      "x": 27,
+      "y": 14
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
-      "x": 581,
-      "y": 0
+      "x": 28,
+      "y": 16
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
-      "x": 581,
-      "y": 1
+      "x": 28,
+      "y": 17
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
-      "x": 581,
+      "x": 28,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
+      "x": 17,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
+      "x": 17,
       "y": 2
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 585,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 585,
-      "y": 0
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 586,
-      "y": 0
+      "x": 18,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
-      "x": 592,
-      "y": 0
+      "x": 30,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
-      "x": 591,
-      "y": 0
+      "x": 29,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
-      "x": 590,
-      "y": 0
+      "x": 28,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
-      "x": 598,
-      "y": 0
+      "x": 30,
+      "y": 3
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
-      "x": 597,
-      "y": 0
+      "x": 29,
+      "y": 3
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
-      "x": 596,
-      "y": 0
+      "x": 28,
+      "y": 3
     }
   ],
   "reservedCells": [
     {
       "instanceId": "instance.piece_room_room_region_start",
-      "x": 0,
-      "y": 0
+      "x": 2,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_start",
-      "x": 4,
-      "y": 0
+      "x": 6,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_room_room_region_hub_central_1",
-      "x": 15,
-      "y": 0
+      "x": 16,
+      "y": 9
     },
     {
       "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 19,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 16,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "x": 13,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
       "x": 18,
-      "y": 3
+      "y": 19
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
       "x": 15,
-      "y": 6
+      "y": 22
     },
     {
-      "instanceId": "instance.piece_room_room_region_hub_central_1",
+      "instanceId": "instance.piece_room_room_region_junction_merge_1",
       "x": 12,
-      "y": 3
+      "y": 19
     },
     {
       "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 26,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 20,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_room_room_region_junction_merge_1",
-      "x": 23,
-      "y": 0
+      "x": 15,
+      "y": 16
     }
   ],
   "danglingExits": []

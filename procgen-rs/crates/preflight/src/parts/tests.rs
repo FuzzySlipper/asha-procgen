@@ -1523,6 +1523,9 @@ mod tests {
             .instances
             .iter()
             .all(|instance| !instance.occupied_cells.is_empty()));
+        let (width, height) = placement_bounds(&placement);
+        assert!(width < 200, "placement should not collapse into a long atlas: {width}x{height}");
+        assert!(height > 10, "placement should preserve source geometry depth: {width}x{height}");
         assert!(placement.instances.iter().all(|instance| {
             !instance.shape_id.is_empty()
                 && !instance.source_requirement_ref.is_empty()
@@ -1760,6 +1763,34 @@ mod tests {
             seed,
             out: PathBuf::from("artifacts/test/piece-shape-match.json"),
         }
+    }
+
+    fn placement_bounds(placement: &PiecePlacement) -> (i32, i32) {
+        let min_x = placement
+            .occupied_cells
+            .iter()
+            .map(|cell| cell.x)
+            .min()
+            .unwrap_or(0);
+        let max_x = placement
+            .occupied_cells
+            .iter()
+            .map(|cell| cell.x)
+            .max()
+            .unwrap_or(0);
+        let min_y = placement
+            .occupied_cells
+            .iter()
+            .map(|cell| cell.y)
+            .min()
+            .unwrap_or(0);
+        let max_y = placement
+            .occupied_cells
+            .iter()
+            .map(|cell| cell.y)
+            .max()
+            .unwrap_or(0);
+        (max_x - min_x + 1, max_y - min_y + 1)
     }
 
     #[test]

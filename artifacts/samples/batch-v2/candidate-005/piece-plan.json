@@ -1093,7 +1093,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:184:108"
       ]
     },
     {
@@ -1387,7 +1388,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:324:104"
       ]
     },
     {
@@ -1431,7 +1433,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:124:152"
       ]
     },
     {
@@ -1725,7 +1728,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:368:688"
       ]
     },
     {
@@ -1773,7 +1777,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:368:688"
       ]
     },
     {
@@ -2091,7 +2096,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:380:144"
       ]
     },
     {
@@ -2135,7 +2141,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:184:108"
       ]
     },
     {
@@ -2429,7 +2436,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:324:276"
       ]
     },
     {
@@ -2477,7 +2485,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:476:276"
       ]
     },
     {
@@ -2795,7 +2804,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:584:264"
       ]
     },
     {
@@ -2839,7 +2849,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:400:332"
       ]
     },
     {
@@ -3133,7 +3144,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:628:1000"
       ]
     },
     {
@@ -3181,7 +3193,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:628:1000"
       ]
     },
     {
@@ -3499,7 +3512,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:400:332"
       ]
     },
     {
@@ -3548,7 +3562,8 @@
         "pressure_route"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:476:276"
       ]
     },
     {
@@ -3882,7 +3897,8 @@
         "pressure_route"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:584:416"
       ]
     },
     {
@@ -3930,7 +3946,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:652:376"
       ]
     },
     {
@@ -4248,7 +4265,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:644:308"
       ]
     },
     {
@@ -4292,7 +4310,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:400:332"
       ]
     },
     {
@@ -4586,7 +4605,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:628:532"
       ]
     },
     {
@@ -4634,7 +4654,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:628:532"
       ]
     },
     {
@@ -4952,7 +4973,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:400:332"
       ]
     },
     {
@@ -4996,7 +5018,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:436:104"
       ]
     },
     {
@@ -5140,7 +5163,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:584:104"
       ]
     },
     {
@@ -5184,7 +5208,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:380:144"
       ]
     },
     {
@@ -5478,7 +5503,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:628:844"
       ]
     },
     {
@@ -5526,7 +5552,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:628:844"
       ]
     },
     {
@@ -5844,7 +5871,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:640:144"
       ]
     },
     {
@@ -5888,7 +5916,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:124:152"
       ]
     },
     {
@@ -6182,7 +6211,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:368:1000"
       ]
     },
     {
@@ -6226,7 +6256,8 @@
         "preparation"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:368:1000"
       ]
     },
     {
@@ -6520,7 +6551,8 @@
         "preparation"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:392:612"
       ]
     },
     {
@@ -6569,7 +6601,8 @@
         "pressure_route"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:124:152"
       ]
     },
     {
@@ -6903,7 +6936,8 @@
         "pressure_route"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:392:532"
       ]
     },
     {
@@ -6951,7 +6985,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:392:532"
       ]
     },
     {
@@ -7269,7 +7304,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:644:308"
       ]
     },
     {
@@ -7313,7 +7349,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:696:104"
       ]
     },
     {
@@ -7607,7 +7644,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:844:116"
       ]
     },
     {
@@ -7663,7 +7701,8 @@
         "visible_before_reachable"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:844:116"
       ]
     },
     {
@@ -8039,7 +8078,8 @@
         "visible_before_reachable"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:704:264"
       ]
     },
     {
@@ -8084,7 +8124,8 @@
         "preparation"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:696:104"
       ]
     },
     {
@@ -8394,7 +8435,8 @@
         "preparation"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:844:256"
       ]
     },
     {
@@ -8442,7 +8484,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:888:220"
       ]
     },
     {
@@ -8760,7 +8803,8 @@
         "return"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:916:168"
       ]
     },
     {
@@ -8804,7 +8848,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:124:152"
       ]
     },
     {
@@ -9098,7 +9143,8 @@
         "open"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:368:844"
       ]
     },
     {
@@ -9154,7 +9200,8 @@
         "visible_before_reachable"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:412:880"
       ]
     },
     {
@@ -9530,7 +9577,8 @@
         "visible_before_reachable"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:584:724"
       ]
     },
     {
@@ -9578,7 +9626,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:628:688"
       ]
     },
     {
@@ -9896,7 +9945,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:644:308"
       ]
     },
     {
@@ -9940,7 +9990,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:124:152"
       ]
     },
     {
@@ -10234,7 +10285,8 @@
         "optional_branch"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:400:376"
       ]
     },
     {
@@ -10282,7 +10334,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:400:332"
       ]
     },
     {
@@ -10384,7 +10437,8 @@
         "rejoin_corridor"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:400:376"
       ]
     },
     {
@@ -10439,7 +10493,8 @@
         "shortcut_link"
       ],
       "placementHints": [
-        "glue:from_room"
+        "glue:from_room",
+        "point:476:432"
       ]
     },
     {
@@ -10799,7 +10854,8 @@
         "shortcut_link"
       ],
       "placementHints": [
-        "glue:to_room"
+        "glue:to_room",
+        "point:584:264"
       ]
     }
   ],

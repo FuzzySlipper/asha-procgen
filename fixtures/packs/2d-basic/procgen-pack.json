@@ -1,0 +1,16 @@
+{
+  "kind": "asha_procgen.pack.v1",
+  "schemaVersion": 1,
+  "packId": "pack.2d_basic",
+  "label": "2D Basic",
+  "dimensionModel": "2d_grid",
+  "defaults": {
+    "gridConnectivity": "four_way",
+    "shapeCatalog": "../../shape-catalogs/2d-basic.json"
+  },
+  "exports": {
+    "buildPieces": ["../../shape-catalogs/2d-basic.json"],
+    "layoutSets": ["layouts/curated", "layouts/generated"]
+  },
+  "tags": ["fixture", "2d", "grid"]
+}

@@ -294,6 +294,8 @@ Catalog inspection uses kind `asha_procgen.catalog_inspection.v1` and reports
 shape counts, piece kinds, feature socket kinds, exit directions, transforms,
 per-shape summaries, and catalog diagnostics.
 
+For modular pack structure, see `docs/build-piece-library-structure.md`.
+
 ## Piece Build Plan Artifact
 
 Kind: `asha_procgen.piece_build_plan.v1`

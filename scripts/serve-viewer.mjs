@@ -29,8 +29,11 @@ const server = createServer(async (request, response) => {
   if (url.pathname === '/api/artifacts/by-path') {
     const requestedPath = url.searchParams.get('path');
     const filePath = requestedPath === null ? null : resolve(repoRoot, requestedPath);
-    const artifactRoot = resolve(repoRoot, 'artifacts/samples');
-    if (filePath === null || !isInside(filePath, artifactRoot)) {
+    const allowedRoots = [
+      resolve(repoRoot, 'artifacts/samples'),
+      resolve(repoRoot, 'fixtures'),
+    ];
+    if (filePath === null || !allowedRoots.some((root) => isInside(filePath, root))) {
       response.writeHead(400);
       response.end('Invalid artifact path');
       return;

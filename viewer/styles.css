@@ -143,7 +143,7 @@ body {
 
 .view-tabs {
   display: inline-grid;
-  grid-template-columns: repeat(3, minmax(112px, 1fr));
+  grid-template-columns: repeat(4, minmax(112px, 1fr));
   gap: 6px;
   margin-bottom: 12px;
 }
@@ -322,6 +322,114 @@ body {
 .intermediate-region-detail {
   fill: var(--text-muted);
   font-size: 10px;
+}
+
+.catalog-card-frame {
+  fill: var(--surface-strong);
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.catalog-shape-card.room .catalog-card-frame,
+.catalog-shape-card.landing .catalog-card-frame {
+  stroke: #5e8aa0;
+}
+
+.catalog-shape-card.corridor .catalog-card-frame,
+.catalog-shape-card.connector .catalog-card-frame {
+  stroke: #718da0;
+}
+
+.catalog-shape-card.threshold .catalog-card-frame,
+.catalog-shape-card.boss .catalog-card-frame {
+  stroke: #c66b71;
+}
+
+.catalog-card-title {
+  fill: #eff8ff;
+  font-size: 14px;
+  font-weight: 800;
+  stroke: none;
+}
+
+.catalog-card-detail {
+  fill: var(--text-muted);
+  font-size: 12px;
+  stroke: none;
+}
+
+.catalog-mini-bg {
+  fill: #10151c;
+  stroke: #2a3542;
+  stroke-width: 1;
+}
+
+.catalog-cell {
+  stroke: #10151c;
+  stroke-width: 1;
+}
+
+.catalog-cell.footprint {
+  fill: #4f6574;
+}
+
+.catalog-cell.room,
+.catalog-cell.landing {
+  fill: #597689;
+}
+
+.catalog-cell.corridor,
+.catalog-cell.connector,
+.catalog-cell.bend {
+  fill: #6f8794;
+}
+
+.catalog-cell.threshold,
+.catalog-cell.boss {
+  fill: #ba6469;
+}
+
+.catalog-cell.hazard {
+  fill: #b56f60;
+}
+
+.catalog-cell.reward,
+.catalog-cell.key {
+  fill: #c6b94e;
+}
+
+.catalog-cell.resource {
+  fill: #6aa27d;
+}
+
+.catalog-cell.secret,
+.catalog-cell.shortcut {
+  fill: #9270b7;
+}
+
+.catalog-cell.reserved {
+  fill: #17202a;
+  stroke: #748290;
+  stroke-dasharray: 2 2;
+}
+
+.catalog-cell.exit {
+  fill: #9fb46f;
+  stroke: #d7ef91;
+}
+
+.catalog-socket {
+  fill: #121821;
+  stroke: #e5eef5;
+  stroke-width: 1;
+}
+
+.catalog-socket-label {
+  fill: #eff8ff;
+  font-size: 8px;
+  font-weight: 900;
+  stroke: none;
+  text-anchor: middle;
 }
 
 .empty-svg-label {

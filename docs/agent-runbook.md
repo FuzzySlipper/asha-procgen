@@ -241,6 +241,7 @@ The catalog-driven piece assembly target is documented in:
 
 ```text
 docs/piece-assembly-contract.md
+docs/build-piece-library-structure.md
 ```
 
 This is the path from geometry rectangles/corridors to prefab or voxel-ready
@@ -300,7 +301,14 @@ The initial metadata-only fixture catalog is:
 
 ```text
 fixtures/shape-catalogs/2d-basic.json
+fixtures/packs/2d-basic/procgen-pack.json
 ```
+
+The viewer Catalog tab renders the active shape catalog from
+`shapeCatalogRef`, including each build piece's footprint, reserved cells,
+exits, sockets, transforms, and tags. Treat this as the visible contract for
+whether build pieces are first-class inputs instead of hidden placement
+side-effects.
 
 ## Pattern Catalog
 
@@ -399,6 +407,8 @@ validation status, provenance steps, and any diagnostics/repair hints for the
 selected artifact. Its Build tab renders catalog piece placements when
 `piecePlacementRef` is present: occupied cells, connection cells, reserved
 cells, glued exits, piece labels, and socket/content markers.
+Its Catalog tab renders the active build-piece shape catalog when
+`shapeCatalogRef` is present.
 
 ## Verification
 

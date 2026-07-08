@@ -220,6 +220,42 @@ interface GeometryContent {
   readonly tags: readonly string[];
 }
 
+interface ShapeCatalog {
+  readonly kind: string;
+  readonly catalogId: string;
+  readonly cellSize: number;
+  readonly shapes: readonly CatalogShape[];
+}
+
+interface CatalogShape {
+  readonly shapeId: string;
+  readonly label: string;
+  readonly pieceKinds: readonly string[];
+  readonly footprint: readonly GridCell[];
+  readonly reservedCells: readonly GridCell[];
+  readonly exits: readonly CatalogExit[];
+  readonly allowedTransforms: readonly string[];
+  readonly featureSockets: readonly CatalogSocket[];
+  readonly tags: readonly string[];
+}
+
+interface CatalogExit {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly direction: string;
+  readonly width: number;
+  readonly tags: readonly string[];
+}
+
+interface CatalogSocket {
+  readonly id: string;
+  readonly kind: string;
+  readonly x: number;
+  readonly y: number;
+  readonly tags: readonly string[];
+}
+
 interface PiecePlacement {
   readonly placementId: string;
   readonly planId: string;
@@ -303,7 +339,7 @@ if (svg === null || summary === null || batchList === null || diagnostics === nu
   throw new Error('viewer mount elements are missing');
 }
 
-type ViewMode = 'layout' | 'intermediate' | 'build';
+type ViewMode = 'layout' | 'intermediate' | 'build' | 'catalog';
 
 const layoutSvg = svg;
 const summaryPanel = summary;
@@ -315,13 +351,14 @@ let activeView: ViewMode = initialViewMode();
 let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
 let currentGeometry: Geometry2dArtifact | null = null;
+let currentCatalog: ShapeCatalog | null = null;
 let currentPlacement: PiecePlacement | null = null;
 let currentPlacementValidation: ValidationReport | null = null;
 
 for (const tab of viewTabs) {
   tab.addEventListener('click', () => {
     const nextView = tab.dataset.view;
-    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build') {
+    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build' || nextView === 'catalog') {
       activeView = nextView;
       history.replaceState(null, '', `#${activeView}`);
       renderActiveView();
@@ -335,6 +372,7 @@ if (initialSelection === null) {
   currentLayout = artifact.layout;
   currentIntermediate = emptyIntermediateContext();
   currentGeometry = null;
+  currentCatalog = null;
   currentPlacement = null;
   currentPlacementValidation = null;
   renderBatchList(batchPanel, batch, null, selectEntry);
@@ -357,14 +395,16 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
-  const [geometry, placement, placementValidation] = await Promise.all([
+  const [geometry, catalog, placement, placementValidation] = await Promise.all([
     fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef),
+    fetchOptionalArtifact<ShapeCatalog>(entry.shapeCatalogRef),
     fetchOptionalArtifact<PiecePlacement>(entry.piecePlacementRef),
     fetchOptionalArtifact<ValidationReport>(entry.piecePlacementValidationRef),
   ]);
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
   currentGeometry = geometry;
+  currentCatalog = catalog;
   currentPlacement = placement;
   currentPlacementValidation = placementValidation;
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
@@ -432,6 +472,9 @@ function emptyIntermediateContext(): IntermediateContext {
 }
 
 function initialViewMode(): ViewMode {
+  if (location.hash === '#catalog') {
+    return 'catalog';
+  }
   if (location.hash === '#intermediate') {
     return 'intermediate';
   }
@@ -742,8 +785,14 @@ function renderActiveView(): void {
   for (const tab of viewTabs) {
     tab.dataset.selected = tab.dataset.view === activeView ? 'true' : 'false';
   }
+  layoutSvg.style.height = '';
+  layoutSvg.style.minWidth = '';
   if (activeView === 'build') {
     renderBuildGrid(layoutSvg, currentGeometry, currentPlacement, currentPlacementValidation);
+    return;
+  }
+  if (activeView === 'catalog') {
+    renderShapeCatalog(layoutSvg, currentCatalog);
     return;
   }
   if (activeView === 'intermediate') {
@@ -755,6 +804,212 @@ function renderActiveView(): void {
     return;
   }
   renderLayout(layoutSvg, currentLayout);
+}
+
+function renderShapeCatalog(target: SVGSVGElement, catalog: ShapeCatalog | null): void {
+  target.replaceChildren();
+  if (catalog === null) {
+    renderEmptySvg(target, 'No build piece catalog loaded.');
+    return;
+  }
+
+  const margin = 24;
+  const headerHeight = 68;
+  const columns = 2;
+  const cardWidth = 306;
+  const cardHeight = 214;
+  const gap = 12;
+  const rows = Math.ceil(catalog.shapes.length / columns);
+  const width = margin * 2 + columns * cardWidth + (columns - 1) * gap;
+  const height = margin * 2 + headerHeight + rows * cardHeight + Math.max(0, rows - 1) * gap;
+  target.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  target.style.height = `${height}px`;
+  target.style.minWidth = `${width}px`;
+
+  const title = createSvg('text');
+  title.setAttribute('class', 'intermediate-role-label');
+  title.setAttribute('x', String(margin));
+  title.setAttribute('y', '28');
+  title.textContent = 'Build Piece Catalog';
+  target.append(title);
+
+  const stats = createSvg('text');
+  stats.setAttribute('class', 'intermediate-region-detail');
+  stats.setAttribute('x', String(margin));
+  stats.setAttribute('y', '50');
+  stats.textContent = `${catalog.catalogId} / ${catalog.shapes.length} shapes / cell size ${catalog.cellSize}`;
+  target.append(stats);
+
+  for (const [index, shape] of catalog.shapes.entries()) {
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const x = margin + column * (cardWidth + gap);
+    const y = margin + headerHeight + row * (cardHeight + gap);
+    renderCatalogShapeCard(target, shape, x, y, cardWidth, cardHeight);
+  }
+}
+
+function renderCatalogShapeCard(
+  target: SVGSVGElement,
+  shape: CatalogShape,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): void {
+  const group = createSvg('g');
+  group.setAttribute('class', `catalog-shape-card ${slugClass(shape.pieceKinds[0] ?? 'piece')}`);
+  group.setAttribute('transform', `translate(${x} ${y})`);
+
+  const frame = createSvg('rect');
+  frame.setAttribute('class', 'catalog-card-frame');
+  frame.setAttribute('width', String(width));
+  frame.setAttribute('height', String(height));
+  frame.setAttribute('rx', '6');
+  group.append(frame);
+
+  const title = createSvg('text');
+  title.setAttribute('class', 'catalog-card-title');
+  title.setAttribute('x', '12');
+  title.setAttribute('y', '22');
+  title.textContent = truncateText(shape.label, 30);
+  group.append(title);
+
+  const subtitle = createSvg('text');
+  subtitle.setAttribute('class', 'catalog-card-detail');
+  subtitle.setAttribute('x', '12');
+  subtitle.setAttribute('y', '42');
+  subtitle.textContent = shape.shapeId.replace('shape.', '');
+  group.append(subtitle);
+
+  renderCatalogMiniShape(group, shape, 14, 60);
+
+  const metadataX = 132;
+  const lines = [
+    `kinds: ${shape.pieceKinds.join(', ')}`,
+    `exits: ${shape.exits.map((exit) => exit.direction[0]?.toUpperCase() ?? '?').join(' ') || 'none'}`,
+    `sockets: ${shape.featureSockets.map((socket) => socket.kind).join(', ') || 'none'}`,
+    `xforms: ${shape.allowedTransforms.map(shortTransform).join(' ')}`,
+    `tags: ${shape.tags.slice(0, 4).join(', ')}`,
+  ];
+  lines.forEach((line, index) => {
+    const text = createSvg('text');
+    text.setAttribute('class', 'catalog-card-detail');
+    text.setAttribute('x', String(metadataX));
+    text.setAttribute('y', String(68 + index * 23));
+    text.textContent = truncateText(line, 30);
+    group.append(text);
+  });
+
+  target.append(group);
+}
+
+function renderCatalogMiniShape(
+  group: SVGElement,
+  shape: CatalogShape,
+  x: number,
+  y: number,
+): void {
+  const cellPixels = 16;
+  const allCells = [
+    ...shape.footprint,
+    ...shape.reservedCells,
+    ...shape.exits,
+    ...shape.featureSockets,
+  ];
+  const minX = Math.min(...allCells.map((cell) => cell.x), 0);
+  const minY = Math.min(...allCells.map((cell) => cell.y), 0);
+  const maxX = Math.max(...allCells.map((cell) => cell.x), 1);
+  const maxY = Math.max(...allCells.map((cell) => cell.y), 1);
+  const columns = maxX - minX + 1;
+  const rows = maxY - minY + 1;
+
+  const background = createSvg('rect');
+  background.setAttribute('class', 'catalog-mini-bg');
+  background.setAttribute('x', String(x));
+  background.setAttribute('y', String(y));
+  background.setAttribute('width', String(columns * cellPixels));
+  background.setAttribute('height', String(rows * cellPixels));
+  group.append(background);
+
+  for (const cell of shape.reservedCells) {
+    appendCatalogCell(group, cell, minX, minY, x, y, cellPixels, 'reserved');
+  }
+  for (const cell of shape.footprint) {
+    appendCatalogCell(group, cell, minX, minY, x, y, cellPixels, `footprint ${slugClass(shape.pieceKinds[0] ?? 'piece')}`);
+  }
+  for (const exit of shape.exits) {
+    appendCatalogCell(group, exit, minX, minY, x, y, cellPixels, `exit ${slugClass(exit.direction)}`);
+  }
+  for (const socket of shape.featureSockets) {
+    const center = normalizeCatalogPoint(socket, minX, minY, x, y, cellPixels);
+    const marker = createSvg('circle');
+    marker.setAttribute('class', `catalog-socket ${slugClass(socket.kind)}`);
+    marker.setAttribute('cx', String(center.x));
+    marker.setAttribute('cy', String(center.y));
+    marker.setAttribute('r', '4');
+    group.append(marker);
+
+    const label = createSvg('text');
+    label.setAttribute('class', 'catalog-socket-label');
+    label.setAttribute('x', String(center.x));
+    label.setAttribute('y', String(center.y + 3));
+    label.textContent = contentSymbol(socket.kind);
+    group.append(label);
+  }
+}
+
+function appendCatalogCell(
+  group: SVGElement,
+  cell: GridCell,
+  minX: number,
+  minY: number,
+  originX: number,
+  originY: number,
+  cellPixels: number,
+  className: string,
+): void {
+  const normalized = normalizeCatalogPoint(cell, minX, minY, originX, originY, cellPixels);
+  const rect = createSvg('rect');
+  rect.setAttribute('class', `catalog-cell ${className}`);
+  rect.setAttribute('x', String(normalized.x - cellPixels / 2));
+  rect.setAttribute('y', String(normalized.y - cellPixels / 2));
+  rect.setAttribute('width', String(cellPixels));
+  rect.setAttribute('height', String(cellPixels));
+  group.append(rect);
+}
+
+function normalizeCatalogPoint(
+  cell: GridCell,
+  minX: number,
+  minY: number,
+  originX: number,
+  originY: number,
+  cellPixels: number,
+): { readonly x: number; readonly y: number } {
+  return {
+    x: originX + (cell.x - minX) * cellPixels + cellPixels / 2,
+    y: originY + (cell.y - minY) * cellPixels + cellPixels / 2,
+  };
+}
+
+function shortTransform(transform: string): string {
+  switch (transform) {
+    case 'identity':
+      return 'I';
+    case 'rotate90':
+      return 'R90';
+    case 'rotate180':
+      return 'R180';
+    case 'rotate270':
+      return 'R270';
+    case 'mirrorX':
+      return 'MX';
+    case 'mirrorY':
+      return 'MY';
+    default:
+      return transform;
+  }
 }
 
 function renderLayout(target: SVGSVGElement, layout: LayoutArtifact): void {
@@ -1501,6 +1756,13 @@ function regionLabel(region: IntermediateRegion): string {
 
 function shortCandidate(candidateId: string): string {
   return candidateId.replace('candidate.first_slice.', '').replace('candidate.first-slice.', '');
+}
+
+function truncateText(value: string, maxLength: number): string {
+  if (value.length <= maxLength) {
+    return value;
+  }
+  return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 }
 
 function slugClass(value: string): string {

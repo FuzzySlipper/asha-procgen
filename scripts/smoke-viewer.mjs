@@ -45,6 +45,9 @@ try {
   if (typeof top.piecePlacementValidationRef !== 'string') {
     throw new Error('top selection is missing piecePlacementValidationRef');
   }
+  if (typeof top.shapeCatalogRef !== 'string') {
+    throw new Error('top selection is missing shapeCatalogRef');
+  }
   const breakdown = await fetchArtifact(top.intermediateBreakdownRef);
   if (breakdown.kind !== 'asha_procgen.intermediate_breakdown.v1') {
     throw new Error(`unexpected intermediate kind: ${breakdown.kind}`);
@@ -74,6 +77,13 @@ try {
   const placementValidation = await fetchArtifact(top.piecePlacementValidationRef);
   if (placementValidation.kind !== 'asha_procgen.validation.piece_placement.v1' || !placementValidation.ok) {
     throw new Error('piece placement validation is not ok');
+  }
+  const catalog = await fetchArtifact(top.shapeCatalogRef);
+  if (catalog.kind !== 'asha_procgen.shape_catalog.v1') {
+    throw new Error(`unexpected shape catalog kind: ${catalog.kind}`);
+  }
+  if (!Array.isArray(catalog.shapes) || catalog.shapes.length < 10) {
+    throw new Error('shape catalog has too few shapes');
   }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
@@ -113,6 +123,15 @@ try {
   if (connectionCellCount < 10) {
     throw new Error(`build tab rendered too few connection cells: ${connectionCellCount}`);
   }
+  const catalogDom = await dumpDom(chromium, `${baseUrl}/#catalog`);
+  const catalogCardCount = countOccurrences(catalogDom, 'class="catalog-shape-card');
+  const catalogCellCount = countOccurrences(catalogDom, 'class="catalog-cell');
+  if (!catalogDom.includes('Build Piece Catalog')) {
+    throw new Error('catalog tab did not render the build piece catalog');
+  }
+  if (catalogCardCount < 10 || catalogCellCount < 20) {
+    throw new Error(`catalog tab rendered too little detail: cards=${catalogCardCount}, cells=${catalogCellCount}`);
+  }
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -132,6 +151,11 @@ try {
     {
       name: 'build-desktop.png',
       url: `${baseUrl}/#build`,
+      size: '1100,780',
+    },
+    {
+      name: 'catalog-desktop.png',
+      url: `${baseUrl}/#catalog`,
       size: '1100,780',
     },
     {
@@ -183,6 +207,12 @@ try {
       markers: buildMarkerCount,
       gluedExits: glueLinkCount,
       placementRef: top.piecePlacementRef,
+    },
+    catalogTab: {
+      catalogRef: top.shapeCatalogRef,
+      shapes: catalog.shapes.length,
+      cards: catalogCardCount,
+      cells: catalogCellCount,
     },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };

@@ -1,6 +1,6 @@
 # Agent Construction Loop
 
-Status: north-star contract for task series #4886.
+Status: executable contract through graph analysis and intermediate layout intent.
 
 This repo is intentionally a file-oriented procgen workbench, not an agent
 service. External harnesses should be able to steer level construction by
@@ -12,7 +12,7 @@ candidates without trusting an LLM as validator or authority.
 The intended agent loop is:
 
 ```text
-inspect rules -> inspect candidate -> fork -> apply rule -> validate -> repair or score -> embed -> accept or discard
+inspect rules -> analyze candidate -> fork -> apply rule -> validate -> repair or score -> annotate intent -> breakdown -> embed -> accept or discard
 ```
 
 The important boundary is that the agent chooses actions, but the CLI owns the
@@ -25,10 +25,16 @@ Already available:
 ```bash
 npm run procgen -- init --intent <intent.json> --seed <u64> --out <candidate.json> --receipt <receipt.json>
 npm run procgen -- graph apply-rule --state <candidate.json> --rule <rule_id> --seed <u64> --out <candidate.json> --receipt <receipt.json>
+npm run procgen -- graph compatible-rules --state <candidate.json> --out <compatible-rules.json>
 npm run procgen -- graph fork --state <candidate.json> --label <name> --seed <u64> --out <candidate.json> --receipt <receipt.json>
 npm run procgen -- graph summarize --state <candidate.json>
+npm run procgen -- analyze graph --state <candidate.json> --out <analysis.json>
 npm run procgen -- validate graph --state <candidate.json> --out <validation.json>
+npm run procgen -- repair apply --state <candidate.json> --action <action_id> --target <node_id> --seed <u64> --out <candidate.json> --receipt <receipt.json>
 npm run procgen -- score graph --state <candidate.json> --out <score.json>
+npm run procgen -- annotate spatial-intent --state <candidate.json> --analysis <analysis.json> --out <spatial-intent.json>
+npm run procgen -- breakdown emit --state <candidate.json> --annotations <spatial-intent.json> --out <intermediate-breakdown.json>
+npm run procgen -- breakdown validate --state <intermediate-breakdown.json> --out <intermediate.validation.json>
 npm run procgen -- embed 2d --state <candidate.json> --seed <u64> --out <layout.json> --receipt <receipt.json>
 npm run procgen -- accept --candidate <candidate.json> --layout <layout.json> --validation <validation.json> --score <score.json> --out <accepted.json> --receipt <receipt.json>
 npm run procgen -- batch generate --out-dir <dir> --seed <u64> --count <n>
@@ -50,9 +56,9 @@ gated_treasure_branch
 branch_merge_shortcut
 ```
 
-## Planned Agent Surfaces
+## Agent Surfaces
 
-These are the next command/artifact surfaces for #4886.
+The core command/artifact surfaces are implemented as deterministic files.
 
 ### Rule Metadata
 
@@ -121,6 +127,35 @@ The report sorts validation diagnostics by severity, preserves `repairHint`,
 and includes known next tool actions where the workbench can suggest one.
 Suggestions are advisory: they do not replace validation.
 
+### Bounded Repair Actions
+
+Implemented command:
+
+```bash
+npm run procgen -- repair apply --state <candidate.json> --action add_rejoin_edge --target <node_id> --seed <u64> --out <candidate.json> --receipt <receipt.json>
+```
+
+Supported actions are `add_rejoin_edge` for simple terminal branch nodes and
+`remove_orphan_node` for non-start/non-goal nodes with no incoming route.
+Rejected repairs still write receipts with diagnostics.
+
+### Graph Analysis And Intermediate Intent
+
+Implemented commands:
+
+```bash
+npm run procgen -- analyze graph --state <candidate.json> --out <analysis.json>
+npm run procgen -- graph compatible-rules --state <candidate.json> --out <compatible-rules.json>
+npm run procgen -- annotate spatial-intent --state <candidate.json> --analysis <analysis.json> --out <spatial-intent.json>
+npm run procgen -- breakdown emit --state <candidate.json> --annotations <spatial-intent.json> --out <intermediate-breakdown.json>
+npm run procgen -- breakdown validate --state <intermediate-breakdown.json> --out <intermediate.validation.json>
+```
+
+See `docs/intermediate-layout-contract.md` for artifact kinds and the
+intentional non-geometry boundary. These commands are for planning and
+pre-geometry validation; they do not produce rooms, meshes, voxels, or vertical
+dungeon layouts.
+
 ### Batch Profile Fixture
 
 Implemented command:
@@ -138,6 +173,8 @@ asha_procgen.batch_profile.v1
 Profiles move rule sequences and selection labels into JSON so external agents
 can propose generation strategies without editing Rust. Selection reports record
 the profile id/ref and each accepted/rejected candidate's profile sequence.
+Accepted entries also include topology fingerprints, duplicate markers, budget
+checks, budget penalties, and `selectionScore`.
 
 ### Viewer Context Panes
 
@@ -155,10 +192,13 @@ layer now shows, for the selected batch candidate:
 Prefer short, reversible steps:
 
 - inspect rule metadata before choosing a rule;
+- inspect compatible rules and graph analysis before mutating mature candidates;
 - fork before applying a risky or incompatible rule;
 - validate immediately after structural changes;
 - use repair reports to pick the next bounded action;
 - score only valid candidates;
+- use spatial intent and intermediate breakdown validation before any future
+  geometry pass;
 - accept only candidates with validation and score refs.
 
 Batch generation should be used as a cheap search tool, not as proof that all

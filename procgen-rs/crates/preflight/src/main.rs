@@ -32,6 +32,12 @@ enum Command {
     Init(InitArgs),
     /// Mutate or summarize intent graphs.
     Graph(GraphCommand),
+    /// Analyze graph topology.
+    Analyze(AnalyzeCommand),
+    /// Add pre-geometry annotations.
+    Annotate(AnnotateCommand),
+    /// Emit or validate intermediate layout breakdowns.
+    Breakdown(BreakdownCommand),
     /// Validate candidates.
     Validate(ValidateCommand),
     /// Suggest repair actions for invalid or warning-heavy candidates.
@@ -77,6 +83,7 @@ struct GraphCommand {
 #[derive(Subcommand)]
 enum GraphSubcommand {
     ApplyRule(ApplyRuleArgs),
+    CompatibleRules(ReportOutArgs),
     Fork(ForkArgs),
     Rules(RuleMetadataArgs),
     Summarize(SummarizeArgs),
@@ -166,7 +173,97 @@ struct RepairCommand {
 
 #[derive(Subcommand)]
 enum RepairSubcommand {
+    Apply(RepairApplyArgs),
     Suggest(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct RepairApplyArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    action: RepairAction,
+    #[arg(long)]
+    target: Option<String>,
+    #[arg(long)]
+    seed: u64,
+    #[arg(long)]
+    out: PathBuf,
+    #[arg(long)]
+    receipt: PathBuf,
+    #[arg(long)]
+    transcript: Option<PathBuf>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, ValueEnum)]
+#[value(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+enum RepairAction {
+    AddRejoinEdge,
+    RemoveOrphanNode,
+}
+
+impl RepairAction {
+    fn as_str(self) -> &'static str {
+        match self {
+            RepairAction::AddRejoinEdge => "add_rejoin_edge",
+            RepairAction::RemoveOrphanNode => "remove_orphan_node",
+        }
+    }
+}
+
+#[derive(Args)]
+struct AnalyzeCommand {
+    #[command(subcommand)]
+    command: AnalyzeSubcommand,
+}
+
+#[derive(Subcommand)]
+enum AnalyzeSubcommand {
+    Graph(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct AnnotateCommand {
+    #[command(subcommand)]
+    command: AnnotateSubcommand,
+}
+
+#[derive(Subcommand)]
+enum AnnotateSubcommand {
+    SpatialIntent(AnnotateSpatialIntentArgs),
+}
+
+#[derive(Args)]
+struct AnnotateSpatialIntentArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    analysis: Option<PathBuf>,
+    #[arg(long)]
+    out: PathBuf,
+}
+
+#[derive(Args)]
+struct BreakdownCommand {
+    #[command(subcommand)]
+    command: BreakdownSubcommand,
+}
+
+#[derive(Subcommand)]
+enum BreakdownSubcommand {
+    Emit(BreakdownEmitArgs),
+    Validate(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct BreakdownEmitArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    annotations: PathBuf,
+    #[arg(long)]
+    out: PathBuf,
 }
 
 #[derive(Args)]
@@ -283,6 +380,16 @@ struct BatchGenerateArgs {
     seed: u64,
     #[arg(long, default_value_t = 10)]
     count: usize,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IntentBudget {
+    max_locked_edges: Option<usize>,
+    min_optional_branches: Option<usize>,
+    require_hub: Option<bool>,
+    require_boss: Option<bool>,
+    max_dead_ends: Option<usize>,
 }
 
 const DEFAULT_BATCH_PROFILE: &str = "fixtures/batch-profiles/v2-sample.json";
@@ -524,6 +631,135 @@ struct RepairSuggestion {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct GraphAnalysisReport {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    critical_path: Vec<String>,
+    dominators: Vec<String>,
+    optional_branches: Vec<BranchAnalysis>,
+    lock_key_order: Vec<LockKeyAnalysis>,
+    loop_signals: Vec<LoopSignal>,
+    shortcut_bypass_risks: Vec<ShortcutRisk>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BranchAnalysis {
+    edge_id: String,
+    from: String,
+    to: String,
+    classification: String,
+    rejoins_goal_route: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct LockKeyAnalysis {
+    edge_id: String,
+    required_item: String,
+    provider_node: Option<String>,
+    provider_reachable_before_lock: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct LoopSignal {
+    edge_id: String,
+    signal: String,
+    detail: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ShortcutRisk {
+    edge_id: String,
+    risk: String,
+    detail: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RuleCompatibilityReport {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    rules: Vec<RuleCompatibility>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RuleCompatibility {
+    rule: String,
+    status: String,
+    reasons: Vec<String>,
+    recommended_actions: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SpatialIntentReport {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    analysis_ref: Option<String>,
+    annotations: Vec<SpatialIntentAnnotation>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SpatialIntentAnnotation {
+    target_type: String,
+    target_id: String,
+    intents: Vec<String>,
+    rationale: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IntermediateBreakdown {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    annotation_ref: String,
+    regions: Vec<IntermediateRegion>,
+    connectors: Vec<IntermediateConnector>,
+    constraints: Vec<IntermediateConstraint>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IntermediateRegion {
+    id: String,
+    node_ids: Vec<String>,
+    role: String,
+    anchor_node: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IntermediateConnector {
+    id: String,
+    edge_id: String,
+    from_region: String,
+    to_region: String,
+    intents: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IntermediateConstraint {
+    code: String,
+    target: String,
+    detail: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct NodeSummary {
     id: String,
     kind: NodeKind,
@@ -613,6 +849,11 @@ struct SelectionReport {
 struct SelectionEntry {
     candidate_id: String,
     profile_sequence: String,
+    topology_fingerprint: String,
+    duplicate_of: Option<String>,
+    budget_checks: Vec<BudgetCheck>,
+    budget_penalty: f64,
+    selection_score: f64,
     artifact_ref: String,
     validation_ref: String,
     score_ref: String,
@@ -638,7 +879,16 @@ struct BatchProfile {
     schema_version: u32,
     profile_id: String,
     description: String,
+    budgets: Option<IntentBudget>,
     sequences: Vec<BatchProfileSequence>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BudgetCheck {
+    code: String,
+    ok: bool,
+    detail: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -654,14 +904,26 @@ fn run(cli: Cli) -> Result<(), String> {
         Command::Init(args) => init_candidate(args),
         Command::Graph(command) => match command.command {
             GraphSubcommand::ApplyRule(args) => apply_rule(args),
+            GraphSubcommand::CompatibleRules(args) => compatible_rules_command(args),
             GraphSubcommand::Fork(args) => fork_command(args),
             GraphSubcommand::Rules(args) => graph_rules_command(args),
             GraphSubcommand::Summarize(args) => summarize_candidate(args),
+        },
+        Command::Analyze(command) => match command.command {
+            AnalyzeSubcommand::Graph(args) => analyze_graph_command(args),
+        },
+        Command::Annotate(command) => match command.command {
+            AnnotateSubcommand::SpatialIntent(args) => annotate_spatial_intent_command(args),
+        },
+        Command::Breakdown(command) => match command.command {
+            BreakdownSubcommand::Emit(args) => breakdown_emit_command(args),
+            BreakdownSubcommand::Validate(args) => breakdown_validate_command(args),
         },
         Command::Validate(command) => match command.command {
             ValidateSubcommand::Graph(args) => validate_graph_command(args),
         },
         Command::Repair(command) => match command.command {
+            RepairSubcommand::Apply(args) => repair_apply_command(args),
             RepairSubcommand::Suggest(args) => repair_suggest_command(args),
         },
         Command::Score(command) => match command.command {
@@ -1580,6 +1842,10 @@ fn has_node(candidate: &Candidate, node_id: &str) -> bool {
     candidate.graph.nodes.iter().any(|node| node.id == node_id)
 }
 
+fn has_edge(candidate: &Candidate, edge_id: &str) -> bool {
+    candidate.graph.edges.iter().any(|edge| edge.id == edge_id)
+}
+
 fn graph_rules_command(args: RuleMetadataArgs) -> Result<(), String> {
     let report = rule_metadata_report();
     if let Some(out) = args.out {
@@ -1851,6 +2117,543 @@ fn graph_summary_report(
     })
 }
 
+fn analyze_graph_command(args: ReportOutArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    let report = analyze_graph(&candidate)?;
+    write_json(&args.out, &report)
+}
+
+fn analyze_graph(candidate: &Candidate) -> Result<GraphAnalysisReport, String> {
+    let critical_path = shortest_path_nodes(candidate, "start", "goal").unwrap_or_default();
+    let dominators = dominator_nodes(candidate);
+    let optional_branches = candidate
+        .graph
+        .edges
+        .iter()
+        .filter(|edge| edge.kind == EdgeKind::OptionalBranch || edge.kind == EdgeKind::SecretBypass)
+        .map(|edge| BranchAnalysis {
+            edge_id: edge.id.clone(),
+            from: edge.from.clone(),
+            to: edge.to.clone(),
+            classification: if edge_has_tag(edge, "pressure") {
+                "pressure".to_owned()
+            } else if edge_has_tag(edge, "rejoin") || edge_has_tag(edge, "return") {
+                "rejoin".to_owned()
+            } else {
+                "optional".to_owned()
+            },
+            rejoins_goal_route: path_exists(candidate, edge.to.as_str(), "goal"),
+        })
+        .collect();
+    let lock_key_order = candidate
+        .graph
+        .edges
+        .iter()
+        .filter_map(|edge| {
+            let required_item = edge.required_item.clone()?;
+            let provider = candidate
+                .graph
+                .nodes
+                .iter()
+                .find(|node| node.grants_item.as_deref() == Some(required_item.as_str()));
+            let provider_node = provider.map(|node| node.id.clone());
+            let provider_reachable_before_lock = provider.is_some_and(|node| {
+                shortest_path_len(candidate, "start", node.id.as_str())
+                    .zip(shortest_path_len(candidate, "start", edge.from.as_str()))
+                    .is_some_and(|(provider_depth, lock_depth)| provider_depth <= lock_depth + 2)
+            });
+            Some(LockKeyAnalysis {
+                edge_id: edge.id.clone(),
+                required_item,
+                provider_node,
+                provider_reachable_before_lock,
+            })
+        })
+        .collect();
+    let loop_signals = candidate
+        .graph
+        .edges
+        .iter()
+        .filter(|edge| {
+            edge_has_tag(edge, "return")
+                || edge_has_tag(edge, "rejoin")
+                || edge.kind == EdgeKind::Shortcut
+        })
+        .map(|edge| LoopSignal {
+            edge_id: edge.id.clone(),
+            signal: if edge.kind == EdgeKind::Shortcut {
+                "shortcut_loop".to_owned()
+            } else {
+                "rejoin_loop".to_owned()
+            },
+            detail: format!("{} reconnects {} to {}", edge.id, edge.from, edge.to),
+        })
+        .collect();
+    let locked_count = candidate
+        .graph
+        .edges
+        .iter()
+        .filter(|edge| edge.traversal == TraversalKind::Locked)
+        .count();
+    let shortcut_bypass_risks = candidate
+        .graph
+        .edges
+        .iter()
+        .filter(|edge| edge.kind == EdgeKind::Shortcut || edge.kind == EdgeKind::SecretBypass)
+        .map(|edge| ShortcutRisk {
+            edge_id: edge.id.clone(),
+            risk: if locked_count > 0 && path_exists(candidate, edge.to.as_str(), "goal") {
+                "may_bypass_lock".to_owned()
+            } else {
+                "low".to_owned()
+            },
+            detail: format!(
+                "{} can compress route from {} to {}",
+                edge.id, edge.from, edge.to
+            ),
+        })
+        .collect();
+    Ok(GraphAnalysisReport {
+        kind: "asha_procgen.graph_analysis.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        critical_path,
+        dominators,
+        optional_branches,
+        lock_key_order,
+        loop_signals,
+        shortcut_bypass_risks,
+    })
+}
+
+fn compatible_rules_command(args: ReportOutArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    let report = compatible_rules_report(&candidate)?;
+    write_json(&args.out, &report)
+}
+
+fn compatible_rules_report(candidate: &Candidate) -> Result<RuleCompatibilityReport, String> {
+    Ok(RuleCompatibilityReport {
+        kind: "asha_procgen.rule_compatibility.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        rules: all_graph_rules()
+            .into_iter()
+            .map(|rule| rule_compatibility(candidate, rule))
+            .collect(),
+    })
+}
+
+fn all_graph_rules() -> Vec<GraphRule> {
+    vec![
+        GraphRule::LockKeyLoop,
+        GraphRule::OptionalTreasureDetour,
+        GraphRule::OneWayShortcut,
+        GraphRule::SecretBypass,
+        GraphRule::HubSpokeCluster,
+        GraphRule::NestedLockKeyChain,
+        GraphRule::HazardResourceTradeoff,
+        GraphRule::BossPreparationLoop,
+        GraphRule::GatedTreasureBranch,
+        GraphRule::BranchMergeShortcut,
+    ]
+}
+
+fn rule_compatibility(candidate: &Candidate, rule: GraphRule) -> RuleCompatibility {
+    let mut status = "applicable".to_owned();
+    let mut reasons = Vec::new();
+    let mut recommended_actions = Vec::new();
+    let duplicate = match rule {
+        GraphRule::LockKeyLoop => has_node(candidate, "gate.locked_1"),
+        GraphRule::OneWayShortcut => {
+            has_edge(candidate, "edge.goal.start.shortcut")
+                || has_edge(candidate, "edge.goal.shortcut_1")
+                || has_edge(candidate, "edge.shortcut_1.start")
+        }
+        GraphRule::SecretBypass => has_edge(candidate, "edge.start.goal.secret"),
+        GraphRule::HubSpokeCluster => has_node(candidate, "hub.central_1"),
+        GraphRule::NestedLockKeyChain => has_node(candidate, "gate.locked_2"),
+        GraphRule::HazardResourceTradeoff => has_node(candidate, "hazard.sluice_1"),
+        GraphRule::BossPreparationLoop => has_node(candidate, "gate.boss_1"),
+        GraphRule::GatedTreasureBranch => has_node(candidate, "treasure.gated_1"),
+        GraphRule::BranchMergeShortcut => has_node(candidate, "junction.merge_1"),
+        GraphRule::OptionalTreasureDetour => false,
+    };
+    if duplicate {
+        status = "duplicate".to_owned();
+        reasons.push("Fixed marker for this rule already exists.".to_owned());
+        recommended_actions
+            .push("Fork from an earlier candidate or choose another rule.".to_owned());
+    }
+    if rule == GraphRule::NestedLockKeyChain && !has_node(candidate, "gate.locked_1") {
+        status = "blocked".to_owned();
+        reasons.push("Requires lock_key_loop / gate.locked_1 first.".to_owned());
+        recommended_actions.push("Apply lock_key_loop before nested_lock_key_chain.".to_owned());
+    }
+    if rule == GraphRule::BranchMergeShortcut
+        && !(has_node(candidate, "hub.central_1")
+            || has_node(candidate, "treasure.gated_1")
+            || has_node(candidate, "key.gate_1"))
+    {
+        status = "blocked".to_owned();
+        reasons.push("Requires an existing branch, hub, or key route to merge.".to_owned());
+        recommended_actions.push(
+            "Apply hub_spoke_cluster, gated_treasure_branch, or lock_key_loop first.".to_owned(),
+        );
+    }
+    if status == "applicable"
+        && rule == GraphRule::SecretBypass
+        && candidate
+            .graph
+            .edges
+            .iter()
+            .any(|edge| edge.traversal == TraversalKind::Locked)
+    {
+        status = "risky".to_owned();
+        reasons.push("Secret bypass may trivialize existing locked progression.".to_owned());
+        recommended_actions.push("Use only when bypass routes are intended.".to_owned());
+    }
+    RuleCompatibility {
+        rule: rule.as_str().to_owned(),
+        status,
+        reasons,
+        recommended_actions,
+    }
+}
+
+fn annotate_spatial_intent_command(args: AnnotateSpatialIntentArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    if let Some(analysis) = args.analysis.as_deref() {
+        let _: GraphAnalysisReport = read_json(analysis)?;
+    }
+    let report = spatial_intent_report(&candidate, args.analysis.as_deref())?;
+    write_json(&args.out, &report)
+}
+
+fn spatial_intent_report(
+    candidate: &Candidate,
+    analysis_ref: Option<&Path>,
+) -> Result<SpatialIntentReport, String> {
+    let mut annotations = Vec::new();
+    for node in &candidate.graph.nodes {
+        let mut intents = Vec::new();
+        if node.kind == NodeKind::Start {
+            intents.push("entry_orientation".to_owned());
+        }
+        if node.kind == NodeKind::Goal {
+            intents.push("destination_readability".to_owned());
+        }
+        if node_has_tag(node, "hub") || node_has_tag(node, "wayfinding_anchor") {
+            intents.push("landmark_hub".to_owned());
+        }
+        if node_has_tag(node, "boss") {
+            intents.push("gated_reveal".to_owned());
+        }
+        if node_has_tag(node, "hazard") {
+            intents.push("pressure_path".to_owned());
+        }
+        if node_has_tag(node, "lock") || node.kind == NodeKind::Gate {
+            intents.push("gated_reveal".to_owned());
+        }
+        if node_has_tag(node, "reward") {
+            intents.push("reward_pocket".to_owned());
+        }
+        let intents = dedupe_strings(intents);
+        if !intents.is_empty() {
+            annotations.push(SpatialIntentAnnotation {
+                target_type: "node".to_owned(),
+                target_id: node.id.clone(),
+                rationale: format!("Node {} carries spatial role tags.", node.id),
+                intents,
+            });
+        }
+    }
+    for edge in &candidate.graph.edges {
+        let mut intents = Vec::new();
+        if edge.traversal == TraversalKind::Locked || edge.required_item.is_some() {
+            intents.push("visible_before_reachable".to_owned());
+            intents.push("gated_connector".to_owned());
+        }
+        if edge_has_tag(edge, "pressure") {
+            intents.push("pressure_path".to_owned());
+        }
+        if edge.kind == EdgeKind::Shortcut || edge_has_tag(edge, "shortcut") {
+            intents.push("shortcut_connector".to_owned());
+        }
+        if edge.traversal == TraversalKind::OneWayReturn {
+            intents.push("one_way_drop".to_owned());
+        }
+        if edge.traversal == TraversalKind::Hidden || edge_has_tag(edge, "hidden") {
+            intents.push("hidden_route".to_owned());
+        }
+        if edge_has_tag(edge, "return") || edge_has_tag(edge, "rejoin") {
+            intents.push("merge_rejoin_clarity".to_owned());
+        }
+        if edge.kind == EdgeKind::SecretBypass {
+            intents.push("hidden_route".to_owned());
+        }
+        let intents = dedupe_strings(intents);
+        if !intents.is_empty() {
+            annotations.push(SpatialIntentAnnotation {
+                target_type: "edge".to_owned(),
+                target_id: edge.id.clone(),
+                rationale: format!("Edge {} has traversal or topology intent.", edge.id),
+                intents,
+            });
+        }
+    }
+    Ok(SpatialIntentReport {
+        kind: "asha_procgen.spatial_intent.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        analysis_ref: analysis_ref.map(display_path),
+        annotations,
+    })
+}
+
+fn breakdown_emit_command(args: BreakdownEmitArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.state)?;
+    let annotations: SpatialIntentReport = read_json(&args.annotations)?;
+    let breakdown = intermediate_breakdown(&candidate, &annotations, &args.annotations)?;
+    write_json(&args.out, &breakdown)
+}
+
+fn intermediate_breakdown(
+    candidate: &Candidate,
+    annotations: &SpatialIntentReport,
+    annotation_path: &Path,
+) -> Result<IntermediateBreakdown, String> {
+    let mut annotations_by_target: BTreeMap<&str, Vec<&SpatialIntentAnnotation>> = BTreeMap::new();
+    for annotation in &annotations.annotations {
+        annotations_by_target
+            .entry(annotation.target_id.as_str())
+            .or_default()
+            .push(annotation);
+    }
+    let regions = candidate
+        .graph
+        .nodes
+        .iter()
+        .map(|node| {
+            let intents = annotations_by_target
+                .get(node.id.as_str())
+                .into_iter()
+                .flat_map(|items| items.iter())
+                .flat_map(|annotation| annotation.intents.iter().map(String::as_str))
+                .collect::<BTreeSet<_>>();
+            let role = region_role(node, &intents);
+            let anchor_node = if matches!(
+                role.as_str(),
+                "start" | "goal" | "landmark_hub" | "boss_gate"
+            ) {
+                Some(node.id.clone())
+            } else {
+                None
+            };
+            IntermediateRegion {
+                id: region_id(node.id.as_str()),
+                node_ids: vec![node.id.clone()],
+                role,
+                anchor_node,
+            }
+        })
+        .collect::<Vec<_>>();
+    let connectors = candidate
+        .graph
+        .edges
+        .iter()
+        .map(|edge| {
+            let intents = annotations_by_target
+                .get(edge.id.as_str())
+                .into_iter()
+                .flat_map(|items| items.iter())
+                .flat_map(|annotation| annotation.intents.clone())
+                .collect::<Vec<_>>();
+            IntermediateConnector {
+                id: format!("connector.{}", slugify_label(edge.id.as_str())),
+                edge_id: edge.id.clone(),
+                from_region: region_id(edge.from.as_str()),
+                to_region: region_id(edge.to.as_str()),
+                intents: dedupe_strings(intents),
+            }
+        })
+        .collect::<Vec<_>>();
+    let constraints = annotations
+        .annotations
+        .iter()
+        .flat_map(|annotation| {
+            annotation
+                .intents
+                .iter()
+                .filter_map(|intent| constraint_for_intent(annotation, intent))
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    Ok(IntermediateBreakdown {
+        kind: "asha_procgen.intermediate_breakdown.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        annotation_ref: display_path(annotation_path),
+        regions,
+        connectors,
+        constraints,
+    })
+}
+
+fn region_role(node: &Node, intents: &BTreeSet<&str>) -> String {
+    if node.kind == NodeKind::Start {
+        "start".to_owned()
+    } else if node.kind == NodeKind::Goal {
+        "goal".to_owned()
+    } else if intents.contains("landmark_hub") {
+        "landmark_hub".to_owned()
+    } else if node_has_tag(node, "boss") {
+        "boss_gate".to_owned()
+    } else if node_has_tag(node, "hazard") || intents.contains("pressure_path") {
+        "pressure".to_owned()
+    } else if node_has_tag(node, "reward") {
+        "reward".to_owned()
+    } else if node.kind == NodeKind::Gate {
+        "gate".to_owned()
+    } else {
+        "standard".to_owned()
+    }
+}
+
+fn constraint_for_intent(
+    annotation: &SpatialIntentAnnotation,
+    intent: &str,
+) -> Option<IntermediateConstraint> {
+    let code = match intent {
+        "visible_before_reachable" => "preserve_lock_preview",
+        "gated_reveal" => "preserve_reveal_sequence",
+        "landmark_hub" => "preserve_wayfinding_anchor",
+        "pressure_path" => "preserve_pressure_read",
+        "one_way_drop" => "preserve_one_way_return",
+        "hidden_route" => "preserve_hidden_route",
+        _ => return None,
+    };
+    Some(IntermediateConstraint {
+        code: code.to_owned(),
+        target: annotation.target_id.clone(),
+        detail: format!("Preserve {intent} for {}.", annotation.target_id),
+    })
+}
+
+fn breakdown_validate_command(args: ReportOutArgs) -> Result<(), String> {
+    let breakdown: IntermediateBreakdown = read_json(&args.state)?;
+    let report = validate_intermediate_breakdown(&breakdown);
+    write_json(&args.out, &report)?;
+    if report.ok {
+        Ok(())
+    } else {
+        Err(format!(
+            "intermediate breakdown validation failed with {} fatal diagnostic(s); see {}",
+            report.fatal_count,
+            args.out.display()
+        ))
+    }
+}
+
+fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> ValidationReport {
+    let mut diagnostics = Vec::new();
+    let region_ids = breakdown
+        .regions
+        .iter()
+        .map(|region| region.id.as_str())
+        .collect::<BTreeSet<_>>();
+    if !breakdown
+        .regions
+        .iter()
+        .any(|region| region.role == "start")
+    {
+        diagnostics.push(fatal(
+            "intermediate_start_missing",
+            Some("start"),
+            None,
+            "Intermediate breakdown must contain a start region.",
+        ));
+    }
+    if !breakdown.regions.iter().any(|region| region.role == "goal") {
+        diagnostics.push(fatal(
+            "intermediate_goal_missing",
+            Some("goal"),
+            None,
+            "Intermediate breakdown must contain a goal region.",
+        ));
+    }
+    for region in &breakdown.regions {
+        if region.role == "landmark_hub" && region.anchor_node.is_none() {
+            diagnostics.push(fatal(
+                "intermediate_anchor_missing",
+                region.node_ids.first().map(String::as_str),
+                None,
+                "Landmark hub region must declare an anchor node.",
+            ));
+        }
+    }
+    for connector in &breakdown.connectors {
+        if connector.edge_id.is_empty() {
+            diagnostics.push(fatal(
+                "intermediate_connector_unbound",
+                None,
+                Some(connector.id.as_str()),
+                "Connector must be bound to a graph edge id.",
+            ));
+        }
+        if !region_ids.contains(connector.from_region.as_str())
+            || !region_ids.contains(connector.to_region.as_str())
+        {
+            diagnostics.push(fatal(
+                "intermediate_connector_endpoint_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Connector references a missing source or target region.",
+            ));
+        }
+        if connector
+            .intents
+            .iter()
+            .any(|intent| intent == "vertical_candidate")
+        {
+            diagnostics.push(fatal(
+                "intermediate_vertical_candidate_unsupported",
+                None,
+                Some(connector.id.as_str()),
+                "Vertical candidates require a later geometry-capable schema.",
+            ));
+        }
+    }
+    let fatal_count = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.severity == Severity::Fatal)
+        .count();
+    ValidationReport {
+        kind: "asha_procgen.validation.intermediate.v1".to_owned(),
+        schema_version: 1,
+        state_hash: hash_json(breakdown).unwrap_or_else(|_| "hash_error".to_owned()),
+        ok: fatal_count == 0,
+        fatal_count,
+        diagnostics,
+    }
+}
+
+fn region_id(node_id: &str) -> String {
+    format!("region.{}", slugify_label(node_id))
+}
+
+fn dedupe_strings(values: Vec<String>) -> Vec<String> {
+    values
+        .into_iter()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect()
+}
+
 fn validate_graph_command(args: ReportOutArgs) -> Result<(), String> {
     let candidate: Candidate = read_json(&args.state)?;
     let report = validate_graph(&candidate);
@@ -1870,6 +2673,178 @@ fn repair_suggest_command(args: ReportOutArgs) -> Result<(), String> {
     let candidate: Candidate = read_json(&args.state)?;
     let report = repair_report(&candidate)?;
     write_json(&args.out, &report)
+}
+
+fn repair_apply_command(args: RepairApplyArgs) -> Result<(), String> {
+    let mut candidate: Candidate = read_json(&args.state)?;
+    let input_hash = hash_file(&args.state)?;
+    let diagnostics = apply_repair_action(
+        &mut candidate,
+        args.action,
+        args.target.as_deref(),
+        args.seed,
+    );
+    let has_fatal = diagnostics
+        .iter()
+        .any(|diagnostic| diagnostic.severity == Severity::Fatal);
+    let status = if has_fatal {
+        "rejected"
+    } else {
+        candidate.provenance.push(ProvenanceStep {
+            step: candidate.provenance.len() as u32 + 1,
+            command: format!("repair apply {}", args.action.as_str()),
+            seed: Some(args.seed),
+            summary: format!(
+                "Applied {}{}",
+                args.action.as_str(),
+                args.target
+                    .as_deref()
+                    .map(|target| format!(" to {target}"))
+                    .unwrap_or_default()
+            ),
+        });
+        write_json(&args.out, &candidate)?;
+        "ok"
+    };
+    let output_hash = if status == "ok" {
+        Some(hash_json(&candidate)?)
+    } else {
+        None
+    };
+    let receipt = Receipt {
+        kind: "asha_procgen.receipt.v1".to_owned(),
+        schema_version: 1,
+        command: format!("repair apply {}", args.action.as_str()),
+        status: status.to_owned(),
+        seed: Some(args.seed),
+        input_hash: Some(input_hash),
+        output_hash,
+        output_ref: if status == "ok" {
+            Some(display_path(&args.out))
+        } else {
+            None
+        },
+        diagnostics,
+    };
+    write_json(&args.receipt, &receipt)?;
+    append_transcript(
+        args.transcript.as_deref(),
+        "repair apply",
+        if status == "ok" {
+            Some(&args.out)
+        } else {
+            None
+        },
+        Some(&args.receipt),
+        Some(args.seed),
+        json!({
+            "state": display_path(&args.state),
+            "action": args.action.as_str(),
+            "target": args.target
+        }),
+    )?;
+    if status == "ok" {
+        Ok(())
+    } else {
+        Err("repair action was rejected; see receipt diagnostics".to_owned())
+    }
+}
+
+fn apply_repair_action(
+    candidate: &mut Candidate,
+    action: RepairAction,
+    target: Option<&str>,
+    seed: u64,
+) -> Vec<Diagnostic> {
+    let Some(target) = target else {
+        return vec![fatal(
+            "repair_target_required",
+            None,
+            None,
+            format!("{} requires --target <node_id>.", action.as_str()),
+        )];
+    };
+    if !has_node(candidate, target) {
+        return vec![fatal(
+            "repair_target_missing",
+            Some(target),
+            None,
+            "Repair target node does not exist.",
+        )];
+    }
+    match action {
+        RepairAction::AddRejoinEdge => apply_add_rejoin_edge(candidate, target, seed),
+        RepairAction::RemoveOrphanNode => apply_remove_orphan_node(candidate, target),
+    }
+}
+
+fn apply_add_rejoin_edge(candidate: &mut Candidate, target: &str, seed: u64) -> Vec<Diagnostic> {
+    if target == "goal" {
+        return vec![fatal(
+            "repair_target_invalid",
+            Some(target),
+            None,
+            "Goal does not need a rejoin edge.",
+        )];
+    }
+    if candidate.graph.edges.iter().any(|edge| edge.from == target) {
+        return vec![fatal_with_hint(
+            "repair_target_ambiguous",
+            Some(target),
+            None,
+            "Target already has outgoing routes.",
+            "Use add_rejoin_edge only on simple terminal branch nodes.",
+        )];
+    }
+    let edge_id = format!(
+        "edge.repair.{}.goal.{}",
+        slugify_label(target),
+        stable_suffix(seed)
+    );
+    if has_edge(candidate, edge_id.as_str()) {
+        return vec![fatal(
+            "repair_edge_duplicate",
+            None,
+            Some(edge_id.as_str()),
+            "Repair edge already exists.",
+        )];
+    }
+    candidate.graph.edges.push(Edge {
+        id: edge_id,
+        from: target.to_owned(),
+        to: "goal".to_owned(),
+        kind: EdgeKind::OptionalBranch,
+        traversal: TraversalKind::Open,
+        required_item: None,
+        tags: vec!["repair".to_owned(), "rejoin".to_owned()],
+    });
+    Vec::new()
+}
+
+fn apply_remove_orphan_node(candidate: &mut Candidate, target: &str) -> Vec<Diagnostic> {
+    if target == "start" || target == "goal" {
+        return vec![fatal(
+            "repair_target_invalid",
+            Some(target),
+            None,
+            "Start and goal nodes cannot be removed by bounded repair.",
+        )];
+    }
+    if candidate.graph.edges.iter().any(|edge| edge.to == target) {
+        return vec![fatal_with_hint(
+            "repair_target_not_orphan",
+            Some(target),
+            None,
+            "Target has incoming routes and is not an orphan.",
+            "Use remove_orphan_node only for nodes with no incoming route.",
+        )];
+    }
+    candidate.graph.nodes.retain(|node| node.id != target);
+    candidate
+        .graph
+        .edges
+        .retain(|edge| edge.from != target && edge.to != target);
+    Vec::new()
 }
 
 fn repair_report(candidate: &Candidate) -> Result<RepairReport, String> {
@@ -1960,8 +2935,26 @@ fn suggested_actions_for_diagnostic(diagnostic: &Diagnostic) -> Vec<String> {
         }
         "non_goal_dead_end" => vec![
             "Add a return/rejoin edge unless this is an intentional terminal reward.".to_owned(),
+            diagnostic
+                .node
+                .as_deref()
+                .map(|node| format!("Run repair apply --action add_rejoin_edge --target {node}."))
+                .unwrap_or_else(|| {
+                    "Run repair apply --action add_rejoin_edge with a terminal node target."
+                        .to_owned()
+                }),
         ],
-        "orphan_node" => vec!["Add an incoming approach or branch edge from a reachable node.".to_owned()],
+        "orphan_node" => vec![
+            "Add an incoming approach or branch edge from a reachable node.".to_owned(),
+            diagnostic
+                .node
+                .as_deref()
+                .map(|node| format!("Run repair apply --action remove_orphan_node --target {node}."))
+                .unwrap_or_else(|| {
+                    "Run repair apply --action remove_orphan_node with the orphan node target."
+                        .to_owned()
+                }),
+        ],
         "rule_already_applied" => {
             vec!["Fork from an earlier candidate or choose a rule with seed-derived ids.".to_owned()]
         }
@@ -2427,6 +3420,83 @@ fn shortest_path_len(candidate: &Candidate, start: &str, goal: &str) -> Option<u
     None
 }
 
+fn shortest_path_nodes(candidate: &Candidate, start: &str, goal: &str) -> Option<Vec<String>> {
+    let mut adjacency: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
+    for edge in &candidate.graph.edges {
+        adjacency
+            .entry(edge.from.as_str())
+            .or_default()
+            .push(edge.to.as_str());
+    }
+    let mut queue = VecDeque::from([start]);
+    let mut visited = BTreeSet::from([start]);
+    let mut previous: BTreeMap<&str, &str> = BTreeMap::new();
+    while let Some(node) = queue.pop_front() {
+        if node == goal {
+            let mut path = vec![node.to_owned()];
+            let mut cursor = node;
+            while let Some(prev) = previous.get(cursor).copied() {
+                path.push(prev.to_owned());
+                cursor = prev;
+            }
+            path.reverse();
+            return Some(path);
+        }
+        for next in adjacency.get(node).into_iter().flatten() {
+            if visited.insert(next) {
+                previous.insert(next, node);
+                queue.push_back(next);
+            }
+        }
+    }
+    None
+}
+
+fn path_exists(candidate: &Candidate, start: &str, goal: &str) -> bool {
+    shortest_path_len(candidate, start, goal).is_some()
+}
+
+fn dominator_nodes(candidate: &Candidate) -> Vec<String> {
+    candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node.id != "start" && node.id != "goal")
+        .filter(|node| path_exists(candidate, "start", node.id.as_str()))
+        .filter(|node| !path_exists_avoiding_node(candidate, "start", "goal", node.id.as_str()))
+        .map(|node| node.id.clone())
+        .collect()
+}
+
+fn path_exists_avoiding_node(candidate: &Candidate, start: &str, goal: &str, avoid: &str) -> bool {
+    if start == avoid || goal == avoid {
+        return false;
+    }
+    let mut adjacency: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
+    for edge in &candidate.graph.edges {
+        if edge.from == avoid || edge.to == avoid {
+            continue;
+        }
+        adjacency
+            .entry(edge.from.as_str())
+            .or_default()
+            .push(edge.to.as_str());
+    }
+    let mut queue = VecDeque::from([start]);
+    let mut visited = BTreeSet::from([start]);
+    while let Some(node) = queue.pop_front() {
+        if node == goal {
+            return true;
+        }
+        for next in adjacency.get(node).into_iter().flatten() {
+            if visited.insert(next) {
+                queue.push_back(next);
+            }
+        }
+    }
+    false
+}
+
 fn cycle_count(candidate: &Candidate) -> usize {
     let node_count = candidate.graph.nodes.len();
     let edge_count = candidate.graph.edges.len();
@@ -2699,6 +3769,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
     let profile = load_batch_profile(&profile_path)?;
     let mut accepted = Vec::new();
     let mut rejected = Vec::new();
+    let mut seen_fingerprints: BTreeMap<String, String> = BTreeMap::new();
     for index in 0..args.count {
         let sequence = batch_profile_sequence(&profile, index)?;
         let candidate_seed = args.seed + index as u64 * 100;
@@ -2765,6 +3836,16 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         }
 
         let score = score_graph(&candidate);
+        let topology_fingerprint = topology_fingerprint(&candidate);
+        let duplicate_of = seen_fingerprints
+            .get(topology_fingerprint.as_str())
+            .cloned();
+        if duplicate_of.is_none() {
+            seen_fingerprints.insert(topology_fingerprint.clone(), candidate.candidate_id.clone());
+        }
+        let budget_checks = budget_checks(profile.budgets.as_ref(), &score, &candidate);
+        let budget_penalty = budget_checks.iter().filter(|check| !check.ok).count() as f64 * 0.05;
+        let selection_score = (score.overall - budget_penalty).max(0.0);
         let score_path = run_dir.join("score.graph.json");
         write_json(&score_path, &score)?;
         append_transcript(
@@ -2798,6 +3879,11 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         accepted.push(SelectionEntry {
             candidate_id: candidate.candidate_id.clone(),
             profile_sequence: sequence.label.clone(),
+            topology_fingerprint,
+            duplicate_of,
+            budget_checks,
+            budget_penalty,
+            selection_score,
             artifact_ref: display_path(&artifact_path),
             validation_ref: display_path(&validation_path),
             score_ref: display_path(&score_path),
@@ -2810,8 +3896,8 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
 
     accepted.sort_by(|left, right| {
         right
-            .overall
-            .partial_cmp(&left.overall)
+            .selection_score
+            .partial_cmp(&left.selection_score)
             .unwrap_or(std::cmp::Ordering::Equal)
             .then_with(|| left.candidate_id.cmp(&right.candidate_id))
     });
@@ -2872,6 +3958,100 @@ fn batch_profile_sequence(
         .sequences
         .get(index % profile.sequences.len())
         .ok_or_else(|| "batch profile has no sequences".to_owned())
+}
+
+fn topology_fingerprint(candidate: &Candidate) -> String {
+    let mut lines = Vec::new();
+    for node in &candidate.graph.nodes {
+        let mut tags = node.tags.clone();
+        tags.sort();
+        let incoming = candidate
+            .graph
+            .edges
+            .iter()
+            .filter(|edge| edge.to == node.id)
+            .count();
+        let outgoing = candidate
+            .graph
+            .edges
+            .iter()
+            .filter(|edge| edge.from == node.id)
+            .count();
+        lines.push(format!(
+            "node:{}:{incoming}:{outgoing}:{}",
+            node.kind.as_str(),
+            tags.join(",")
+        ));
+    }
+    for edge in &candidate.graph.edges {
+        let mut tags = edge.tags.clone();
+        tags.sort();
+        lines.push(format!(
+            "edge:{:?}:{:?}:required={}:{}",
+            edge.kind,
+            edge.traversal,
+            edge.required_item.is_some(),
+            tags.join(",")
+        ));
+    }
+    lines.sort();
+    format!("topology:{:016x}", fnv1a64(lines.join("\n").as_bytes()))
+}
+
+fn budget_checks(
+    budgets: Option<&IntentBudget>,
+    score: &ScoreReport,
+    candidate: &Candidate,
+) -> Vec<BudgetCheck> {
+    let Some(budgets) = budgets else {
+        return Vec::new();
+    };
+    let mut checks = Vec::new();
+    if let Some(max_locked_edges) = budgets.max_locked_edges {
+        let actual = metric_usize(score, "lockedEdgeCount");
+        checks.push(BudgetCheck {
+            code: "max_locked_edges".to_owned(),
+            ok: actual <= max_locked_edges,
+            detail: format!("locked edges {actual} <= budget {max_locked_edges}"),
+        });
+    }
+    if let Some(min_optional_branches) = budgets.min_optional_branches {
+        let actual = metric_usize(score, "optionalBranchCount");
+        checks.push(BudgetCheck {
+            code: "min_optional_branches".to_owned(),
+            ok: actual >= min_optional_branches,
+            detail: format!("optional branches {actual} >= budget {min_optional_branches}"),
+        });
+    }
+    if budgets.require_hub.unwrap_or(false) {
+        let actual = metric_usize(score, "hubCount");
+        checks.push(BudgetCheck {
+            code: "require_hub".to_owned(),
+            ok: actual > 0,
+            detail: format!("hub count {actual} > 0"),
+        });
+    }
+    if budgets.require_boss.unwrap_or(false) {
+        let actual = metric_usize(score, "bossCount");
+        checks.push(BudgetCheck {
+            code: "require_boss".to_owned(),
+            ok: actual > 0,
+            detail: format!("boss count {actual} > 0"),
+        });
+    }
+    if let Some(max_dead_ends) = budgets.max_dead_ends {
+        let actual = dead_end_count(candidate);
+        checks.push(BudgetCheck {
+            code: "max_dead_ends".to_owned(),
+            ok: actual <= max_dead_ends,
+            detail: format!("dead ends {actual} <= budget {max_dead_ends}"),
+        });
+    }
+    checks
+}
+
+fn metric_usize(score: &ScoreReport, metric: &str) -> usize {
+    score.metrics.get(metric).copied().unwrap_or(0.0) as usize
 }
 
 fn collect_tags(candidate: &Candidate) -> Vec<String> {
@@ -3064,6 +4244,17 @@ fn display_path(path: &Path) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn test_intent(id: &str) -> SeedIntent {
+        SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: id.to_owned(),
+            title: "Test".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        }
+    }
 
     #[test]
     fn rejects_private_engine_paths() {
@@ -3443,6 +4634,241 @@ mod tests {
             .suggested_actions
             .iter()
             .any(|action| action.contains("preparation")));
+    }
+
+    #[test]
+    fn graph_analysis_reports_lock_and_shortcut_signals() {
+        let intent = test_intent("analysis");
+        let mut candidate = create_initial_candidate(&intent, 61);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 62).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::OneWayShortcut, 63).is_empty());
+        let report = analyze_graph(&candidate).expect("analysis should encode");
+        assert_eq!(report.kind, "asha_procgen.graph_analysis.v1");
+        assert_eq!(
+            report.critical_path.first().map(String::as_str),
+            Some("start")
+        );
+        assert_eq!(
+            report.critical_path.last().map(String::as_str),
+            Some("goal")
+        );
+        assert!(report
+            .lock_key_order
+            .iter()
+            .any(|entry| entry.required_item == "item.gate_key_1"
+                && entry.provider_reachable_before_lock));
+        assert!(report
+            .loop_signals
+            .iter()
+            .any(|signal| signal.signal == "shortcut_loop"));
+        assert!(report
+            .shortcut_bypass_risks
+            .iter()
+            .any(|risk| risk.risk == "may_bypass_lock"));
+    }
+
+    #[test]
+    fn compatible_rules_reports_blocked_duplicate_and_risky() {
+        let intent = test_intent("compatibility");
+        let mut candidate = create_initial_candidate(&intent, 71);
+        let initial = compatible_rules_report(&candidate).expect("compatibility report");
+        let nested = initial
+            .rules
+            .iter()
+            .find(|rule| rule.rule == "nested_lock_key_chain")
+            .expect("nested rule should be present");
+        assert_eq!(nested.status, "blocked");
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 72).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::OneWayShortcut, 73).is_empty());
+        let report = compatible_rules_report(&candidate).expect("compatibility report");
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "lock_key_loop")
+                .map(|rule| rule.status.as_str()),
+            Some("duplicate")
+        );
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "one_way_shortcut")
+                .map(|rule| rule.status.as_str()),
+            Some("duplicate")
+        );
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "secret_bypass")
+                .map(|rule| rule.status.as_str()),
+            Some("risky")
+        );
+    }
+
+    #[test]
+    fn repair_apply_adds_rejoin_and_refuses_ambiguous_target() {
+        let intent = test_intent("repair-apply");
+        let mut candidate = create_initial_candidate(&intent, 81);
+        candidate.graph.nodes.push(Node {
+            id: "treasure.loose".to_owned(),
+            kind: NodeKind::Treasure,
+            label: "Loose Treasure".to_owned(),
+            tags: vec!["optional".to_owned(), "reward".to_owned()],
+            grants_item: None,
+        });
+        candidate.graph.edges.push(Edge {
+            id: "edge.start.loose".to_owned(),
+            from: "start".to_owned(),
+            to: "treasure.loose".to_owned(),
+            kind: EdgeKind::OptionalBranch,
+            traversal: TraversalKind::Open,
+            required_item: None,
+            tags: vec!["branch".to_owned()],
+        });
+        let diagnostics = apply_repair_action(
+            &mut candidate,
+            RepairAction::AddRejoinEdge,
+            Some("treasure.loose"),
+            82,
+        );
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert!(candidate
+            .graph
+            .edges
+            .iter()
+            .any(|edge| edge.from == "treasure.loose"
+                && edge.to == "goal"
+                && edge_has_tag(edge, "repair")));
+        let rejected = apply_repair_action(
+            &mut candidate,
+            RepairAction::AddRejoinEdge,
+            Some("start"),
+            83,
+        );
+        assert!(rejected
+            .iter()
+            .any(|diagnostic| diagnostic.code == "repair_target_ambiguous"));
+    }
+
+    #[test]
+    fn repair_apply_removes_orphan_node() {
+        let intent = test_intent("repair-orphan");
+        let mut candidate = create_initial_candidate(&intent, 84);
+        candidate.graph.nodes.push(Node {
+            id: "secret.orphan".to_owned(),
+            kind: NodeKind::Secret,
+            label: "Orphan Secret".to_owned(),
+            tags: vec!["secret".to_owned()],
+            grants_item: None,
+        });
+        let diagnostics = apply_repair_action(
+            &mut candidate,
+            RepairAction::RemoveOrphanNode,
+            Some("secret.orphan"),
+            85,
+        );
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert!(!has_node(&candidate, "secret.orphan"));
+    }
+
+    #[test]
+    fn topology_fingerprint_is_stable_and_budget_checks_fail_cleanly() {
+        let intent = test_intent("fingerprint");
+        let mut left = create_initial_candidate(&intent, 91);
+        let mut right = create_initial_candidate(&intent, 92);
+        assert!(apply_graph_rule(&mut left, GraphRule::LockKeyLoop, 93).is_empty());
+        assert!(apply_graph_rule(&mut left, GraphRule::OptionalTreasureDetour, 94).is_empty());
+        assert!(apply_graph_rule(&mut right, GraphRule::LockKeyLoop, 95).is_empty());
+        assert!(apply_graph_rule(&mut right, GraphRule::OptionalTreasureDetour, 96).is_empty());
+        assert_eq!(topology_fingerprint(&left), topology_fingerprint(&right));
+        let budgets = IntentBudget {
+            require_hub: Some(true),
+            min_optional_branches: Some(3),
+            max_dead_ends: Some(0),
+            ..IntentBudget::default()
+        };
+        let checks = budget_checks(Some(&budgets), &score_graph(&left), &left);
+        assert!(checks
+            .iter()
+            .any(|check| check.code == "require_hub" && !check.ok));
+        assert!(checks
+            .iter()
+            .any(|check| check.code == "max_dead_ends" && check.ok));
+    }
+
+    #[test]
+    fn spatial_intent_annotation_marks_core_intents() {
+        let intent = test_intent("spatial");
+        let mut candidate = create_initial_candidate(&intent, 101);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::OneWayShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 102 + index as u64).is_empty());
+        }
+        let report = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation.target_id == "hub.central_1"
+                && annotation.intents.contains(&"landmark_hub".to_owned())
+        }));
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation.target_id == "edge.gate_1.goal"
+                && annotation
+                    .intents
+                    .contains(&"visible_before_reachable".to_owned())
+        }));
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation
+                .intents
+                .contains(&"shortcut_connector".to_owned())
+        }));
+        assert!(report
+            .annotations
+            .iter()
+            .any(|annotation| { annotation.intents.contains(&"pressure_path".to_owned()) }));
+    }
+
+    #[test]
+    fn intermediate_breakdown_validates_and_catches_invalid_cases() {
+        let intent = test_intent("breakdown");
+        let mut candidate = create_initial_candidate(&intent, 111);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 112).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 113).is_empty());
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let mut breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let report = validate_intermediate_breakdown(&breakdown);
+        assert!(report.ok, "{report:?}");
+        breakdown.regions.retain(|region| region.role != "goal");
+        let missing_goal = validate_intermediate_breakdown(&breakdown);
+        assert!(missing_goal.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "intermediate_goal_missing" && diagnostic.severity == Severity::Fatal
+        }));
+        let connector = breakdown
+            .connectors
+            .first_mut()
+            .expect("connector should exist");
+        connector.to_region = "region.missing".to_owned();
+        connector.intents.push("vertical_candidate".to_owned());
+        let invalid_connector = validate_intermediate_breakdown(&breakdown);
+        assert!(invalid_connector
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_connector_endpoint_missing" }));
+        assert!(invalid_connector.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "intermediate_vertical_candidate_unsupported"
+        }));
     }
 
     #[test]

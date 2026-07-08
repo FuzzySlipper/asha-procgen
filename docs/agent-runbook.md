@@ -60,7 +60,8 @@ fixtures/batch-profiles/v2-sample.json
 ```
 
 The selection report records the profile id/ref, the profile sequence used for
-each candidate, and sorts accepted entries by deterministic score.
+each candidate, topology fingerprints, budget checks, and sorts accepted entries
+by deterministic selection score.
 
 ## Manual CLI Sequence
 
@@ -113,6 +114,14 @@ npm run procgen -- graph summarize \
   --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
   --json \
   --out artifacts/manual/summary.json
+
+npm run procgen -- analyze graph \
+  --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --out artifacts/manual/analysis.json
+
+npm run procgen -- graph compatible-rules \
+  --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --out artifacts/manual/compatible-rules.json
 ```
 
 Implemented richer graph rules:
@@ -128,6 +137,35 @@ branch_merge_shortcut
 
 Duplicate or incompatible rule applications are rejected with receipt
 diagnostics and `repairHint` text where the tool can suggest a next edit.
+
+## Intermediate Layout Intent
+
+The pre-geometry graph analysis and breakdown contract is documented in:
+
+```text
+docs/intermediate-layout-contract.md
+```
+
+A typical manual chain:
+
+```bash
+npm run procgen -- annotate spatial-intent \
+  --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --analysis artifacts/manual/analysis.json \
+  --out artifacts/manual/spatial-intent.json
+
+npm run procgen -- breakdown emit \
+  --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --annotations artifacts/manual/spatial-intent.json \
+  --out artifacts/manual/intermediate-breakdown.json
+
+npm run procgen -- breakdown validate \
+  --state artifacts/manual/intermediate-breakdown.json \
+  --out artifacts/manual/intermediate.validation.json
+```
+
+This layer names regions, connectors, and constraints for later geometry passes.
+It does not emit rooms, meshes, voxels, or 3D placement.
 
 ## Pattern Catalog
 
@@ -181,6 +219,18 @@ npm run procgen -- repair suggest \
 Repair reports preserve validator diagnostics and add `suggestedActions`.
 Suggestions are planning aids only; validate repaired candidates before scoring
 or accepting them.
+
+Some diagnostics can now be handled with bounded repair actions:
+
+```bash
+npm run procgen -- repair apply \
+  --state <candidate.json> \
+  --action add_rejoin_edge \
+  --target <terminal-node-id> \
+  --seed <u64> \
+  --out <candidate.json> \
+  --receipt <receipt.json>
+```
 
 ## LAN Viewer
 

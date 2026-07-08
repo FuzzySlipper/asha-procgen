@@ -3,6 +3,10 @@
   "schemaVersion": 1,
   "profileId": "asha_procgen.batch_profile.v2_sample",
   "description": "Default v2 sample profile cycling through richer graph grammar combinations.",
+  "budgets": {
+    "minOptionalBranches": 2,
+    "maxDeadEnds": 0
+  },
   "sequences": [
     {
       "label": "hub-merge",

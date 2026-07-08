@@ -1,6 +1,6 @@
 # Procgen Artifact Contract
 
-Status: first-slice contract plus v2 graph grammar/batch additions.
+Status: graph grammar, batch selection, and intermediate layout intent contract.
 
 The CLI workbench is file-oriented. Every command reads explicit inputs, writes
 explicit outputs, and produces structured JSON a human or agent can inspect.
@@ -137,6 +137,56 @@ Stable diagnostic codes currently emitted by graph validation/rule rejection:
 
 Fatal diagnostics block acceptance. Warnings are advisory.
 
+## Graph Analysis Report
+
+Kind: `asha_procgen.graph_analysis.v1`
+
+Graph analysis reports contain:
+
+- `criticalPath`
+- `dominators`
+- `optionalBranches`
+- `lockKeyOrder`
+- `loopSignals`
+- `shortcutBypassRisks`
+
+They are intended as agent planning context, not as validation authority.
+
+## Rule Compatibility Report
+
+Kind: `asha_procgen.rule_compatibility.v1`
+
+Compatibility reports list every known graph rule with one of:
+
+- `applicable`
+- `blocked`
+- `duplicate`
+- `risky`
+
+Each entry may include reasons and recommended actions.
+
+## Spatial Intent Report
+
+Kind: `asha_procgen.spatial_intent.v1`
+
+Spatial intent reports annotate graph nodes and edges with pre-geometry hints
+such as `landmark_hub`, `visible_before_reachable`, `pressure_path`,
+`shortcut_connector`, `one_way_drop`, and `hidden_route`.
+
+## Intermediate Breakdown
+
+Kind: `asha_procgen.intermediate_breakdown.v1`
+
+Intermediate breakdowns contain:
+
+- `regions`: graph-derived region roles and optional anchor nodes
+- `connectors`: graph-edge-derived connector intents
+- `constraints`: named constraints that later geometry passes should preserve
+
+Validation uses kind `asha_procgen.validation.intermediate.v1`. This schema is
+intentionally not a 2D room layout, 3D prefab graph, mesh, voxel grid, or tile
+map. See `docs/intermediate-layout-contract.md`.
+
 ## Score Report
 
 Kind: `asha_procgen.score.graph.v1`
@@ -182,8 +232,16 @@ The report contains:
   layout refs
 - `rejected`: rejected candidate refs plus diagnostics
 
-Accepted entries are sorted by descending deterministic score, then candidate
-id for stable tie-breaking.
+Accepted entries include:
+
+- `topologyFingerprint`
+- `duplicateOf`
+- `budgetChecks`
+- `budgetPenalty`
+- `selectionScore`
+
+Accepted entries are sorted by descending `selectionScore`, then candidate id
+for stable tie-breaking.
 
 ## Layout Artifact
 

@@ -113,6 +113,18 @@ Implemented `graph apply-rule --rule <id>` values should stay aligned with the
 catalog ids and preserve the documented invariants, scoring hints, and repair
 hints.
 
+## Agent Construction Loop
+
+The next workbench layer is tracked in:
+
+```text
+docs/agent-construction-loop.md
+```
+
+That document defines the intended external-agent loop and the planned command
+surfaces for rule metadata, JSON graph summaries, candidate forking, repair
+reports, data-driven batch profiles, and viewer context panes.
+
 ## Broken Fixture Check
 
 This intentionally fails with stable diagnostics:

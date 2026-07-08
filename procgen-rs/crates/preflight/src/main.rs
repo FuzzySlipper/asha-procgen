@@ -2567,7 +2567,90 @@ mod tests {
         assert!(report
             .diagnostics
             .iter()
-            .any(|diagnostic| diagnostic.code == "required_item_unavailable"));
+            .any(|diagnostic| diagnostic.code == "required_item_unavailable"
+                && diagnostic.repair_hint.is_some()));
+    }
+
+    #[test]
+    fn rejects_incompatible_v2_rule_with_repair_hint() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "incompatible".to_owned(),
+            title: "Incompatible".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 19);
+        let diagnostics = apply_graph_rule(&mut candidate, GraphRule::NestedLockKeyChain, 20);
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "missing_required_pattern" && diagnostic.repair_hint.is_some()
+        }));
+    }
+
+    #[test]
+    fn validates_v2_structural_repair_hints() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "structural".to_owned(),
+            title: "Structural".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 21);
+        candidate.graph.nodes.extend([
+            Node {
+                id: "hub.broken".to_owned(),
+                kind: NodeKind::Junction,
+                label: "Broken Hub".to_owned(),
+                tags: vec!["hub".to_owned()],
+                grants_item: None,
+            },
+            Node {
+                id: "gate.boss_broken".to_owned(),
+                kind: NodeKind::Gate,
+                label: "Unprepared Boss".to_owned(),
+                tags: vec!["boss".to_owned()],
+                grants_item: None,
+            },
+        ]);
+        candidate.graph.edges.extend([
+            Edge {
+                id: "edge.start.broken_hub".to_owned(),
+                from: "start".to_owned(),
+                to: "hub.broken".to_owned(),
+                kind: EdgeKind::OptionalBranch,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["branch".to_owned()],
+            },
+            Edge {
+                id: "edge.start.boss_broken".to_owned(),
+                from: "start".to_owned(),
+                to: "gate.boss_broken".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["approach".to_owned()],
+            },
+            Edge {
+                id: "edge.boss_broken.goal".to_owned(),
+                from: "gate.boss_broken".to_owned(),
+                to: "goal".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["boss".to_owned()],
+            },
+        ]);
+        let report = validate_graph(&candidate);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "hub_missing_wayfinding_anchor" && diagnostic.repair_hint.is_some()
+        }));
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "boss_missing_preparation" && diagnostic.repair_hint.is_some()
+        }));
     }
 
     #[test]

@@ -1,0 +1,4911 @@
+{
+  "kind": "asha_procgen.piece_build_plan.v1",
+  "schemaVersion": 1,
+  "planId": "piece_plan.geometry.candidate.first_slice.5901.14310",
+  "candidateId": "candidate.first_slice.5901",
+  "geometryId": "geometry.candidate.first_slice.5901.14310",
+  "sourceCandidateRef": "artifacts/samples/batch-v2/candidate-007/accepted.json",
+  "sourceIntermediateRef": "artifacts/samples/batch-v2/candidate-007/intermediate-breakdown.json",
+  "sourceGeometryRef": "artifacts/samples/batch-v2/candidate-007/geometry-2d.json",
+  "requirements": [
+    {
+      "pieceId": "piece.room.room_region_start",
+      "kind": "room",
+      "role": "start",
+      "sourceRefs": [
+        "geometryRoom:room.region_start",
+        "region:region.start",
+        "node:start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_start_gate_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_start_key_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "marker"
+      ],
+      "tags": [
+        "choice_readability",
+        "entry",
+        "entry_spawn",
+        "marker_room",
+        "medium",
+        "start",
+        "start_marker"
+      ],
+      "placementHints": [
+        "anchorQuality:explicit",
+        "footprintClass:marker_room",
+        "geometryRect:64:64:120:88",
+        "scaleBand:medium"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_gate_locked_1",
+      "kind": "threshold",
+      "role": "gate",
+      "sourceRefs": [
+        "geometryRoom:room.region_gate_locked_1",
+        "region:region.gate_locked_1",
+        "node:gate.locked_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_start_gate_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_key_1_gate_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_gate_1_gate_2.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_gate_1_key_2.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "gate_line"
+      ],
+      "tags": [
+        "choice_readability",
+        "gate",
+        "locked_gate",
+        "locked_threshold_preview",
+        "medium",
+        "merge_readability",
+        "reveal_line",
+        "threshold"
+      ],
+      "placementHints": [
+        "anchorQuality:derived",
+        "footprintClass:threshold",
+        "geometryRect:324:64:112:80",
+        "scaleBand:medium"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_key_gate_1",
+      "kind": "key",
+      "role": "standard",
+      "sourceRefs": [
+        "geometryRoom:room.region_key_gate_1",
+        "region:region.key_gate_1",
+        "node:key.gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_start_key_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_key_1_gate_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "key_pickup"
+      ],
+      "tags": [
+        "key_pickup",
+        "key_pocket",
+        "pickup_pocket",
+        "small",
+        "small_pocket",
+        "standard"
+      ],
+      "placementHints": [
+        "anchorQuality:derived",
+        "footprintClass:small_pocket",
+        "geometryRect:324:220:88:72",
+        "scaleBand:small"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_gate_locked_2",
+      "kind": "threshold",
+      "role": "gate",
+      "sourceRefs": [
+        "geometryRoom:room.region_gate_locked_2",
+        "region:region.gate_locked_2",
+        "node:gate.locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_gate_1_gate_2.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_key_2_gate_2.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_approach_boss_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_approach_boss_prep_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "gate_line"
+      ],
+      "tags": [
+        "choice_readability",
+        "gate",
+        "locked_gate",
+        "locked_threshold_preview",
+        "medium",
+        "merge_readability",
+        "reveal_line",
+        "threshold"
+      ],
+      "placementHints": [
+        "anchorQuality:derived",
+        "footprintClass:threshold",
+        "geometryRect:584:64:112:80",
+        "scaleBand:medium"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_key_deep_2",
+      "kind": "key",
+      "role": "standard",
+      "sourceRefs": [
+        "geometryRoom:room.region_key_deep_2",
+        "region:region.key_deep_2",
+        "node:key.deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_gate_1_key_2.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_key_2_gate_2.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "key_pickup"
+      ],
+      "tags": [
+        "key_pickup",
+        "key_pocket",
+        "pickup_pocket",
+        "small",
+        "small_pocket",
+        "standard"
+      ],
+      "placementHints": [
+        "anchorQuality:derived",
+        "footprintClass:small_pocket",
+        "geometryRect:584:220:88:72",
+        "scaleBand:small"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_gate_boss_1",
+      "kind": "boss",
+      "role": "boss_gate",
+      "sourceRefs": [
+        "geometryRoom:room.region_gate_boss_1",
+        "region:region.gate_boss_1",
+        "node:gate.boss_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_approach_boss_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_boss_1_goal.east",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_boss_prep_1_boss_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "boss_space"
+      ],
+      "tags": [
+        "approach_then_reveal",
+        "boss_gate",
+        "boss_threshold",
+        "large",
+        "merge_readability",
+        "reveal_line",
+        "threshold_large"
+      ],
+      "placementHints": [
+        "anchorQuality:explicit",
+        "footprintClass:threshold_large",
+        "geometryRect:844:64:144:104",
+        "scaleBand:large"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_resource_boss_prep_1",
+      "kind": "resource",
+      "role": "standard",
+      "sourceRefs": [
+        "geometryRoom:room.region_resource_boss_prep_1",
+        "region:region.resource_boss_prep_1",
+        "node:resource.boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_approach_boss_prep_1.west",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor_connector_edge_boss_prep_1_boss_1.east",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "resource_clue"
+      ],
+      "tags": [
+        "chamber",
+        "pickup_pocket",
+        "resource_clue",
+        "small",
+        "small_pocket",
+        "standard"
+      ],
+      "placementHints": [
+        "anchorQuality:derived",
+        "footprintClass:small_pocket",
+        "geometryRect:844:220:88:72",
+        "scaleBand:small"
+      ]
+    },
+    {
+      "pieceId": "piece.room.room_region_goal",
+      "kind": "room",
+      "role": "goal",
+      "sourceRefs": [
+        "geometryRoom:room.region_goal",
+        "region:region.goal",
+        "node:goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.corridor_connector_edge_boss_1_goal.west",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [
+        "marker"
+      ],
+      "tags": [
+        "destination",
+        "destination_arrival",
+        "goal",
+        "goal_marker",
+        "marker_room",
+        "medium"
+      ],
+      "placementHints": [
+        "anchorQuality:explicit",
+        "footprintClass:marker_room",
+        "geometryRect:1104:64:120:88",
+        "scaleBand:medium"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_start_gate_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_gate_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:184:108:254:108"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_start_gate_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "bend:254:108"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_gate_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:254:108:254:104"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_start_gate_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "bend:254:104"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_gate_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:254:104:324:104"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_start_gate_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.connector_edge_start_gate_1",
+        "graphEdge:start:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_start_key_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_key_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:184:108:254:108"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_start_key_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "bend:254:108"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_key_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:254:108:254:256"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_start_key_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "bend:254:256"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_start_key_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:254:256:324:256"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_start_key_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.connector_edge_start_key_1",
+        "graphEdge:start:key.gate_1",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_key_1_gate_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:368:220:374:220"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:374:220"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:374:220:374:144"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:374:144"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:374:144:380:144"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_key_1_gate_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.connector_edge_key_1_gate_1",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_gate_1_gate_2.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_gate_2",
+        "edge:edge.gate_1.gate_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_gate_2",
+        "graphEdge:gate.locked_1:gate.locked_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_gate_2",
+        "edge:edge.gate_1.gate_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_gate_2",
+        "graphEdge:gate.locked_1:gate.locked_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:436:104:510:104"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_gate_2",
+        "edge:edge.gate_1.gate_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_gate_2",
+        "graphEdge:gate.locked_1:gate.locked_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:510:104:584:104"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_gate_1_gate_2.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_gate_2",
+        "edge:edge.gate_1.gate_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_gate_2",
+        "graphEdge:gate.locked_1:gate.locked_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_gate_1_key_2.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:436:104:510:104"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "bend:510:104"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:510:104:510:256"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "bend:510:256"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "key_branch",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "segment:510:256:584:256"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_gate_1_key_2.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_key_2",
+        "edge:edge.gate_1.key_2",
+        "geometryCorridor:corridor.connector_edge_gate_1_key_2",
+        "graphEdge:gate.locked_1:key.deep_2",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_key_2_gate_2.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:628:220:634:220"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:634:220"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:634:220:634:144"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:634:144"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "key_branch",
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:634:144:640:144"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_key_2_gate_2.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_key_2_gate_2",
+        "constraint:preserve_rejoin_clarity:edge.key_2.gate_2",
+        "edge:edge.key_2.gate_2",
+        "geometryCorridor:corridor.connector_edge_key_2_gate_2",
+        "graphEdge:key.deep_2:gate.locked_2",
+        "room:room.region_gate_locked_2",
+        "room:room.region_key_deep_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_approach_boss_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:696:104:770:104"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_approach_boss_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "bend:770:104"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:770:104:770:116"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_approach_boss_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "bend:770:116"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "approach",
+            "corridor",
+            "critical_path",
+            "explicit_corridor_piece",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "segment:770:116:844:116"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_approach_boss_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_1",
+        "edge:edge.approach.boss_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_1",
+        "graphEdge:gate.locked_2:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_gate_locked_2"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_boss_1_goal.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "segment:988:116:1046:116"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_boss_1_goal.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "north",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "bend:1046:116"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "south",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "north",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "segment:1046:116:1046:108"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_boss_1_goal.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "south",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "bend:1046:108"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "boss",
+            "critical_path",
+            "explicit_corridor_piece",
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "requires:item.boss_preparation_1",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "segment:1046:108:1104:108"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_boss_1_goal.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_boss_1_goal",
+        "constraint:preserve_gated_connector:edge.boss_1.goal",
+        "constraint:preserve_lock_preview:edge.boss_1.goal",
+        "edge:edge.boss_1.goal",
+        "geometryCorridor:corridor.connector_edge_boss_1_goal",
+        "graphEdge:gate.boss_1:goal",
+        "room:room.region_gate_boss_1",
+        "room:room.region_goal"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 18,
+          "tags": [
+            "gated_connector",
+            "locked",
+            "locked_threshold",
+            "preview_line",
+            "visible_before_reachable"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "boss",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.boss_preparation_1",
+        "visible_before_reachable"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_approach_boss_prep_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "segment:696:104:770:104"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "bend:770:104"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "segment:770:104:770:256"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "bend:770:256"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "branch",
+            "corridor",
+            "explicit_corridor_piece",
+            "open",
+            "optional_branch",
+            "preparation"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "segment:770:256:844:256"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_approach_boss_prep_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_approach_boss_prep_1",
+        "edge:edge.approach.boss_prep_1",
+        "geometryCorridor:corridor.connector_edge_approach_boss_prep_1",
+        "graphEdge:gate.locked_2:resource.boss_prep_1",
+        "room:room.region_gate_locked_2",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "corridor",
+            "open"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "open",
+        "optional_branch",
+        "preparation"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.start",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:from_room"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_1",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_1.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:888:220:902:220"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_1",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_1.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_1.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:902:220"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_2",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_2.out",
+          "direction": "north",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:902:220:902:168"
+      ]
+    },
+    {
+      "pieceId": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_2",
+      "kind": "bend",
+      "role": "corridor_bend",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.bend_2.in",
+          "direction": "south",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.bend_2.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "bend:902:168"
+      ]
+    },
+    {
+      "pieceId": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_3",
+      "kind": "corridor",
+      "role": "corridor_segment",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.segment_3.in",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        },
+        {
+          "id": "exit.segment_3.out",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "explicit_corridor_piece",
+            "merge_rejoin_clarity",
+            "open",
+            "optional_branch",
+            "rejoin_corridor",
+            "return"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "segment:902:168:916:168"
+      ]
+    },
+    {
+      "pieceId": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.end",
+      "kind": "connector",
+      "role": "corridor_connector",
+      "sourceRefs": [
+        "connector:connector.edge_boss_prep_1_boss_1",
+        "constraint:preserve_rejoin_clarity:edge.boss_prep_1.boss_1",
+        "edge:edge.boss_prep_1.boss_1",
+        "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1",
+        "graphEdge:resource.boss_prep_1:gate.boss_1",
+        "room:room.region_gate_boss_1",
+        "room:room.region_resource_boss_prep_1"
+      ],
+      "requiredExits": [
+        {
+          "id": "exit.room",
+          "direction": "east",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        },
+        {
+          "id": "exit.corridor",
+          "direction": "west",
+          "width": 12,
+          "tags": [
+            "merge_rejoin_clarity",
+            "open",
+            "rejoin_corridor"
+          ]
+        }
+      ],
+      "requiredSockets": [],
+      "tags": [
+        "explicit_corridor_piece",
+        "merge_rejoin_clarity",
+        "open",
+        "optional_branch",
+        "rejoin_corridor",
+        "return"
+      ],
+      "placementHints": [
+        "glue:to_room"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.1",
+      "fromPiece": "piece.room.room_region_start",
+      "toPiece": "piece.connector.corridor_connector_edge_start_gate_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_start_gate_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_start_gate_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_start_gate_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_start_gate_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_start_gate_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_gate_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_start_gate_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_gate_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_start_gate_1.end",
+      "toPiece": "piece.room.room_region_gate_locked_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_gate_1;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.1",
+      "fromPiece": "piece.room.room_region_start",
+      "toPiece": "piece.connector.corridor_connector_edge_start_key_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_start_key_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_start_key_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_start_key_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_start_key_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_start_key_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_start_key_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_start_key_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_start_key_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_start_key_1.end",
+      "toPiece": "piece.room.room_region_key_gate_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_start_key_1;connector:connector.edge_start_key_1;edge:edge.start.key_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.1",
+      "fromPiece": "piece.room.room_region_key_gate_1",
+      "toPiece": "piece.connector.corridor_connector_edge_key_1_gate_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_key_1_gate_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_key_1_gate_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_1_gate_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_key_1_gate_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_1_gate_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_key_1_gate_1.end",
+      "toPiece": "piece.room.room_region_gate_locked_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_1_gate_1;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_gate_2.1",
+      "fromPiece": "piece.room.room_region_gate_locked_1",
+      "toPiece": "piece.connector.corridor_connector_edge_gate_1_gate_2.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_gate_2;connector:connector.edge_gate_1_gate_2;edge:edge.gate_1.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_gate_2.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_gate_1_gate_2.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_gate_2;connector:connector.edge_gate_1_gate_2;edge:edge.gate_1.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_gate_2.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_gate_2;connector:connector.edge_gate_1_gate_2;edge:edge.gate_1.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_gate_2.4",
+      "fromPiece": "piece.corridor.corridor_connector_edge_gate_1_gate_2.segment_2",
+      "toPiece": "piece.connector.corridor_connector_edge_gate_1_gate_2.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_gate_2;connector:connector.edge_gate_1_gate_2;edge:edge.gate_1.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_gate_2.5",
+      "fromPiece": "piece.connector.corridor_connector_edge_gate_1_gate_2.end",
+      "toPiece": "piece.room.room_region_gate_locked_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_gate_2;connector:connector.edge_gate_1_gate_2;edge:edge.gate_1.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.1",
+      "fromPiece": "piece.room.room_region_gate_locked_1",
+      "toPiece": "piece.connector.corridor_connector_edge_gate_1_key_2.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_gate_1_key_2.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_gate_1_key_2.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_gate_1_key_2.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_gate_1_key_2.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_gate_1_key_2.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_gate_1_key_2.end",
+      "toPiece": "piece.room.room_region_key_deep_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_gate_1_key_2;connector:connector.edge_gate_1_key_2;edge:edge.gate_1.key_2",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.1",
+      "fromPiece": "piece.room.room_region_key_deep_2",
+      "toPiece": "piece.connector.corridor_connector_edge_key_2_gate_2.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_key_2_gate_2.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_key_2_gate_2.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_key_2_gate_2.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_key_2_gate_2.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_key_2_gate_2.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_key_2_gate_2.end",
+      "toPiece": "piece.room.room_region_gate_locked_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_key_2_gate_2;connector:connector.edge_key_2_gate_2;edge:edge.key_2.gate_2",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.1",
+      "fromPiece": "piece.room.room_region_gate_locked_2",
+      "toPiece": "piece.connector.corridor_connector_edge_approach_boss_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_approach_boss_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_approach_boss_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_approach_boss_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_approach_boss_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_approach_boss_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_approach_boss_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_approach_boss_1.end",
+      "toPiece": "piece.room.room_region_gate_boss_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_1;connector:connector.edge_approach_boss_1;edge:edge.approach.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.1",
+      "fromPiece": "piece.room.room_region_gate_boss_1",
+      "toPiece": "piece.connector.corridor_connector_edge_boss_1_goal.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_boss_1_goal.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_boss_1_goal.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_boss_1_goal.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_boss_1_goal.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_boss_1_goal.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_1_goal.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_boss_1_goal.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_1_goal.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_boss_1_goal.end",
+      "toPiece": "piece.room.room_region_goal",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_1_goal;connector:connector.edge_boss_1_goal;edge:edge.boss_1.goal",
+      "traversalHint": "locked",
+      "tags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.1",
+      "fromPiece": "piece.room.room_region_gate_locked_2",
+      "toPiece": "piece.connector.corridor_connector_edge_approach_boss_prep_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_approach_boss_prep_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_approach_boss_prep_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_approach_boss_prep_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_approach_boss_prep_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_approach_boss_prep_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_approach_boss_prep_1.end",
+      "toPiece": "piece.room.room_region_resource_boss_prep_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_approach_boss_prep_1;connector:connector.edge_approach_boss_prep_1;edge:edge.approach.boss_prep_1",
+      "traversalHint": "open",
+      "tags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.1",
+      "fromPiece": "piece.room.room_region_resource_boss_prep_1",
+      "toPiece": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.start",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.2",
+      "fromPiece": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.start",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.3",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_1",
+      "toPiece": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.4",
+      "fromPiece": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_1",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.5",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_2",
+      "toPiece": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_2",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.6",
+      "fromPiece": "piece.bend.corridor_connector_edge_boss_prep_1_boss_1.bend_2",
+      "toPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_3",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.7",
+      "fromPiece": "piece.corridor.corridor_connector_edge_boss_prep_1_boss_1.segment_3",
+      "toPiece": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.end",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "piece_link.corridor_connector_edge_boss_prep_1_boss_1.8",
+      "fromPiece": "piece.connector.corridor_connector_edge_boss_prep_1_boss_1.end",
+      "toPiece": "piece.room.room_region_gate_boss_1",
+      "sourceRef": "geometryCorridor:corridor.connector_edge_boss_prep_1_boss_1;connector:connector.edge_boss_prep_1_boss_1;edge:edge.boss_prep_1.boss_1",
+      "traversalHint": "open",
+      "tags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    }
+  ],
+  "contentRequirements": [
+    {
+      "id": "piece_content.piece_room_room_region_start.start_marker",
+      "pieceId": "piece.room.room_region_start",
+      "sourceRef": "node:start;region:region.start",
+      "kind": "start_marker",
+      "label": "Start",
+      "requiredSocket": "marker",
+      "tags": [
+        "choice_readability",
+        "critical",
+        "entry",
+        "entry_spawn",
+        "medium",
+        "start",
+        "start_marker"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_gate_locked_1.locked_gate",
+      "pieceId": "piece.room.room_region_gate_locked_1",
+      "sourceRef": "node:gate.locked_1;region:region.gate_locked_1",
+      "kind": "locked_gate",
+      "label": "Locked Gate",
+      "requiredSocket": "gate_line",
+      "tags": [
+        "choice_readability",
+        "critical",
+        "gate",
+        "lock",
+        "locked_gate",
+        "locked_threshold_preview",
+        "medium",
+        "merge_readability",
+        "reveal_line",
+        "threshold"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_key_gate_1.key_pickup",
+      "pieceId": "piece.room.room_region_key_gate_1",
+      "sourceRef": "node:key.gate_1;region:region.key_gate_1",
+      "kind": "key_pickup",
+      "label": "Key Pickup",
+      "requiredSocket": "key_pickup",
+      "tags": [
+        "branch",
+        "key",
+        "key_pickup",
+        "key_pocket",
+        "pickup_pocket",
+        "small",
+        "standard"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_gate_locked_2.locked_gate",
+      "pieceId": "piece.room.room_region_gate_locked_2",
+      "sourceRef": "node:gate.locked_2;region:region.gate_locked_2",
+      "kind": "locked_gate",
+      "label": "Locked Gate",
+      "requiredSocket": "gate_line",
+      "tags": [
+        "choice_readability",
+        "critical",
+        "gate",
+        "lock",
+        "locked_gate",
+        "locked_threshold_preview",
+        "medium",
+        "merge_readability",
+        "reveal_line",
+        "threshold"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_key_deep_2.key_pickup",
+      "pieceId": "piece.room.room_region_key_deep_2",
+      "sourceRef": "node:key.deep_2;region:region.key_deep_2",
+      "kind": "key_pickup",
+      "label": "Key Pickup",
+      "requiredSocket": "key_pickup",
+      "tags": [
+        "branch",
+        "key",
+        "key_pickup",
+        "key_pocket",
+        "pickup_pocket",
+        "preparation",
+        "small",
+        "standard"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_gate_boss_1.boss_threshold",
+      "pieceId": "piece.room.room_region_gate_boss_1",
+      "sourceRef": "node:gate.boss_1;region:region.gate_boss_1",
+      "kind": "boss_threshold",
+      "label": "Boss Threshold",
+      "requiredSocket": "boss_space",
+      "tags": [
+        "approach_then_reveal",
+        "boss",
+        "boss_gate",
+        "boss_threshold",
+        "critical",
+        "gate",
+        "large",
+        "merge_readability",
+        "reveal_line"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_resource_boss_prep_1.resource_clue",
+      "pieceId": "piece.room.room_region_resource_boss_prep_1",
+      "sourceRef": "node:resource.boss_prep_1;region:region.resource_boss_prep_1",
+      "kind": "resource_clue",
+      "label": "Resource Clue",
+      "requiredSocket": "resource_clue",
+      "tags": [
+        "chamber",
+        "optional",
+        "pickup_pocket",
+        "preparation",
+        "resource",
+        "resource_clue",
+        "small",
+        "standard"
+      ]
+    },
+    {
+      "id": "piece_content.piece_room_room_region_goal.goal_marker",
+      "pieceId": "piece.room.room_region_goal",
+      "sourceRef": "node:goal;region:region.goal",
+      "kind": "goal_marker",
+      "label": "Goal",
+      "requiredSocket": "marker",
+      "tags": [
+        "critical",
+        "destination",
+        "destination_arrival",
+        "goal",
+        "goal_marker",
+        "medium"
+      ]
+    }
+  ]
+}

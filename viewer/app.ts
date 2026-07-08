@@ -78,6 +78,12 @@ interface SelectionEntry {
   readonly geometryValidationRef?: string;
   readonly htmlPreviewRef?: string;
   readonly htmlRef?: string;
+  readonly shapeCatalogRef?: string;
+  readonly catalogInspectionRef?: string;
+  readonly piecePlanRef?: string;
+  readonly shapeMatchRef?: string;
+  readonly piecePlacementRef?: string;
+  readonly piecePlacementValidationRef?: string;
   readonly overall: number;
   readonly metrics: Record<string, number>;
   readonly tags: readonly string[];
@@ -214,6 +220,77 @@ interface GeometryContent {
   readonly tags: readonly string[];
 }
 
+interface PiecePlacement {
+  readonly placementId: string;
+  readonly planId: string;
+  readonly catalogId: string;
+  readonly matchId: string;
+  readonly cellSize: number;
+  readonly instances: readonly PieceInstance[];
+  readonly gluedExits: readonly GluedExit[];
+  readonly occupiedCells: readonly PlacementCellRef[];
+  readonly reservedCells: readonly PlacementCellRef[];
+  readonly danglingExits: readonly DanglingExit[];
+}
+
+interface PieceInstance {
+  readonly instanceId: string;
+  readonly pieceId: string;
+  readonly requirementKind: string;
+  readonly role: string;
+  readonly shapeId: string;
+  readonly transform: string;
+  readonly origin: GridCell;
+  readonly occupiedCells: readonly GridCell[];
+  readonly reservedCells: readonly GridCell[];
+  readonly exitMap: readonly MatchedExit[];
+  readonly featurePlacements: readonly MatchedSocket[];
+  readonly sourceRequirementRef: string;
+  readonly sourceRefs: readonly string[];
+  readonly tags: readonly string[];
+}
+
+interface GridCell {
+  readonly x: number;
+  readonly y: number;
+}
+
+interface PlacementCellRef {
+  readonly instanceId: string;
+  readonly x: number;
+  readonly y: number;
+}
+
+interface GluedExit {
+  readonly id: string;
+  readonly linkId: string;
+  readonly fromInstance: string;
+  readonly fromExit: string;
+  readonly toInstance: string;
+  readonly toExit: string;
+  readonly sourceRef: string;
+  readonly tags: readonly string[];
+}
+
+interface DanglingExit {
+  readonly instanceId: string;
+  readonly exitId: string;
+  readonly reason: string;
+}
+
+interface MatchedExit {
+  readonly requirementExitId: string;
+  readonly catalogExitId: string;
+  readonly direction: string;
+  readonly width: number;
+}
+
+interface MatchedSocket {
+  readonly requiredSocket: string;
+  readonly catalogSocketId: string;
+  readonly kind: string;
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -236,6 +313,8 @@ let activeView: ViewMode = initialViewMode();
 let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
 let currentGeometry: Geometry2dArtifact | null = null;
+let currentPlacement: PiecePlacement | null = null;
+let currentPlacementValidation: ValidationReport | null = null;
 
 for (const tab of viewTabs) {
   tab.addEventListener('click', () => {
@@ -254,9 +333,19 @@ if (initialSelection === null) {
   currentLayout = artifact.layout;
   currentIntermediate = emptyIntermediateContext();
   currentGeometry = null;
+  currentPlacement = null;
+  currentPlacementValidation = null;
   renderBatchList(batchPanel, batch, null, selectEntry);
   renderSummary(summaryPanel, artifact, null, batch);
-  renderContext(diagnosticsPanel, artifact, null, batch, validation, emptyIntermediateContext());
+  renderContext(
+    diagnosticsPanel,
+    artifact,
+    null,
+    batch,
+    validation,
+    emptyIntermediateContext(),
+    null,
+  );
   renderActiveView();
 } else {
   await selectEntry(initialSelection);
@@ -266,13 +355,19 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
-  const geometry = await fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef);
+  const [geometry, placement, placementValidation] = await Promise.all([
+    fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef),
+    fetchOptionalArtifact<PiecePlacement>(entry.piecePlacementRef),
+    fetchOptionalArtifact<ValidationReport>(entry.piecePlacementValidationRef),
+  ]);
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
   currentGeometry = geometry;
+  currentPlacement = placement;
+  currentPlacementValidation = placementValidation;
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
-  renderContext(diagnosticsPanel, artifact, entry, batch, validation, intermediate);
+  renderContext(diagnosticsPanel, artifact, entry, batch, validation, intermediate, placementValidation);
   renderActiveView();
 }
 
@@ -418,6 +513,7 @@ function renderContext(
   report: SelectionReport,
   validation: ValidationReport,
   intermediate: IntermediateContext,
+  placementValidation: ValidationReport | null,
 ): void {
   target.replaceChildren(
     contextSection('Artifact Refs', [
@@ -429,6 +525,7 @@ function renderContext(
     ]),
     contextSection('Intermediate Refs', intermediateRefLines(selection)),
     contextSection('Build Refs', buildRefLines(selection)),
+    contextSection('Piece Placement', piecePlacementLines(selection, placementValidation)),
     contextSection('Intermediate', intermediateLines(intermediate)),
     contextSection('Validation', validationLines(validation)),
     contextSection('Provenance', provenanceLines(artifact.candidate.provenance)),
@@ -448,7 +545,33 @@ function buildRefLines(selection: SelectionEntry | null): readonly HTMLElement[]
     refLine('gvalid', selection.geometryValidationRef ?? 'missing'),
     refLine('preview', selection.htmlPreviewRef ?? 'missing'),
     refLine('html', selection.htmlRef ?? 'missing'),
+    refLine('catalog', selection.shapeCatalogRef ?? 'missing'),
+    refLine('creport', selection.catalogInspectionRef ?? 'missing'),
+    refLine('plan', selection.piecePlanRef ?? 'missing'),
+    refLine('match', selection.shapeMatchRef ?? 'missing'),
+    refLine('place', selection.piecePlacementRef ?? 'missing'),
+    refLine('pvalid', selection.piecePlacementValidationRef ?? 'missing'),
   ];
+}
+
+function piecePlacementLines(
+  selection: SelectionEntry | null,
+  validation: ValidationReport | null,
+): readonly HTMLElement[] {
+  if (selection === null || selection.piecePlacementRef === undefined) {
+    const empty = document.createElement('p');
+    empty.className = 'diagnostic-empty';
+    empty.textContent = 'No catalog piece placement loaded; Build tab will use geometry fallback.';
+    return [empty];
+  }
+  const lines = [
+    contextLine('placement', selection.piecePlacementRef),
+    contextLine('shape match', selection.shapeMatchRef ?? 'missing'),
+  ];
+  if (validation !== null) {
+    lines.push(...validationLines(validation));
+  }
+  return lines;
 }
 
 function intermediateRefLines(selection: SelectionEntry | null): readonly HTMLElement[] {
@@ -618,7 +741,7 @@ function renderActiveView(): void {
     tab.dataset.selected = tab.dataset.view === activeView ? 'true' : 'false';
   }
   if (activeView === 'build') {
-    renderBuildGrid(layoutSvg, currentGeometry);
+    renderBuildGrid(layoutSvg, currentGeometry, currentPlacement, currentPlacementValidation);
     return;
   }
   if (activeView === 'intermediate') {
@@ -816,10 +939,19 @@ interface BuildPlan {
   readonly cells: Map<string, BuildCell>;
 }
 
-function renderBuildGrid(target: SVGSVGElement, geometry: Geometry2dArtifact | null): void {
+function renderBuildGrid(
+  target: SVGSVGElement,
+  geometry: Geometry2dArtifact | null,
+  placement: PiecePlacement | null,
+  placementValidation: ValidationReport | null,
+): void {
   target.replaceChildren();
+  if (placement !== null) {
+    renderPiecePlacementGrid(target, placement, placementValidation);
+    return;
+  }
   if (geometry === null) {
-    renderEmptySvg(target, 'No geometry build artifact loaded.');
+    renderEmptySvg(target, 'No geometry or piece placement build artifact loaded.');
     return;
   }
 
@@ -834,7 +966,7 @@ function renderBuildGrid(target: SVGSVGElement, geometry: Geometry2dArtifact | n
   title.setAttribute('class', 'intermediate-role-label');
   title.setAttribute('x', String(margin));
   title.setAttribute('y', '28');
-  title.textContent = 'Build Grid';
+  title.textContent = 'Geometry Build Grid';
   target.append(title);
 
   const stats = createSvg('text');
@@ -920,6 +1052,243 @@ function renderBuildGrid(target: SVGSVGElement, geometry: Geometry2dArtifact | n
     label.textContent = contentSymbol(content.kind);
     grid.append(label);
   }
+}
+
+function renderPiecePlacementGrid(
+  target: SVGSVGElement,
+  placement: PiecePlacement,
+  validation: ValidationReport | null,
+): void {
+  const plan = piecePlacementGridPlan(placement);
+  const margin = 24;
+  const headerHeight = 64;
+  const width = margin * 2 + plan.columns * plan.cellPixels;
+  const height = margin * 2 + headerHeight + plan.rows * plan.cellPixels;
+  target.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+  const title = createSvg('text');
+  title.setAttribute('class', 'intermediate-role-label');
+  title.setAttribute('x', String(margin));
+  title.setAttribute('y', '28');
+  title.textContent = 'Piece Placement Grid';
+  target.append(title);
+
+  const stats = createSvg('text');
+  stats.setAttribute('class', 'intermediate-region-detail');
+  stats.setAttribute('x', String(margin));
+  stats.setAttribute('y', '50');
+  stats.textContent = `${placement.instances.length} pieces / ${placement.occupiedCells.length} occupied / ${placement.reservedCells.length} reserved / ${placement.gluedExits.length} glued exits / ${validation?.ok === false ? `${validation.fatalCount} fatal` : 'valid'}`;
+  target.append(stats);
+
+  const grid = createSvg('g');
+  grid.setAttribute('transform', `translate(${margin} ${margin + headerHeight})`);
+  target.append(grid);
+
+  const background = createSvg('rect');
+  background.setAttribute('x', '0');
+  background.setAttribute('y', '0');
+  background.setAttribute('width', String(plan.columns * plan.cellPixels));
+  background.setAttribute('height', String(plan.rows * plan.cellPixels));
+  background.setAttribute('fill', '#111820');
+  grid.append(background);
+
+  const centers = new Map<string, { readonly x: number; readonly y: number }>();
+  for (const instance of placement.instances) {
+    const cells = instance.occupiedCells.map((cell) => normalizeCell(cell, plan));
+    if (cells.length === 0) {
+      continue;
+    }
+    const minColumn = Math.min(...cells.map((cell) => cell.column));
+    const maxColumn = Math.max(...cells.map((cell) => cell.column));
+    const minRow = Math.min(...cells.map((cell) => cell.row));
+    const maxRow = Math.max(...cells.map((cell) => cell.row));
+    centers.set(instance.instanceId, {
+      x: ((minColumn + maxColumn + 1) / 2) * plan.cellPixels,
+      y: ((minRow + maxRow + 1) / 2) * plan.cellPixels,
+    });
+  }
+
+  for (const glued of placement.gluedExits) {
+    const from = centers.get(glued.fromInstance);
+    const to = centers.get(glued.toInstance);
+    if (from === undefined || to === undefined) {
+      continue;
+    }
+    const line = createSvg('line');
+    line.setAttribute('class', `build-glue-link ${glueClass(glued)}`);
+    line.setAttribute('x1', String(from.x));
+    line.setAttribute('y1', String(from.y));
+    line.setAttribute('x2', String(to.x));
+    line.setAttribute('y2', String(to.y));
+    grid.append(line);
+  }
+
+  for (const cell of placement.reservedCells) {
+    const normalized = normalizeCell(cell, plan);
+    const rect = createSvg('rect');
+    rect.setAttribute('class', 'build-cell reserved');
+    rect.setAttribute('x', String(normalized.column * plan.cellPixels));
+    rect.setAttribute('y', String(normalized.row * plan.cellPixels));
+    rect.setAttribute('width', String(plan.cellPixels));
+    rect.setAttribute('height', String(plan.cellPixels));
+    grid.append(rect);
+  }
+
+  const instancesById = new Map(placement.instances.map((instance) => [instance.instanceId, instance]));
+  for (const cell of placement.occupiedCells) {
+    const normalized = normalizeCell(cell, plan);
+    const instance = instancesById.get(cell.instanceId);
+    const rect = createSvg('rect');
+    rect.setAttribute(
+      'class',
+      `build-cell piece ${slugClass(instance?.requirementKind ?? 'piece')} ${slugClass(instance?.role ?? 'piece')}`,
+    );
+    rect.setAttribute('x', String(normalized.column * plan.cellPixels));
+    rect.setAttribute('y', String(normalized.row * plan.cellPixels));
+    rect.setAttribute('width', String(plan.cellPixels));
+    rect.setAttribute('height', String(plan.cellPixels));
+    const titleElement = createSvg('title');
+    titleElement.textContent = instance === undefined
+      ? cell.instanceId
+      : `${instance.pieceId} / ${instance.shapeId} / ${instance.transform}`;
+    rect.append(titleElement);
+    grid.append(rect);
+  }
+
+  for (let column = 0; column <= plan.columns; column += 1) {
+    const line = createSvg('line');
+    line.setAttribute('class', 'build-grid-line');
+    line.setAttribute('x1', String(column * plan.cellPixels));
+    line.setAttribute('y1', '0');
+    line.setAttribute('x2', String(column * plan.cellPixels));
+    line.setAttribute('y2', String(plan.rows * plan.cellPixels));
+    grid.append(line);
+  }
+  for (let row = 0; row <= plan.rows; row += 1) {
+    const line = createSvg('line');
+    line.setAttribute('class', 'build-grid-line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', String(row * plan.cellPixels));
+    line.setAttribute('x2', String(plan.columns * plan.cellPixels));
+    line.setAttribute('y2', String(row * plan.cellPixels));
+    grid.append(line);
+  }
+
+  for (const instance of placement.instances) {
+    const center = centers.get(instance.instanceId);
+    if (center === undefined) {
+      continue;
+    }
+    const label = createSvg('text');
+    label.setAttribute('class', 'build-label piece-label');
+    label.setAttribute('x', String(center.x - 8));
+    label.setAttribute('y', String(center.y + 4));
+    label.textContent = pieceLabel(instance);
+    grid.append(label);
+
+    instance.featurePlacements.forEach((feature, index) => {
+      const marker = createSvg('circle');
+      marker.setAttribute('class', `build-marker ${slugClass(feature.kind)}`);
+      marker.setAttribute('cx', String(center.x + 10 + (index % 2) * 10));
+      marker.setAttribute('cy', String(center.y - 10 + Math.floor(index / 2) * 10));
+      marker.setAttribute('r', '6');
+      grid.append(marker);
+
+      const markerLabel = createSvg('text');
+      markerLabel.setAttribute('class', 'build-marker-label');
+      markerLabel.setAttribute('x', marker.getAttribute('cx') ?? String(center.x));
+      markerLabel.setAttribute('y', String(Number(marker.getAttribute('cy') ?? center.y) + 3));
+      markerLabel.textContent = contentSymbol(feature.kind);
+      grid.append(markerLabel);
+    });
+  }
+
+  for (const dangling of placement.danglingExits) {
+    const center = centers.get(dangling.instanceId);
+    if (center === undefined) {
+      continue;
+    }
+    const marker = createSvg('rect');
+    marker.setAttribute('class', 'build-dangling');
+    marker.setAttribute('x', String(center.x - 6));
+    marker.setAttribute('y', String(center.y - 6));
+    marker.setAttribute('width', '12');
+    marker.setAttribute('height', '12');
+    marker.setAttribute('transform', `rotate(45 ${center.x} ${center.y})`);
+    grid.append(marker);
+  }
+}
+
+interface PiecePlacementGridPlan {
+  readonly cellPixels: number;
+  readonly minX: number;
+  readonly minY: number;
+  readonly columns: number;
+  readonly rows: number;
+}
+
+function piecePlacementGridPlan(placement: PiecePlacement): PiecePlacementGridPlan {
+  const allCells = [...placement.occupiedCells, ...placement.reservedCells];
+  const minX = Math.min(...allCells.map((cell) => cell.x), 0);
+  const minY = Math.min(...allCells.map((cell) => cell.y), 0);
+  const maxX = Math.max(...allCells.map((cell) => cell.x), 1);
+  const maxY = Math.max(...allCells.map((cell) => cell.y), 1);
+  return {
+    cellPixels: 14,
+    minX,
+    minY,
+    columns: maxX - minX + 3,
+    rows: maxY - minY + 3,
+  };
+}
+
+function normalizeCell(
+  cell: GridCell | PlacementCellRef,
+  plan: PiecePlacementGridPlan,
+): { readonly column: number; readonly row: number } {
+  return {
+    column: cell.x - plan.minX + 1,
+    row: cell.y - plan.minY + 1,
+  };
+}
+
+function pieceLabel(instance: PieceInstance): string {
+  switch (instance.requirementKind) {
+    case 'connector':
+      return 'CON';
+    case 'corridor':
+      return 'COR';
+    case 'threshold':
+      return 'GATE';
+    case 'hazard':
+      return 'HAZ';
+    case 'reward':
+      return 'REW';
+    case 'resource':
+      return 'RES';
+    case 'secret':
+      return 'SEC';
+    case 'shortcut':
+      return 'SCT';
+    default:
+      return instance.requirementKind.slice(0, 4).toUpperCase();
+  }
+}
+
+function glueClass(glued: GluedExit): string {
+  if (glued.tags.some((tag) => tag.includes('hidden'))) {
+    return 'hidden';
+  }
+  if (glued.tags.some((tag) => tag.includes('locked'))) {
+    return 'locked';
+  }
+  if (glued.tags.some((tag) => tag.includes('shortcut'))) {
+    return 'shortcut';
+  }
+  if (glued.tags.some((tag) => tag.includes('pressure'))) {
+    return 'pressure';
+  }
+  return 'standard';
 }
 
 function buildGridPlan(geometry: Geometry2dArtifact): BuildPlan {
@@ -1016,17 +1385,23 @@ function contentSymbol(kind: string): string {
     case 'key_pickup':
       return 'K';
     case 'locked_gate':
+    case 'gate_line':
       return 'L';
     case 'boss_threshold':
+    case 'boss_space':
       return 'B';
     case 'hazard':
+    case 'hazard_zone':
       return '!';
     case 'reward_cache':
       return '$';
     case 'secret_route_marker':
+    case 'secret_marker':
       return '?';
     case 'shortcut_marker':
       return 'S';
+    case 'resource_clue':
+      return 'R';
     case 'start_marker':
       return 'A';
     case 'goal_marker':

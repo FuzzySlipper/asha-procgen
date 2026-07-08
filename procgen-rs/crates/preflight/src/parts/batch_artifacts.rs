@@ -254,6 +254,12 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             geometry_validation_ref: None,
             html_preview_ref: None,
             html_ref: None,
+            shape_catalog_ref: None,
+            catalog_inspection_ref: None,
+            piece_plan_ref: None,
+            shape_match_ref: None,
+            piece_placement_ref: None,
+            piece_placement_validation_ref: None,
             overall: score.overall,
             metrics: score.metrics,
             tags: collect_tags(&candidate),
@@ -311,6 +317,12 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
     let geometry_validation_path = run_dir.join("geometry-2d.validation.json");
     let html_path = run_dir.join("geometry-2d.preview.html");
     let html_preview_path = run_dir.join("html-preview.json");
+    let shape_catalog_path = PathBuf::from(DEFAULT_SHAPE_CATALOG);
+    let catalog_inspection_path = run_dir.join("shape-catalog.report.json");
+    let piece_plan_path = run_dir.join("piece-plan.json");
+    let shape_match_path = run_dir.join("piece-shape-match.json");
+    let placement_path = run_dir.join("piece-placement.json");
+    let placement_validation_path = run_dir.join("piece-placement.validation.json");
 
     let geometry_args = GeometryEmit2dArgs {
         candidate: artifact_path.clone(),
@@ -359,16 +371,89 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
     entry.html_preview_ref = Some(display_path(&html_preview_path));
     entry.html_ref = Some(preview.html_ref.clone());
 
+    let catalog: ShapeCatalog = read_json(&shape_catalog_path)?;
+    let catalog_report = inspect_shape_catalog(&catalog, &shape_catalog_path);
+    if catalog_report
+        .diagnostics
+        .iter()
+        .any(|diagnostic| diagnostic.severity == Severity::Fatal)
+    {
+        return Err(format!(
+            "shape catalog inspection failed with {} diagnostic(s)",
+            catalog_report.diagnostics.len()
+        ));
+    }
+    write_json(&catalog_inspection_path, &catalog_report)?;
+
+    let piece_plan_args = BuildEmitPiecePlanArgs {
+        candidate: artifact_path.clone(),
+        intermediate: intermediate_path,
+        geometry: geometry_path.clone(),
+        out: piece_plan_path.clone(),
+    };
+    let piece_plan = emit_piece_build_plan(
+        &accepted_artifact.candidate,
+        &intermediate,
+        &geometry,
+        &piece_plan_args,
+    )?;
+    write_json(&piece_plan_path, &piece_plan)?;
+
+    let match_args = BuildMatchShapesArgs {
+        catalog: shape_catalog_path.clone(),
+        piece_plan: piece_plan_path.clone(),
+        seed: seed + 31,
+        out: shape_match_path.clone(),
+    };
+    let shape_match = match_shapes(&catalog, &piece_plan, &match_args);
+    if !shape_match.ok {
+        return Err(format!(
+            "selection {} shape matching failed with {} unmatched requirement(s)",
+            entry.candidate_id, shape_match.unmatched_count
+        ));
+    }
+    write_json(&shape_match_path, &shape_match)?;
+
+    let assemble_args = BuildAssembleArgs {
+        catalog: shape_catalog_path.clone(),
+        piece_plan: piece_plan_path.clone(),
+        shape_match: shape_match_path.clone(),
+        out: placement_path.clone(),
+    };
+    let placement = assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)?;
+    write_json(&placement_path, &placement)?;
+
+    let placement_validation = validate_piece_placement(&placement);
+    write_json(&placement_validation_path, &placement_validation)?;
+    if !placement_validation.ok {
+        return Err(format!(
+            "selection {} piece placement validation failed with {} fatal diagnostic(s)",
+            entry.candidate_id, placement_validation.fatal_count
+        ));
+    }
+
+    entry.shape_catalog_ref = Some(display_path(&shape_catalog_path));
+    entry.catalog_inspection_ref = Some(display_path(&catalog_inspection_path));
+    entry.piece_plan_ref = Some(display_path(&piece_plan_path));
+    entry.shape_match_ref = Some(display_path(&shape_match_path));
+    entry.piece_placement_ref = Some(display_path(&placement_path));
+    entry.piece_placement_validation_ref = Some(display_path(&placement_validation_path));
+
     let transcript = run_dir.join("transcript.jsonl");
     append_transcript(
         Some(&transcript),
-        "geometry preview",
-        Some(&geometry_path),
-        Some(&html_preview_path),
+        "geometry and piece build preview",
+        Some(&piece_plan_path),
+        Some(&placement_validation_path),
         Some(seed),
         json!({
+            "geometry": preview.geometry_ref,
             "validation": preview.validation_ref,
-            "html": preview.html_ref
+            "html": preview.html_ref,
+            "catalog": display_path(&shape_catalog_path),
+            "catalogInspection": display_path(&catalog_inspection_path),
+            "shapeMatch": display_path(&shape_match_path),
+            "placement": display_path(&placement_path)
         }),
     )?;
     Ok(())

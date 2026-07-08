@@ -349,6 +349,76 @@ body {
   fill: #49616f;
 }
 
+.build-cell.piece {
+  fill: #324457;
+  stroke: #10151c;
+  stroke-width: 1;
+}
+
+.build-cell.reserved {
+  fill: #18202a;
+  stroke: #6c7784;
+  stroke-dasharray: 2 3;
+  stroke-width: 1;
+}
+
+.build-cell.connector {
+  fill: #516c79;
+}
+
+.build-cell.bend {
+  fill: #5a7481;
+}
+
+.build-cell.threshold {
+  fill: #b65f66;
+}
+
+.build-cell.hazard {
+  fill: #a96c59;
+}
+
+.build-cell.reward,
+.build-cell.key {
+  fill: #bca957;
+}
+
+.build-cell.resource {
+  fill: #679a77;
+}
+
+.build-cell.secret,
+.build-cell.shortcut {
+  fill: #8469a9;
+}
+
+.build-cell.boss {
+  fill: #9e5e73;
+}
+
+.build-glue-link {
+  stroke: #9bb3c4;
+  stroke-width: 2;
+  opacity: 0.28;
+}
+
+.build-glue-link.locked {
+  stroke: var(--danger);
+}
+
+.build-glue-link.hidden {
+  stroke: #c49be8;
+  stroke-dasharray: 4 5;
+}
+
+.build-glue-link.shortcut {
+  stroke: #58b7ba;
+}
+
+.build-glue-link.pressure {
+  stroke: var(--warning);
+}
+
 .build-cell.start,
 .build-marker.start {
   fill: #60b67b;
@@ -391,6 +461,20 @@ body {
   fill: #74a582;
 }
 
+.build-marker.gate-line,
+.build-marker.boss-space {
+  fill: #cf665f;
+}
+
+.build-marker.hazard-zone {
+  fill: #b56f60;
+}
+
+.build-marker.secret-marker,
+.build-marker.shortcut-marker {
+  fill: #9d75bd;
+}
+
 .build-label {
   fill: #eff8ff;
   font-size: 11px;
@@ -400,12 +484,22 @@ body {
   stroke-width: 3px;
 }
 
+.piece-label {
+  font-size: 8px;
+}
+
 .build-marker-label {
   fill: #071018;
   font-size: 10px;
   font-weight: 900;
   text-anchor: middle;
   pointer-events: none;
+}
+
+.build-dangling {
+  fill: var(--danger);
+  stroke: #071018;
+  stroke-width: 1;
 }
 
 .diagnostics {

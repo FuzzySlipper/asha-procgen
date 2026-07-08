@@ -39,6 +39,12 @@ try {
   if (typeof top.htmlRef !== 'string') {
     throw new Error('top selection is missing htmlRef');
   }
+  if (typeof top.piecePlacementRef !== 'string') {
+    throw new Error('top selection is missing piecePlacementRef');
+  }
+  if (typeof top.piecePlacementValidationRef !== 'string') {
+    throw new Error('top selection is missing piecePlacementValidationRef');
+  }
   const breakdown = await fetchArtifact(top.intermediateBreakdownRef);
   if (breakdown.kind !== 'asha_procgen.intermediate_breakdown.v1') {
     throw new Error(`unexpected intermediate kind: ${breakdown.kind}`);
@@ -48,6 +54,20 @@ try {
   }
   if (!Array.isArray(breakdown.connectors) || breakdown.connectors.length === 0) {
     throw new Error('intermediate breakdown has no connectors');
+  }
+  const placement = await fetchArtifact(top.piecePlacementRef);
+  if (placement.kind !== 'asha_procgen.piece_placement.v1') {
+    throw new Error(`unexpected placement kind: ${placement.kind}`);
+  }
+  if (!Array.isArray(placement.instances) || placement.instances.length < 10) {
+    throw new Error('piece placement has too few instances');
+  }
+  if (!Array.isArray(placement.gluedExits) || placement.gluedExits.length < 10) {
+    throw new Error('piece placement has too few glued exits');
+  }
+  const placementValidation = await fetchArtifact(top.piecePlacementValidationRef);
+  if (placementValidation.kind !== 'asha_procgen.validation.piece_placement.v1' || !placementValidation.ok) {
+    throw new Error('piece placement validation is not ok');
   }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
@@ -73,8 +93,15 @@ try {
   const buildDom = await dumpDom(chromium, `${baseUrl}/#build`);
   const buildCellCount = countOccurrences(buildDom, 'class="build-cell');
   const buildMarkerCount = countOccurrences(buildDom, 'class="build-marker');
+  const glueLinkCount = countOccurrences(buildDom, 'class="build-glue-link');
+  if (!buildDom.includes('Piece Placement Grid')) {
+    throw new Error('build tab did not render the piece placement grid');
+  }
   if (buildCellCount < 20 || buildMarkerCount < 2) {
     throw new Error(`build tab rendered too little grid detail: cells=${buildCellCount}, markers=${buildMarkerCount}`);
+  }
+  if (glueLinkCount < 10) {
+    throw new Error(`build tab rendered too few glued exits: ${glueLinkCount}`);
   }
   const screenshots = [
     {
@@ -143,6 +170,8 @@ try {
     buildTab: {
       cells: buildCellCount,
       markers: buildMarkerCount,
+      gluedExits: glueLinkCount,
+      placementRef: top.piecePlacementRef,
     },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };

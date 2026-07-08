@@ -78,11 +78,19 @@ artifacts/samples/batch-v2/<candidate>/geometry-2d.json
 artifacts/samples/batch-v2/<candidate>/geometry-2d.validation.json
 artifacts/samples/batch-v2/<candidate>/geometry-2d.preview.html
 artifacts/samples/batch-v2/<candidate>/html-preview.json
+artifacts/samples/batch-v2/<candidate>/shape-catalog.report.json
+artifacts/samples/batch-v2/<candidate>/piece-plan.json
+artifacts/samples/batch-v2/<candidate>/piece-shape-match.json
+artifacts/samples/batch-v2/<candidate>/piece-placement.json
+artifacts/samples/batch-v2/<candidate>/piece-placement.validation.json
 ```
 
 Each `accepted` entry in `selection-report.json` carries `geometryRef`,
-`geometryValidationRef`, `htmlPreviewRef`, and `htmlRef`, which powers the
-viewer Build tab when switching candidates.
+`geometryValidationRef`, `htmlPreviewRef`, `htmlRef`, `shapeCatalogRef`,
+`catalogInspectionRef`, `piecePlanRef`, `shapeMatchRef`, `piecePlacementRef`,
+and `piecePlacementValidationRef`. The viewer Build tab prefers the catalog
+piece placement grid and falls back to the older geometry-rasterized grid when
+piece artifacts are absent.
 
 ## Manual CLI Sequence
 
@@ -384,7 +392,9 @@ Viewer API routes:
 
 The batch viewer shows candidate scores, profile sequence, artifact refs,
 validation status, provenance steps, and any diagnostics/repair hints for the
-selected artifact.
+selected artifact. Its Build tab renders catalog piece placements when
+`piecePlacementRef` is present: occupied cells, reserved cells, glued exits,
+piece labels, and socket/content markers.
 
 ## Verification
 
@@ -411,7 +421,8 @@ This builds the viewer, starts the local preview server on `127.0.0.1`, checks
 the sample batch and intermediate artifact API, verifies the dark theme CSS, and
 checks the top generated standalone HTML preview for dark styling, SVG room and
 corridor elements, and required content labels. It also checks the viewer Build
-tab for rendered grid cells and markers. It uses Chromium to write
+tab for the catalog piece placement grid, rendered cells, socket markers, and
+glued-exit links. It uses Chromium to write
 layout/intermediate/build/standalone-preview screenshots plus a report under:
 
 ```text

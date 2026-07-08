@@ -893,6 +893,18 @@ struct SelectionEntry {
     html_preview_ref: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     html_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    shape_catalog_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    catalog_inspection_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    piece_plan_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    shape_match_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    piece_placement_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    piece_placement_validation_ref: Option<String>,
     overall: f64,
     metrics: BTreeMap<String, f64>,
     tags: Vec<String>,

@@ -24,6 +24,9 @@ fn run(cli: Cli) -> Result<(), String> {
             GeometrySubcommand::Validate2d(args) => geometry_validate_2d_command(args),
         },
         Command::Build(command) => match command.command {
+            BuildSubcommand::Catalog(command) => match command.command {
+                BuildCatalogSubcommand::Inspect(args) => build_catalog_inspect_command(args),
+            },
             BuildSubcommand::EmitPiecePlan(args) => build_emit_piece_plan_command(args),
             BuildSubcommand::MatchShapes(args) => build_match_shapes_command(args),
             BuildSubcommand::Assemble(args) => build_assemble_command(args),

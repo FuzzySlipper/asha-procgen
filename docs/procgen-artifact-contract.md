@@ -290,6 +290,10 @@ cells, exits, allowed transforms, tags, and feature sockets. Catalog shapes are
 JSON metadata in this repo; they are not final art assets, meshes, voxels, or
 runtime authority.
 
+Catalog inspection uses kind `asha_procgen.catalog_inspection.v1` and reports
+shape counts, piece kinds, feature socket kinds, exit directions, transforms,
+per-shape summaries, and catalog diagnostics.
+
 ## Piece Build Plan Artifact
 
 Kind: `asha_procgen.piece_build_plan.v1`

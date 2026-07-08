@@ -27,6 +27,7 @@ include!("parts/graph_reports.rs"); // graph summaries, analysis, compatibility
 include!("parts/intermediate.rs"); // spatial intent and intermediate breakdowns
 include!("parts/geometry_preview.rs"); // 2D geometry, validation, HTML preview
 include!("parts/piece_plan.rs"); // explicit catalog-piece build plans
+include!("parts/catalog_tools.rs"); // shape catalog inspection
 include!("parts/shape_matching.rs"); // catalog shape matching
 include!("parts/piece_placement.rs"); // deterministic piece occupancy placement
 include!("parts/intermediate_validation.rs"); // intermediate validation

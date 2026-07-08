@@ -289,6 +289,7 @@ struct BuildCommand {
 
 #[derive(Subcommand)]
 enum BuildSubcommand {
+    Catalog(BuildCatalogCommand),
     #[command(name = "emit-piece-plan")]
     EmitPiecePlan(BuildEmitPiecePlanArgs),
     #[command(name = "match-shapes")]
@@ -296,6 +297,25 @@ enum BuildSubcommand {
     Assemble(BuildAssembleArgs),
     #[command(name = "validate-placement")]
     ValidatePlacement(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct BuildCatalogCommand {
+    #[command(subcommand)]
+    command: BuildCatalogSubcommand,
+}
+
+#[derive(Subcommand)]
+enum BuildCatalogSubcommand {
+    Inspect(BuildCatalogInspectArgs),
+}
+
+#[derive(Args)]
+struct BuildCatalogInspectArgs {
+    #[arg(long)]
+    catalog: PathBuf,
+    #[arg(long)]
+    out: PathBuf,
 }
 
 #[derive(Args)]

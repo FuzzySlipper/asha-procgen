@@ -807,6 +807,35 @@ struct FeatureSocket {
     tags: Vec<String>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct CatalogInspectionReport {
+    kind: String,
+    schema_version: u32,
+    catalog_id: String,
+    catalog_ref: String,
+    shape_count: usize,
+    piece_kinds: Vec<String>,
+    feature_sockets: Vec<String>,
+    exit_directions: Vec<String>,
+    transforms: Vec<String>,
+    shapes: Vec<CatalogShapeSummary>,
+    diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct CatalogShapeSummary {
+    shape_id: String,
+    piece_kinds: Vec<String>,
+    footprint_cells: usize,
+    reserved_cells: usize,
+    exit_count: usize,
+    feature_socket_kinds: Vec<String>,
+    allowed_transforms: Vec<String>,
+    tags: Vec<String>,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct AcceptedArtifact {

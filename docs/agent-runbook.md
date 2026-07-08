@@ -244,6 +244,10 @@ occupancy cells, reservations, and glued-exit validation.
 Current piece assembly commands:
 
 ```bash
+npm run procgen -- build catalog inspect \
+  --catalog fixtures/shape-catalogs/2d-basic.json \
+  --out artifacts/manual/shape-catalog.report.json
+
 npm run procgen -- build emit-piece-plan \
   --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
   --geometry artifacts/manual/geometry-2d.json \
@@ -267,12 +271,10 @@ npm run procgen -- build validate-placement \
   --out artifacts/manual/piece-placement.validation.json
 ```
 
-Planned follow-up command shape:
+Focused smoke:
 
 ```bash
-npm run procgen -- build catalog inspect \
-  --catalog fixtures/shape-catalogs/2d-basic.json \
-  --out artifacts/manual/shape-catalog.report.json
+npm run piece:smoke
 ```
 
 Do not treat the current viewer Build tab's geometry-rasterized cells as final

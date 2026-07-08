@@ -1878,6 +1878,27 @@ mod tests {
     }
 
     #[test]
+    fn catalog_inspect_reports_default_shape_vocabulary() {
+        let catalog_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_SHAPE_CATALOG);
+        let catalog: ShapeCatalog = read_json(&catalog_path).expect("shape catalog should load");
+        let report = inspect_shape_catalog(&catalog, &catalog_path);
+
+        assert_eq!(report.kind, "asha_procgen.catalog_inspection.v1");
+        assert_eq!(report.catalog_id, "shape_catalog.2d_basic.v1");
+        assert_eq!(report.shape_count, catalog.shapes.len());
+        assert!(report.diagnostics.is_empty(), "{:?}", report.diagnostics);
+        for required in ["room", "corridor", "connector", "threshold", "reward", "key"] {
+            assert!(report.piece_kinds.contains(&required.to_owned()));
+        }
+        for required in ["north", "east", "south", "west"] {
+            assert!(report.exit_directions.contains(&required.to_owned()));
+        }
+        assert!(report.transforms.contains(&"rotate90".to_owned()));
+    }
+
+    #[test]
     fn scoring_rewards_cycles() {
         let intent = SeedIntent {
             kind: "asha_procgen.seed_intent.v1".to_owned(),

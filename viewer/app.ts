@@ -226,9 +226,11 @@ interface PiecePlacement {
   readonly catalogId: string;
   readonly matchId: string;
   readonly cellSize: number;
+  readonly gridConnectivity: 'four_way' | 'eight_way';
   readonly instances: readonly PieceInstance[];
   readonly gluedExits: readonly GluedExit[];
   readonly occupiedCells: readonly PlacementCellRef[];
+  readonly connectionCells: readonly PlacementCellRef[];
   readonly reservedCells: readonly PlacementCellRef[];
   readonly danglingExits: readonly DanglingExit[];
 }
@@ -1077,7 +1079,8 @@ function renderPiecePlacementGrid(
   stats.setAttribute('class', 'intermediate-region-detail');
   stats.setAttribute('x', String(margin));
   stats.setAttribute('y', '50');
-  stats.textContent = `${placement.instances.length} pieces / ${placement.occupiedCells.length} occupied / ${placement.reservedCells.length} reserved / ${placement.gluedExits.length} glued exits / ${validation?.ok === false ? `${validation.fatalCount} fatal` : 'valid'}`;
+  const connectivity = placement.gridConnectivity.replace('_', '-');
+  stats.textContent = `${placement.instances.length} pieces / ${placement.occupiedCells.length} occupied / ${placement.connectionCells.length} connection / ${connectivity} / ${validation?.ok === false ? `${validation.fatalCount} fatal` : 'valid'}`;
   target.append(stats);
 
   const grid = createSvg('g');
@@ -1131,6 +1134,20 @@ function renderPiecePlacementGrid(
     rect.setAttribute('y', String(normalized.row * plan.cellPixels));
     rect.setAttribute('width', String(plan.cellPixels));
     rect.setAttribute('height', String(plan.cellPixels));
+    grid.append(rect);
+  }
+
+  for (const cell of placement.connectionCells) {
+    const normalized = normalizeCell(cell, plan);
+    const rect = createSvg('rect');
+    rect.setAttribute('class', 'build-cell connection');
+    rect.setAttribute('x', String(normalized.column * plan.cellPixels));
+    rect.setAttribute('y', String(normalized.row * plan.cellPixels));
+    rect.setAttribute('width', String(plan.cellPixels));
+    rect.setAttribute('height', String(plan.cellPixels));
+    const titleElement = createSvg('title');
+    titleElement.textContent = cell.instanceId;
+    rect.append(titleElement);
     grid.append(rect);
   }
 
@@ -1228,7 +1245,11 @@ interface PiecePlacementGridPlan {
 }
 
 function piecePlacementGridPlan(placement: PiecePlacement): PiecePlacementGridPlan {
-  const allCells = [...placement.occupiedCells, ...placement.reservedCells];
+  const allCells = [
+    ...placement.occupiedCells,
+    ...placement.connectionCells,
+    ...placement.reservedCells,
+  ];
   const minX = Math.min(...allCells.map((cell) => cell.x), 0);
   const minY = Math.min(...allCells.map((cell) => cell.y), 0);
   const maxX = Math.max(...allCells.map((cell) => cell.x), 1);

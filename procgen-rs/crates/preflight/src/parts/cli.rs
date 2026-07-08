@@ -350,8 +350,17 @@ struct BuildAssembleArgs {
     piece_plan: PathBuf,
     #[arg(long = "shape-match")]
     shape_match: PathBuf,
+    #[arg(long, value_enum, default_value_t = GridConnectivity::FourWay)]
+    connectivity: GridConnectivity,
     #[arg(long)]
     out: PathBuf,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, ValueEnum)]
+#[serde(rename_all = "snake_case")]
+enum GridConnectivity {
+    FourWay,
+    EightWay,
 }
 
 #[derive(Args)]

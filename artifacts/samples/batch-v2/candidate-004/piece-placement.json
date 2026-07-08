@@ -9,6 +9,7 @@
   "sourceCatalogRef": "fixtures/shape-catalogs/2d-basic.json",
   "sourceMatchRef": "artifacts/samples/batch-v2/candidate-004/piece-shape-match.json",
   "cellSize": 1,
+  "gridConnectivity": "four_way",
   "instances": [
     {
       "instanceId": "instance.piece_room_room_region_start",
@@ -9081,6 +9082,283 @@
       "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
       "x": 25,
       "y": 8
+    }
+  ],
+  "connectionCells": [
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_1",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_1",
+      "x": 6,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 12,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_1",
+      "x": 5,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_5",
+      "x": 10,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_6",
+      "x": 11,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
+      "x": 17,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
+      "x": 17,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
+      "x": 17,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_7",
+      "x": 17,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 16,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 17,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
+      "x": 21,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
+      "x": 22,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 28,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_2",
+      "x": 18,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 21,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 21,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
+      "x": 21,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
+      "x": 21,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
+      "x": 21,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_6",
+      "x": 22,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 28,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 26,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 26,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 26,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_1",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_1",
+      "x": 4,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
+      "x": 8,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
+      "x": 9,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
+      "x": 12,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
+      "x": 9,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
+      "x": 9,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
+      "x": 9,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
+      "x": 9,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_6",
+      "x": 11,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
+      "x": 14,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
+      "x": 15,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_1",
+      "x": 15,
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_1",
+      "x": 16,
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_5",
+      "x": 20,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_5",
+      "x": 27,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_1",
+      "x": 5,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_1",
+      "x": 6,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 10,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_6",
+      "x": 11,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 18,
+      "y": 11
     }
   ],
   "reservedCells": [

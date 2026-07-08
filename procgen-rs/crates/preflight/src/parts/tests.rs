@@ -1518,7 +1518,9 @@ mod tests {
 
         assert!(report.ok, "{:?}", report.diagnostics);
         assert_eq!(placement.kind, "asha_procgen.piece_placement.v1");
+        assert_eq!(placement.grid_connectivity, GridConnectivity::FourWay);
         assert!(placement.occupied_cells.len() >= placement.instances.len());
+        assert!(!placement.connection_cells.is_empty());
         assert!(placement
             .instances
             .iter()
@@ -1583,6 +1585,25 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "piece_goal_unreachable"));
+
+        let mut grid_unreachable = full_stack_piece_placement_fixture(1052);
+        grid_unreachable.connection_cells.clear();
+        let report = validate_piece_placement(&grid_unreachable);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_grid_instance_unreachable"));
+    }
+
+    #[test]
+    fn grid_connectivity_distinguishes_cardinal_and_diagonal_neighbors() {
+        let origin = GridCell { x: 0, y: 0 };
+        let cardinal = GridCell { x: 1, y: 0 };
+        let diagonal = GridCell { x: 1, y: 1 };
+
+        assert!(cells_adjacent(&origin, &cardinal, GridConnectivity::FourWay));
+        assert!(!cells_adjacent(&origin, &diagonal, GridConnectivity::FourWay));
+        assert!(cells_adjacent(&origin, &diagonal, GridConnectivity::EightWay));
     }
 
     fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
@@ -1653,6 +1674,7 @@ mod tests {
             catalog: PathBuf::from("fixtures/shape-catalogs/2d-basic.json"),
             piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
             shape_match: PathBuf::from("artifacts/test/piece-shape-match.json"),
+            connectivity: GridConnectivity::FourWay,
             out: PathBuf::from("artifacts/test/piece-placement.json"),
         };
         assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)

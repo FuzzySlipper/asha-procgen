@@ -65,6 +65,12 @@ try {
   if (!Array.isArray(placement.gluedExits) || placement.gluedExits.length < 10) {
     throw new Error('piece placement has too few glued exits');
   }
+  if (placement.gridConnectivity !== 'four_way') {
+    throw new Error(`unexpected piece placement connectivity: ${placement.gridConnectivity}`);
+  }
+  if (!Array.isArray(placement.connectionCells) || placement.connectionCells.length < 10) {
+    throw new Error('piece placement has too few connection cells');
+  }
   const placementValidation = await fetchArtifact(top.piecePlacementValidationRef);
   if (placementValidation.kind !== 'asha_procgen.validation.piece_placement.v1' || !placementValidation.ok) {
     throw new Error('piece placement validation is not ok');
@@ -94,6 +100,7 @@ try {
   const buildCellCount = countOccurrences(buildDom, 'class="build-cell');
   const buildMarkerCount = countOccurrences(buildDom, 'class="build-marker');
   const glueLinkCount = countOccurrences(buildDom, 'class="build-glue-link');
+  const connectionCellCount = countOccurrences(buildDom, 'class="build-cell connection');
   if (!buildDom.includes('Piece Placement Grid')) {
     throw new Error('build tab did not render the piece placement grid');
   }
@@ -102,6 +109,9 @@ try {
   }
   if (glueLinkCount < 10) {
     throw new Error(`build tab rendered too few glued exits: ${glueLinkCount}`);
+  }
+  if (connectionCellCount < 10) {
+    throw new Error(`build tab rendered too few connection cells: ${connectionCellCount}`);
   }
   const screenshots = [
     {
@@ -169,6 +179,7 @@ try {
     },
     buildTab: {
       cells: buildCellCount,
+      connectionCells: connectionCellCount,
       markers: buildMarkerCount,
       gluedExits: glueLinkCount,
       placementRef: top.piecePlacementRef,

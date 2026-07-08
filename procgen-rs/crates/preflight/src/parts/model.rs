@@ -673,9 +673,11 @@ struct PiecePlacement {
     source_catalog_ref: String,
     source_match_ref: String,
     cell_size: i32,
+    grid_connectivity: GridConnectivity,
     instances: Vec<PieceInstance>,
     glued_exits: Vec<GluedExit>,
     occupied_cells: Vec<PlacementCellRef>,
+    connection_cells: Vec<PlacementCellRef>,
     reserved_cells: Vec<PlacementCellRef>,
     dangling_exits: Vec<DanglingExit>,
 }

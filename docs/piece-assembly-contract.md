@@ -169,9 +169,13 @@ Important fields:
 - `sourceCatalogRef`: source shape catalog ref.
 - `sourceMatchRef`: source shape match ref.
 - `cellSize`: placement grid cell size.
+- `gridConnectivity`: physical grid adjacency policy, currently `four_way`
+  or `eight_way`; CLI assembly defaults to `four_way`.
 - `instances`: placed piece instances.
 - `gluedExits`: validated exit-to-exit joins.
 - `occupiedCells`: optional flattened occupancy index for quick inspection.
+- `connectionCells`: generated bridge cells that make glued joins physically
+  reachable under `gridConnectivity`.
 - `reservedCells`: optional flattened reservation/clearance index.
 - `danglingExits`: exits intentionally left open or invalid exits found during
   validation.
@@ -201,9 +205,11 @@ diagnostic families:
 - incompatible glued exits;
 - occupied-cell overlap;
 - reserved-cell conflict;
+- connection-cell overlap;
 - dangling required exit;
 - missing feature socket;
 - start-to-goal unreachable through glued exits;
+- piece instance unreachable on the physical placement grid;
 - unsupported vertical/3D exit.
 
 Fatal diagnostics block sample evidence and future mesh/voxel output. Warnings

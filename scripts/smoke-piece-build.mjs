@@ -93,6 +93,12 @@ if (!match.ok || match.unmatchedCount !== 0) {
 if (!validation.ok) {
   throw new Error(`placement validation failed with ${validation.fatalCount} fatal diagnostic(s)`);
 }
+if (placement.gridConnectivity !== 'four_way') {
+  throw new Error(`unexpected placement connectivity: ${placement.gridConnectivity}`);
+}
+if (!Array.isArray(placement.connectionCells) || placement.connectionCells.length === 0) {
+  throw new Error('placement emitted no connection cells');
+}
 
 console.log(
   JSON.stringify({
@@ -103,6 +109,8 @@ console.log(
     instances: placement.instances.length,
     gluedExits: placement.gluedExits.length,
     occupiedCells: placement.occupiedCells.length,
+    connectionCells: placement.connectionCells.length,
+    gridConnectivity: placement.gridConnectivity,
     validationOk: validation.ok,
   }),
 );

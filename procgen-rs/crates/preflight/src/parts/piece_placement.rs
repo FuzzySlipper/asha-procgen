@@ -132,13 +132,16 @@ fn assemble_piece_placement(
         source_catalog_ref: display_path(&args.catalog),
         source_match_ref: display_path(&args.shape_match),
         cell_size: catalog.cell_size,
+        grid_connectivity: args.connectivity,
         instances,
         glued_exits: Vec::new(),
         occupied_cells,
+        connection_cells: Vec::new(),
         reserved_cells,
         dangling_exits: Vec::new(),
     };
     placement.glued_exits = derive_glued_exits(plan, &placement.instances);
+    placement.connection_cells = derive_connection_cells(&placement);
     Ok(placement)
 }
 
@@ -280,6 +283,123 @@ fn compatible_exit_pair<'a>(
     None
 }
 
+fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> {
+    let instances = placement
+        .instances
+        .iter()
+        .map(|instance| (instance.instance_id.as_str(), instance))
+        .collect::<BTreeMap<_, _>>();
+    let occupied = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    let mut seen = BTreeSet::new();
+    let mut cells = Vec::new();
+    for glued in &placement.glued_exits {
+        let Some(from) = instances.get(glued.from_instance.as_str()) else {
+            continue;
+        };
+        let Some(to) = instances.get(glued.to_instance.as_str()) else {
+            continue;
+        };
+        let Some((start, end)) = nearest_cell_pair(
+            &from.occupied_cells,
+            &to.occupied_cells,
+            placement.grid_connectivity,
+        ) else {
+            continue;
+        };
+        if cells_adjacent(start, end, placement.grid_connectivity) {
+            continue;
+        }
+        let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
+        for cell in bridge_cells(start, end, placement.grid_connectivity) {
+            if occupied.contains(&(cell.x, cell.y)) {
+                continue;
+            }
+            if seen.insert((cell.x, cell.y)) {
+                cells.push(PlacementCellRef {
+                    instance_id: instance_id.clone(),
+                    x: cell.x,
+                    y: cell.y,
+                });
+            }
+        }
+    }
+    cells
+}
+
+fn nearest_cell_pair<'a>(
+    from: &'a [GridCell],
+    to: &'a [GridCell],
+    connectivity: GridConnectivity,
+) -> Option<(&'a GridCell, &'a GridCell)> {
+    let mut best: Option<(&GridCell, &GridCell, i32)> = None;
+    for from_cell in from {
+        for to_cell in to {
+            let distance = grid_distance(from_cell, to_cell, connectivity);
+            if best
+                .map(|(_, _, best_distance)| distance < best_distance)
+                .unwrap_or(true)
+            {
+                best = Some((from_cell, to_cell, distance));
+            }
+        }
+    }
+    best.map(|(from_cell, to_cell, _)| (from_cell, to_cell))
+}
+
+fn grid_distance(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> i32 {
+    let dx = (from.x - to.x).abs();
+    let dy = (from.y - to.y).abs();
+    match connectivity {
+        GridConnectivity::FourWay => dx + dy,
+        GridConnectivity::EightWay => dx.max(dy),
+    }
+}
+
+fn bridge_cells(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> Vec<GridCell> {
+    let mut cells = Vec::new();
+    let mut x = from.x;
+    let mut y = from.y;
+    while x != to.x || y != to.y {
+        match connectivity {
+            GridConnectivity::FourWay => {
+                if x != to.x {
+                    x += (to.x - x).signum();
+                } else if y != to.y {
+                    y += (to.y - y).signum();
+                }
+            }
+            GridConnectivity::EightWay => {
+                if x != to.x {
+                    x += (to.x - x).signum();
+                }
+                if y != to.y {
+                    y += (to.y - y).signum();
+                }
+            }
+        }
+        if x != to.x || y != to.y {
+            cells.push(GridCell { x, y });
+        }
+    }
+    cells
+}
+
+fn cells_adjacent(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> bool {
+    if from.x == to.x && from.y == to.y {
+        return true;
+    }
+    let dx = (from.x - to.x).abs();
+    let dy = (from.y - to.y).abs();
+    match connectivity {
+        GridConnectivity::FourWay => dx + dy == 1,
+        GridConnectivity::EightWay => dx.max(dy) == 1,
+    }
+}
+
 fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
     let mut diagnostics = Vec::new();
     if placement.kind != "asha_procgen.piece_placement.v1" {
@@ -293,6 +413,7 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
     validate_placement_cells(placement, &mut diagnostics);
     validate_placement_links(placement, &mut diagnostics);
     validate_placement_reachability(placement, &mut diagnostics);
+    validate_placement_grid_reachability(placement, &mut diagnostics);
     let fatal_count = diagnostics
         .iter()
         .filter(|diagnostic| diagnostic.severity == Severity::Fatal)
@@ -349,6 +470,22 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                     ),
                 ));
             }
+        }
+    }
+    let mut connection_by_cell: BTreeMap<(i32, i32), &str> = BTreeMap::new();
+    for cell in &placement.connection_cells {
+        if let Some(existing) =
+            connection_by_cell.insert((cell.x, cell.y), cell.instance_id.as_str())
+        {
+            diagnostics.push(fatal(
+                "piece_connection_cell_overlap",
+                None,
+                None,
+                format!(
+                    "Connection cell {},{} is shared by {} and {}.",
+                    cell.x, cell.y, existing, cell.instance_id
+                ),
+            ));
         }
     }
 }
@@ -487,6 +624,87 @@ fn validate_placement_reachability(placement: &PiecePlacement, diagnostics: &mut
         None,
         "No glued-exit path reaches a goal instance from a start instance.",
     ));
+}
+
+fn validate_placement_grid_reachability(
+    placement: &PiecePlacement,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let grid_cells = placement
+        .occupied_cells
+        .iter()
+        .chain(placement.connection_cells.iter())
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    if grid_cells.is_empty() {
+        return;
+    }
+    let start = placement
+        .instances
+        .iter()
+        .find(|instance| instance.tags.iter().any(|tag| tag == "start_marker" || tag == "start"))
+        .and_then(|instance| instance.occupied_cells.first())
+        .or_else(|| {
+            placement
+                .instances
+                .iter()
+                .find(|instance| !instance.occupied_cells.is_empty())
+                .and_then(|instance| instance.occupied_cells.first())
+        });
+    let Some(start) = start else {
+        return;
+    };
+    let mut seen = BTreeSet::new();
+    let mut queue = VecDeque::new();
+    if grid_cells.contains(&(start.x, start.y)) {
+        seen.insert((start.x, start.y));
+        queue.push_back((start.x, start.y));
+    }
+    while let Some(cell) = queue.pop_front() {
+        for neighbor in grid_neighbors(cell, placement.grid_connectivity) {
+            if grid_cells.contains(&neighbor) && seen.insert(neighbor) {
+                queue.push_back(neighbor);
+            }
+        }
+    }
+    for instance in &placement.instances {
+        if instance.occupied_cells.is_empty() {
+            continue;
+        }
+        if !instance
+            .occupied_cells
+            .iter()
+            .any(|cell| seen.contains(&(cell.x, cell.y)))
+        {
+            diagnostics.push(fatal(
+                "piece_grid_instance_unreachable",
+                None,
+                None,
+                format!(
+                    "Instance {} is not physically reachable on the {:?} placement grid.",
+                    instance.instance_id, placement.grid_connectivity
+                ),
+            ));
+        }
+    }
+}
+
+fn grid_neighbors(cell: (i32, i32), connectivity: GridConnectivity) -> Vec<(i32, i32)> {
+    let mut neighbors = vec![
+        (cell.0 + 1, cell.1),
+        (cell.0 - 1, cell.1),
+        (cell.0, cell.1 + 1),
+        (cell.0, cell.1 - 1),
+    ];
+    if connectivity == GridConnectivity::EightWay {
+        neighbors.extend([
+            (cell.0 + 1, cell.1 + 1),
+            (cell.0 + 1, cell.1 - 1),
+            (cell.0 - 1, cell.1 + 1),
+            (cell.0 - 1, cell.1 - 1),
+        ]);
+    }
+    neighbors
 }
 
 fn transform_cells(cells: &[GridCell], transform: &str, origin: &GridCell) -> Vec<GridCell> {

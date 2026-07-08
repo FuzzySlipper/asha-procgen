@@ -362,6 +362,13 @@ body {
   stroke-width: 1;
 }
 
+.build-cell.connection {
+  fill: #8aa36d;
+  opacity: 0.9;
+  stroke: #151b16;
+  stroke-width: 1;
+}
+
 .build-cell.connector {
   fill: #516c79;
 }

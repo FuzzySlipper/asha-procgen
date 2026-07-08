@@ -272,6 +272,7 @@ npm run procgen -- build assemble \
   --catalog fixtures/shape-catalogs/2d-basic.json \
   --piece-plan artifacts/manual/piece-plan.json \
   --shape-match artifacts/manual/piece-shape-match.json \
+  --connectivity four-way \
   --out artifacts/manual/piece-placement.json
 
 npm run procgen -- build validate-placement \
@@ -290,7 +291,10 @@ piece-placement authority. The `piece-plan.json` artifact is the requirement
 graph, and `piece-shape-match.json` records selected catalog shape ids,
 transforms, exit maps, socket maps, and rejected alternatives. The
 `piece-placement.json` artifact owns the first catalog-driven occupancy cells,
-reservations, glued exits, and dangling-exit diagnostics.
+generated physical connection cells, reservations, glued exits, and
+dangling-exit diagnostics. Assembly defaults to four-way grid connectivity;
+use `--connectivity eight-way` only for games where diagonal contact is meant
+to count as reachable.
 
 The initial metadata-only fixture catalog is:
 
@@ -393,8 +397,8 @@ Viewer API routes:
 The batch viewer shows candidate scores, profile sequence, artifact refs,
 validation status, provenance steps, and any diagnostics/repair hints for the
 selected artifact. Its Build tab renders catalog piece placements when
-`piecePlacementRef` is present: occupied cells, reserved cells, glued exits,
-piece labels, and socket/content markers.
+`piecePlacementRef` is present: occupied cells, connection cells, reserved
+cells, glued exits, piece labels, and socket/content markers.
 
 ## Verification
 

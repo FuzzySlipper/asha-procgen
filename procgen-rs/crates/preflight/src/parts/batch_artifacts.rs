@@ -418,6 +418,7 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
         catalog: shape_catalog_path.clone(),
         piece_plan: piece_plan_path.clone(),
         shape_match: shape_match_path.clone(),
+        connectivity: GridConnectivity::FourWay,
         out: placement_path.clone(),
     };
     let placement = assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)?;

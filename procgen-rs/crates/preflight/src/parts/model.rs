@@ -662,6 +662,74 @@ struct ShapeMatchRejection {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct PiecePlacement {
+    kind: String,
+    schema_version: u32,
+    placement_id: String,
+    plan_id: String,
+    catalog_id: String,
+    match_id: String,
+    source_plan_ref: String,
+    source_catalog_ref: String,
+    source_match_ref: String,
+    cell_size: i32,
+    instances: Vec<PieceInstance>,
+    glued_exits: Vec<GluedExit>,
+    occupied_cells: Vec<PlacementCellRef>,
+    reserved_cells: Vec<PlacementCellRef>,
+    dangling_exits: Vec<DanglingExit>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceInstance {
+    instance_id: String,
+    piece_id: String,
+    requirement_kind: String,
+    role: String,
+    shape_id: String,
+    transform: String,
+    origin: GridCell,
+    occupied_cells: Vec<GridCell>,
+    reserved_cells: Vec<GridCell>,
+    exit_map: Vec<MatchedExit>,
+    feature_placements: Vec<MatchedSocket>,
+    source_requirement_ref: String,
+    source_refs: Vec<String>,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GluedExit {
+    id: String,
+    link_id: String,
+    from_instance: String,
+    from_exit: String,
+    to_instance: String,
+    to_exit: String,
+    source_ref: String,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PlacementCellRef {
+    instance_id: String,
+    x: i32,
+    y: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DanglingExit {
+    instance_id: String,
+    exit_id: String,
+    reason: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct SkippedConnector {
     source_connector: String,
     reason: String,

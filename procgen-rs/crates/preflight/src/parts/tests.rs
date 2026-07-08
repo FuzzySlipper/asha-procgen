@@ -1511,6 +1511,77 @@ mod tests {
         assert_eq!(report_a.matches[0].transform, report_b.matches[0].transform);
     }
 
+    #[test]
+    fn piece_placement_assembles_full_stack_without_overlap() {
+        let placement = full_stack_piece_placement_fixture(951);
+        let report = validate_piece_placement(&placement);
+
+        assert!(report.ok, "{:?}", report.diagnostics);
+        assert_eq!(placement.kind, "asha_procgen.piece_placement.v1");
+        assert!(placement.occupied_cells.len() >= placement.instances.len());
+        assert!(placement
+            .instances
+            .iter()
+            .all(|instance| !instance.occupied_cells.is_empty()));
+        assert!(placement.instances.iter().all(|instance| {
+            !instance.shape_id.is_empty()
+                && !instance.source_requirement_ref.is_empty()
+                && !instance.source_refs.is_empty()
+        }));
+        assert!(!placement.glued_exits.is_empty());
+        assert!(placement.dangling_exits.is_empty());
+    }
+
+    #[test]
+    fn piece_placement_validation_catches_overlap_reservation_dangling_and_reachability() {
+        let placement = full_stack_piece_placement_fixture(1051);
+
+        let mut overlap = placement.clone();
+        let first = overlap.occupied_cells[0].clone();
+        overlap.occupied_cells[1].x = first.x;
+        overlap.occupied_cells[1].y = first.y;
+        let report = validate_piece_placement(&overlap);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_occupied_cell_overlap"));
+
+        let mut reservation = placement.clone();
+        let occupied = reservation.occupied_cells[0].clone();
+        let reserver = reservation.instances[1].instance_id.clone();
+        reservation.reserved_cells.push(PlacementCellRef {
+            instance_id: reserver,
+            x: occupied.x,
+            y: occupied.y,
+        });
+        let report = validate_piece_placement(&reservation);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_reserved_cell_conflict"));
+
+        let mut dangling = placement.clone();
+        dangling.dangling_exits.push(DanglingExit {
+            instance_id: dangling.instances[0].instance_id.clone(),
+            exit_id: "exit.test".to_owned(),
+            reason: "test".to_owned(),
+        });
+        let report = validate_piece_placement(&dangling);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_required_exit_dangling"));
+
+        let mut unreachable = placement;
+        unreachable.glued_exits.clear();
+        unreachable.dangling_exits.clear();
+        let report = validate_piece_placement(&unreachable);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_goal_unreachable"));
+    }
+
     fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
         full_stack_geometry_inputs(seed).2
     }
@@ -1551,6 +1622,38 @@ mod tests {
         let geometry =
             emit_geometry_2d(&candidate, &intermediate, &args, seed + 20).expect("geometry should emit");
         (candidate, intermediate, geometry)
+    }
+
+    fn full_stack_piece_placement_fixture(seed: u64) -> PiecePlacement {
+        let (candidate, intermediate, geometry) = full_stack_geometry_inputs(seed);
+        let piece_plan_args = BuildEmitPiecePlanArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            out: PathBuf::from("artifacts/test/piece-plan.json"),
+        };
+        let piece_plan = emit_piece_build_plan(
+            &candidate,
+            &intermediate,
+            &geometry,
+            &piece_plan_args,
+        )
+        .expect("piece plan should emit");
+        let catalog_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_SHAPE_CATALOG);
+        let catalog: ShapeCatalog = read_json(&catalog_path).expect("shape catalog should load");
+        let match_args = test_match_args(seed + 30);
+        let shape_match = match_shapes(&catalog, &piece_plan, &match_args);
+        assert!(shape_match.ok, "{:?}", shape_match.diagnostics);
+        let assemble_args = BuildAssembleArgs {
+            catalog: PathBuf::from("fixtures/shape-catalogs/2d-basic.json"),
+            piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
+            shape_match: PathBuf::from("artifacts/test/piece-shape-match.json"),
+            out: PathBuf::from("artifacts/test/piece-placement.json"),
+        };
+        assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)
+            .expect("piece placement should assemble")
     }
 
     fn rectangles_overlap(left: &GeometryRect, right: &GeometryRect) -> bool {

@@ -311,7 +311,7 @@ fn emit_corridor_piece_requirements(
                 },
                 PieceExitRequirement {
                     id: format!("exit.segment_{}.out", index + 1),
-                    direction,
+                    direction: direction.clone(),
                     width: corridor.width,
                     tags: base_tags.clone(),
                 },
@@ -324,18 +324,16 @@ fn emit_corridor_piece_requirements(
             )],
         });
         piece_ids.push(segment_id);
-    }
 
-    for (index, triple) in corridor.points.windows(3).enumerate() {
-        let Some(in_direction) = direction_between_points(&triple[0], &triple[1]) else {
+        let Some(next_point) = corridor.points.get(index + 2) else {
             continue;
         };
-        let Some(out_direction) = direction_between_points(&triple[1], &triple[2]) else {
+        let Some(out_direction) = direction_between_points(&pair[1], next_point) else {
             continue;
         };
-        if in_direction == out_direction {
+        if direction == out_direction {
             continue;
-        }
+        };
         let bend_id = format!(
             "piece.bend.{}.bend_{}",
             slugify_label(corridor.id.as_str()),
@@ -349,7 +347,7 @@ fn emit_corridor_piece_requirements(
             required_exits: vec![
                 PieceExitRequirement {
                     id: format!("exit.bend_{}.in", index + 1),
-                    direction: opposite_direction(in_direction.as_str()).to_owned(),
+                    direction: opposite_direction(direction.as_str()).to_owned(),
                     width: corridor.width,
                     tags: base_tags.clone(),
                 },
@@ -362,7 +360,7 @@ fn emit_corridor_piece_requirements(
             ],
             required_sockets: Vec::new(),
             tags: base_tags.clone(),
-            placement_hints: vec![format!("bend:{}:{}", triple[1].x, triple[1].y)],
+            placement_hints: vec![format!("bend:{}:{}", pair[1].x, pair[1].y)],
         });
         piece_ids.push(bend_id);
     }

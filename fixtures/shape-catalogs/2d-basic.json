@@ -155,7 +155,8 @@
       ],
       "reservedCells": [],
       "exits": [
-        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["optional"]}
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["optional"]},
+        {"id": "exit.east", "x": 2, "y": 0, "direction": "east", "width": 1, "tags": ["optional"]}
       ],
       "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
       "featureSockets": [
@@ -274,7 +275,8 @@
       ],
       "reservedCells": [],
       "exits": [
-        {"id": "exit.north", "x": 1, "y": -1, "direction": "north", "width": 1, "tags": ["preparation"]}
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["preparation"]},
+        {"id": "exit.east", "x": 3, "y": 0, "direction": "east", "width": 1, "tags": ["preparation"]}
       ],
       "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
       "featureSockets": [

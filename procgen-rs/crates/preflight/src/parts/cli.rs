@@ -293,6 +293,9 @@ enum BuildSubcommand {
     EmitPiecePlan(BuildEmitPiecePlanArgs),
     #[command(name = "match-shapes")]
     MatchShapes(BuildMatchShapesArgs),
+    Assemble(BuildAssembleArgs),
+    #[command(name = "validate-placement")]
+    ValidatePlacement(ReportOutArgs),
 }
 
 #[derive(Args)]
@@ -315,6 +318,18 @@ struct BuildMatchShapesArgs {
     piece_plan: PathBuf,
     #[arg(long)]
     seed: u64,
+    #[arg(long)]
+    out: PathBuf,
+}
+
+#[derive(Args)]
+struct BuildAssembleArgs {
+    #[arg(long)]
+    catalog: PathBuf,
+    #[arg(long = "piece-plan")]
+    piece_plan: PathBuf,
+    #[arg(long = "shape-match")]
+    shape_match: PathBuf,
     #[arg(long)]
     out: PathBuf,
 }

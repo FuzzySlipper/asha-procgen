@@ -317,9 +317,9 @@ for incompatible shapes.
 Kind: `asha_procgen.piece_placement.v1`
 
 Piece placements record selected catalog shapes, transforms, occupied cells,
-reserved cells, glued exits, and feature/socket placements. They are the first
-artifact layer that owns occupancy, while still stopping before mesh, voxel,
-renderer, collision, or ASHA runtime integration.
+reserved cells, glued exits, dangling exits, and feature/socket placements.
+They are the first artifact layer that owns occupancy, while still stopping
+before mesh, voxel, renderer, collision, or ASHA runtime integration.
 
 Validation uses kind `asha_procgen.validation.piece_placement.v1`.
 

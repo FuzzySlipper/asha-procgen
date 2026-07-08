@@ -163,8 +163,11 @@ Important fields:
 
 - `placementId`: stable generated id.
 - `planId`: source build-plan id.
-- `catalogRef`: source shape catalog.
-- `seed`: deterministic assembly seed.
+- `catalogId`: source shape catalog id.
+- `matchId`: source shape match id.
+- `sourcePlanRef`: source build-plan ref.
+- `sourceCatalogRef`: source shape catalog ref.
+- `sourceMatchRef`: source shape match ref.
 - `cellSize`: placement grid cell size.
 - `instances`: placed piece instances.
 - `gluedExits`: validated exit-to-exit joins.

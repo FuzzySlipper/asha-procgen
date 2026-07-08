@@ -238,10 +238,10 @@ docs/piece-assembly-contract.md
 This is the path from geometry rectangles/corridors to prefab or voxel-ready
 build data. It treats rooms, corridors, bends, thresholds, landings,
 reward pockets, hazards, boss spaces, shortcuts, secrets, and resource rooms as
-explicit pieces with exits and feature sockets. Later commands will add catalog
-matching, transforms, occupied cells, and reserved cells.
+explicit pieces with exits, feature sockets, catalog matches, transformed
+occupancy cells, reservations, and glued-exit validation.
 
-Current piece-plan and matching commands:
+Current piece assembly commands:
 
 ```bash
 npm run procgen -- build emit-piece-plan \
@@ -255,6 +255,16 @@ npm run procgen -- build match-shapes \
   --piece-plan artifacts/manual/piece-plan.json \
   --seed 7101 \
   --out artifacts/manual/piece-shape-match.json
+
+npm run procgen -- build assemble \
+  --catalog fixtures/shape-catalogs/2d-basic.json \
+  --piece-plan artifacts/manual/piece-plan.json \
+  --shape-match artifacts/manual/piece-shape-match.json \
+  --out artifacts/manual/piece-placement.json
+
+npm run procgen -- build validate-placement \
+  --state artifacts/manual/piece-placement.json \
+  --out artifacts/manual/piece-placement.validation.json
 ```
 
 Planned follow-up command shape:
@@ -263,23 +273,14 @@ Planned follow-up command shape:
 npm run procgen -- build catalog inspect \
   --catalog fixtures/shape-catalogs/2d-basic.json \
   --out artifacts/manual/shape-catalog.report.json
-
-npm run procgen -- build assemble \
-  --catalog fixtures/shape-catalogs/2d-basic.json \
-  --shape-match artifacts/manual/piece-shape-match.json \
-  --seed 7101 \
-  --out artifacts/manual/piece-placement.json
-
-npm run procgen -- build validate \
-  --state artifacts/manual/piece-placement.json \
-  --out artifacts/manual/piece-placement.validation.json
 ```
 
 Do not treat the current viewer Build tab's geometry-rasterized cells as final
 piece-placement authority. The `piece-plan.json` artifact is the requirement
 graph, and `piece-shape-match.json` records selected catalog shape ids,
-transforms, exit maps, socket maps, and rejected alternatives for the next
-occupancy slice.
+transforms, exit maps, socket maps, and rejected alternatives. The
+`piece-placement.json` artifact owns the first catalog-driven occupancy cells,
+reservations, glued exits, and dangling-exit diagnostics.
 
 The initial metadata-only fixture catalog is:
 

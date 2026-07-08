@@ -1,0 +1,286 @@
+{
+  "kind": "asha_procgen.shape_catalog.v1",
+  "schemaVersion": 1,
+  "catalogId": "shape_catalog.2d_basic.v1",
+  "cellSize": 1,
+  "shapes": [
+    {
+      "shapeId": "shape.room.standard.1_exit",
+      "label": "Standard chamber, one exit",
+      "pieceKinds": ["room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}
+      ],
+      "reservedCells": [
+        {"x": -1, "y": 1}, {"x": 3, "y": 1}
+      ],
+      "exits": [
+        {"id": "exit.east", "x": 3, "y": 1, "direction": "east", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.marker", "kind": "marker", "x": 1, "y": 1, "tags": ["room_center"]}
+      ],
+      "tags": ["medium", "standard_room"]
+    },
+    {
+      "shapeId": "shape.room.standard.2_exit_opposed",
+      "label": "Standard chamber, opposed exits",
+      "pieceKinds": ["room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}, {"x": 3, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}, {"x": 3, "y": 2}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 1, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 4, "y": 1, "direction": "east", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90"],
+      "featureSockets": [
+        {"id": "socket.container.1", "kind": "container", "x": 1, "y": 1, "tags": ["optional"]},
+        {"id": "socket.marker", "kind": "marker", "x": 2, "y": 1, "tags": ["room_center"]}
+      ],
+      "tags": ["medium", "standard_room", "through_room"]
+    },
+    {
+      "shapeId": "shape.room.standard.3_exit",
+      "label": "Standard chamber, three exits",
+      "pieceKinds": ["room", "landing"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.north", "x": 1, "y": -1, "direction": "north", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 3, "y": 1, "direction": "east", "width": 1, "tags": ["standard"]},
+        {"id": "exit.south", "x": 1, "y": 3, "direction": "south", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.marker", "kind": "marker", "x": 1, "y": 1, "tags": ["junction"]}
+      ],
+      "tags": ["medium", "choice", "landing"]
+    },
+    {
+      "shapeId": "shape.room.hub.4_exit",
+      "label": "Landmark hub chamber, four exits",
+      "pieceKinds": ["room", "landing"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0}, {"x": 4, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}, {"x": 3, "y": 1}, {"x": 4, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}, {"x": 3, "y": 2}, {"x": 4, "y": 2},
+        {"x": 0, "y": 3}, {"x": 1, "y": 3}, {"x": 2, "y": 3}, {"x": 3, "y": 3}, {"x": 4, "y": 3},
+        {"x": 0, "y": 4}, {"x": 1, "y": 4}, {"x": 2, "y": 4}, {"x": 3, "y": 4}, {"x": 4, "y": 4}
+      ],
+      "reservedCells": [
+        {"x": 2, "y": -1}, {"x": 5, "y": 2}, {"x": 2, "y": 5}, {"x": -1, "y": 2}
+      ],
+      "exits": [
+        {"id": "exit.north", "x": 2, "y": -1, "direction": "north", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 5, "y": 2, "direction": "east", "width": 1, "tags": ["standard"]},
+        {"id": "exit.south", "x": 2, "y": 5, "direction": "south", "width": 1, "tags": ["standard"]},
+        {"id": "exit.west", "x": -1, "y": 2, "direction": "west", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.landmark", "kind": "landmark", "x": 2, "y": 2, "tags": ["wayfinding_anchor"]}
+      ],
+      "tags": ["large", "hub", "landmark", "choice"]
+    },
+    {
+      "shapeId": "shape.corridor.straight.3",
+      "label": "Straight corridor, length three",
+      "pieceKinds": ["corridor"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 3, "y": 0, "direction": "east", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90"],
+      "featureSockets": [],
+      "tags": ["corridor", "straight"]
+    },
+    {
+      "shapeId": "shape.corridor.bend.2x2",
+      "label": "Bend corridor, two by two",
+      "pieceKinds": ["corridor", "bend"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 1, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.south", "x": 1, "y": 2, "direction": "south", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [],
+      "tags": ["corridor", "bend"]
+    },
+    {
+      "shapeId": "shape.threshold.locked_gate",
+      "label": "Locked threshold with interior gate line",
+      "pieceKinds": ["threshold", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["preview_line"]},
+        {"id": "exit.east", "x": 3, "y": 0, "direction": "east", "width": 1, "tags": ["locked_threshold"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.gate_line", "kind": "gate_line", "x": 1, "y": 0, "tags": ["locked_threshold"]},
+        {"id": "socket.lock_marker", "kind": "lock_marker", "x": 1, "y": 1, "tags": ["locked_gate"]}
+      ],
+      "tags": ["threshold", "locked_threshold", "gate"]
+    },
+    {
+      "shapeId": "shape.pocket.reward_cache",
+      "label": "Reward cache pocket",
+      "pieceKinds": ["reward", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["optional"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.reward_cache", "kind": "reward_cache", "x": 1, "y": 0, "tags": ["treasure"]},
+        {"id": "socket.container.1", "kind": "container", "x": 0, "y": 1, "tags": ["cache"]}
+      ],
+      "tags": ["small", "reward", "cache", "optional"]
+    },
+    {
+      "shapeId": "shape.pocket.key_pickup",
+      "label": "Key pickup pocket",
+      "pieceKinds": ["key", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.south", "x": 0, "y": 2, "direction": "south", "width": 1, "tags": ["pickup_pocket"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.key_pickup", "kind": "key_pickup", "x": 1, "y": 1, "tags": ["key"]}
+      ],
+      "tags": ["small", "key", "pickup"]
+    },
+    {
+      "shapeId": "shape.room.hazard_pressure",
+      "label": "Hazard pressure room",
+      "pieceKinds": ["hazard", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}, {"x": 3, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["pressure_route"]},
+        {"id": "exit.east", "x": 4, "y": 0, "direction": "east", "width": 1, "tags": ["rejoin_corridor"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.hazard_zone", "kind": "hazard_zone", "x": 1, "y": 0, "tags": ["pressure"]},
+        {"id": "socket.hazard_marker", "kind": "hazard", "x": 2, "y": 1, "tags": ["hazard"]}
+      ],
+      "tags": ["hazard", "pressure", "medium"]
+    },
+    {
+      "shapeId": "shape.room.boss_arena",
+      "label": "Boss arena with preparation approach",
+      "pieceKinds": ["boss", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0}, {"x": 4, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}, {"x": 3, "y": 1}, {"x": 4, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}, {"x": 3, "y": 2}, {"x": 4, "y": 2},
+        {"x": 0, "y": 3}, {"x": 1, "y": 3}, {"x": 2, "y": 3}, {"x": 3, "y": 3}, {"x": 4, "y": 3}
+      ],
+      "reservedCells": [
+        {"x": 2, "y": -1}, {"x": 2, "y": 4}
+      ],
+      "exits": [
+        {"id": "exit.north", "x": 2, "y": -1, "direction": "north", "width": 1, "tags": ["approach"]},
+        {"id": "exit.south", "x": 2, "y": 4, "direction": "south", "width": 1, "tags": ["boss_exit"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.boss_space", "kind": "boss_space", "x": 2, "y": 1, "tags": ["boss"]},
+        {"id": "socket.reward_cache", "kind": "reward_cache", "x": 2, "y": 3, "tags": ["boss_reward"]}
+      ],
+      "tags": ["large", "boss", "threshold"]
+    },
+    {
+      "shapeId": "shape.room.secret_bypass",
+      "label": "Secret bypass marker",
+      "pieceKinds": ["secret", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["hidden_passage"]},
+        {"id": "exit.east", "x": 2, "y": 0, "direction": "east", "width": 1, "tags": ["hidden_route"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.secret_marker", "kind": "secret_marker", "x": 1, "y": 1, "tags": ["secret"]}
+      ],
+      "tags": ["secret", "hidden", "bypass"]
+    },
+    {
+      "shapeId": "shape.connector.shortcut_return",
+      "label": "Shortcut return connector",
+      "pieceKinds": ["shortcut", "corridor"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["shortcut_link"]},
+        {"id": "exit.east", "x": 3, "y": 0, "direction": "east", "width": 1, "tags": ["one_way_return"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.shortcut_marker", "kind": "shortcut_marker", "x": 1, "y": 0, "tags": ["shortcut"]}
+      ],
+      "tags": ["shortcut", "return", "rejoin"]
+    },
+    {
+      "shapeId": "shape.room.resource_clue",
+      "label": "Resource clue room",
+      "pieceKinds": ["resource", "room"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0},
+        {"x": 0, "y": 1}, {"x": 1, "y": 1}, {"x": 2, "y": 1}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.north", "x": 1, "y": -1, "direction": "north", "width": 1, "tags": ["preparation"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [
+        {"id": "socket.resource_clue", "kind": "resource_clue", "x": 1, "y": 0, "tags": ["preparation"]},
+        {"id": "socket.container.1", "kind": "container", "x": 2, "y": 1, "tags": ["resource"]}
+      ],
+      "tags": ["resource", "preparation", "clue"]
+    }
+  ]
+}

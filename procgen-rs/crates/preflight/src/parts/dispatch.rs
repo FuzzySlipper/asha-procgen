@@ -23,6 +23,9 @@ fn run(cli: Cli) -> Result<(), String> {
             GeometrySubcommand::Emit2d(args) => geometry_emit_2d_command(args),
             GeometrySubcommand::Validate2d(args) => geometry_validate_2d_command(args),
         },
+        Command::Build(command) => match command.command {
+            BuildSubcommand::EmitPiecePlan(args) => build_emit_piece_plan_command(args),
+        },
         Command::Preview(command) => match command.command {
             PreviewSubcommand::Html(args) => preview_html_command(args),
         },

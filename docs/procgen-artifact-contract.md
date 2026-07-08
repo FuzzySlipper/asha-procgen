@@ -281,6 +281,40 @@ Preview metadata records geometry, validation, and standalone HTML refs. The
 HTML file itself should open from disk and render the generated 2D dungeon as
 dark-mode SVG with labels and annotations.
 
+## Shape Catalog Artifact
+
+Kind: `asha_procgen.shape_catalog.v1`
+
+Shape catalogs describe reusable prefab metadata: occupied cells, reserved
+cells, exits, allowed transforms, tags, and feature sockets. Catalog shapes are
+JSON metadata in this repo; they are not final art assets, meshes, voxels, or
+runtime authority.
+
+## Piece Build Plan Artifact
+
+Kind: `asha_procgen.piece_build_plan.v1`
+
+Piece build plans expand geometry/intermediate intent into explicit piece
+requirements before catalog matching. Rooms, corridors, bends, thresholds,
+landings, reward pockets, hazards, boss spaces, shortcuts, secrets, and resource
+rooms are all first-class pieces. Corridors are not hidden runtime negotiation.
+The top-level artifact records `planId`, `candidateId`, `geometryId`,
+`sourceCandidateRef`, `sourceIntermediateRef`, `sourceGeometryRef`,
+`requirements`, `links`, and `contentRequirements`.
+
+## Piece Placement Artifact
+
+Kind: `asha_procgen.piece_placement.v1`
+
+Piece placements record selected catalog shapes, transforms, occupied cells,
+reserved cells, glued exits, and feature/socket placements. They are the first
+artifact layer that owns occupancy, while still stopping before mesh, voxel,
+renderer, collision, or ASHA runtime integration.
+
+Validation uses kind `asha_procgen.validation.piece_placement.v1`.
+
+See `docs/piece-assembly-contract.md`.
+
 ## Accepted Artifact
 
 Kind: `asha_procgen.accepted_artifact.v1`

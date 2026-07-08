@@ -26,6 +26,7 @@ include!("parts/candidate_graph.rs"); // graph construction and rules
 include!("parts/graph_reports.rs"); // graph summaries, analysis, compatibility
 include!("parts/intermediate.rs"); // spatial intent and intermediate breakdowns
 include!("parts/geometry_preview.rs"); // 2D geometry, validation, HTML preview
+include!("parts/piece_plan.rs"); // explicit catalog-piece build plans
 include!("parts/intermediate_validation.rs"); // intermediate validation
 include!("parts/common_helpers.rs"); // shared graph/id helpers
 include!("parts/repair_validation.rs"); // graph validation and repair advice

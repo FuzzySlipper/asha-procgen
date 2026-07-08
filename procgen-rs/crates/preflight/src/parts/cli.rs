@@ -23,6 +23,8 @@ enum Command {
     Breakdown(BreakdownCommand),
     /// Emit or validate concrete geometry artifacts.
     Geometry(GeometryCommand),
+    /// Expand geometry into explicit catalog-piece requirements.
+    Build(BuildCommand),
     /// Render generated artifacts into standalone previews.
     Preview(PreviewCommand),
     /// Validate candidates.
@@ -280,6 +282,30 @@ struct GeometryEmit2dArgs {
 }
 
 #[derive(Args)]
+struct BuildCommand {
+    #[command(subcommand)]
+    command: BuildSubcommand,
+}
+
+#[derive(Subcommand)]
+enum BuildSubcommand {
+    #[command(name = "emit-piece-plan")]
+    EmitPiecePlan(BuildEmitPiecePlanArgs),
+}
+
+#[derive(Args)]
+struct BuildEmitPiecePlanArgs {
+    #[arg(long)]
+    candidate: PathBuf,
+    #[arg(long)]
+    intermediate: PathBuf,
+    #[arg(long)]
+    geometry: PathBuf,
+    #[arg(long)]
+    out: PathBuf,
+}
+
+#[derive(Args)]
 struct PreviewCommand {
     #[command(subcommand)]
     command: PreviewSubcommand,
@@ -429,3 +455,5 @@ struct IntentBudget {
 }
 
 const DEFAULT_BATCH_PROFILE: &str = "fixtures/batch-profiles/v2-sample.json";
+#[allow(dead_code)]
+const DEFAULT_SHAPE_CATALOG: &str = "fixtures/shape-catalogs/2d-basic.json";

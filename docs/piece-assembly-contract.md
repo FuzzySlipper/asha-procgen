@@ -1,0 +1,233 @@
+# Piece Assembly Contract
+
+Status: first contract for catalog-driven 2D piece assembly.
+
+This layer sits after `geometry_2d` and before any mesh, voxel, renderer, or
+runtime output. It turns abstract room/corridor geometry into explicit
+placeable pieces chosen from a reusable shape catalog. Rooms, corridors, bends,
+thresholds, landings, and later vertical connectors are all represented as
+pieces with exits and footprints.
+
+## Pipeline
+
+```text
+candidate + intermediate_breakdown + geometry_2d
+  -> piece_build_plan
+  -> shape_catalog matching
+  -> piece_placement
+  -> piece placement validation
+  -> viewer build evidence
+  -> future mesh/voxel output
+```
+
+The graph and intermediate layers answer "what should this dungeon do?" The
+piece layer answers "which explicit cells and exits does this build require?"
+The mesh/voxel layer, when it exists, will answer "how is this rendered or
+simulated?"
+
+## Shape Catalog Artifact
+
+Kind: `asha_procgen.shape_catalog.v1`
+
+Shape catalogs are reusable prefab metadata. A shape may eventually point at
+art assets or voxel volumes, but this first contract is JSON-only and 2D-grid
+focused.
+
+Important top-level fields:
+
+- `catalogId`: stable catalog id.
+- `schemaVersion`: additive schema version.
+- `cellSize`: authoring grid size in abstract cells.
+- `shapes`: reusable shape records.
+
+Important shape fields:
+
+- `shapeId`: stable shape id such as `shape.room.standard.2_exit`.
+- `pieceKinds`: compatible requirement kinds, such as `room`, `corridor`,
+  `bend`, `threshold`, `reward`, `hazard`, `boss`, `secret`, or `resource`.
+- `footprint`: occupied grid cells relative to shape origin.
+- `reservedCells`: optional clearance cells that must remain empty but are not
+  occupied.
+- `exits`: exit sockets with relative position, direction, width, and tags.
+- `allowedTransforms`: transforms the assembler may use, such as `identity`,
+  `rotate90`, `rotate180`, `rotate270`, `mirrorX`, or `mirrorY`.
+- `featureSockets`: gameplay/art sockets such as `container`, `boss_space`,
+  `gate_line`, `hazard_zone`, `reward_cache`, `key_pickup`, `secret_marker`,
+  `shortcut_marker`, or `resource_clue`.
+- `tags`: matching hints such as `small`, `wide`, `locked_threshold`,
+  `pressure`, `hidden`, `shortcut`, `rejoin`, or `landmark`.
+
+### Catalog Exit Model
+
+Exit directions use a 2D vocabulary now:
+
+- `north`
+- `east`
+- `south`
+- `west`
+
+Later 3D catalogs may add `up`, `down`, or vector-style exits. The 2D matcher
+must reject unsupported 3D exits until placement validation can prove them.
+
+Two exits can glue when:
+
+- their transformed positions touch across a cell edge;
+- their directions are opposite;
+- their widths are compatible;
+- required tags are satisfied.
+
+## Piece Build Plan Artifact
+
+Kind: `asha_procgen.piece_build_plan.v1`
+
+The build plan is a requirement graph, not yet a placed map. It expands the
+geometry artifact into explicit pieces and connectors for catalog matching.
+
+Important fields:
+
+- `planId`: stable generated id.
+- `candidateId`: source candidate id.
+- `geometryId`: source geometry id.
+- `sourceCandidateRef`: source candidate ref.
+- `sourceGeometryRef`: source `geometry_2d` ref.
+- `sourceIntermediateRef`: source intermediate breakdown ref.
+- `requirements`: piece requirements.
+- `links`: exit-to-exit requirements between pieces.
+- `contentRequirements`: content/socket requirements that must be satisfied by
+  matched shapes or placed feature sockets.
+
+Important requirement fields:
+
+- `pieceId`: stable requirement id.
+- `kind`: `room`, `corridor`, `bend`, `threshold`, `reward`, `hazard`, `boss`,
+  `secret`, `shortcut`, `resource`, or other additive piece kind.
+- `role`: semantic role inherited from geometry/intermediate.
+- `sourceRefs`: graph node/edge, intermediate region/connector, and
+  geometry room/corridor refs.
+- `requiredExits`: abstract exits the selected shape must provide.
+- `requiredSockets`: feature sockets needed for contents or gameplay beats.
+- `tags`: matching hints and validation semantics.
+- `placementHints`: optional non-authoritative hints, such as preferred
+  approximate cell span or corridor length band.
+
+Corridors are first-class requirements. A geometry corridor may expand into:
+
+```text
+connector piece -> straight corridor piece -> bend piece -> straight corridor piece -> connector piece
+```
+
+or into a shorter equivalent. The important rule is that corridor space is not
+an invisible runtime side effect. It is explicit catalog-matched build data.
+
+## Piece Placement Artifact
+
+Kind: `asha_procgen.piece_placement.v1`
+
+Placement artifacts record selected catalog shapes and concrete grid cells.
+They are the first layer that owns occupancy.
+
+Important fields:
+
+- `placementId`: stable generated id.
+- `planId`: source build-plan id.
+- `catalogRef`: source shape catalog.
+- `seed`: deterministic assembly seed.
+- `cellSize`: placement grid cell size.
+- `instances`: placed piece instances.
+- `gluedExits`: validated exit-to-exit joins.
+- `occupiedCells`: optional flattened occupancy index for quick inspection.
+- `reservedCells`: optional flattened reservation/clearance index.
+- `danglingExits`: exits intentionally left open or invalid exits found during
+  validation.
+
+Important instance fields:
+
+- `instanceId`: stable instance id.
+- `pieceId`: source requirement id.
+- `shapeId`: selected catalog shape.
+- `transform`: selected transform.
+- `origin`: grid origin.
+- `occupiedCells`: transformed occupied cells.
+- `reservedCells`: transformed reserved cells.
+- `exitMap`: mapping from requirement exits to transformed catalog exits.
+- `featurePlacements`: mapping from content/socket requirements to feature
+  sockets.
+
+## Validation Artifact
+
+Kind: `asha_procgen.validation.piece_placement.v1`
+
+Placement validation should be deterministic and fail closed. Expected
+diagnostic families:
+
+- catalog shape missing or unsupported;
+- required exit unsatisfied;
+- incompatible glued exits;
+- occupied-cell overlap;
+- reserved-cell conflict;
+- dangling required exit;
+- missing feature socket;
+- start-to-goal unreachable through glued exits;
+- unsupported vertical/3D exit.
+
+Fatal diagnostics block sample evidence and future mesh/voxel output. Warnings
+may flag density, excessive corridor length, or stylistic mismatch.
+
+## Responsibilities By Layer
+
+Graph/intermediate:
+
+- progression, lock/key order, branch purpose, pressure/reward semantics;
+- no shape ids, grid cells, mesh handles, or voxel coordinates.
+
+Geometry:
+
+- approximate 2D room rectangles, corridor polylines, content labels;
+- enough coordinate intent to seed piece requirements;
+- no final occupancy authority.
+
+Piece build plan:
+
+- explicit room/corridor/bend/threshold requirements;
+- source refs and required exits/sockets;
+- no selected catalog shape or occupied cells.
+
+Piece placement:
+
+- selected shapes, transforms, occupied cells, reserved cells, glued exits;
+- validation authority for prefab-grid assembly;
+- still no mesh, voxel, renderer, collision, or ASHA runtime authority.
+
+## Fixture Catalog Shape Families
+
+The first fixture catalog should include at least:
+
+- standard chambers with 1, 2, 3, and 4 exits;
+- straight corridor pieces;
+- bend corridor pieces;
+- connector/landing pieces;
+- locked threshold or interior gate split pieces;
+- reward/key/cache pockets;
+- hazard/pressure rooms;
+- boss/preparation rooms;
+- secret/shortcut marker pieces;
+- resource/clue rooms.
+
+The first fixture catalog lives at:
+
+```text
+fixtures/shape-catalogs/2d-basic.json
+```
+
+It is intentionally metadata-only and small enough for agents to inspect by
+hand while still covering the current sample dungeon vocabulary.
+
+## Non-Goals
+
+- No final tile-perfect roguelike map.
+- No mesh generation.
+- No voxel output.
+- No ASHA runtime, renderer, collision, or pathfinding integration.
+- No hand-authored art assets beyond JSON fixture shape metadata.
+- No accepted 3D placement yet; 3D exits remain future contract vocabulary
+  until validators can prove them.

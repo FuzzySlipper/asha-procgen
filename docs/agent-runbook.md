@@ -227,6 +227,58 @@ npm run procgen -- preview html \
   --out artifacts/manual/geometry-2d.preview.html
 ```
 
+## Piece Assembly Preview
+
+The catalog-driven piece assembly target is documented in:
+
+```text
+docs/piece-assembly-contract.md
+```
+
+This is the path from geometry rectangles/corridors to prefab or voxel-ready
+build data. It treats rooms, corridors, bends, thresholds, landings,
+reward pockets, hazards, boss spaces, shortcuts, secrets, and resource rooms as
+explicit pieces with exits and feature sockets. Later commands will add catalog
+matching, transforms, occupied cells, and reserved cells.
+
+Current piece-plan command:
+
+```bash
+npm run procgen -- build emit-piece-plan \
+  --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --geometry artifacts/manual/geometry-2d.json \
+  --intermediate artifacts/manual/intermediate-breakdown.json \
+  --out artifacts/manual/piece-plan.json
+```
+
+Planned follow-up command shape:
+
+```bash
+npm run procgen -- build catalog inspect \
+  --catalog fixtures/shape-catalogs/2d-basic.json \
+  --out artifacts/manual/shape-catalog.report.json
+
+npm run procgen -- build assemble \
+  --catalog fixtures/shape-catalogs/2d-basic.json \
+  --piece-plan artifacts/manual/piece-plan.json \
+  --seed 7101 \
+  --out artifacts/manual/piece-placement.json
+
+npm run procgen -- build validate \
+  --state artifacts/manual/piece-placement.json \
+  --out artifacts/manual/piece-placement.validation.json
+```
+
+Do not treat the current viewer Build tab's geometry-rasterized cells as final
+piece-placement authority. The `piece-plan.json` artifact is the requirement
+graph for the next catalog matching and occupancy slices.
+
+The initial metadata-only fixture catalog is:
+
+```text
+fixtures/shape-catalogs/2d-basic.json
+```
+
 ## Pattern Catalog
 
 The next graph grammar vocabulary is documented in:

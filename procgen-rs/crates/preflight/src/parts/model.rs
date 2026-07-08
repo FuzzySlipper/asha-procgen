@@ -102,6 +102,18 @@ enum EdgeKind {
     SecretBypass,
 }
 
+impl EdgeKind {
+    fn as_str(self) -> &'static str {
+        match self {
+            EdgeKind::CriticalPath => "critical_path",
+            EdgeKind::KeyBranch => "key_branch",
+            EdgeKind::OptionalBranch => "optional_branch",
+            EdgeKind::Shortcut => "shortcut",
+            EdgeKind::SecretBypass => "secret_bypass",
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 enum TraversalKind {
@@ -109,6 +121,17 @@ enum TraversalKind {
     Locked,
     OneWayReturn,
     Hidden,
+}
+
+impl TraversalKind {
+    fn as_str(self) -> &'static str {
+        match self {
+            TraversalKind::Open => "open",
+            TraversalKind::Locked => "locked",
+            TraversalKind::OneWayReturn => "one_way_return",
+            TraversalKind::Hidden => "hidden",
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -521,6 +544,67 @@ struct GeometryContent {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct PieceBuildPlan {
+    kind: String,
+    schema_version: u32,
+    plan_id: String,
+    candidate_id: String,
+    geometry_id: String,
+    source_candidate_ref: String,
+    source_intermediate_ref: String,
+    source_geometry_ref: String,
+    requirements: Vec<PieceRequirement>,
+    links: Vec<PieceLink>,
+    content_requirements: Vec<PieceContentRequirement>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceRequirement {
+    piece_id: String,
+    kind: String,
+    role: String,
+    source_refs: Vec<String>,
+    required_exits: Vec<PieceExitRequirement>,
+    required_sockets: Vec<String>,
+    tags: Vec<String>,
+    placement_hints: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceExitRequirement {
+    id: String,
+    direction: String,
+    width: i32,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceLink {
+    id: String,
+    from_piece: String,
+    to_piece: String,
+    source_ref: String,
+    traversal_hint: String,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceContentRequirement {
+    id: String,
+    piece_id: String,
+    source_ref: String,
+    kind: String,
+    label: String,
+    required_socket: String,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct SkippedConnector {
     source_connector: String,
     reason: String,
@@ -537,6 +621,65 @@ struct HtmlPreviewArtifact {
     validation_ref: String,
     html_ref: String,
     screenshot_hint: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct ShapeCatalog {
+    kind: String,
+    schema_version: u32,
+    catalog_id: String,
+    cell_size: i32,
+    shapes: Vec<CatalogShape>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct CatalogShape {
+    shape_id: String,
+    label: String,
+    piece_kinds: Vec<String>,
+    footprint: Vec<GridCell>,
+    #[serde(default)]
+    reserved_cells: Vec<GridCell>,
+    exits: Vec<CatalogExit>,
+    allowed_transforms: Vec<String>,
+    #[serde(default)]
+    feature_sockets: Vec<FeatureSocket>,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct GridCell {
+    x: i32,
+    y: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct CatalogExit {
+    id: String,
+    x: i32,
+    y: i32,
+    direction: String,
+    width: i32,
+    tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct FeatureSocket {
+    id: String,
+    kind: String,
+    x: i32,
+    y: i32,
+    tags: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

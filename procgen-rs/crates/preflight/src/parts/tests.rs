@@ -1264,7 +1264,128 @@ mod tests {
         assert!(html.contains("geometry_room_overlap"));
     }
 
+    #[test]
+    fn piece_plan_emits_explicit_room_corridor_and_semantic_requirements() {
+        let (candidate, intermediate, geometry) = full_stack_geometry_inputs(851);
+        let args = BuildEmitPiecePlanArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            out: PathBuf::from("artifacts/test/piece-plan.json"),
+        };
+        let plan = emit_piece_build_plan(&candidate, &intermediate, &geometry, &args)
+            .expect("piece plan should emit");
+
+        assert_eq!(plan.kind, "asha_procgen.piece_build_plan.v1");
+        assert_eq!(plan.candidate_id, candidate.candidate_id);
+        assert_eq!(plan.geometry_id, geometry.geometry_id);
+        assert!(plan.requirements.len() > geometry.rooms.len() + geometry.corridors.len() * 2);
+        assert!(plan.links.len() > geometry.corridors.len());
+
+        let requirement_kinds = plan
+            .requirements
+            .iter()
+            .map(|requirement| requirement.kind.as_str())
+            .collect::<BTreeSet<_>>();
+        for required in [
+            "room",
+            "threshold",
+            "key",
+            "hazard",
+            "reward",
+            "boss",
+            "secret",
+            "shortcut",
+            "resource",
+            "connector",
+            "corridor",
+            "bend",
+        ] {
+            assert!(requirement_kinds.contains(required), "{required} requirement missing");
+        }
+
+        for corridor in &geometry.corridors {
+            let corridor_ref = format!("geometryCorridor:{}", corridor.id);
+            let corridor_requirements = plan
+                .requirements
+                .iter()
+                .filter(|requirement| requirement.source_refs.contains(&corridor_ref))
+                .collect::<Vec<_>>();
+            assert!(
+                corridor_requirements
+                    .iter()
+                    .any(|requirement| requirement.kind == "connector"),
+                "{} missing connector piece requirements",
+                corridor.id
+            );
+            assert!(
+                corridor_requirements
+                    .iter()
+                    .any(|requirement| requirement.kind == "corridor"),
+                "{} missing corridor segment piece requirements",
+                corridor.id
+            );
+        }
+
+        let sockets = plan
+            .content_requirements
+            .iter()
+            .map(|requirement| requirement.required_socket.as_str())
+            .collect::<BTreeSet<_>>();
+        for required in [
+            "gate_line",
+            "key_pickup",
+            "hazard_zone",
+            "reward_cache",
+            "boss_space",
+            "secret_marker",
+            "shortcut_marker",
+            "resource_clue",
+        ] {
+            assert!(sockets.contains(required), "{required} content socket missing");
+        }
+
+        let link_tags = plan
+            .links
+            .iter()
+            .flat_map(|link| link.tags.iter().map(String::as_str))
+            .collect::<BTreeSet<_>>();
+        for required in [
+            "locked_threshold",
+            "hidden_route",
+            "shortcut_link",
+            "pressure_route",
+            "rejoin_corridor",
+        ] {
+            assert!(link_tags.contains(required), "{required} link tag missing");
+        }
+        assert!(
+            plan.links
+                .iter()
+                .any(|link| link.traversal_hint == "open"),
+            "normal open corridor link missing"
+        );
+
+        let locked_requirement = plan
+            .requirements
+            .iter()
+            .find(|requirement| requirement.tags.contains(&"locked_threshold".to_owned()))
+            .expect("locked corridor requirement should exist");
+        assert!(
+            locked_requirement
+                .source_refs
+                .iter()
+                .any(|source_ref| source_ref.starts_with("edge:"))
+        );
+    }
+
     fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
+        full_stack_geometry_inputs(seed).2
+    }
+
+    fn full_stack_geometry_inputs(
+        seed: u64,
+    ) -> (Candidate, IntermediateBreakdown, Geometry2dArtifact) {
         let intent = test_intent("geometry-validation");
         let mut candidate = create_initial_candidate(&intent, seed);
         for (index, rule) in [
@@ -1295,7 +1416,9 @@ mod tests {
             seed: seed + 20,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
-        emit_geometry_2d(&candidate, &intermediate, &args, seed + 20).expect("geometry should emit")
+        let geometry =
+            emit_geometry_2d(&candidate, &intermediate, &args, seed + 20).expect("geometry should emit");
+        (candidate, intermediate, geometry)
     }
 
     fn rectangles_overlap(left: &GeometryRect, right: &GeometryRect) -> bool {
@@ -1326,6 +1449,99 @@ mod tests {
         );
         let cycled = batch_profile_sequence(&profile, 6).expect("cycled sequence");
         assert_eq!(cycled.label, "hub-merge");
+    }
+
+    #[test]
+    fn loads_default_shape_catalog_fixture() {
+        let catalog_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_SHAPE_CATALOG);
+        let catalog: ShapeCatalog = read_json(&catalog_path).expect("shape catalog should load");
+        assert_eq!(catalog.kind, "asha_procgen.shape_catalog.v1");
+        assert_eq!(catalog.catalog_id, "shape_catalog.2d_basic.v1");
+        assert!(catalog.cell_size > 0);
+        assert!(catalog.shapes.len() >= 12);
+
+        let mut shape_ids = BTreeSet::new();
+        let mut piece_kinds = BTreeSet::new();
+        let mut feature_kinds = BTreeSet::new();
+        let allowed_directions = BTreeSet::from(["north", "east", "south", "west"]);
+        let allowed_transforms = BTreeSet::from([
+            "identity",
+            "rotate90",
+            "rotate180",
+            "rotate270",
+            "mirrorX",
+            "mirrorY",
+        ]);
+        for shape in &catalog.shapes {
+            assert!(
+                shape_ids.insert(shape.shape_id.as_str()),
+                "duplicate shape id {}",
+                shape.shape_id
+            );
+            assert!(!shape.piece_kinds.is_empty(), "{} has no piece kinds", shape.shape_id);
+            assert!(!shape.footprint.is_empty(), "{} has no footprint", shape.shape_id);
+            assert!(!shape.exits.is_empty(), "{} has no exits", shape.shape_id);
+            assert!(
+                shape
+                    .allowed_transforms
+                    .iter()
+                    .all(|transform| allowed_transforms.contains(transform.as_str())),
+                "{} has an unsupported transform",
+                shape.shape_id
+            );
+            for exit in &shape.exits {
+                assert!(
+                    allowed_directions.contains(exit.direction.as_str()),
+                    "{} has unsupported exit direction {}",
+                    shape.shape_id,
+                    exit.direction
+                );
+                assert!(exit.width > 0, "{} has non-positive exit width", shape.shape_id);
+            }
+            piece_kinds.extend(shape.piece_kinds.iter().map(String::as_str));
+            feature_kinds.extend(shape.feature_sockets.iter().map(|socket| socket.kind.as_str()));
+        }
+
+        for required in [
+            "room",
+            "corridor",
+            "bend",
+            "threshold",
+            "reward",
+            "hazard",
+            "boss",
+            "secret",
+            "shortcut",
+            "resource",
+        ] {
+            assert!(piece_kinds.contains(required), "{required} piece kind missing");
+        }
+        for required in [
+            "container",
+            "boss_space",
+            "gate_line",
+            "hazard_zone",
+            "reward_cache",
+            "key_pickup",
+            "secret_marker",
+            "shortcut_marker",
+            "resource_clue",
+        ] {
+            assert!(feature_kinds.contains(required), "{required} socket missing");
+        }
+
+        for exit_count in 1..=4 {
+            assert!(
+                catalog
+                    .shapes
+                    .iter()
+                    .any(|shape| shape.piece_kinds.iter().any(|kind| kind == "room")
+                        && shape.exits.len() == exit_count),
+                "{exit_count}-exit room shape missing"
+            );
+        }
     }
 
     #[test]

@@ -42,6 +42,8 @@ enum Command {
     Accept(AcceptArgs),
     /// Produce the first deterministic sample run.
     Baseline(BaselineArgs),
+    /// Generate a deterministic batch and selection report.
+    Batch(BatchCommand),
 }
 
 #[derive(Args)]
@@ -100,6 +102,12 @@ enum GraphRule {
     OptionalTreasureDetour,
     OneWayShortcut,
     SecretBypass,
+    HubSpokeCluster,
+    NestedLockKeyChain,
+    HazardResourceTradeoff,
+    BossPreparationLoop,
+    GatedTreasureBranch,
+    BranchMergeShortcut,
 }
 
 impl GraphRule {
@@ -109,6 +117,12 @@ impl GraphRule {
             GraphRule::OptionalTreasureDetour => "optional_treasure_detour",
             GraphRule::OneWayShortcut => "one_way_shortcut",
             GraphRule::SecretBypass => "secret_bypass",
+            GraphRule::HubSpokeCluster => "hub_spoke_cluster",
+            GraphRule::NestedLockKeyChain => "nested_lock_key_chain",
+            GraphRule::HazardResourceTradeoff => "hazard_resource_tradeoff",
+            GraphRule::BossPreparationLoop => "boss_preparation_loop",
+            GraphRule::GatedTreasureBranch => "gated_treasure_branch",
+            GraphRule::BranchMergeShortcut => "branch_merge_shortcut",
         }
     }
 }
@@ -199,6 +213,27 @@ struct BaselineArgs {
     out_dir: PathBuf,
     #[arg(long, default_value_t = 4103)]
     seed: u64,
+}
+
+#[derive(Args)]
+struct BatchCommand {
+    #[command(subcommand)]
+    command: BatchSubcommand,
+}
+
+#[derive(Subcommand)]
+enum BatchSubcommand {
+    Generate(BatchGenerateArgs),
+}
+
+#[derive(Args)]
+struct BatchGenerateArgs {
+    #[arg(long)]
+    out_dir: PathBuf,
+    #[arg(long, default_value_t = 5201)]
+    seed: u64,
+    #[arg(long, default_value_t = 10)]
+    count: usize,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -336,6 +371,8 @@ struct Diagnostic {
     node: Option<String>,
     edge: Option<String>,
     detail: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    repair_hint: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -418,6 +455,40 @@ struct AcceptedArtifact {
     score_summary: ScoreReport,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SelectionReport {
+    kind: String,
+    schema_version: u32,
+    batch_id: String,
+    seed: u64,
+    requested_count: usize,
+    generated_count: usize,
+    accepted: Vec<SelectionEntry>,
+    rejected: Vec<SelectionRejection>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SelectionEntry {
+    candidate_id: String,
+    artifact_ref: String,
+    validation_ref: String,
+    score_ref: String,
+    layout_ref: String,
+    overall: f64,
+    metrics: BTreeMap<String, f64>,
+    tags: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SelectionRejection {
+    candidate_id: String,
+    candidate_ref: String,
+    diagnostics: Vec<Diagnostic>,
+}
+
 fn run(cli: Cli) -> Result<(), String> {
     match cli.command {
         Command::Preflight(args) => run_preflight_command(&args.repo_root),
@@ -437,6 +508,9 @@ fn run(cli: Cli) -> Result<(), String> {
         },
         Command::Accept(args) => accept_command(args),
         Command::Baseline(args) => baseline_command(args),
+        Command::Batch(command) => match command.command {
+            BatchSubcommand::Generate(args) => batch_generate_command(args),
+        },
     }
 }
 
@@ -602,7 +676,11 @@ fn apply_rule(args: ApplyRuleArgs) -> Result<(), String> {
     append_transcript(
         args.transcript.as_deref(),
         "graph apply-rule",
-        if status == "ok" { Some(&args.out) } else { None },
+        if status == "ok" {
+            Some(&args.out)
+        } else {
+            None
+        },
         Some(&args.receipt),
         Some(args.seed),
         json!({ "rule": args.rule.as_str(), "state": display_path(&args.state) }),
@@ -618,7 +696,12 @@ fn apply_graph_rule(candidate: &mut Candidate, rule: GraphRule, seed: u64) -> Ve
     let mut diagnostics = Vec::new();
     match rule {
         GraphRule::LockKeyLoop => {
-            if candidate.graph.nodes.iter().any(|node| node.id == "gate.locked_1") {
+            if candidate
+                .graph
+                .nodes
+                .iter()
+                .any(|node| node.id == "gate.locked_1")
+            {
                 diagnostics.push(fatal(
                     "rule_already_applied",
                     Some("gate.locked_1"),
@@ -718,7 +801,12 @@ fn apply_graph_rule(candidate: &mut Candidate, rule: GraphRule, seed: u64) -> Ve
             ]);
         }
         GraphRule::OneWayShortcut => {
-            if candidate.graph.edges.iter().any(|edge| edge.id == "edge.goal.start.shortcut") {
+            if candidate
+                .graph
+                .edges
+                .iter()
+                .any(|edge| edge.id == "edge.goal.start.shortcut")
+            {
                 diagnostics.push(fatal(
                     "rule_already_applied",
                     None,
@@ -756,12 +844,18 @@ fn apply_graph_rule(candidate: &mut Candidate, rule: GraphRule, seed: u64) -> Ve
             ]);
         }
         GraphRule::SecretBypass => {
-            if candidate.graph.edges.iter().any(|edge| edge.id == "edge.start.goal.secret") {
-                diagnostics.push(fatal(
+            if candidate
+                .graph
+                .edges
+                .iter()
+                .any(|edge| edge.id == "edge.start.goal.secret")
+            {
+                diagnostics.push(fatal_with_hint(
                     "rule_already_applied",
                     None,
                     Some("edge.start.goal.secret"),
                     "secret_bypass is already present.",
+                    "Choose a different bypass rule or start from an earlier candidate.",
                 ));
                 return diagnostics;
             }
@@ -793,8 +887,488 @@ fn apply_graph_rule(candidate: &mut Candidate, rule: GraphRule, seed: u64) -> Ve
                 },
             ]);
         }
+        GraphRule::HubSpokeCluster => {
+            if has_node(candidate, "hub.central_1") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("hub.central_1"),
+                    None,
+                    "hub_spoke_cluster is already present.",
+                    "Use an alternate hub id or apply a different branch pattern.",
+                ));
+                return diagnostics;
+            }
+            candidate.graph.nodes.extend([
+                Node {
+                    id: "hub.central_1".to_owned(),
+                    kind: NodeKind::Junction,
+                    label: "Wayfinding Hub".to_owned(),
+                    tags: vec![
+                        "hub".to_owned(),
+                        "wayfinding_anchor".to_owned(),
+                        "merge".to_owned(),
+                    ],
+                    grants_item: None,
+                },
+                Node {
+                    id: "resource.clue_1".to_owned(),
+                    kind: NodeKind::Resource,
+                    label: "Route Clue".to_owned(),
+                    tags: vec!["optional".to_owned(), "preparation".to_owned()],
+                    grants_item: None,
+                },
+                Node {
+                    id: "hazard.watch_1".to_owned(),
+                    kind: NodeKind::Hazard,
+                    label: "Watched Passage".to_owned(),
+                    tags: vec!["optional".to_owned(), "hazard".to_owned()],
+                    grants_item: None,
+                },
+                Node {
+                    id: "treasure.cache_1".to_owned(),
+                    kind: NodeKind::Treasure,
+                    label: "Hub Cache".to_owned(),
+                    tags: vec!["optional".to_owned(), "reward".to_owned()],
+                    grants_item: None,
+                },
+            ]);
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.start.hub_1".to_owned(),
+                    from: "start".to_owned(),
+                    to: "hub.central_1".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["approach".to_owned()],
+                },
+                Edge {
+                    id: "edge.hub_1.goal".to_owned(),
+                    from: "hub.central_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["rejoin".to_owned()],
+                },
+                Edge {
+                    id: "edge.hub_1.clue_1".to_owned(),
+                    from: "hub.central_1".to_owned(),
+                    to: "resource.clue_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.clue_1.hub_1".to_owned(),
+                    from: "resource.clue_1".to_owned(),
+                    to: "hub.central_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["return".to_owned()],
+                },
+                Edge {
+                    id: "edge.hub_1.watch_1".to_owned(),
+                    from: "hub.central_1".to_owned(),
+                    to: "hazard.watch_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned(), "pressure".to_owned()],
+                },
+                Edge {
+                    id: "edge.watch_1.goal".to_owned(),
+                    from: "hazard.watch_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["rejoin".to_owned()],
+                },
+                Edge {
+                    id: "edge.hub_1.cache_1".to_owned(),
+                    from: "hub.central_1".to_owned(),
+                    to: "treasure.cache_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.cache_1.hub_1".to_owned(),
+                    from: "treasure.cache_1".to_owned(),
+                    to: "hub.central_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["return".to_owned()],
+                },
+            ]);
+        }
+        GraphRule::NestedLockKeyChain => {
+            if has_node(candidate, "gate.locked_2") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("gate.locked_2"),
+                    None,
+                    "nested_lock_key_chain is already present.",
+                    "Nested locks use fixed gate/key ids; start from a candidate before this rule.",
+                ));
+                return diagnostics;
+            }
+            if !has_node(candidate, "gate.locked_1") {
+                diagnostics.push(fatal_with_hint(
+                    "missing_required_pattern",
+                    Some("gate.locked_1"),
+                    None,
+                    "nested_lock_key_chain requires an existing first lock/key loop.",
+                    "Apply lock_key_loop before nested_lock_key_chain.",
+                ));
+                return diagnostics;
+            }
+            candidate
+                .graph
+                .edges
+                .retain(|edge| edge.id != "edge.gate_1.goal");
+            candidate.graph.nodes.extend([
+                Node {
+                    id: "gate.locked_2".to_owned(),
+                    kind: NodeKind::Gate,
+                    label: "Inner Locked Gate".to_owned(),
+                    tags: vec!["lock".to_owned(), "critical".to_owned()],
+                    grants_item: None,
+                },
+                Node {
+                    id: "key.deep_2".to_owned(),
+                    kind: NodeKind::Key,
+                    label: "Inner Gate Key".to_owned(),
+                    tags: vec![
+                        "key".to_owned(),
+                        "branch".to_owned(),
+                        "preparation".to_owned(),
+                    ],
+                    grants_item: Some("item.deep_key_2".to_owned()),
+                },
+            ]);
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.gate_1.gate_2".to_owned(),
+                    from: "gate.locked_1".to_owned(),
+                    to: "gate.locked_2".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["approach".to_owned()],
+                },
+                Edge {
+                    id: "edge.gate_2.goal".to_owned(),
+                    from: "gate.locked_2".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Locked,
+                    required_item: Some("item.deep_key_2".to_owned()),
+                    tags: vec!["locked".to_owned()],
+                },
+                Edge {
+                    id: "edge.gate_1.key_2".to_owned(),
+                    from: "gate.locked_1".to_owned(),
+                    to: "key.deep_2".to_owned(),
+                    kind: EdgeKind::KeyBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.key_2.gate_2".to_owned(),
+                    from: "key.deep_2".to_owned(),
+                    to: "gate.locked_2".to_owned(),
+                    kind: EdgeKind::KeyBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["return".to_owned()],
+                },
+            ]);
+        }
+        GraphRule::HazardResourceTradeoff => {
+            if has_node(candidate, "hazard.sluice_1") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("hazard.sluice_1"),
+                    None,
+                    "hazard_resource_tradeoff is already present.",
+                    "Apply a different pressure pattern or use a fresh candidate.",
+                ));
+                return diagnostics;
+            }
+            candidate.graph.nodes.extend([
+                Node {
+                    id: "hazard.sluice_1".to_owned(),
+                    kind: NodeKind::Hazard,
+                    label: "Flooded Sluice".to_owned(),
+                    tags: vec!["optional".to_owned(), "hazard".to_owned()],
+                    grants_item: None,
+                },
+                Node {
+                    id: "resource.safety_1".to_owned(),
+                    kind: NodeKind::Resource,
+                    label: "Safety Cache".to_owned(),
+                    tags: vec!["optional".to_owned(), "preparation".to_owned()],
+                    grants_item: Some("item.safety_cache_1".to_owned()),
+                },
+            ]);
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.start.safety_1".to_owned(),
+                    from: "start".to_owned(),
+                    to: "resource.safety_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.safety_1.sluice_1".to_owned(),
+                    from: "resource.safety_1".to_owned(),
+                    to: "hazard.sluice_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["preparation".to_owned()],
+                },
+                Edge {
+                    id: "edge.start.sluice_1".to_owned(),
+                    from: "start".to_owned(),
+                    to: "hazard.sluice_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned(), "pressure".to_owned()],
+                },
+                Edge {
+                    id: "edge.sluice_1.goal".to_owned(),
+                    from: "hazard.sluice_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["rejoin".to_owned()],
+                },
+            ]);
+        }
+        GraphRule::BossPreparationLoop => {
+            if has_node(candidate, "gate.boss_1") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("gate.boss_1"),
+                    None,
+                    "boss_preparation_loop is already present.",
+                    "Boss preparation currently uses one fixed boss gate per candidate.",
+                ));
+                return diagnostics;
+            }
+            let approach_from = if has_node(candidate, "gate.locked_2") {
+                candidate
+                    .graph
+                    .edges
+                    .retain(|edge| edge.id != "edge.gate_2.goal");
+                "gate.locked_2"
+            } else if has_node(candidate, "gate.locked_1") {
+                candidate
+                    .graph
+                    .edges
+                    .retain(|edge| edge.id != "edge.gate_1.goal");
+                "gate.locked_1"
+            } else {
+                candidate
+                    .graph
+                    .edges
+                    .retain(|edge| edge.id != "edge.start.goal");
+                "start"
+            };
+            candidate.graph.nodes.extend([
+                Node {
+                    id: "gate.boss_1".to_owned(),
+                    kind: NodeKind::Gate,
+                    label: "Boss Threshold".to_owned(),
+                    tags: vec!["boss".to_owned(), "critical".to_owned()],
+                    grants_item: None,
+                },
+                Node {
+                    id: "resource.boss_prep_1".to_owned(),
+                    kind: NodeKind::Resource,
+                    label: "Boss Preparation".to_owned(),
+                    tags: vec!["preparation".to_owned(), "optional".to_owned()],
+                    grants_item: Some("item.boss_preparation_1".to_owned()),
+                },
+            ]);
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.approach.boss_1".to_owned(),
+                    from: approach_from.to_owned(),
+                    to: "gate.boss_1".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["approach".to_owned()],
+                },
+                Edge {
+                    id: "edge.boss_1.goal".to_owned(),
+                    from: "gate.boss_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::CriticalPath,
+                    traversal: TraversalKind::Locked,
+                    required_item: Some("item.boss_preparation_1".to_owned()),
+                    tags: vec!["locked".to_owned(), "boss".to_owned()],
+                },
+                Edge {
+                    id: "edge.approach.boss_prep_1".to_owned(),
+                    from: approach_from.to_owned(),
+                    to: "resource.boss_prep_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned(), "preparation".to_owned()],
+                },
+                Edge {
+                    id: "edge.boss_prep_1.boss_1".to_owned(),
+                    from: "resource.boss_prep_1".to_owned(),
+                    to: "gate.boss_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["return".to_owned()],
+                },
+            ]);
+        }
+        GraphRule::GatedTreasureBranch => {
+            if has_node(candidate, "treasure.gated_1") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("treasure.gated_1"),
+                    None,
+                    "gated_treasure_branch is already present.",
+                    "Use optional_treasure_detour for repeatable reward branches.",
+                ));
+                return diagnostics;
+            }
+            candidate.graph.nodes.extend([
+                Node {
+                    id: "key.treasure_1".to_owned(),
+                    kind: NodeKind::Key,
+                    label: "Treasure Key".to_owned(),
+                    tags: vec!["key".to_owned(), "optional".to_owned()],
+                    grants_item: Some("item.treasure_key_1".to_owned()),
+                },
+                Node {
+                    id: "treasure.gated_1".to_owned(),
+                    kind: NodeKind::Treasure,
+                    label: "Gated Treasure".to_owned(),
+                    tags: vec!["optional".to_owned(), "reward".to_owned()],
+                    grants_item: None,
+                },
+            ]);
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.start.treasure_key_1".to_owned(),
+                    from: "start".to_owned(),
+                    to: "key.treasure_1".to_owned(),
+                    kind: EdgeKind::KeyBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.treasure_key_1.treasure_1".to_owned(),
+                    from: "key.treasure_1".to_owned(),
+                    to: "treasure.gated_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Locked,
+                    required_item: Some("item.treasure_key_1".to_owned()),
+                    tags: vec!["locked".to_owned(), "branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.treasure_1.goal".to_owned(),
+                    from: "treasure.gated_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["rejoin".to_owned()],
+                },
+            ]);
+        }
+        GraphRule::BranchMergeShortcut => {
+            if has_node(candidate, "junction.merge_1") {
+                diagnostics.push(fatal_with_hint(
+                    "rule_already_applied",
+                    Some("junction.merge_1"),
+                    None,
+                    "branch_merge_shortcut is already present.",
+                    "Merge shortcuts use a fixed merge node until batch generation adds variant ids.",
+                ));
+                return diagnostics;
+            }
+            let secondary_source = if has_node(candidate, "hub.central_1") {
+                "hub.central_1"
+            } else if has_node(candidate, "treasure.gated_1") {
+                "treasure.gated_1"
+            } else if has_node(candidate, "key.gate_1") {
+                "key.gate_1"
+            } else {
+                diagnostics.push(fatal_with_hint(
+                    "missing_required_pattern",
+                    None,
+                    None,
+                    "branch_merge_shortcut needs an existing branch or hub to merge.",
+                    "Apply hub_spoke_cluster, gated_treasure_branch, or lock_key_loop first.",
+                ));
+                return diagnostics;
+            };
+            candidate.graph.nodes.push(Node {
+                id: "junction.merge_1".to_owned(),
+                kind: NodeKind::Junction,
+                label: "Branch Merge".to_owned(),
+                tags: vec!["merge".to_owned(), "wayfinding_anchor".to_owned()],
+                grants_item: None,
+            });
+            candidate.graph.edges.extend([
+                Edge {
+                    id: "edge.start.merge_1".to_owned(),
+                    from: "start".to_owned(),
+                    to: "junction.merge_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["branch".to_owned()],
+                },
+                Edge {
+                    id: "edge.secondary.merge_1".to_owned(),
+                    from: secondary_source.to_owned(),
+                    to: "junction.merge_1".to_owned(),
+                    kind: EdgeKind::OptionalBranch,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["rejoin".to_owned()],
+                },
+                Edge {
+                    id: "edge.merge_1.goal.shortcut".to_owned(),
+                    from: "junction.merge_1".to_owned(),
+                    to: "goal".to_owned(),
+                    kind: EdgeKind::Shortcut,
+                    traversal: TraversalKind::Open,
+                    required_item: None,
+                    tags: vec!["shortcut".to_owned(), "rejoin".to_owned()],
+                },
+            ]);
+        }
     }
     diagnostics
+}
+
+fn has_node(candidate: &Candidate, node_id: &str) -> bool {
+    candidate.graph.nodes.iter().any(|node| node.id == node_id)
 }
 
 fn summarize_candidate(args: StateArg) -> Result<(), String> {
@@ -829,7 +1403,12 @@ fn validate_graph_command(args: ReportOutArgs) -> Result<(), String> {
 
 fn validate_graph(candidate: &Candidate) -> ValidationReport {
     let mut diagnostics = Vec::new();
-    let node_ids: BTreeSet<&str> = candidate.graph.nodes.iter().map(|node| node.id.as_str()).collect();
+    let node_ids: BTreeSet<&str> = candidate
+        .graph
+        .nodes
+        .iter()
+        .map(|node| node.id.as_str())
+        .collect();
     let start_count = candidate
         .graph
         .nodes
@@ -860,19 +1439,21 @@ fn validate_graph(candidate: &Candidate) -> ValidationReport {
     }
     for edge in &candidate.graph.edges {
         if !node_ids.contains(edge.from.as_str()) {
-            diagnostics.push(fatal(
+            diagnostics.push(fatal_with_hint(
                 "edge_from_missing",
                 None,
                 Some(edge.id.as_str()),
                 "Edge source node is missing.",
+                "Create the source node or remove this edge before applying more rules.",
             ));
         }
         if !node_ids.contains(edge.to.as_str()) {
-            diagnostics.push(fatal(
+            diagnostics.push(fatal_with_hint(
                 "edge_to_missing",
                 None,
                 Some(edge.id.as_str()),
                 "Edge target node is missing.",
+                "Create the target node or remove this edge before applying more rules.",
             ));
         }
     }
@@ -886,11 +1467,12 @@ fn validate_graph(candidate: &Candidate) -> ValidationReport {
     for edge in &candidate.graph.edges {
         if let Some(required_item) = edge.required_item.as_deref() {
             if !granted_items.contains(required_item) {
-                diagnostics.push(fatal(
+                diagnostics.push(fatal_with_hint(
                     "required_item_unavailable",
                     None,
                     Some(edge.id.as_str()),
                     format!("Edge requires {required_item}, but no node grants it."),
+                    "Add a reachable key/resource node that grants the required item.",
                 ));
             }
         }
@@ -899,20 +1481,24 @@ fn validate_graph(candidate: &Candidate) -> ValidationReport {
     if start_count == 1 && goal_count == 1 {
         let reachable = reachable_with_items(candidate);
         if !reachable.goal_reached {
-            diagnostics.push(fatal(
+            diagnostics.push(fatal_with_hint(
                 "goal_unreachable",
                 Some("goal"),
                 None,
                 "Goal is not reachable under lock/key constraints.",
+                "Add an open route, move item providers before locks, or reconnect the critical path.",
             ));
         }
         for edge in &candidate.graph.edges {
-            if edge.traversal == TraversalKind::Locked && !reachable.traversed_edges.contains(edge.id.as_str()) {
-                diagnostics.push(fatal(
+            if edge.traversal == TraversalKind::Locked
+                && !reachable.traversed_edges.contains(edge.id.as_str())
+            {
+                diagnostics.push(fatal_with_hint(
                     "locked_edge_never_traversed",
                     None,
                     Some(edge.id.as_str()),
                     "Locked edge could not be traversed after item collection.",
+                    "Move the item provider earlier or add a branch that reaches it before the lock.",
                 ));
             }
         }
@@ -925,23 +1511,29 @@ fn validate_graph(candidate: &Candidate) -> ValidationReport {
         *outgoing.entry(edge.from.as_str()).or_insert(0) += 1;
     }
     for node in &candidate.graph.nodes {
-        if node.kind != NodeKind::Goal && outgoing.get(node.id.as_str()).copied().unwrap_or(0) == 0 {
-            diagnostics.push(warning(
+        if node.kind != NodeKind::Goal && outgoing.get(node.id.as_str()).copied().unwrap_or(0) == 0
+        {
+            diagnostics.push(warning_with_hint(
                 "non_goal_dead_end",
                 Some(node.id.as_str()),
                 None,
                 "Non-goal node has no outgoing route.",
+                "Add a return/rejoin edge or tag this as an intentional terminal reward in a later schema.",
             ));
         }
-        if node.kind != NodeKind::Start && incoming.get(node.id.as_str()).copied().unwrap_or(0) == 0 {
-            diagnostics.push(warning(
+        if node.kind != NodeKind::Start && incoming.get(node.id.as_str()).copied().unwrap_or(0) == 0
+        {
+            diagnostics.push(warning_with_hint(
                 "orphan_node",
                 Some(node.id.as_str()),
                 None,
                 "Node has no incoming route.",
+                "Add an incoming approach or branch edge from a reachable node.",
             ));
         }
     }
+
+    validate_v2_patterns(candidate, &incoming, &outgoing, &mut diagnostics);
 
     let fatal_count = diagnostics
         .iter()
@@ -955,6 +1547,138 @@ fn validate_graph(candidate: &Candidate) -> ValidationReport {
         fatal_count,
         diagnostics,
     }
+}
+
+fn validate_v2_patterns(
+    candidate: &Candidate,
+    incoming: &BTreeMap<&str, usize>,
+    outgoing: &BTreeMap<&str, usize>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    for node in candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, "hub"))
+    {
+        let incident = incoming.get(node.id.as_str()).copied().unwrap_or(0)
+            + outgoing.get(node.id.as_str()).copied().unwrap_or(0);
+        if incident < 3 {
+            diagnostics.push(warning_with_hint(
+                "hub_incident_edges_low",
+                Some(node.id.as_str()),
+                None,
+                "Hub has fewer than three incident edges.",
+                "Add at least two spokes plus a critical approach or continuation.",
+            ));
+        }
+        if !node_has_tag(node, "wayfinding_anchor") {
+            diagnostics.push(warning_with_hint(
+                "hub_missing_wayfinding_anchor",
+                Some(node.id.as_str()),
+                None,
+                "Hub is missing a wayfinding anchor tag.",
+                "Tag the hub as wayfinding_anchor so later embedding can preserve orientation.",
+            ));
+        }
+        let returns_to_hub = candidate.graph.edges.iter().any(|edge| {
+            (edge.from == node.id || edge.to == node.id)
+                && (edge_has_tag(edge, "return") || edge_has_tag(edge, "rejoin"))
+        });
+        if !returns_to_hub {
+            diagnostics.push(warning_with_hint(
+                "hub_missing_return_or_rejoin",
+                Some(node.id.as_str()),
+                None,
+                "Hub has no spoke return or rejoin edge.",
+                "Add a return/rejoin edge from at least one spoke back to the hub or main route.",
+            ));
+        }
+    }
+
+    let preparation_nodes: BTreeSet<&str> = candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, "preparation"))
+        .map(|node| node.id.as_str())
+        .collect();
+    for boss in candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, "boss"))
+    {
+        if preparation_nodes.is_empty() {
+            diagnostics.push(fatal_with_hint(
+                "boss_missing_preparation",
+                Some(boss.id.as_str()),
+                None,
+                "Boss node has no preparation branch.",
+                "Add a reachable resource or clue tagged preparation before the boss approach.",
+            ));
+        }
+        let preparation_rejoins_boss = candidate.graph.edges.iter().any(|edge| {
+            edge.to == boss.id
+                && preparation_nodes.contains(edge.from.as_str())
+                && (edge_has_tag(edge, "return") || edge_has_tag(edge, "rejoin"))
+        });
+        if !preparation_nodes.is_empty() && !preparation_rejoins_boss {
+            diagnostics.push(warning_with_hint(
+                "boss_preparation_missing_return",
+                Some(boss.id.as_str()),
+                None,
+                "Preparation branch does not return to the boss approach.",
+                "Add a return/rejoin edge from a preparation node to the boss gate.",
+            ));
+        }
+    }
+
+    for hazard in candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, "hazard"))
+    {
+        let rejoins = candidate.graph.edges.iter().any(|edge| {
+            edge.from == hazard.id && (edge_has_tag(edge, "rejoin") || edge_has_tag(edge, "return"))
+        });
+        if !rejoins {
+            diagnostics.push(warning_with_hint(
+                "hazard_missing_rejoin",
+                Some(hazard.id.as_str()),
+                None,
+                "Hazard branch does not visibly rejoin progression.",
+                "Add a rejoin edge after the hazard or mark the branch as a deliberate terminal.",
+            ));
+        }
+    }
+
+    for merge in candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, "merge"))
+    {
+        let incoming_count = incoming.get(merge.id.as_str()).copied().unwrap_or(0);
+        if incoming_count < 2 {
+            diagnostics.push(warning_with_hint(
+                "merge_upstream_routes_low",
+                Some(merge.id.as_str()),
+                None,
+                "Merge node has fewer than two upstream routes.",
+                "Add another branch or shortcut edge into the merge node.",
+            ));
+        }
+    }
+}
+
+fn node_has_tag(node: &Node, tag: &str) -> bool {
+    node.tags.iter().any(|candidate_tag| candidate_tag == tag)
+}
+
+fn edge_has_tag(edge: &Edge, tag: &str) -> bool {
+    edge.tags.iter().any(|candidate_tag| candidate_tag == tag)
 }
 
 struct Reachability<'a> {
@@ -979,9 +1703,9 @@ fn reachable_with_items(candidate: &Candidate) -> Reachability<'_> {
             if let Some(item) = node.grants_item.as_deref() {
                 if items.insert(item) {
                     visited.clear();
-                    visited.insert(node_id);
+                    visited.insert("start");
                     queue.clear();
-                    queue.push_back(node_id);
+                    queue.push_back("start");
                 }
             }
         }
@@ -1034,6 +1758,14 @@ fn score_graph(candidate: &Candidate) -> ScoreReport {
         .iter()
         .filter(|edge| edge.kind == EdgeKind::Shortcut)
         .count() as f64;
+    let hub_count = count_nodes_with_tag(candidate, "hub") as f64;
+    let wayfinding_anchor_count = count_nodes_with_tag(candidate, "wayfinding_anchor") as f64;
+    let preparation_count = count_nodes_with_tag(candidate, "preparation") as f64;
+    let hazard_count = count_nodes_with_tag(candidate, "hazard") as f64;
+    let boss_count = count_nodes_with_tag(candidate, "boss") as f64;
+    let merge_count = count_nodes_with_tag(candidate, "merge") as f64;
+    let pressure_edge_count = count_edges_with_tag(candidate, "pressure") as f64;
+    let rejoin_edge_count = count_edges_with_tag(candidate, "rejoin") as f64;
     let critical_path = shortest_path_len(candidate, "start", "goal").unwrap_or(0) as f64;
     let dead_end_count = dead_end_count(candidate) as f64;
     let mut metrics = BTreeMap::new();
@@ -1045,13 +1777,28 @@ fn score_graph(candidate: &Candidate) -> ScoreReport {
     metrics.insert("lockedEdgeCount".to_owned(), locked_count);
     metrics.insert("shortcutCount".to_owned(), shortcut_count);
     metrics.insert("deadEndCount".to_owned(), dead_end_count);
+    metrics.insert("hubCount".to_owned(), hub_count);
+    metrics.insert("wayfindingAnchorCount".to_owned(), wayfinding_anchor_count);
+    metrics.insert("preparationCount".to_owned(), preparation_count);
+    metrics.insert("hazardCount".to_owned(), hazard_count);
+    metrics.insert("bossCount".to_owned(), boss_count);
+    metrics.insert("mergeCount".to_owned(), merge_count);
+    metrics.insert("pressureEdgeCount".to_owned(), pressure_edge_count);
+    metrics.insert("rejoinEdgeCount".to_owned(), rejoin_edge_count);
 
-    let raw = 0.18
-        + (critical_path.min(6.0) * 0.08)
-        + (loop_bonus.min(3.0) * 0.12)
-        + (optional_count.min(4.0) * 0.06)
-        + (locked_count.min(2.0) * 0.08)
-        + (shortcut_count.min(2.0) * 0.05)
+    let raw = 0.10
+        + (critical_path.min(8.0) * 0.025)
+        + (loop_bonus.min(8.0) * 0.018)
+        + (optional_count.min(10.0) * 0.012)
+        + (locked_count.min(4.0) * 0.025)
+        + (shortcut_count.min(3.0) * 0.018)
+        + (hub_count.min(1.0) * 0.035)
+        + (wayfinding_anchor_count.min(3.0) * 0.018)
+        + (preparation_count.min(4.0) * 0.018)
+        + (pressure_edge_count.min(4.0) * 0.015)
+        + (rejoin_edge_count.min(6.0) * 0.012)
+        + (merge_count.min(3.0) * 0.018)
+        + (boss_count.min(1.0) * 0.035)
         - (dead_end_count * 0.04);
     let overall = (raw.clamp(0.0, 1.0) * 100.0).round() / 100.0;
     ScoreReport {
@@ -1065,6 +1812,24 @@ fn score_graph(candidate: &Candidate) -> ScoreReport {
                 .to_owned(),
         ],
     }
+}
+
+fn count_nodes_with_tag(candidate: &Candidate, tag: &str) -> usize {
+    candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node_has_tag(node, tag))
+        .count()
+}
+
+fn count_edges_with_tag(candidate: &Candidate, tag: &str) -> usize {
+    candidate
+        .graph
+        .edges
+        .iter()
+        .filter(|edge| edge_has_tag(edge, tag))
+        .count()
 }
 
 fn shortest_path_len(candidate: &Candidate, start: &str, goal: &str) -> Option<usize> {
@@ -1097,7 +1862,9 @@ fn cycle_count(candidate: &Candidate) -> usize {
         return 0;
     }
     let component_count = 1;
-    edge_count.saturating_sub(node_count).saturating_add(component_count)
+    edge_count
+        .saturating_sub(node_count)
+        .saturating_add(component_count)
 }
 
 fn dead_end_count(candidate: &Candidate) -> usize {
@@ -1288,9 +2055,9 @@ fn baseline_command(args: BaselineArgs) -> Result<(), String> {
         let next = args
             .out_dir
             .join(format!("candidate-{:03}-{}.json", index + 1, rule.as_str()));
-        let receipt_path = args
-            .out_dir
-            .join(format!("receipt-{:03}-{}.json", index + 1, rule.as_str()));
+        let receipt_path =
+            args.out_dir
+                .join(format!("receipt-{:03}-{}.json", index + 1, rule.as_str()));
         apply_rule(ApplyRuleArgs {
             state: current,
             rule,
@@ -1350,10 +2117,207 @@ fn baseline_command(args: BaselineArgs) -> Result<(), String> {
     Ok(())
 }
 
+fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
+    fs::create_dir_all(&args.out_dir)
+        .map_err(|error| format!("failed to create {}: {error}", args.out_dir.display()))?;
+    let mut accepted = Vec::new();
+    let mut rejected = Vec::new();
+    for index in 0..args.count {
+        let candidate_seed = args.seed + index as u64 * 100;
+        let run_dir = args.out_dir.join(format!("candidate-{index:03}"));
+        fs::create_dir_all(&run_dir)
+            .map_err(|error| format!("failed to create {}: {error}", run_dir.display()))?;
+        let transcript = run_dir.join("transcript.jsonl");
+        if transcript.exists() {
+            fs::remove_file(&transcript)
+                .map_err(|error| format!("failed to reset {}: {error}", transcript.display()))?;
+        }
+
+        let mut current = run_dir.join("candidate-000-base.json");
+        init_candidate(InitArgs {
+            intent: PathBuf::from("fixtures/intents/first-slice.intent.json"),
+            seed: candidate_seed,
+            out: current.clone(),
+            receipt: run_dir.join("receipt-000-init.json"),
+            transcript: Some(transcript.clone()),
+        })?;
+
+        for (rule_index, rule) in batch_profile(index).into_iter().enumerate() {
+            let next = run_dir.join(format!(
+                "candidate-{:03}-{}.json",
+                rule_index + 1,
+                rule.as_str()
+            ));
+            apply_rule(ApplyRuleArgs {
+                state: current,
+                rule,
+                seed: candidate_seed + rule_index as u64 + 1,
+                out: next.clone(),
+                receipt: run_dir.join(format!(
+                    "receipt-{:03}-{}.json",
+                    rule_index + 1,
+                    rule.as_str()
+                )),
+                transcript: Some(transcript.clone()),
+            })?;
+            current = next;
+        }
+
+        let candidate: Candidate = read_json(&current)?;
+        let validation = validate_graph(&candidate);
+        let validation_path = run_dir.join("validation.graph.json");
+        write_json(&validation_path, &validation)?;
+        append_transcript(
+            Some(&transcript),
+            "validate graph",
+            Some(&validation_path),
+            None,
+            None,
+            json!({ "state": display_path(&current) }),
+        )?;
+
+        if !validation.ok {
+            rejected.push(SelectionRejection {
+                candidate_id: candidate.candidate_id,
+                candidate_ref: display_path(&current),
+                diagnostics: validation.diagnostics,
+            });
+            continue;
+        }
+
+        let score = score_graph(&candidate);
+        let score_path = run_dir.join("score.graph.json");
+        write_json(&score_path, &score)?;
+        append_transcript(
+            Some(&transcript),
+            "score graph",
+            Some(&score_path),
+            None,
+            None,
+            json!({ "state": display_path(&current) }),
+        )?;
+
+        let layout_path = run_dir.join("layout-2d.json");
+        embed_2d_command(Embed2dArgs {
+            state: current.clone(),
+            seed: candidate_seed + 90,
+            out: layout_path.clone(),
+            receipt: run_dir.join("receipt-090-embed-2d.json"),
+            transcript: Some(transcript.clone()),
+        })?;
+        let artifact_path = run_dir.join("accepted.json");
+        accept_command(AcceptArgs {
+            candidate: current.clone(),
+            layout: layout_path.clone(),
+            validation: validation_path.clone(),
+            score: score_path.clone(),
+            out: artifact_path.clone(),
+            receipt: run_dir.join("receipt-091-accept.json"),
+            transcript: Some(transcript),
+        })?;
+
+        accepted.push(SelectionEntry {
+            candidate_id: candidate.candidate_id.clone(),
+            artifact_ref: display_path(&artifact_path),
+            validation_ref: display_path(&validation_path),
+            score_ref: display_path(&score_path),
+            layout_ref: display_path(&layout_path),
+            overall: score.overall,
+            metrics: score.metrics,
+            tags: collect_tags(&candidate),
+        });
+    }
+
+    accepted.sort_by(|left, right| {
+        right
+            .overall
+            .partial_cmp(&left.overall)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| left.candidate_id.cmp(&right.candidate_id))
+    });
+    let report = SelectionReport {
+        kind: "asha_procgen.selection_report.v1".to_owned(),
+        schema_version: 1,
+        batch_id: format!("batch.v2.{}", args.seed),
+        seed: args.seed,
+        requested_count: args.count,
+        generated_count: accepted.len() + rejected.len(),
+        accepted,
+        rejected,
+    };
+    write_json(&args.out_dir.join("selection-report.json"), &report)?;
+    println!(
+        "batch run wrote {} accepted and {} rejected candidate(s) to {}",
+        report.accepted.len(),
+        report.rejected.len(),
+        args.out_dir.display()
+    );
+    Ok(())
+}
+
+fn batch_profile(index: usize) -> Vec<GraphRule> {
+    let profiles: &[&[GraphRule]] = &[
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::BranchMergeShortcut,
+        ],
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::NestedLockKeyChain,
+            GraphRule::BossPreparationLoop,
+        ],
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ],
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+        ],
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::NestedLockKeyChain,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ],
+        &[
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::NestedLockKeyChain,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ],
+    ];
+    profiles[index % profiles.len()].to_vec()
+}
+
+fn collect_tags(candidate: &Candidate) -> Vec<String> {
+    let mut tags = BTreeSet::new();
+    for node in &candidate.graph.nodes {
+        for tag in &node.tags {
+            tags.insert(tag.clone());
+        }
+    }
+    for edge in &candidate.graph.edges {
+        for tag in &edge.tags {
+            tags.insert(tag.clone());
+        }
+    }
+    tags.into_iter().collect()
+}
+
 fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, String> {
     let text = fs::read_to_string(path)
         .map_err(|error| format!("failed to read {}: {error}", path.display()))?;
-    serde_json::from_str(&text).map_err(|error| format!("failed to parse {}: {error}", path.display()))
+    serde_json::from_str(&text)
+        .map_err(|error| format!("failed to parse {}: {error}", path.display()))
 }
 
 fn write_json<T: Serialize>(path: &Path, value: &T) -> Result<(), String> {
@@ -1421,12 +2385,14 @@ fn receipt(
 }
 
 fn hash_file(path: &Path) -> Result<String, String> {
-    let bytes = fs::read(path).map_err(|error| format!("failed to read {}: {error}", path.display()))?;
+    let bytes =
+        fs::read(path).map_err(|error| format!("failed to read {}: {error}", path.display()))?;
     Ok(format!("fnv1a64:{:016x}", fnv1a64(&bytes)))
 }
 
 fn hash_json<T: Serialize>(value: &T) -> Result<String, String> {
-    let bytes = serde_json::to_vec(value).map_err(|error| format!("failed to encode hash input: {error}"))?;
+    let bytes = serde_json::to_vec(value)
+        .map_err(|error| format!("failed to encode hash input: {error}"))?;
     Ok(format!("fnv1a64:{:016x}", fnv1a64(&bytes)))
 }
 
@@ -1455,14 +2421,33 @@ fn fatal(
         node: node.map(str::to_owned),
         edge: edge.map(str::to_owned),
         detail: detail.into(),
+        repair_hint: None,
     }
 }
 
-fn warning(
+fn fatal_with_hint(
     code: &str,
     node: Option<&str>,
     edge: Option<&str>,
     detail: impl Into<String>,
+    repair_hint: impl Into<String>,
+) -> Diagnostic {
+    Diagnostic {
+        code: code.to_owned(),
+        severity: Severity::Fatal,
+        node: node.map(str::to_owned),
+        edge: edge.map(str::to_owned),
+        detail: detail.into(),
+        repair_hint: Some(repair_hint.into()),
+    }
+}
+
+fn warning_with_hint(
+    code: &str,
+    node: Option<&str>,
+    edge: Option<&str>,
+    detail: impl Into<String>,
+    repair_hint: impl Into<String>,
 ) -> Diagnostic {
     Diagnostic {
         code: code.to_owned(),
@@ -1470,6 +2455,7 @@ fn warning(
         node: node.map(str::to_owned),
         edge: edge.map(str::to_owned),
         detail: detail.into(),
+        repair_hint: Some(repair_hint.into()),
     }
 }
 
@@ -1502,6 +2488,65 @@ mod tests {
         assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 8).is_empty());
         let report = validate_graph(&candidate);
         assert!(report.ok, "{report:?}");
+    }
+
+    #[test]
+    fn validates_v2_graph_grammar_rules() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "v2".to_owned(),
+            title: "V2".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 11);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::NestedLockKeyChain,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let diagnostics = apply_graph_rule(&mut candidate, rule, 12 + index as u64);
+            assert!(diagnostics.is_empty(), "{rule:?} rejected: {diagnostics:?}");
+        }
+        let report = validate_graph(&candidate);
+        assert!(report.ok, "{report:?}");
+        let score = score_graph(&candidate);
+        assert_eq!(score.metrics.get("hubCount"), Some(&1.0));
+        assert_eq!(score.metrics.get("bossCount"), Some(&1.0));
+        assert!(
+            score
+                .metrics
+                .get("pressureEdgeCount")
+                .copied()
+                .unwrap_or(0.0)
+                >= 2.0
+        );
+    }
+
+    #[test]
+    fn rejects_duplicate_v2_rule_with_repair_hint() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "duplicate".to_owned(),
+            title: "Duplicate".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 15);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 16).is_empty());
+        let diagnostics = apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 17);
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "rule_already_applied" && diagnostic.repair_hint.is_some()
+        }));
     }
 
     #[test]

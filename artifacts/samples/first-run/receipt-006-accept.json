@@ -5,7 +5,7 @@
   "status": "ok",
   "seed": null,
   "inputHash": "fnv1a64:a515ae0bd865cd32",
-  "outputHash": "fnv1a64:3ec75bea3455b535",
+  "outputHash": "fnv1a64:6163dc5ed93c5568",
   "outputRef": "artifacts/samples/first-run/accepted.json",
   "diagnostics": []
 }

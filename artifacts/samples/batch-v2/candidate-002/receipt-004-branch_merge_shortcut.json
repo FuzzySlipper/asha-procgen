@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "graph apply-rule branch_merge_shortcut",
+  "status": "ok",
+  "seed": 5405,
+  "inputHash": "fnv1a64:61b89694cdbd5803",
+  "outputHash": "fnv1a64:cf9a5af09cc73c8e",
+  "outputRef": "artifacts/samples/batch-v2/candidate-002/candidate-004-branch_merge_shortcut.json",
+  "diagnostics": []
+}

@@ -1,0 +1,531 @@
+{
+  "kind": "asha_procgen.accepted_artifact.v1",
+  "schemaVersion": 1,
+  "artifactId": "accepted.candidate.first_slice.6001",
+  "candidateHash": "fnv1a64:0729a996c8d0f9ba",
+  "layoutHash": "fnv1a64:b2e37338fb14e68d",
+  "validationRef": "artifacts/samples/batch-v2/candidate-008/validation.graph.json",
+  "scoreRef": "artifacts/samples/batch-v2/candidate-008/score.graph.json",
+  "candidate": {
+    "kind": "asha_procgen.candidate.v1",
+    "schemaVersion": 1,
+    "candidateId": "candidate.first_slice.6001",
+    "seed": 6001,
+    "dimensionModel": "topology_graph",
+    "sourceIntent": "first_slice",
+    "provenance": [
+      {
+        "step": 1,
+        "command": "init",
+        "seed": 6001,
+        "summary": "Initialized candidate.first_slice.6001 from first_slice"
+      },
+      {
+        "step": 2,
+        "command": "graph apply-rule lock_key_loop",
+        "seed": 6002,
+        "summary": "Applied lock_key_loop"
+      },
+      {
+        "step": 3,
+        "command": "graph apply-rule hazard_resource_tradeoff",
+        "seed": 6003,
+        "summary": "Applied hazard_resource_tradeoff"
+      },
+      {
+        "step": 4,
+        "command": "graph apply-rule gated_treasure_branch",
+        "seed": 6004,
+        "summary": "Applied gated_treasure_branch"
+      },
+      {
+        "step": 5,
+        "command": "graph apply-rule branch_merge_shortcut",
+        "seed": 6005,
+        "summary": "Applied branch_merge_shortcut"
+      }
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "start",
+          "label": "Start",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "goal",
+          "kind": "goal",
+          "label": "Goal",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "gate.locked_1",
+          "kind": "gate",
+          "label": "Locked Gate",
+          "tags": [
+            "lock",
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "key.gate_1",
+          "kind": "key",
+          "label": "Gate Key",
+          "tags": [
+            "key",
+            "branch"
+          ],
+          "grantsItem": "item.gate_key_1"
+        },
+        {
+          "id": "hazard.sluice_1",
+          "kind": "hazard",
+          "label": "Flooded Sluice",
+          "tags": [
+            "optional",
+            "hazard"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "resource.safety_1",
+          "kind": "resource",
+          "label": "Safety Cache",
+          "tags": [
+            "optional",
+            "preparation"
+          ],
+          "grantsItem": "item.safety_cache_1"
+        },
+        {
+          "id": "key.treasure_1",
+          "kind": "key",
+          "label": "Treasure Key",
+          "tags": [
+            "key",
+            "optional"
+          ],
+          "grantsItem": "item.treasure_key_1"
+        },
+        {
+          "id": "treasure.gated_1",
+          "kind": "treasure",
+          "label": "Gated Treasure",
+          "tags": [
+            "optional",
+            "reward"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "junction.merge_1",
+          "kind": "junction",
+          "label": "Branch Merge",
+          "tags": [
+            "merge",
+            "wayfinding_anchor"
+          ],
+          "grantsItem": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge.start.gate_1",
+          "from": "start",
+          "to": "gate.locked_1",
+          "kind": "critical_path",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "approach"
+          ]
+        },
+        {
+          "id": "edge.gate_1.goal",
+          "from": "gate.locked_1",
+          "to": "goal",
+          "kind": "critical_path",
+          "traversal": "locked",
+          "requiredItem": "item.gate_key_1",
+          "tags": [
+            "lock"
+          ]
+        },
+        {
+          "id": "edge.start.key_1",
+          "from": "start",
+          "to": "key.gate_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.key_1.gate_1",
+          "from": "key.gate_1",
+          "to": "gate.locked_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.start.safety_1",
+          "from": "start",
+          "to": "resource.safety_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.safety_1.sluice_1",
+          "from": "resource.safety_1",
+          "to": "hazard.sluice_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "preparation"
+          ]
+        },
+        {
+          "id": "edge.start.sluice_1",
+          "from": "start",
+          "to": "hazard.sluice_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch",
+            "pressure"
+          ]
+        },
+        {
+          "id": "edge.sluice_1.goal",
+          "from": "hazard.sluice_1",
+          "to": "goal",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.start.treasure_key_1",
+          "from": "start",
+          "to": "key.treasure_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.treasure_key_1.treasure_1",
+          "from": "key.treasure_1",
+          "to": "treasure.gated_1",
+          "kind": "optional_branch",
+          "traversal": "locked",
+          "requiredItem": "item.treasure_key_1",
+          "tags": [
+            "locked",
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.treasure_1.goal",
+          "from": "treasure.gated_1",
+          "to": "goal",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.start.merge_1",
+          "from": "start",
+          "to": "junction.merge_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.secondary.merge_1",
+          "from": "treasure.gated_1",
+          "to": "junction.merge_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.merge_1.goal.shortcut",
+          "from": "junction.merge_1",
+          "to": "goal",
+          "kind": "shortcut",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "shortcut",
+            "rejoin"
+          ]
+        }
+      ]
+    }
+  },
+  "layout": {
+    "kind": "asha_procgen.layout_2d.v1",
+    "schemaVersion": 1,
+    "layoutId": "layout.candidate.first_slice.6001.6091",
+    "candidateId": "candidate.first_slice.6001",
+    "seed": 6091,
+    "rooms": [
+      {
+        "nodeId": "start",
+        "kind": "start",
+        "label": "Start",
+        "x": 80,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "x": 440,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "x": 260,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "x": 260,
+        "y": 190,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "hazard.sluice_1",
+        "kind": "hazard",
+        "label": "Flooded Sluice",
+        "x": 260,
+        "y": 300,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "resource.safety_1",
+        "kind": "resource",
+        "label": "Safety Cache",
+        "x": 260,
+        "y": 410,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "key.treasure_1",
+        "kind": "key",
+        "label": "Treasure Key",
+        "x": 260,
+        "y": 520,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "treasure.gated_1",
+        "kind": "treasure",
+        "label": "Gated Treasure",
+        "x": 440,
+        "y": 190,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "junction.merge_1",
+        "kind": "junction",
+        "label": "Branch Merge",
+        "x": 260,
+        "y": 630,
+        "width": 116,
+        "height": 64
+      }
+    ],
+    "links": [
+      {
+        "edgeId": "edge.start.gate_1",
+        "fromNode": "start",
+        "toNode": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.gate_1.goal",
+        "fromNode": "gate.locked_1",
+        "toNode": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.gate_key_1"
+      },
+      {
+        "edgeId": "edge.start.key_1",
+        "fromNode": "start",
+        "toNode": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.key_1.gate_1",
+        "fromNode": "key.gate_1",
+        "toNode": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.safety_1",
+        "fromNode": "start",
+        "toNode": "resource.safety_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.safety_1.sluice_1",
+        "fromNode": "resource.safety_1",
+        "toNode": "hazard.sluice_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.sluice_1",
+        "fromNode": "start",
+        "toNode": "hazard.sluice_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.sluice_1.goal",
+        "fromNode": "hazard.sluice_1",
+        "toNode": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.treasure_key_1",
+        "fromNode": "start",
+        "toNode": "key.treasure_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.treasure_key_1.treasure_1",
+        "fromNode": "key.treasure_1",
+        "toNode": "treasure.gated_1",
+        "kind": "optional_branch",
+        "traversal": "locked",
+        "requiredItem": "item.treasure_key_1"
+      },
+      {
+        "edgeId": "edge.treasure_1.goal",
+        "fromNode": "treasure.gated_1",
+        "toNode": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.merge_1",
+        "fromNode": "start",
+        "toNode": "junction.merge_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.secondary.merge_1",
+        "fromNode": "treasure.gated_1",
+        "toNode": "junction.merge_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.merge_1.goal.shortcut",
+        "fromNode": "junction.merge_1",
+        "toNode": "goal",
+        "kind": "shortcut",
+        "traversal": "open",
+        "requiredItem": null
+      }
+    ]
+  },
+  "scoreSummary": {
+    "kind": "asha_procgen.score.graph.v1",
+    "schemaVersion": 1,
+    "stateHash": "fnv1a64:0729a996c8d0f9ba",
+    "overall": 0.54,
+    "metrics": {
+      "bossCount": 0.0,
+      "criticalPathLength": 2.0,
+      "deadEndCount": 0.0,
+      "edgeCount": 14.0,
+      "hazardCount": 1.0,
+      "hubCount": 0.0,
+      "lockedEdgeCount": 2.0,
+      "loopCount": 6.0,
+      "mergeCount": 1.0,
+      "nodeCount": 9.0,
+      "optionalBranchCount": 8.0,
+      "preparationCount": 1.0,
+      "pressureEdgeCount": 1.0,
+      "rejoinEdgeCount": 4.0,
+      "shortcutCount": 1.0,
+      "wayfindingAnchorCount": 1.0
+    },
+    "notes": [
+      "Graph score is a deterministic first-slice heuristic, not a human-quality verdict."
+    ]
+  }
+}

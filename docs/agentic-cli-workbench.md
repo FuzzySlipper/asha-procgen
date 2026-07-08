@@ -123,7 +123,8 @@ Validators should return diagnostics with stable codes, for example:
       "code": "lock_reachable_before_key",
       "severity": "fatal",
       "node": "gate_crypt_01",
-      "detail": "Gate can be reached before its required key branch is reachable."
+      "detail": "Gate can be reached before its required key branch is reachable.",
+      "repairHint": "Move the key branch before the gate or add a safe alternate route."
     }
   ]
 }
@@ -136,6 +137,8 @@ Rank candidates without deciding authority.
 Candidate commands:
 
 - `score graph`: cycle usefulness, optional-path value, pacing, novelty.
+- `batch generate`: produce multiple deterministic candidates and a sorted
+  selection report.
 - `score navigation`: backtracking burden, orientation anchors, path length.
 - `score three-d`: vertical complexity and disorientation budget.
 - `score novelty`: similarity to accepted artifacts.
@@ -213,6 +216,23 @@ Build the smallest useful CLI workbench:
 No LLM integration is required for the first slice. A scripted baseline should
 be able to drive the same CLI so agent behavior can be compared against boring
 automation.
+
+## Current V2 Slice
+
+The current richer grammar slice adds:
+
+- `graph apply-rule --rule hub_spoke_cluster`
+- `graph apply-rule --rule nested_lock_key_chain`
+- `graph apply-rule --rule hazard_resource_tradeoff`
+- `graph apply-rule --rule boss_preparation_loop`
+- `graph apply-rule --rule gated_treasure_branch`
+- `graph apply-rule --rule branch_merge_shortcut`
+- `batch generate --out-dir <dir> --seed <u64> --count <n>`
+
+`batch generate` writes a `selection-report.json` with sorted accepted entries
+and rejected entries carrying validator diagnostics. This is the first intended
+surface for external agent harnesses to compare candidate variety without
+requiring a custom service.
 
 ## Non-Goals
 

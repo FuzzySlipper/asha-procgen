@@ -1,0 +1,544 @@
+{
+  "kind": "asha_procgen.accepted_artifact.v1",
+  "schemaVersion": 1,
+  "artifactId": "accepted.candidate.first_slice.5201",
+  "candidateHash": "fnv1a64:5fab411910c30afe",
+  "layoutHash": "fnv1a64:b2f2fdf4259fdd31",
+  "validationRef": "artifacts/samples/batch-v2/candidate-000/validation.graph.json",
+  "scoreRef": "artifacts/samples/batch-v2/candidate-000/score.graph.json",
+  "candidate": {
+    "kind": "asha_procgen.candidate.v1",
+    "schemaVersion": 1,
+    "candidateId": "candidate.first_slice.5201",
+    "seed": 5201,
+    "dimensionModel": "topology_graph",
+    "sourceIntent": "first_slice",
+    "provenance": [
+      {
+        "step": 1,
+        "command": "init",
+        "seed": 5201,
+        "summary": "Initialized candidate.first_slice.5201 from first_slice"
+      },
+      {
+        "step": 2,
+        "command": "graph apply-rule lock_key_loop",
+        "seed": 5202,
+        "summary": "Applied lock_key_loop"
+      },
+      {
+        "step": 3,
+        "command": "graph apply-rule hub_spoke_cluster",
+        "seed": 5203,
+        "summary": "Applied hub_spoke_cluster"
+      },
+      {
+        "step": 4,
+        "command": "graph apply-rule branch_merge_shortcut",
+        "seed": 5204,
+        "summary": "Applied branch_merge_shortcut"
+      }
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "start",
+          "label": "Start",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "goal",
+          "kind": "goal",
+          "label": "Goal",
+          "tags": [
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "gate.locked_1",
+          "kind": "gate",
+          "label": "Locked Gate",
+          "tags": [
+            "lock",
+            "critical"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "key.gate_1",
+          "kind": "key",
+          "label": "Gate Key",
+          "tags": [
+            "key",
+            "branch"
+          ],
+          "grantsItem": "item.gate_key_1"
+        },
+        {
+          "id": "hub.central_1",
+          "kind": "junction",
+          "label": "Wayfinding Hub",
+          "tags": [
+            "hub",
+            "wayfinding_anchor",
+            "merge"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "resource.clue_1",
+          "kind": "resource",
+          "label": "Route Clue",
+          "tags": [
+            "optional",
+            "preparation"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "hazard.watch_1",
+          "kind": "hazard",
+          "label": "Watched Passage",
+          "tags": [
+            "optional",
+            "hazard"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "treasure.cache_1",
+          "kind": "treasure",
+          "label": "Hub Cache",
+          "tags": [
+            "optional",
+            "reward"
+          ],
+          "grantsItem": null
+        },
+        {
+          "id": "junction.merge_1",
+          "kind": "junction",
+          "label": "Branch Merge",
+          "tags": [
+            "merge",
+            "wayfinding_anchor"
+          ],
+          "grantsItem": null
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge.start.gate_1",
+          "from": "start",
+          "to": "gate.locked_1",
+          "kind": "critical_path",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "approach"
+          ]
+        },
+        {
+          "id": "edge.gate_1.goal",
+          "from": "gate.locked_1",
+          "to": "goal",
+          "kind": "critical_path",
+          "traversal": "locked",
+          "requiredItem": "item.gate_key_1",
+          "tags": [
+            "lock"
+          ]
+        },
+        {
+          "id": "edge.start.key_1",
+          "from": "start",
+          "to": "key.gate_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.key_1.gate_1",
+          "from": "key.gate_1",
+          "to": "gate.locked_1",
+          "kind": "key_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.start.hub_1",
+          "from": "start",
+          "to": "hub.central_1",
+          "kind": "critical_path",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "approach"
+          ]
+        },
+        {
+          "id": "edge.hub_1.goal",
+          "from": "hub.central_1",
+          "to": "goal",
+          "kind": "critical_path",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.hub_1.clue_1",
+          "from": "hub.central_1",
+          "to": "resource.clue_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.clue_1.hub_1",
+          "from": "resource.clue_1",
+          "to": "hub.central_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.hub_1.watch_1",
+          "from": "hub.central_1",
+          "to": "hazard.watch_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch",
+            "pressure"
+          ]
+        },
+        {
+          "id": "edge.watch_1.goal",
+          "from": "hazard.watch_1",
+          "to": "goal",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.hub_1.cache_1",
+          "from": "hub.central_1",
+          "to": "treasure.cache_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.cache_1.hub_1",
+          "from": "treasure.cache_1",
+          "to": "hub.central_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "return"
+          ]
+        },
+        {
+          "id": "edge.start.merge_1",
+          "from": "start",
+          "to": "junction.merge_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "branch"
+          ]
+        },
+        {
+          "id": "edge.secondary.merge_1",
+          "from": "hub.central_1",
+          "to": "junction.merge_1",
+          "kind": "optional_branch",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "rejoin"
+          ]
+        },
+        {
+          "id": "edge.merge_1.goal.shortcut",
+          "from": "junction.merge_1",
+          "to": "goal",
+          "kind": "shortcut",
+          "traversal": "open",
+          "requiredItem": null,
+          "tags": [
+            "shortcut",
+            "rejoin"
+          ]
+        }
+      ]
+    }
+  },
+  "layout": {
+    "kind": "asha_procgen.layout_2d.v1",
+    "schemaVersion": 1,
+    "layoutId": "layout.candidate.first_slice.5201.5291",
+    "candidateId": "candidate.first_slice.5201",
+    "seed": 5291,
+    "rooms": [
+      {
+        "nodeId": "start",
+        "kind": "start",
+        "label": "Start",
+        "x": 80,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "x": 440,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "x": 260,
+        "y": 80,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "x": 260,
+        "y": 190,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "hub.central_1",
+        "kind": "junction",
+        "label": "Wayfinding Hub",
+        "x": 260,
+        "y": 300,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "resource.clue_1",
+        "kind": "resource",
+        "label": "Route Clue",
+        "x": 440,
+        "y": 190,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "hazard.watch_1",
+        "kind": "hazard",
+        "label": "Watched Passage",
+        "x": 440,
+        "y": 300,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "treasure.cache_1",
+        "kind": "treasure",
+        "label": "Hub Cache",
+        "x": 440,
+        "y": 410,
+        "width": 116,
+        "height": 64
+      },
+      {
+        "nodeId": "junction.merge_1",
+        "kind": "junction",
+        "label": "Branch Merge",
+        "x": 260,
+        "y": 410,
+        "width": 116,
+        "height": 64
+      }
+    ],
+    "links": [
+      {
+        "edgeId": "edge.start.gate_1",
+        "fromNode": "start",
+        "toNode": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.gate_1.goal",
+        "fromNode": "gate.locked_1",
+        "toNode": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.gate_key_1"
+      },
+      {
+        "edgeId": "edge.start.key_1",
+        "fromNode": "start",
+        "toNode": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.key_1.gate_1",
+        "fromNode": "key.gate_1",
+        "toNode": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.hub_1",
+        "fromNode": "start",
+        "toNode": "hub.central_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.hub_1.goal",
+        "fromNode": "hub.central_1",
+        "toNode": "goal",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.hub_1.clue_1",
+        "fromNode": "hub.central_1",
+        "toNode": "resource.clue_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.clue_1.hub_1",
+        "fromNode": "resource.clue_1",
+        "toNode": "hub.central_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.hub_1.watch_1",
+        "fromNode": "hub.central_1",
+        "toNode": "hazard.watch_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.watch_1.goal",
+        "fromNode": "hazard.watch_1",
+        "toNode": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.hub_1.cache_1",
+        "fromNode": "hub.central_1",
+        "toNode": "treasure.cache_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.cache_1.hub_1",
+        "fromNode": "treasure.cache_1",
+        "toNode": "hub.central_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.start.merge_1",
+        "fromNode": "start",
+        "toNode": "junction.merge_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.secondary.merge_1",
+        "fromNode": "hub.central_1",
+        "toNode": "junction.merge_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null
+      },
+      {
+        "edgeId": "edge.merge_1.goal.shortcut",
+        "fromNode": "junction.merge_1",
+        "toNode": "goal",
+        "kind": "shortcut",
+        "traversal": "open",
+        "requiredItem": null
+      }
+    ]
+  },
+  "scoreSummary": {
+    "kind": "asha_procgen.score.graph.v1",
+    "schemaVersion": 1,
+    "stateHash": "fnv1a64:5fab411910c30afe",
+    "overall": 0.6,
+    "metrics": {
+      "bossCount": 0.0,
+      "criticalPathLength": 2.0,
+      "deadEndCount": 0.0,
+      "edgeCount": 15.0,
+      "hazardCount": 1.0,
+      "hubCount": 1.0,
+      "lockedEdgeCount": 1.0,
+      "loopCount": 7.0,
+      "mergeCount": 2.0,
+      "nodeCount": 9.0,
+      "optionalBranchCount": 8.0,
+      "preparationCount": 1.0,
+      "pressureEdgeCount": 1.0,
+      "rejoinEdgeCount": 4.0,
+      "shortcutCount": 1.0,
+      "wayfindingAnchorCount": 2.0
+    },
+    "notes": [
+      "Graph score is a deterministic first-slice heuristic, not a human-quality verdict."
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "asha_procgen.candidate.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5401",
+  "seed": 5401,
+  "dimensionModel": "topology_graph",
+  "sourceIntent": "first_slice",
+  "provenance": [
+    {
+      "step": 1,
+      "command": "init",
+      "seed": 5401,
+      "summary": "Initialized candidate.first_slice.5401 from first_slice"
+    },
+    {
+      "step": 2,
+      "command": "graph apply-rule lock_key_loop",
+      "seed": 5402,
+      "summary": "Applied lock_key_loop"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "start",
+        "kind": "start",
+        "label": "Start",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "tags": [
+          "lock",
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "tags": [
+          "key",
+          "branch"
+        ],
+        "grantsItem": "item.gate_key_1"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge.start.gate_1",
+        "from": "start",
+        "to": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "approach"
+        ]
+      },
+      {
+        "id": "edge.gate_1.goal",
+        "from": "gate.locked_1",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.gate_key_1",
+        "tags": [
+          "lock"
+        ]
+      },
+      {
+        "id": "edge.start.key_1",
+        "from": "start",
+        "to": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.key_1.gate_1",
+        "from": "key.gate_1",
+        "to": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      }
+    ]
+  }
+}

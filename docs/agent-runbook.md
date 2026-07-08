@@ -1,6 +1,6 @@
 # Agent Runbook
 
-Status: first-slice runbook for the CLI workbench and viewer.
+Status: v2 sample runbook for the CLI workbench and viewer.
 
 ## Install
 
@@ -33,6 +33,29 @@ Important files:
 - `accepted.json`
 - `transcript.jsonl`
 
+## Build A Batch Run
+
+```bash
+npm run batch:sample
+```
+
+This writes a deterministic v2 batch under:
+
+```text
+artifacts/samples/batch-v2/
+```
+
+Important files:
+
+- `selection-report.json`
+- `candidate-000/accepted.json`
+- `candidate-000/validation.graph.json`
+- `candidate-000/score.graph.json`
+- `candidate-000/transcript.jsonl`
+
+The sample command currently generates 10 candidates from fixed profiles and
+sorts accepted entries by deterministic score.
+
 ## Manual CLI Sequence
 
 ```bash
@@ -63,6 +86,20 @@ npm run procgen -- score graph \
 Use `npm run procgen -- graph summarize --state <candidate>` to print a compact
 agent-readable graph summary.
 
+Implemented richer graph rules:
+
+```text
+hub_spoke_cluster
+nested_lock_key_chain
+hazard_resource_tradeoff
+boss_preparation_loop
+gated_treasure_branch
+branch_merge_shortcut
+```
+
+Duplicate or incompatible rule applications are rejected with receipt
+diagnostics and `repairHint` text where the tool can suggest a next edit.
+
 ## Pattern Catalog
 
 The next graph grammar vocabulary is documented in:
@@ -72,8 +109,9 @@ docs/v2-graph-grammar-catalog.md
 fixtures/rule-catalog/v2-graph-patterns.json
 ```
 
-Future `graph apply-rule --rule <id>` implementations should use the catalog
-ids and preserve the documented invariants, scoring hints, and repair hints.
+Implemented `graph apply-rule --rule <id>` values should stay aligned with the
+catalog ids and preserve the documented invariants, scoring hints, and repair
+hints.
 
 ## Broken Fixture Check
 
@@ -111,6 +149,12 @@ den-serve stop asha-procgen -repo /home/dev/asha-procgen
 
 Serving semantics come from Den document `den-services/den-serve-agent-usage`.
 Do not replace this with localhost-only instructions.
+
+Viewer API routes:
+
+- `/api/artifacts/first-run`
+- `/api/batches/v2`
+- `/api/artifacts/by-path?path=<artifact-ref-from-selection-report>`
 
 ## Verification
 

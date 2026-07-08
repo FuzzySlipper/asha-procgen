@@ -1,0 +1,51 @@
+{
+  "kind": "asha_procgen.candidate.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5901",
+  "seed": 5901,
+  "dimensionModel": "topology_graph",
+  "sourceIntent": "first_slice",
+  "provenance": [
+    {
+      "step": 1,
+      "command": "init",
+      "seed": 5901,
+      "summary": "Initialized candidate.first_slice.5901 from first_slice"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "start",
+        "kind": "start",
+        "label": "Start",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge.start.goal",
+        "from": "start",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "initial"
+        ]
+      }
+    ]
+  }
+}

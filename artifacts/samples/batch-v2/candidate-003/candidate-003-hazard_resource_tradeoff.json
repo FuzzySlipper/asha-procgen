@@ -1,0 +1,317 @@
+{
+  "kind": "asha_procgen.candidate.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5501",
+  "seed": 5501,
+  "dimensionModel": "topology_graph",
+  "sourceIntent": "first_slice",
+  "provenance": [
+    {
+      "step": 1,
+      "command": "init",
+      "seed": 5501,
+      "summary": "Initialized candidate.first_slice.5501 from first_slice"
+    },
+    {
+      "step": 2,
+      "command": "graph apply-rule lock_key_loop",
+      "seed": 5502,
+      "summary": "Applied lock_key_loop"
+    },
+    {
+      "step": 3,
+      "command": "graph apply-rule hub_spoke_cluster",
+      "seed": 5503,
+      "summary": "Applied hub_spoke_cluster"
+    },
+    {
+      "step": 4,
+      "command": "graph apply-rule hazard_resource_tradeoff",
+      "seed": 5504,
+      "summary": "Applied hazard_resource_tradeoff"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "start",
+        "kind": "start",
+        "label": "Start",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "tags": [
+          "lock",
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "tags": [
+          "key",
+          "branch"
+        ],
+        "grantsItem": "item.gate_key_1"
+      },
+      {
+        "id": "hub.central_1",
+        "kind": "junction",
+        "label": "Wayfinding Hub",
+        "tags": [
+          "hub",
+          "wayfinding_anchor",
+          "merge"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "resource.clue_1",
+        "kind": "resource",
+        "label": "Route Clue",
+        "tags": [
+          "optional",
+          "preparation"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "hazard.watch_1",
+        "kind": "hazard",
+        "label": "Watched Passage",
+        "tags": [
+          "optional",
+          "hazard"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "treasure.cache_1",
+        "kind": "treasure",
+        "label": "Hub Cache",
+        "tags": [
+          "optional",
+          "reward"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "hazard.sluice_1",
+        "kind": "hazard",
+        "label": "Flooded Sluice",
+        "tags": [
+          "optional",
+          "hazard"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "resource.safety_1",
+        "kind": "resource",
+        "label": "Safety Cache",
+        "tags": [
+          "optional",
+          "preparation"
+        ],
+        "grantsItem": "item.safety_cache_1"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge.start.gate_1",
+        "from": "start",
+        "to": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "approach"
+        ]
+      },
+      {
+        "id": "edge.gate_1.goal",
+        "from": "gate.locked_1",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.gate_key_1",
+        "tags": [
+          "lock"
+        ]
+      },
+      {
+        "id": "edge.start.key_1",
+        "from": "start",
+        "to": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.key_1.gate_1",
+        "from": "key.gate_1",
+        "to": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      },
+      {
+        "id": "edge.start.hub_1",
+        "from": "start",
+        "to": "hub.central_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "approach"
+        ]
+      },
+      {
+        "id": "edge.hub_1.goal",
+        "from": "hub.central_1",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "rejoin"
+        ]
+      },
+      {
+        "id": "edge.hub_1.clue_1",
+        "from": "hub.central_1",
+        "to": "resource.clue_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.clue_1.hub_1",
+        "from": "resource.clue_1",
+        "to": "hub.central_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      },
+      {
+        "id": "edge.hub_1.watch_1",
+        "from": "hub.central_1",
+        "to": "hazard.watch_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch",
+          "pressure"
+        ]
+      },
+      {
+        "id": "edge.watch_1.goal",
+        "from": "hazard.watch_1",
+        "to": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "rejoin"
+        ]
+      },
+      {
+        "id": "edge.hub_1.cache_1",
+        "from": "hub.central_1",
+        "to": "treasure.cache_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.cache_1.hub_1",
+        "from": "treasure.cache_1",
+        "to": "hub.central_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      },
+      {
+        "id": "edge.start.safety_1",
+        "from": "start",
+        "to": "resource.safety_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.safety_1.sluice_1",
+        "from": "resource.safety_1",
+        "to": "hazard.sluice_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "preparation"
+        ]
+      },
+      {
+        "id": "edge.start.sluice_1",
+        "from": "start",
+        "to": "hazard.sluice_1",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch",
+          "pressure"
+        ]
+      },
+      {
+        "id": "edge.sluice_1.goal",
+        "from": "hazard.sluice_1",
+        "to": "goal",
+        "kind": "optional_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "rejoin"
+        ]
+      }
+    ]
+  }
+}

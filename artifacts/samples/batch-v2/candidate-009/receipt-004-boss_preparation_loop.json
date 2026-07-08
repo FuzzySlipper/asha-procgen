@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "graph apply-rule boss_preparation_loop",
+  "status": "ok",
+  "seed": 6105,
+  "inputHash": "fnv1a64:755838116693be4c",
+  "outputHash": "fnv1a64:22440bd53093e409",
+  "outputRef": "artifacts/samples/batch-v2/candidate-009/candidate-004-boss_preparation_loop.json",
+  "diagnostics": []
+}

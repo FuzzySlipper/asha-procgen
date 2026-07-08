@@ -1,0 +1,170 @@
+{
+  "kind": "asha_procgen.candidate.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5901",
+  "seed": 5901,
+  "dimensionModel": "topology_graph",
+  "sourceIntent": "first_slice",
+  "provenance": [
+    {
+      "step": 1,
+      "command": "init",
+      "seed": 5901,
+      "summary": "Initialized candidate.first_slice.5901 from first_slice"
+    },
+    {
+      "step": 2,
+      "command": "graph apply-rule lock_key_loop",
+      "seed": 5902,
+      "summary": "Applied lock_key_loop"
+    },
+    {
+      "step": 3,
+      "command": "graph apply-rule nested_lock_key_chain",
+      "seed": 5903,
+      "summary": "Applied nested_lock_key_chain"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "start",
+        "kind": "start",
+        "label": "Start",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "goal",
+        "kind": "goal",
+        "label": "Goal",
+        "tags": [
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "gate.locked_1",
+        "kind": "gate",
+        "label": "Locked Gate",
+        "tags": [
+          "lock",
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "key.gate_1",
+        "kind": "key",
+        "label": "Gate Key",
+        "tags": [
+          "key",
+          "branch"
+        ],
+        "grantsItem": "item.gate_key_1"
+      },
+      {
+        "id": "gate.locked_2",
+        "kind": "gate",
+        "label": "Inner Locked Gate",
+        "tags": [
+          "lock",
+          "critical"
+        ],
+        "grantsItem": null
+      },
+      {
+        "id": "key.deep_2",
+        "kind": "key",
+        "label": "Inner Gate Key",
+        "tags": [
+          "key",
+          "branch",
+          "preparation"
+        ],
+        "grantsItem": "item.deep_key_2"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge.start.gate_1",
+        "from": "start",
+        "to": "gate.locked_1",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "approach"
+        ]
+      },
+      {
+        "id": "edge.start.key_1",
+        "from": "start",
+        "to": "key.gate_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.key_1.gate_1",
+        "from": "key.gate_1",
+        "to": "gate.locked_1",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      },
+      {
+        "id": "edge.gate_1.gate_2",
+        "from": "gate.locked_1",
+        "to": "gate.locked_2",
+        "kind": "critical_path",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "approach"
+        ]
+      },
+      {
+        "id": "edge.gate_2.goal",
+        "from": "gate.locked_2",
+        "to": "goal",
+        "kind": "critical_path",
+        "traversal": "locked",
+        "requiredItem": "item.deep_key_2",
+        "tags": [
+          "locked"
+        ]
+      },
+      {
+        "id": "edge.gate_1.key_2",
+        "from": "gate.locked_1",
+        "to": "key.deep_2",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "branch"
+        ]
+      },
+      {
+        "id": "edge.key_2.gate_2",
+        "from": "key.deep_2",
+        "to": "gate.locked_2",
+        "kind": "key_branch",
+        "traversal": "open",
+        "requiredItem": null,
+        "tags": [
+          "return"
+        ]
+      }
+    ]
+  }
+}

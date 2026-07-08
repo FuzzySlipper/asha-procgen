@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "embed 2d",
+  "status": "ok",
+  "seed": 6091,
+  "inputHash": "fnv1a64:9af7cfb8deaca344",
+  "outputHash": "fnv1a64:b2e37338fb14e68d",
+  "outputRef": "artifacts/samples/batch-v2/candidate-008/layout-2d.json",
+  "diagnostics": []
+}

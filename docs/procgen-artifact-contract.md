@@ -1,6 +1,6 @@
 # Procgen Artifact Contract
 
-Status: first-slice contract for tasks #4824-#4830.
+Status: first-slice contract plus v2 graph grammar/batch additions.
 
 The CLI workbench is file-oriented. Every command reads explicit inputs, writes
 explicit outputs, and produces structured JSON a human or agent can inspect.
@@ -84,6 +84,15 @@ Pattern ids in this catalog should match future `graph apply-rule --rule <id>`
 values. The catalog records required node/edge kinds, tags, validator
 invariants, scoring hints, repair hints, and 2D/3D embedding notes.
 
+Implemented v2 rule ids:
+
+- `hub_spoke_cluster`
+- `nested_lock_key_chain`
+- `hazard_resource_tradeoff`
+- `boss_preparation_loop`
+- `gated_treasure_branch`
+- `branch_merge_shortcut`
+
 ## Receipt
 
 Kind: `asha_procgen.receipt.v1`
@@ -102,7 +111,10 @@ Validation reports contain:
 - `stateHash`
 - `diagnostics`
 
-Stable diagnostic codes in the first slice:
+Diagnostics may include `repairHint`. Agents should treat it as a suggested
+next edit, not as proof that the edit is the only valid repair.
+
+Stable diagnostic codes currently emitted by graph validation/rule rejection:
 
 - `start_count_invalid`
 - `goal_count_invalid`
@@ -113,6 +125,15 @@ Stable diagnostic codes in the first slice:
 - `locked_edge_never_traversed`
 - `non_goal_dead_end`
 - `orphan_node`
+- `hub_incident_edges_low`
+- `hub_missing_wayfinding_anchor`
+- `hub_missing_return_or_rejoin`
+- `boss_missing_preparation`
+- `boss_preparation_missing_return`
+- `hazard_missing_rejoin`
+- `merge_upstream_routes_low`
+- `rule_already_applied`
+- `missing_required_pattern`
 
 Fatal diagnostics block acceptance. Warnings are advisory.
 
@@ -130,8 +151,39 @@ First-slice metrics:
 - `lockedEdgeCount`
 - `shortcutCount`
 - `deadEndCount`
+- `hubCount`
+- `wayfindingAnchorCount`
+- `preparationCount`
+- `hazardCount`
+- `bossCount`
+- `mergeCount`
+- `pressureEdgeCount`
+- `rejoinEdgeCount`
 
 `overall` is a deterministic heuristic score, not a final design verdict.
+
+## Selection Report
+
+Kind: `asha_procgen.selection_report.v1`
+
+Batch generation writes:
+
+```text
+artifacts/samples/batch-v2/selection-report.json
+```
+
+The report contains:
+
+- `batchId`
+- `seed`
+- `requestedCount`
+- `generatedCount`
+- `accepted`: sorted accepted candidates with artifact, validation, score, and
+  layout refs
+- `rejected`: rejected candidate refs plus diagnostics
+
+Accepted entries are sorted by descending deterministic score, then candidate
+id for stable tie-breaking.
 
 ## Layout Artifact
 

@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "accept",
+  "status": "ok",
+  "seed": null,
+  "inputHash": "fnv1a64:27a2fe49c77da678",
+  "outputHash": "fnv1a64:c3e19ea1286f845c",
+  "outputRef": "artifacts/samples/batch-v2/candidate-001/accepted.json",
+  "diagnostics": []
+}

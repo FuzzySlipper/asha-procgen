@@ -2,6 +2,8 @@ interface AcceptedArtifact {
   readonly artifactId: string;
   readonly candidateHash: string;
   readonly layoutHash: string;
+  readonly validationRef: string;
+  readonly scoreRef: string;
   readonly layout: LayoutArtifact;
   readonly scoreSummary: ScoreReport;
 }
@@ -37,27 +39,148 @@ interface ScoreReport {
   readonly metrics: Record<string, number>;
 }
 
+interface SelectionReport {
+  readonly batchId: string;
+  readonly requestedCount: number;
+  readonly generatedCount: number;
+  readonly accepted: readonly SelectionEntry[];
+  readonly rejected: readonly SelectionRejection[];
+}
+
+interface SelectionEntry {
+  readonly candidateId: string;
+  readonly artifactRef: string;
+  readonly validationRef: string;
+  readonly scoreRef: string;
+  readonly layoutRef: string;
+  readonly overall: number;
+  readonly metrics: Record<string, number>;
+  readonly tags: readonly string[];
+}
+
+interface SelectionRejection {
+  readonly candidateId: string;
+  readonly candidateRef: string;
+  readonly diagnostics: readonly Diagnostic[];
+}
+
+interface Diagnostic {
+  readonly code: string;
+  readonly severity: string;
+  readonly node?: string | null;
+  readonly edge?: string | null;
+  readonly detail: string;
+  readonly repairHint?: string;
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
+const batchList = document.querySelector<HTMLElement>('#batch-list');
+const diagnostics = document.querySelector<HTMLElement>('#diagnostics');
 
-if (svg === null || summary === null) {
+if (svg === null || summary === null || batchList === null || diagnostics === null) {
   throw new Error('viewer mount elements are missing');
 }
 
-const artifact = await fetchArtifact();
-renderSummary(summary, artifact);
-renderLayout(svg, artifact.layout);
+const layoutSvg = svg;
+const summaryPanel = summary;
+const batchPanel = batchList;
+const diagnosticsPanel = diagnostics;
+const batch = await fetchBatch();
+const initialSelection = batch.accepted[0] ?? null;
 
-async function fetchArtifact(): Promise<AcceptedArtifact> {
-  const response = await fetch('/api/artifacts/first-run');
+if (initialSelection === null) {
+  const artifact = await fetchArtifact('/api/artifacts/first-run');
+  renderBatchList(batchPanel, batch, null, selectEntry);
+  renderSummary(summaryPanel, artifact, null, batch);
+  renderDiagnostics(diagnosticsPanel, batch);
+  renderLayout(layoutSvg, artifact.layout);
+} else {
+  await selectEntry(initialSelection);
+}
+
+async function selectEntry(entry: SelectionEntry): Promise<void> {
+  const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
+  renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
+  renderSummary(summaryPanel, artifact, entry, batch);
+  renderDiagnostics(diagnosticsPanel, batch);
+  renderLayout(layoutSvg, artifact.layout);
+}
+
+async function fetchBatch(): Promise<SelectionReport> {
+  const response = await fetch('/api/batches/v2');
+  if (!response.ok) {
+    return {
+      batchId: 'first-run-fallback',
+      requestedCount: 1,
+      generatedCount: 1,
+      accepted: [],
+      rejected: [],
+    };
+  }
+  return (await response.json()) as SelectionReport;
+}
+
+async function fetchArtifact(url: string): Promise<AcceptedArtifact> {
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`failed to load artifact: ${response.status}`);
   }
   return (await response.json()) as AcceptedArtifact;
 }
 
-function renderSummary(target: HTMLElement, artifact: AcceptedArtifact): void {
+function artifactUrl(path: string): string {
+  return `/api/artifacts/by-path?path=${encodeURIComponent(path)}`;
+}
+
+function renderBatchList(
+  target: HTMLElement,
+  report: SelectionReport,
+  selectedCandidateId: string | null,
+  onSelect: (entry: SelectionEntry) => void,
+): void {
+  const header = document.createElement('div');
+  header.className = 'batch-header';
+  header.append(
+    metric('Batch', report.batchId),
+    metric('Accepted', `${report.accepted.length}/${report.generatedCount}`),
+  );
+
+  const buttons = report.accepted.map((entry, index) => {
+    const button = document.createElement('button');
+    button.className = 'candidate-button';
+    button.type = 'button';
+    button.dataset.selected = entry.candidateId === selectedCandidateId ? 'true' : 'false';
+    button.addEventListener('click', () => onSelect(entry));
+
+    const rank = document.createElement('span');
+    rank.className = 'candidate-rank';
+    rank.textContent = String(index + 1).padStart(2, '0');
+    const name = document.createElement('span');
+    name.className = 'candidate-name';
+    name.textContent = shortCandidate(entry.candidateId);
+    const score = document.createElement('span');
+    score.className = 'candidate-score';
+    score.textContent = entry.overall.toFixed(2);
+    const tags = document.createElement('span');
+    tags.className = 'candidate-tags';
+    tags.textContent = entry.tags.slice(0, 4).join(' / ');
+
+    button.append(rank, name, score, tags);
+    return button;
+  });
+
+  target.replaceChildren(header, ...buttons);
+}
+
+function renderSummary(
+  target: HTMLElement,
+  artifact: AcceptedArtifact,
+  selection: SelectionEntry | null,
+  report: SelectionReport,
+): void {
   const metrics = artifact.scoreSummary.metrics;
+  const topTags = selection?.tags.slice(0, 8).join(', ') ?? 'first-run';
   target.replaceChildren(
     metric('Artifact', artifact.artifactId),
     metric('Candidate', artifact.layout.candidateId),
@@ -65,8 +188,42 @@ function renderSummary(target: HTMLElement, artifact: AcceptedArtifact): void {
     metric('Nodes', String(metrics.nodeCount ?? artifact.layout.rooms.length)),
     metric('Edges', String(metrics.edgeCount ?? artifact.layout.links.length)),
     metric('Loops', String(metrics.loopCount ?? 0)),
-    metric('Critical Path', String(metrics.criticalPathLength ?? 0)),
+    metric('Hubs', String(metrics.hubCount ?? 0)),
+    metric('Pressure', String(metrics.pressureEdgeCount ?? 0)),
+    metric('Rejected', String(report.rejected.length)),
+    metric('Tags', topTags),
   );
+}
+
+function renderDiagnostics(target: HTMLElement, report: SelectionReport): void {
+  if (report.rejected.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'diagnostic-empty';
+    empty.textContent = 'No rejected candidates in the current sample batch.';
+    target.replaceChildren(empty);
+    return;
+  }
+
+  const items = report.rejected.flatMap((rejection) =>
+    rejection.diagnostics.map((diagnostic) => {
+      const item = document.createElement('li');
+      const code = document.createElement('strong');
+      code.textContent = diagnostic.code;
+      const detail = document.createElement('span');
+      detail.textContent = ` ${diagnostic.detail}`;
+      item.append(code, detail);
+      if (diagnostic.repairHint !== undefined) {
+        const repair = document.createElement('small');
+        repair.textContent = diagnostic.repairHint;
+        item.append(repair);
+      }
+      return item;
+    }),
+  );
+  const list = document.createElement('ul');
+  list.className = 'diagnostic-list';
+  list.append(...items);
+  target.replaceChildren(list);
 }
 
 function metric(label: string, value: string): HTMLElement {
@@ -100,7 +257,10 @@ function renderLayout(target: SVGSVGElement, layout: LayoutArtifact): void {
     const path = createSvg('path');
     const controlX = (fromPoint.x + toPoint.x) / 2;
     path.setAttribute('class', `link ${link.traversal}`);
-    path.setAttribute('d', `M ${fromPoint.x} ${fromPoint.y} C ${controlX} ${fromPoint.y}, ${controlX} ${toPoint.y}, ${toPoint.x} ${toPoint.y}`);
+    path.setAttribute(
+      'd',
+      `M ${fromPoint.x} ${fromPoint.y} C ${controlX} ${fromPoint.y}, ${controlX} ${toPoint.y}, ${toPoint.x} ${toPoint.y}`,
+    );
     target.append(path);
 
     const labelText = describeLink(link);
@@ -151,6 +311,10 @@ function describeLink(link: LayoutLink): string | null {
     return 'one-way';
   }
   return null;
+}
+
+function shortCandidate(candidateId: string): string {
+  return candidateId.replace('candidate.first_slice.', '').replace('candidate.first-slice.', '');
 }
 
 function createSvg(name: string): SVGElement {

@@ -1,7 +1,7 @@
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { dirname, extname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -15,17 +15,31 @@ const routes = new Map([
   ['/viewer/styles.css', join(repoRoot, 'viewer/styles.css')],
   ['/viewer/app.js', join(repoRoot, 'dist/ts/viewer/app.js')],
   ['/api/artifacts/first-run', join(repoRoot, 'artifacts/samples/first-run/accepted.json')],
+  ['/api/batches/v2', join(repoRoot, 'artifacts/samples/batch-v2/selection-report.json')],
 ]);
 
 const server = createServer(async (request, response) => {
   response.setHeader('X-Den-Project', 'asha-procgen');
-  if (request.url === '/health') {
+  const url = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
+  if (url.pathname === '/health') {
     sendJson(response, 200, { ok: true, project: 'asha-procgen' });
     return;
   }
 
-  const pathname = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`).pathname;
-  const filePath = routes.get(pathname);
+  if (url.pathname === '/api/artifacts/by-path') {
+    const requestedPath = url.searchParams.get('path');
+    const filePath = requestedPath === null ? null : resolve(repoRoot, requestedPath);
+    const artifactRoot = resolve(repoRoot, 'artifacts/samples');
+    if (filePath === null || !isInside(filePath, artifactRoot)) {
+      response.writeHead(400);
+      response.end('Invalid artifact path');
+      return;
+    }
+    await sendFile(response, filePath);
+    return;
+  }
+
+  const filePath = routes.get(url.pathname);
   if (filePath === undefined) {
     response.writeHead(404);
     response.end('Not found');
@@ -56,6 +70,10 @@ async function sendFile(response, filePath) {
     response.writeHead(404);
     response.end('Not found');
   }
+}
+
+function isInside(filePath, rootPath) {
+  return filePath === rootPath || filePath.startsWith(`${rootPath}${sep}`);
 }
 
 function sendJson(response, statusCode, value) {

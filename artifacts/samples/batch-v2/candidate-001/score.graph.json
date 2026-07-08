@@ -1,0 +1,27 @@
+{
+  "kind": "asha_procgen.score.graph.v1",
+  "schemaVersion": 1,
+  "stateHash": "fnv1a64:27a2fe49c77da678",
+  "overall": 0.37,
+  "metrics": {
+    "bossCount": 1.0,
+    "criticalPathLength": 4.0,
+    "deadEndCount": 0.0,
+    "edgeCount": 10.0,
+    "hazardCount": 0.0,
+    "hubCount": 0.0,
+    "lockedEdgeCount": 1.0,
+    "loopCount": 3.0,
+    "mergeCount": 0.0,
+    "nodeCount": 8.0,
+    "optionalBranchCount": 2.0,
+    "preparationCount": 2.0,
+    "pressureEdgeCount": 0.0,
+    "rejoinEdgeCount": 0.0,
+    "shortcutCount": 0.0,
+    "wayfindingAnchorCount": 0.0
+  },
+  "notes": [
+    "Graph score is a deterministic first-slice heuristic, not a human-quality verdict."
+  ]
+}

@@ -1,0 +1,1366 @@
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_intent(id: &str) -> SeedIntent {
+        SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: id.to_owned(),
+            title: "Test".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn rejects_private_engine_paths() {
+        let private_path = format!("{}/{}/{}", "../asha-engine", "engine-rs", "crates/state");
+        let error = reject_private_engine_path("demo", private_path.as_str())
+            .expect_err("private engine path should be rejected");
+        assert!(error.contains("private ASHA internals"));
+    }
+
+    #[test]
+    fn geometry_2d_contract_round_trips_minimal_layout() {
+        let geometry = Geometry2dArtifact {
+            kind: "asha_procgen.geometry_2d.v1".to_owned(),
+            schema_version: 1,
+            geometry_id: "geometry.test.1".to_owned(),
+            candidate_id: "candidate.test.1".to_owned(),
+            seed: 99,
+            source_candidate_ref: "artifacts/test/candidate.json".to_owned(),
+            source_intermediate_ref: "artifacts/test/intermediate-breakdown.json".to_owned(),
+            bounds: GeometryBounds {
+                width: 480,
+                height: 320,
+                grid: 8,
+            },
+            rooms: vec![GeometryRoom {
+                id: "room.start".to_owned(),
+                source_region: "region.start".to_owned(),
+                source_nodes: vec!["start".to_owned()],
+                role: "start".to_owned(),
+                geometry_role: "entry".to_owned(),
+                footprint_class: "marker_room".to_owned(),
+                rect: GeometryRect {
+                    x: 32,
+                    y: 48,
+                    width: 96,
+                    height: 72,
+                },
+                style_tags: vec!["entry".to_owned()],
+            }],
+            corridors: vec![GeometryCorridor {
+                id: "corridor.start.goal".to_owned(),
+                source_connector: "connector.edge_start_goal".to_owned(),
+                source_edge: "edge.start.goal".to_owned(),
+                from_room: "room.start".to_owned(),
+                to_room: "room.goal".to_owned(),
+                traversal_hint: "open".to_owned(),
+                semantic_tags: vec!["corridor".to_owned()],
+                width: 16,
+                points: vec![
+                    GeometryPoint { x: 128, y: 84 },
+                    GeometryPoint { x: 240, y: 84 },
+                ],
+            }],
+            contents: vec![GeometryContent {
+                id: "content.start.marker".to_owned(),
+                room_id: "room.start".to_owned(),
+                source_ref: "start".to_owned(),
+                kind: "marker".to_owned(),
+                label: "Start".to_owned(),
+                tags: vec!["entry".to_owned()],
+            }],
+            skipped_connectors: Vec::new(),
+        };
+        let encoded = serde_json::to_string(&geometry).expect("geometry should encode");
+        let decoded: Geometry2dArtifact =
+            serde_json::from_str(&encoded).expect("geometry should decode");
+        assert_eq!(decoded.kind, "asha_procgen.geometry_2d.v1");
+        assert_eq!(decoded.rooms[0].rect.width, 96);
+        assert_eq!(decoded.corridors[0].points.len(), 2);
+
+        let preview = HtmlPreviewArtifact {
+            kind: "asha_procgen.html_preview.v1".to_owned(),
+            schema_version: 1,
+            preview_id: "preview.test.1".to_owned(),
+            geometry_ref: "artifacts/test/geometry.json".to_owned(),
+            validation_ref: "artifacts/test/geometry.validation.json".to_owned(),
+            html_ref: "artifacts/test/preview.html".to_owned(),
+            screenshot_hint: None,
+        };
+        let encoded = serde_json::to_string(&preview).expect("preview should encode");
+        let decoded: HtmlPreviewArtifact =
+            serde_json::from_str(&encoded).expect("preview should decode");
+        assert_eq!(decoded.kind, "asha_procgen.html_preview.v1");
+        assert_eq!(decoded.html_ref, "artifacts/test/preview.html");
+    }
+
+    #[test]
+    fn validates_lock_key_loop() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "test".to_owned(),
+            title: "Test".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 7);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 8).is_empty());
+        let report = validate_graph(&candidate);
+        assert!(report.ok, "{report:?}");
+    }
+
+    #[test]
+    fn validates_v2_graph_grammar_rules() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "v2".to_owned(),
+            title: "V2".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 11);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::NestedLockKeyChain,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let diagnostics = apply_graph_rule(&mut candidate, rule, 12 + index as u64);
+            assert!(diagnostics.is_empty(), "{rule:?} rejected: {diagnostics:?}");
+        }
+        let report = validate_graph(&candidate);
+        assert!(report.ok, "{report:?}");
+        let score = score_graph(&candidate);
+        assert_eq!(score.metrics.get("hubCount"), Some(&1.0));
+        assert_eq!(score.metrics.get("bossCount"), Some(&1.0));
+        assert!(
+            score
+                .metrics
+                .get("pressureEdgeCount")
+                .copied()
+                .unwrap_or(0.0)
+                >= 2.0
+        );
+    }
+
+    #[test]
+    fn rule_metadata_includes_v2_compatibility_hints() {
+        let report = rule_metadata_report();
+        assert_eq!(report.kind, "asha_procgen.rule_metadata.v1");
+        let nested = report
+            .rules
+            .iter()
+            .find(|rule| rule.id == "nested_lock_key_chain")
+            .expect("nested lock metadata should exist");
+        assert!(nested
+            .required_patterns
+            .contains(&"lock_key_loop".to_owned()));
+        assert!(nested
+            .compatibility_hints
+            .iter()
+            .any(|hint| hint.contains("lock_key_loop first")));
+        let merge = report
+            .rules
+            .iter()
+            .find(|rule| rule.id == "branch_merge_shortcut")
+            .expect("merge shortcut metadata should exist");
+        assert!(merge
+            .duplicate_markers
+            .contains(&"junction.merge_1".to_owned()));
+    }
+
+    #[test]
+    fn graph_summary_reports_metrics_and_provenance_tail() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "summary".to_owned(),
+            title: "Summary".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 31);
+        candidate.provenance.push(ProvenanceStep {
+            step: 1,
+            command: "init".to_owned(),
+            seed: Some(31),
+            summary: "Initialized test candidate".to_owned(),
+        });
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 32).is_empty());
+        candidate.provenance.push(ProvenanceStep {
+            step: 2,
+            command: "graph apply-rule lock_key_loop".to_owned(),
+            seed: Some(32),
+            summary: "Applied lock_key_loop".to_owned(),
+        });
+        let validation = validate_graph(&candidate);
+        let score = score_graph(&candidate);
+        let summary =
+            graph_summary_report(&candidate, &validation, &score).expect("summary should encode");
+        assert_eq!(summary.kind, "asha_procgen.graph_summary.v1");
+        assert!(summary.validation_ok);
+        assert_eq!(summary.node_count, candidate.graph.nodes.len());
+        assert!(summary.locked_items.contains(&"item.gate_key_1".to_owned()));
+        assert!(summary.tags.contains(&"critical".to_owned()));
+        assert_eq!(summary.provenance_tail.len(), 2);
+        assert!(summary.metrics.contains_key("lockedEdgeCount"));
+    }
+
+    #[test]
+    fn fork_candidate_preserves_graph_and_adds_provenance() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "fork".to_owned(),
+            title: "Fork".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 41);
+        candidate.provenance.push(ProvenanceStep {
+            step: 1,
+            command: "init".to_owned(),
+            seed: Some(41),
+            summary: "Initialized fork source".to_owned(),
+        });
+        apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 42);
+        let source_id = candidate.candidate_id.clone();
+        let source_graph = candidate.graph.clone();
+        let forked = fork_candidate(candidate, "Boss Prep Attempt!", 77);
+        assert_eq!(
+            forked.candidate_id,
+            format!("{source_id}.fork.boss_prep_attempt.77")
+        );
+        assert_eq!(forked.seed, 77);
+        assert_eq!(forked.graph.nodes.len(), source_graph.nodes.len());
+        assert_eq!(forked.graph.edges.len(), source_graph.edges.len());
+        assert_eq!(forked.provenance.len(), 2);
+        let fork_step = forked.provenance.last().expect("fork step should exist");
+        assert_eq!(fork_step.command, "graph fork");
+        assert_eq!(fork_step.seed, Some(77));
+        assert!(fork_step.summary.contains(&source_id));
+    }
+
+    #[test]
+    fn rejects_duplicate_v2_rule_with_repair_hint() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "duplicate".to_owned(),
+            title: "Duplicate".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 15);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 16).is_empty());
+        let diagnostics = apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 17);
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "rule_already_applied" && diagnostic.repair_hint.is_some()
+        }));
+    }
+
+    #[test]
+    fn rejects_missing_required_item() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "broken".to_owned(),
+            title: "Broken".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 9);
+        candidate.graph.edges[0].required_item = Some("missing.key".to_owned());
+        candidate.graph.edges[0].traversal = TraversalKind::Locked;
+        let report = validate_graph(&candidate);
+        assert!(!report.ok);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "required_item_unavailable"
+                && diagnostic.repair_hint.is_some()));
+    }
+
+    #[test]
+    fn rejects_incompatible_v2_rule_with_repair_hint() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "incompatible".to_owned(),
+            title: "Incompatible".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 19);
+        let diagnostics = apply_graph_rule(&mut candidate, GraphRule::NestedLockKeyChain, 20);
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "missing_required_pattern" && diagnostic.repair_hint.is_some()
+        }));
+    }
+
+    #[test]
+    fn validates_v2_structural_repair_hints() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "structural".to_owned(),
+            title: "Structural".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 21);
+        candidate.graph.nodes.extend([
+            Node {
+                id: "hub.broken".to_owned(),
+                kind: NodeKind::Junction,
+                label: "Broken Hub".to_owned(),
+                tags: vec!["hub".to_owned()],
+                grants_item: None,
+            },
+            Node {
+                id: "gate.boss_broken".to_owned(),
+                kind: NodeKind::Gate,
+                label: "Unprepared Boss".to_owned(),
+                tags: vec!["boss".to_owned()],
+                grants_item: None,
+            },
+        ]);
+        candidate.graph.edges.extend([
+            Edge {
+                id: "edge.start.broken_hub".to_owned(),
+                from: "start".to_owned(),
+                to: "hub.broken".to_owned(),
+                kind: EdgeKind::OptionalBranch,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["branch".to_owned()],
+            },
+            Edge {
+                id: "edge.start.boss_broken".to_owned(),
+                from: "start".to_owned(),
+                to: "gate.boss_broken".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["approach".to_owned()],
+            },
+            Edge {
+                id: "edge.boss_broken.goal".to_owned(),
+                from: "gate.boss_broken".to_owned(),
+                to: "goal".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["boss".to_owned()],
+            },
+        ]);
+        let report = validate_graph(&candidate);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "hub_missing_wayfinding_anchor" && diagnostic.repair_hint.is_some()
+        }));
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "boss_missing_preparation" && diagnostic.repair_hint.is_some()
+        }));
+    }
+
+    #[test]
+    fn repair_report_prioritizes_missing_provider_actions() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "repair".to_owned(),
+            title: "Repair".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 51);
+        candidate.graph.edges[0].required_item = Some("missing.key".to_owned());
+        candidate.graph.edges[0].traversal = TraversalKind::Locked;
+        let report = repair_report(&candidate).expect("repair report should encode");
+        assert_eq!(report.kind, "asha_procgen.repair_report.v1");
+        assert!(!report.validation_ok);
+        let suggestion = report
+            .suggestions
+            .iter()
+            .find(|suggestion| suggestion.code == "required_item_unavailable")
+            .expect("missing provider suggestion should exist");
+        assert_eq!(suggestion.severity, Severity::Fatal);
+        assert!(suggestion.repair_hint.is_some());
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("provider")));
+    }
+
+    #[test]
+    fn repair_mapping_covers_missing_required_pattern() {
+        let diagnostic = fatal_with_hint(
+            "missing_required_pattern",
+            Some("gate.locked_1"),
+            None,
+            "nested_lock_key_chain requires an existing first lock/key loop.",
+            "Apply lock_key_loop before nested_lock_key_chain.",
+        );
+        let suggestion = repair_suggestion_for_diagnostic(&diagnostic);
+        assert_eq!(suggestion.code, "missing_required_pattern");
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("prerequisite pattern")));
+    }
+
+    #[test]
+    fn repair_report_maps_v2_structural_hints() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "repair-structural".to_owned(),
+            title: "Repair Structural".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 52);
+        candidate.graph.nodes.push(Node {
+            id: "gate.boss_broken".to_owned(),
+            kind: NodeKind::Gate,
+            label: "Unprepared Boss".to_owned(),
+            tags: vec!["boss".to_owned()],
+            grants_item: None,
+        });
+        candidate.graph.edges.extend([
+            Edge {
+                id: "edge.start.boss_broken".to_owned(),
+                from: "start".to_owned(),
+                to: "gate.boss_broken".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["approach".to_owned()],
+            },
+            Edge {
+                id: "edge.boss_broken.goal".to_owned(),
+                from: "gate.boss_broken".to_owned(),
+                to: "goal".to_owned(),
+                kind: EdgeKind::CriticalPath,
+                traversal: TraversalKind::Open,
+                required_item: None,
+                tags: vec!["boss".to_owned()],
+            },
+        ]);
+        let report = repair_report(&candidate).expect("repair report should encode");
+        let suggestion = report
+            .suggestions
+            .iter()
+            .find(|suggestion| suggestion.code == "boss_missing_preparation")
+            .expect("boss preparation suggestion should exist");
+        assert!(suggestion
+            .suggested_actions
+            .iter()
+            .any(|action| action.contains("preparation")));
+    }
+
+    #[test]
+    fn graph_analysis_reports_lock_and_shortcut_signals() {
+        let intent = test_intent("analysis");
+        let mut candidate = create_initial_candidate(&intent, 61);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 62).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::OneWayShortcut, 63).is_empty());
+        let report = analyze_graph(&candidate).expect("analysis should encode");
+        assert_eq!(report.kind, "asha_procgen.graph_analysis.v1");
+        assert_eq!(
+            report.critical_path.first().map(String::as_str),
+            Some("start")
+        );
+        assert_eq!(
+            report.critical_path.last().map(String::as_str),
+            Some("goal")
+        );
+        assert!(report
+            .lock_key_order
+            .iter()
+            .any(|entry| entry.required_item == "item.gate_key_1"
+                && entry.provider_reachable_before_lock));
+        assert!(report
+            .loop_signals
+            .iter()
+            .any(|signal| signal.signal == "shortcut_loop"));
+        assert!(report
+            .shortcut_bypass_risks
+            .iter()
+            .any(|risk| risk.risk == "may_bypass_lock"));
+    }
+
+    #[test]
+    fn compatible_rules_reports_blocked_duplicate_and_risky() {
+        let intent = test_intent("compatibility");
+        let mut candidate = create_initial_candidate(&intent, 71);
+        let initial = compatible_rules_report(&candidate).expect("compatibility report");
+        let nested = initial
+            .rules
+            .iter()
+            .find(|rule| rule.rule == "nested_lock_key_chain")
+            .expect("nested rule should be present");
+        assert_eq!(nested.status, "blocked");
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 72).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::OneWayShortcut, 73).is_empty());
+        let report = compatible_rules_report(&candidate).expect("compatibility report");
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "lock_key_loop")
+                .map(|rule| rule.status.as_str()),
+            Some("duplicate")
+        );
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "one_way_shortcut")
+                .map(|rule| rule.status.as_str()),
+            Some("duplicate")
+        );
+        assert_eq!(
+            report
+                .rules
+                .iter()
+                .find(|rule| rule.rule == "secret_bypass")
+                .map(|rule| rule.status.as_str()),
+            Some("risky")
+        );
+    }
+
+    #[test]
+    fn repair_apply_adds_rejoin_and_refuses_ambiguous_target() {
+        let intent = test_intent("repair-apply");
+        let mut candidate = create_initial_candidate(&intent, 81);
+        candidate.graph.nodes.push(Node {
+            id: "treasure.loose".to_owned(),
+            kind: NodeKind::Treasure,
+            label: "Loose Treasure".to_owned(),
+            tags: vec!["optional".to_owned(), "reward".to_owned()],
+            grants_item: None,
+        });
+        candidate.graph.edges.push(Edge {
+            id: "edge.start.loose".to_owned(),
+            from: "start".to_owned(),
+            to: "treasure.loose".to_owned(),
+            kind: EdgeKind::OptionalBranch,
+            traversal: TraversalKind::Open,
+            required_item: None,
+            tags: vec!["branch".to_owned()],
+        });
+        let diagnostics = apply_repair_action(
+            &mut candidate,
+            RepairAction::AddRejoinEdge,
+            Some("treasure.loose"),
+            82,
+        );
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert!(candidate
+            .graph
+            .edges
+            .iter()
+            .any(|edge| edge.from == "treasure.loose"
+                && edge.to == "goal"
+                && edge_has_tag(edge, "repair")));
+        let rejected = apply_repair_action(
+            &mut candidate,
+            RepairAction::AddRejoinEdge,
+            Some("start"),
+            83,
+        );
+        assert!(rejected
+            .iter()
+            .any(|diagnostic| diagnostic.code == "repair_target_ambiguous"));
+    }
+
+    #[test]
+    fn repair_apply_removes_orphan_node() {
+        let intent = test_intent("repair-orphan");
+        let mut candidate = create_initial_candidate(&intent, 84);
+        candidate.graph.nodes.push(Node {
+            id: "secret.orphan".to_owned(),
+            kind: NodeKind::Secret,
+            label: "Orphan Secret".to_owned(),
+            tags: vec!["secret".to_owned()],
+            grants_item: None,
+        });
+        let diagnostics = apply_repair_action(
+            &mut candidate,
+            RepairAction::RemoveOrphanNode,
+            Some("secret.orphan"),
+            85,
+        );
+        assert!(diagnostics.is_empty(), "{diagnostics:?}");
+        assert!(!has_node(&candidate, "secret.orphan"));
+    }
+
+    #[test]
+    fn topology_fingerprint_is_stable_and_budget_checks_fail_cleanly() {
+        let intent = test_intent("fingerprint");
+        let mut left = create_initial_candidate(&intent, 91);
+        let mut right = create_initial_candidate(&intent, 92);
+        assert!(apply_graph_rule(&mut left, GraphRule::LockKeyLoop, 93).is_empty());
+        assert!(apply_graph_rule(&mut left, GraphRule::OptionalTreasureDetour, 94).is_empty());
+        assert!(apply_graph_rule(&mut right, GraphRule::LockKeyLoop, 95).is_empty());
+        assert!(apply_graph_rule(&mut right, GraphRule::OptionalTreasureDetour, 96).is_empty());
+        assert_eq!(topology_fingerprint(&left), topology_fingerprint(&right));
+        let budgets = IntentBudget {
+            require_hub: Some(true),
+            min_optional_branches: Some(3),
+            max_dead_ends: Some(0),
+            ..IntentBudget::default()
+        };
+        let checks = budget_checks(Some(&budgets), &score_graph(&left), &left);
+        assert!(checks
+            .iter()
+            .any(|check| check.code == "require_hub" && !check.ok));
+        assert!(checks
+            .iter()
+            .any(|check| check.code == "max_dead_ends" && check.ok));
+    }
+
+    #[test]
+    fn spatial_intent_annotation_marks_core_intents() {
+        let intent = test_intent("spatial");
+        let mut candidate = create_initial_candidate(&intent, 101);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::OneWayShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 102 + index as u64).is_empty());
+        }
+        let report = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation.target_id == "hub.central_1"
+                && annotation.intents.contains(&"landmark_hub".to_owned())
+        }));
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation.target_id == "edge.gate_1.goal"
+                && annotation
+                    .intents
+                    .contains(&"visible_before_reachable".to_owned())
+        }));
+        assert!(report.annotations.iter().any(|annotation| {
+            annotation
+                .intents
+                .contains(&"shortcut_connector".to_owned())
+        }));
+        assert!(report
+            .annotations
+            .iter()
+            .any(|annotation| { annotation.intents.contains(&"pressure_path".to_owned()) }));
+    }
+
+    #[test]
+    fn intermediate_breakdown_validates_and_catches_invalid_cases() {
+        let intent = test_intent("breakdown");
+        let mut candidate = create_initial_candidate(&intent, 111);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 112).is_empty());
+        assert!(apply_graph_rule(&mut candidate, GraphRule::HubSpokeCluster, 113).is_empty());
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let mut breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let report = validate_intermediate_breakdown(&breakdown);
+        assert!(report.ok, "{report:?}");
+        breakdown.regions.retain(|region| region.role != "goal");
+        let missing_goal = validate_intermediate_breakdown(&breakdown);
+        assert!(missing_goal.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "intermediate_goal_missing" && diagnostic.severity == Severity::Fatal
+        }));
+        let connector = breakdown
+            .connectors
+            .first_mut()
+            .expect("connector should exist");
+        connector.to_region = "region.missing".to_owned();
+        connector.intents.push("vertical_candidate".to_owned());
+        let invalid_connector = validate_intermediate_breakdown(&breakdown);
+        assert!(invalid_connector
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_connector_endpoint_missing" }));
+        assert!(invalid_connector.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "intermediate_vertical_candidate_unsupported"
+        }));
+    }
+
+    #[test]
+    fn intermediate_breakdown_emits_geometry_prep_hints() {
+        let intent = test_intent("geometry-prep");
+        let mut candidate = create_initial_candidate(&intent, 121);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 122 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        assert_eq!(breakdown.schema_version, 2);
+        let hub = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["hub.central_1".to_owned()])
+            .expect("hub region should exist");
+        assert_eq!(hub.geometry_role, "landmark_junction");
+        assert_eq!(hub.footprint_class, "hub");
+        assert_eq!(hub.scale_band, "large");
+        assert_eq!(hub.anchor_quality, "explicit");
+        assert!(hub
+            .entrance_expectations
+            .contains(&"multi_spoke_orientation".to_owned()));
+
+        let gate = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["gate.locked_1".to_owned()])
+            .expect("gate region should exist");
+        assert_eq!(gate.geometry_role, "threshold");
+        assert!(gate
+            .entrance_expectations
+            .contains(&"locked_threshold_preview".to_owned()));
+
+        let hazard = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["hazard.sluice_1".to_owned()])
+            .expect("hazard region should exist");
+        assert_eq!(hazard.footprint_class, "pressure_lane");
+        assert!(hazard
+            .entrance_expectations
+            .contains(&"readable_hazard_approach".to_owned()));
+
+        let reward = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["treasure.gated_1".to_owned()])
+            .expect("reward region should exist");
+        assert_eq!(reward.geometry_role, "reward_pocket");
+        assert_eq!(reward.scale_band, "small");
+
+        let locked_connector = breakdown
+            .connectors
+            .iter()
+            .find(|connector| connector.edge_id == "edge.gate_1.goal")
+            .expect("locked connector should exist");
+        assert_eq!(locked_connector.traversal_hint, "locked");
+        assert!(locked_connector
+            .affordances
+            .contains(&"locked_threshold".to_owned()));
+        assert!(locked_connector
+            .constraint_refs
+            .iter()
+            .any(|reference| reference.contains("preserve_lock_preview")));
+
+        let shortcut_connector = breakdown
+            .connectors
+            .iter()
+            .find(|connector| connector.edge_id == "edge.merge_1.goal.shortcut")
+            .expect("shortcut connector should exist");
+        assert!(shortcut_connector
+            .affordances
+            .contains(&"shortcut_link".to_owned()));
+        assert!(shortcut_connector
+            .constraint_refs
+            .iter()
+            .any(|reference| reference.contains("preserve_shortcut_connector")));
+
+        assert!(breakdown.constraints.iter().any(|constraint| {
+            constraint.target_type == "edge"
+                && constraint
+                    .graph_refs
+                    .contains(&"edge.gate_1.goal".to_owned())
+                && constraint
+                    .source_intents
+                    .contains(&"visible_before_reachable".to_owned())
+        }));
+    }
+
+    #[test]
+    fn intermediate_validation_catches_geometry_prep_gaps() {
+        let intent = test_intent("geometry-prep-validation");
+        let mut candidate = create_initial_candidate(&intent, 131);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+            GraphRule::SecretBypass,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 132 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let valid = validate_intermediate_breakdown(&breakdown);
+        assert!(valid.ok, "{valid:?}");
+
+        let mut missing_affordance = breakdown.clone();
+        missing_affordance
+            .connectors
+            .first_mut()
+            .expect("connector should exist")
+            .affordances
+            .clear();
+        let report = validate_intermediate_breakdown(&missing_affordance);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_connector_affordance_missing" }));
+
+        let mut missing_gated_constraint = breakdown.clone();
+        let locked = missing_gated_constraint
+            .connectors
+            .iter_mut()
+            .find(|connector| connector.edge_id == "edge.gate_1.goal")
+            .expect("locked connector should exist");
+        locked.constraint_refs.clear();
+        let report = validate_intermediate_breakdown(&missing_gated_constraint);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "intermediate_gated_constraint_missing"));
+
+        let mut missing_shortcut_affordance = breakdown.clone();
+        let shortcut = missing_shortcut_affordance
+            .connectors
+            .iter_mut()
+            .find(|connector| connector.edge_id == "edge.merge_1.goal.shortcut")
+            .expect("shortcut connector should exist");
+        shortcut
+            .affordances
+            .retain(|affordance| affordance != "shortcut_link");
+        let report = validate_intermediate_breakdown(&missing_shortcut_affordance);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_shortcut_affordance_missing" }));
+
+        let mut missing_region_prep = breakdown.clone();
+        missing_region_prep
+            .regions
+            .first_mut()
+            .expect("region should exist")
+            .geometry_role
+            .clear();
+        let report = validate_intermediate_breakdown(&missing_region_prep);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_region_geometry_prep_missing" }));
+
+        let mut unsupported_3d = breakdown;
+        unsupported_3d
+            .connectors
+            .first_mut()
+            .expect("connector should exist")
+            .affordances
+            .push("vertical_shaft".to_owned());
+        let report = validate_intermediate_breakdown(&unsupported_3d);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "intermediate_3d_claim_unsupported"));
+    }
+
+    #[test]
+    fn geometry_emit_2d_places_variable_non_overlapping_rooms() {
+        let intent = test_intent("geometry-emit");
+        let mut candidate = create_initial_candidate(&intent, 141);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 142 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let intermediate = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let args = GeometryEmit2dArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            seed: 150,
+            out: PathBuf::from("artifacts/test/geometry.json"),
+        };
+        let geometry =
+            emit_geometry_2d(&candidate, &intermediate, &args, 150).expect("geometry should emit");
+        assert_eq!(geometry.kind, "asha_procgen.geometry_2d.v1");
+        assert_eq!(geometry.rooms.len(), intermediate.regions.len());
+        assert_eq!(geometry.corridors.len(), intermediate.connectors.len());
+        assert_eq!(geometry.skipped_connectors.len(), 0);
+        assert!(geometry.bounds.width > 640);
+        let hub = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.hub_central_1")
+            .expect("hub room should exist");
+        let reward = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.treasure_gated_1")
+            .expect("reward room should exist");
+        let hazard = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.hazard_sluice_1")
+            .expect("hazard room should exist");
+        let gate = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.gate_locked_1")
+            .expect("gate room should exist");
+        let start = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.start")
+            .expect("start room should exist");
+        let goal = geometry
+            .rooms
+            .iter()
+            .find(|room| room.source_region == "region.goal")
+            .expect("goal room should exist");
+        assert!(hub.rect.width > reward.rect.width);
+        assert!(hazard.rect.width > reward.rect.width);
+        assert!(gate.style_tags.contains(&"threshold".to_owned()));
+        assert!(start.style_tags.contains(&"entry".to_owned()));
+        assert!(goal.style_tags.contains(&"destination".to_owned()));
+        for (index, left) in geometry.rooms.iter().enumerate() {
+            for right in geometry.rooms.iter().skip(index + 1) {
+                assert!(
+                    !rectangles_overlap(&left.rect, &right.rect),
+                    "{} overlaps {}",
+                    left.id,
+                    right.id
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn geometry_emit_2d_routes_semantic_corridors() {
+        let intent = test_intent("geometry-corridors");
+        let mut candidate = create_initial_candidate(&intent, 251);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+            GraphRule::OneWayShortcut,
+            GraphRule::SecretBypass,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 252 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let intermediate = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let args = GeometryEmit2dArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            seed: 253,
+            out: PathBuf::from("artifacts/test/geometry.json"),
+        };
+        let geometry =
+            emit_geometry_2d(&candidate, &intermediate, &args, 253).expect("geometry should emit");
+        assert_eq!(geometry.corridors.len(), intermediate.connectors.len());
+        assert!(geometry.skipped_connectors.is_empty());
+
+        let locked = geometry
+            .corridors
+            .iter()
+            .find(|corridor| corridor.source_edge == "edge.gate_1.goal")
+            .expect("locked threshold corridor should exist");
+        assert_eq!(locked.width, 18);
+        assert!(locked
+            .semantic_tags
+            .contains(&"locked_threshold".to_owned()));
+
+        let secret = geometry
+            .corridors
+            .iter()
+            .find(|corridor| corridor.source_edge == "edge.start.secret_1")
+            .expect("secret corridor should exist");
+        assert_eq!(secret.width, 10);
+        assert!(secret.semantic_tags.contains(&"hidden_route".to_owned()));
+
+        let shortcut = geometry
+            .corridors
+            .iter()
+            .find(|corridor| corridor.source_edge == "edge.merge_1.goal.shortcut")
+            .expect("shortcut corridor should exist");
+        assert!(shortcut.semantic_tags.contains(&"shortcut_link".to_owned()));
+
+        let pressure = geometry
+            .corridors
+            .iter()
+            .find(|corridor| corridor.source_edge == "edge.start.sluice_1")
+            .expect("pressure route corridor should exist");
+        assert_eq!(pressure.width, 20);
+
+        let rooms_by_id = geometry
+            .rooms
+            .iter()
+            .map(|room| (room.id.as_str(), room))
+            .collect::<BTreeMap<_, _>>();
+        for corridor in &geometry.corridors {
+            let first = corridor
+                .points
+                .first()
+                .expect("corridor should have a start point");
+            let last = corridor
+                .points
+                .last()
+                .expect("corridor should have an end point");
+            let from_room = rooms_by_id
+                .get(corridor.from_room.as_str())
+                .expect("corridor from room should resolve");
+            let to_room = rooms_by_id
+                .get(corridor.to_room.as_str())
+                .expect("corridor to room should resolve");
+            assert!(
+                point_on_rect_boundary(first, &from_room.rect),
+                "{} does not start on {}",
+                corridor.id,
+                from_room.id
+            );
+            assert!(
+                point_on_rect_boundary(last, &to_room.rect),
+                "{} does not end on {}",
+                corridor.id,
+                to_room.id
+            );
+        }
+    }
+
+    #[test]
+    fn geometry_emit_2d_annotates_room_contents() {
+        let intent = test_intent("geometry-contents");
+        let mut candidate = create_initial_candidate(&intent, 351);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+            GraphRule::OneWayShortcut,
+            GraphRule::SecretBypass,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 352 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let intermediate = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let args = GeometryEmit2dArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            seed: 353,
+            out: PathBuf::from("artifacts/test/geometry.json"),
+        };
+        let geometry =
+            emit_geometry_2d(&candidate, &intermediate, &args, 353).expect("geometry should emit");
+        let content_kinds = geometry
+            .contents
+            .iter()
+            .map(|content| content.kind.as_str())
+            .collect::<BTreeSet<_>>();
+        for expected in [
+            "key_pickup",
+            "locked_gate",
+            "hazard",
+            "reward_cache",
+            "boss_threshold",
+            "shortcut_marker",
+            "secret_route_marker",
+        ] {
+            assert!(
+                content_kinds.contains(expected),
+                "{expected} content missing"
+            );
+        }
+        for content in &geometry.contents {
+            assert!(!content.label.is_empty());
+            assert!(content.source_ref.contains("node:"));
+            assert!(content.source_ref.contains("region:"));
+            assert!(geometry.rooms.iter().any(|room| room.id == content.room_id));
+            assert!(
+                content.tags.contains(&content.kind),
+                "{} tags should include kind",
+                content.id
+            );
+        }
+    }
+
+    #[test]
+    fn geometry_validate_2d_accepts_valid_full_stack_geometry() {
+        let geometry = full_stack_geometry_fixture(451);
+        let report = validate_geometry_2d(&geometry);
+        assert!(report.ok, "{:?}", report.diagnostics);
+        assert_eq!(report.kind, "asha_procgen.validation.geometry_2d.v1");
+    }
+
+    #[test]
+    fn geometry_validate_2d_catches_invalid_cases() {
+        let geometry = full_stack_geometry_fixture(551);
+
+        let mut overlapping = geometry.clone();
+        overlapping.rooms[1].rect = overlapping.rooms[0].rect.clone();
+        let report = validate_geometry_2d(&overlapping);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "geometry_room_overlap"));
+
+        let mut missing_corridors = geometry.clone();
+        missing_corridors.corridors.clear();
+        let report = validate_geometry_2d(&missing_corridors);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "geometry_connector_coverage_missing"));
+
+        let mut bad_content_anchor = geometry.clone();
+        bad_content_anchor
+            .contents
+            .first_mut()
+            .expect("content should exist")
+            .room_id = "room.missing".to_owned();
+        let report = validate_geometry_2d(&bad_content_anchor);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "geometry_content_room_missing"));
+
+        let mut unreachable_goal = geometry;
+        let goal_room_id = unreachable_goal
+            .rooms
+            .iter()
+            .find(|room| room.role == "goal")
+            .expect("goal room should exist")
+            .id
+            .clone();
+        unreachable_goal
+            .corridors
+            .retain(|corridor| corridor.to_room != goal_room_id);
+        let report = validate_geometry_2d(&unreachable_goal);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "geometry_goal_unreachable"));
+    }
+
+    #[test]
+    fn preview_html_renders_required_sections() {
+        let geometry = full_stack_geometry_fixture(651);
+        let validation = validate_geometry_2d(&geometry);
+        assert!(validation.ok, "{:?}", validation.diagnostics);
+        let html = render_geometry_preview_html(
+            &geometry,
+            &validation,
+            "artifacts/test/geometry.json",
+            "artifacts/test/geometry.validation.json",
+        );
+        for expected in [
+            "<!doctype html>",
+            "data-preview-kind=\"asha_procgen.html_preview.v1\"",
+            "<svg",
+            "<polyline",
+            "<rect",
+            "Dungeon Preview",
+            "Validation: ok",
+            "Key Pickup",
+            "Boss Threshold",
+            "Reward Cache",
+            "Secret Route",
+            "Shortcut Marker",
+        ] {
+            assert!(html.contains(expected), "{expected} missing");
+        }
+    }
+
+    #[test]
+    fn preview_html_refuses_invalid_geometry_without_override() {
+        let mut geometry = full_stack_geometry_fixture(751);
+        geometry.rooms[1].rect = geometry.rooms[0].rect.clone();
+        let validation = validate_geometry_2d(&geometry);
+        assert!(!validation.ok);
+        let error = validate_preview_inputs(&geometry, &validation, false)
+            .expect_err("invalid geometry should need explicit preview override");
+        assert!(error.contains("--allow-invalid"));
+        validate_preview_inputs(&geometry, &validation, true)
+            .expect("allow-invalid should render diagnostics");
+        let html = render_geometry_preview_html(
+            &geometry,
+            &validation,
+            "artifacts/test/geometry.json",
+            "artifacts/test/geometry.validation.json",
+        );
+        assert!(html.contains("Validation: invalid"));
+        assert!(html.contains("geometry_room_overlap"));
+    }
+
+    fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
+        let intent = test_intent("geometry-validation");
+        let mut candidate = create_initial_candidate(&intent, seed);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::BossPreparationLoop,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+            GraphRule::OneWayShortcut,
+            GraphRule::SecretBypass,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, seed + 1 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let intermediate = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let args = GeometryEmit2dArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            seed: seed + 20,
+            out: PathBuf::from("artifacts/test/geometry.json"),
+        };
+        emit_geometry_2d(&candidate, &intermediate, &args, seed + 20).expect("geometry should emit")
+    }
+
+    fn rectangles_overlap(left: &GeometryRect, right: &GeometryRect) -> bool {
+        geometry_rectangles_overlap(left, right)
+    }
+
+    fn point_on_rect_boundary(point: &GeometryPoint, rect: &GeometryRect) -> bool {
+        geometry_point_on_rect_boundary(point, rect)
+    }
+
+    #[test]
+    fn loads_default_batch_profile_fixture() {
+        let profile_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_BATCH_PROFILE);
+        let profile = load_batch_profile(&profile_path).expect("default profile should load");
+        assert_eq!(profile.kind, "asha_procgen.batch_profile.v1");
+        assert_eq!(profile.sequences.len(), 6);
+        let first = batch_profile_sequence(&profile, 0).expect("first sequence");
+        assert_eq!(first.label, "hub-merge");
+        assert_eq!(
+            first.rules,
+            vec![
+                GraphRule::LockKeyLoop,
+                GraphRule::HubSpokeCluster,
+                GraphRule::BranchMergeShortcut
+            ]
+        );
+        let cycled = batch_profile_sequence(&profile, 6).expect("cycled sequence");
+        assert_eq!(cycled.label, "hub-merge");
+    }
+
+    #[test]
+    fn scoring_rewards_cycles() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "score".to_owned(),
+            title: "Score".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 1);
+        let base = score_graph(&candidate).overall;
+        apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 2);
+        apply_graph_rule(&mut candidate, GraphRule::OptionalTreasureDetour, 3);
+        let richer = score_graph(&candidate).overall;
+        assert!(richer > base);
+    }
+
+    #[test]
+    fn embeds_valid_graph() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "embed".to_owned(),
+            title: "Embed".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 1);
+        apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 2);
+        let layout = embed_2d(&candidate, 3);
+        assert_eq!(layout.candidate_id, candidate.candidate_id);
+        assert_eq!(layout.rooms.len(), candidate.graph.nodes.len());
+        assert_eq!(layout.links.len(), candidate.graph.edges.len());
+    }
+}

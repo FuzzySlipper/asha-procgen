@@ -25,6 +25,7 @@ fn run(cli: Cli) -> Result<(), String> {
         },
         Command::Build(command) => match command.command {
             BuildSubcommand::EmitPiecePlan(args) => build_emit_piece_plan_command(args),
+            BuildSubcommand::MatchShapes(args) => build_match_shapes_command(args),
         },
         Command::Preview(command) => match command.command {
             PreviewSubcommand::Html(args) => preview_html_command(args),

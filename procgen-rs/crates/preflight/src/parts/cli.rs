@@ -291,6 +291,8 @@ struct BuildCommand {
 enum BuildSubcommand {
     #[command(name = "emit-piece-plan")]
     EmitPiecePlan(BuildEmitPiecePlanArgs),
+    #[command(name = "match-shapes")]
+    MatchShapes(BuildMatchShapesArgs),
 }
 
 #[derive(Args)]
@@ -301,6 +303,18 @@ struct BuildEmitPiecePlanArgs {
     intermediate: PathBuf,
     #[arg(long)]
     geometry: PathBuf,
+    #[arg(long)]
+    out: PathBuf,
+}
+
+#[derive(Args)]
+struct BuildMatchShapesArgs {
+    #[arg(long)]
+    catalog: PathBuf,
+    #[arg(long = "piece-plan")]
+    piece_plan: PathBuf,
+    #[arg(long)]
+    seed: u64,
     #[arg(long)]
     out: PathBuf,
 }

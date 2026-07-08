@@ -241,7 +241,7 @@ reward pockets, hazards, boss spaces, shortcuts, secrets, and resource rooms as
 explicit pieces with exits and feature sockets. Later commands will add catalog
 matching, transforms, occupied cells, and reserved cells.
 
-Current piece-plan command:
+Current piece-plan and matching commands:
 
 ```bash
 npm run procgen -- build emit-piece-plan \
@@ -249,6 +249,12 @@ npm run procgen -- build emit-piece-plan \
   --geometry artifacts/manual/geometry-2d.json \
   --intermediate artifacts/manual/intermediate-breakdown.json \
   --out artifacts/manual/piece-plan.json
+
+npm run procgen -- build match-shapes \
+  --catalog fixtures/shape-catalogs/2d-basic.json \
+  --piece-plan artifacts/manual/piece-plan.json \
+  --seed 7101 \
+  --out artifacts/manual/piece-shape-match.json
 ```
 
 Planned follow-up command shape:
@@ -260,7 +266,7 @@ npm run procgen -- build catalog inspect \
 
 npm run procgen -- build assemble \
   --catalog fixtures/shape-catalogs/2d-basic.json \
-  --piece-plan artifacts/manual/piece-plan.json \
+  --shape-match artifacts/manual/piece-shape-match.json \
   --seed 7101 \
   --out artifacts/manual/piece-placement.json
 
@@ -271,7 +277,9 @@ npm run procgen -- build validate \
 
 Do not treat the current viewer Build tab's geometry-rasterized cells as final
 piece-placement authority. The `piece-plan.json` artifact is the requirement
-graph for the next catalog matching and occupancy slices.
+graph, and `piece-shape-match.json` records selected catalog shape ids,
+transforms, exit maps, socket maps, and rejected alternatives for the next
+occupancy slice.
 
 The initial metadata-only fixture catalog is:
 

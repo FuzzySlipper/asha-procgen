@@ -605,6 +605,63 @@ struct PieceContentRequirement {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct PieceShapeMatchReport {
+    kind: String,
+    schema_version: u32,
+    match_id: String,
+    plan_id: String,
+    catalog_id: String,
+    seed: u64,
+    source_plan_ref: String,
+    source_catalog_ref: String,
+    ok: bool,
+    unmatched_count: usize,
+    matches: Vec<MatchedPiece>,
+    rejections: Vec<ShapeMatchRejection>,
+    diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct MatchedPiece {
+    piece_id: String,
+    requirement_kind: String,
+    shape_id: String,
+    transform: String,
+    score: i32,
+    source_requirement_ref: String,
+    exit_map: Vec<MatchedExit>,
+    socket_map: Vec<MatchedSocket>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct MatchedExit {
+    requirement_exit_id: String,
+    catalog_exit_id: String,
+    direction: String,
+    width: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct MatchedSocket {
+    required_socket: String,
+    catalog_socket_id: String,
+    kind: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ShapeMatchRejection {
+    piece_id: String,
+    shape_id: String,
+    transform: Option<String>,
+    reasons: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct SkippedConnector {
     source_connector: String,
     reason: String,

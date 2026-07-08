@@ -1,0 +1,362 @@
+fn build_match_shapes_command(args: BuildMatchShapesArgs) -> Result<(), String> {
+    let catalog: ShapeCatalog = read_json(&args.catalog)?;
+    let plan: PieceBuildPlan = read_json(&args.piece_plan)?;
+    let report = match_shapes(&catalog, &plan, &args);
+    write_json(&args.out, &report)
+}
+
+fn match_shapes(
+    catalog: &ShapeCatalog,
+    plan: &PieceBuildPlan,
+    args: &BuildMatchShapesArgs,
+) -> PieceShapeMatchReport {
+    let mut matches = Vec::new();
+    let mut rejections = Vec::new();
+    let mut diagnostics = Vec::new();
+
+    for requirement in &plan.requirements {
+        let result = match_requirement(catalog, requirement, plan, args.seed);
+        rejections.extend(result.rejections);
+        if let Some(piece_match) = result.selected {
+            matches.push(piece_match);
+        } else {
+            diagnostics.push(Diagnostic {
+                code: "shape_match_missing".to_owned(),
+                severity: Severity::Fatal,
+                node: None,
+                edge: None,
+                detail: format!(
+                    "No catalog shape matched piece requirement {} ({})",
+                    requirement.piece_id, requirement.kind
+                ),
+                repair_hint: Some("Add a compatible catalog shape or relax the piece requirement.".to_owned()),
+            });
+        }
+    }
+
+    let unmatched_count = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.code == "shape_match_missing")
+        .count();
+    PieceShapeMatchReport {
+        kind: "asha_procgen.piece_shape_match.v1".to_owned(),
+        schema_version: 1,
+        match_id: format!("piece_shape_match.{}.{}", plan.plan_id, args.seed),
+        plan_id: plan.plan_id.clone(),
+        catalog_id: catalog.catalog_id.clone(),
+        seed: args.seed,
+        source_plan_ref: display_path(&args.piece_plan),
+        source_catalog_ref: display_path(&args.catalog),
+        ok: unmatched_count == 0,
+        unmatched_count,
+        matches,
+        rejections,
+        diagnostics,
+    }
+}
+
+struct RequirementMatchResult {
+    selected: Option<MatchedPiece>,
+    rejections: Vec<ShapeMatchRejection>,
+}
+
+#[derive(Clone, Debug)]
+struct CandidateShapeMatch {
+    matched_piece: MatchedPiece,
+    tie_key: u64,
+}
+
+fn match_requirement(
+    catalog: &ShapeCatalog,
+    requirement: &PieceRequirement,
+    plan: &PieceBuildPlan,
+    seed: u64,
+) -> RequirementMatchResult {
+    let mut candidates = Vec::new();
+    let mut rejections = Vec::new();
+    for shape in &catalog.shapes {
+        let static_reasons = static_shape_rejection_reasons(shape, requirement);
+        if !static_reasons.is_empty() {
+            rejections.push(ShapeMatchRejection {
+                piece_id: requirement.piece_id.clone(),
+                shape_id: shape.shape_id.clone(),
+                transform: None,
+                reasons: static_reasons,
+            });
+            continue;
+        }
+
+        for transform in &shape.allowed_transforms {
+            let transformed_exits = transformed_catalog_exits(shape, transform);
+            let exit_map = match_exits(requirement, &transformed_exits);
+            let Some(exit_map) = exit_map else {
+                rejections.push(ShapeMatchRejection {
+                    piece_id: requirement.piece_id.clone(),
+                    shape_id: shape.shape_id.clone(),
+                    transform: Some(transform.clone()),
+                    reasons: vec![exit_rejection_reason(shape, requirement, &transformed_exits)],
+                });
+                continue;
+            };
+            let socket_map = match_sockets(requirement, shape);
+            let score = shape_match_score(shape, requirement, &exit_map, &socket_map);
+            let tie_key = stable_match_tie_key(seed, requirement, shape, transform);
+            candidates.push(CandidateShapeMatch {
+                matched_piece: MatchedPiece {
+                    piece_id: requirement.piece_id.clone(),
+                    requirement_kind: requirement.kind.clone(),
+                    shape_id: shape.shape_id.clone(),
+                    transform: transform.clone(),
+                    score,
+                    source_requirement_ref: format!(
+                        "piecePlan:{};requirement:{}",
+                        plan.plan_id, requirement.piece_id
+                    ),
+                    exit_map,
+                    socket_map,
+                },
+                tie_key,
+            });
+        }
+    }
+
+    candidates.sort_by(|left, right| {
+        right
+            .matched_piece
+            .score
+            .cmp(&left.matched_piece.score)
+            .then_with(|| left.tie_key.cmp(&right.tie_key))
+            .then_with(|| {
+                left.matched_piece
+                    .shape_id
+                    .cmp(&right.matched_piece.shape_id)
+            })
+            .then_with(|| {
+                left.matched_piece
+                    .transform
+                    .cmp(&right.matched_piece.transform)
+            })
+    });
+    RequirementMatchResult {
+        selected: candidates.into_iter().next().map(|candidate| candidate.matched_piece),
+        rejections,
+    }
+}
+
+fn static_shape_rejection_reasons(
+    shape: &CatalogShape,
+    requirement: &PieceRequirement,
+) -> Vec<String> {
+    let mut reasons = Vec::new();
+    if !shape
+        .piece_kinds
+        .iter()
+        .any(|kind| kind == requirement.kind.as_str())
+    {
+        reasons.push(format!("kind_mismatch: need {}", requirement.kind));
+    }
+    let missing_sockets = requirement
+        .required_sockets
+        .iter()
+        .filter(|socket| {
+            !shape
+                .feature_sockets
+                .iter()
+                .any(|feature_socket| feature_socket.kind == socket.as_str())
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+    if !missing_sockets.is_empty() {
+        reasons.push(format!("missing_sockets: {}", missing_sockets.join(",")));
+    }
+    let required_exits = effective_required_exits(requirement);
+    if shape.exits.len() < required_exits.len() {
+        reasons.push(format!(
+            "exit_count_mismatch: need at least {} got {}",
+            required_exits.len(),
+            shape.exits.len()
+        ));
+    }
+    reasons
+}
+
+fn transformed_catalog_exits(shape: &CatalogShape, transform: &str) -> Vec<CatalogExit> {
+    shape
+        .exits
+        .iter()
+        .map(|exit| CatalogExit {
+            id: exit.id.clone(),
+            x: exit.x,
+            y: exit.y,
+            direction: transform_direction(exit.direction.as_str(), transform).to_owned(),
+            width: exit.width,
+            tags: exit.tags.clone(),
+        })
+        .collect()
+}
+
+fn transform_direction(direction: &str, transform: &str) -> &'static str {
+    let steps = match transform {
+        "identity" => 0,
+        "rotate90" => 1,
+        "rotate180" => 2,
+        "rotate270" => 3,
+        "mirrorX" => {
+            return match direction {
+                "east" => "west",
+                "west" => "east",
+                "north" => "north",
+                "south" => "south",
+                _ => "unknown",
+            };
+        }
+        "mirrorY" => {
+            return match direction {
+                "north" => "south",
+                "south" => "north",
+                "east" => "east",
+                "west" => "west",
+                _ => "unknown",
+            };
+        }
+        _ => 0,
+    };
+    let directions = ["north", "east", "south", "west"];
+    let index = directions
+        .iter()
+        .position(|candidate| *candidate == direction)
+        .unwrap_or(0);
+    directions[(index + steps) % directions.len()]
+}
+
+fn match_exits(
+    requirement: &PieceRequirement,
+    transformed_exits: &[CatalogExit],
+) -> Option<Vec<MatchedExit>> {
+    let mut mapped = Vec::new();
+    let mut used = BTreeSet::new();
+    let effective_exits = effective_required_exits(requirement);
+    let mut required_exits = effective_exits.iter().collect::<Vec<_>>();
+    required_exits.sort_by(|left, right| left.id.cmp(&right.id));
+    for required_exit in required_exits {
+        let candidate = transformed_exits
+            .iter()
+            .enumerate()
+            .filter(|(index, exit)| {
+                !used.contains(index)
+                    && exit.direction == required_exit.direction
+                    && exit_width_compatible(required_exit.width, exit.width)
+            })
+            .min_by(|(_, left), (_, right)| left.id.cmp(&right.id));
+        let Some((index, catalog_exit)) = candidate else {
+            return None;
+        };
+        used.insert(index);
+        mapped.push(MatchedExit {
+            requirement_exit_id: required_exit.id.clone(),
+            catalog_exit_id: catalog_exit.id.clone(),
+            direction: required_exit.direction.clone(),
+            width: catalog_exit.width,
+        });
+    }
+    Some(mapped)
+}
+
+fn exit_width_compatible(required_width: i32, catalog_width: i32) -> bool {
+    required_width > 0 && catalog_width > 0
+}
+
+fn exit_rejection_reason(
+    shape: &CatalogShape,
+    requirement: &PieceRequirement,
+    transformed_exits: &[CatalogExit],
+) -> String {
+    let available = transformed_exits
+        .iter()
+        .map(|exit| format!("{}:{}", exit.id, exit.direction))
+        .collect::<Vec<_>>()
+        .join(",");
+    let required = requirement
+        .required_exits
+        .iter()
+        .map(|exit| format!("{}:{}", exit.id, exit.direction))
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "exit_compatibility_mismatch: shape {} required [{}] available [{}]",
+        shape.shape_id, required, available
+    )
+}
+
+fn match_sockets(requirement: &PieceRequirement, shape: &CatalogShape) -> Vec<MatchedSocket> {
+    requirement
+        .required_sockets
+        .iter()
+        .filter_map(|required_socket| {
+            shape
+                .feature_sockets
+                .iter()
+                .find(|socket| socket.kind == *required_socket)
+                .map(|socket| MatchedSocket {
+                    required_socket: required_socket.clone(),
+                    catalog_socket_id: socket.id.clone(),
+                    kind: socket.kind.clone(),
+                })
+        })
+        .collect()
+}
+
+fn shape_match_score(
+    shape: &CatalogShape,
+    requirement: &PieceRequirement,
+    exit_map: &[MatchedExit],
+    socket_map: &[MatchedSocket],
+) -> i32 {
+    let mut score = 0;
+    score += 1000;
+    score += (exit_map.len() as i32) * 20;
+    score += (socket_map.len() as i32) * 25;
+    score -= ((shape.exits.len() as i32) - (effective_required_exits(requirement).len() as i32))
+        .abs()
+        * 5;
+    score += shape
+        .tags
+        .iter()
+        .filter(|tag| requirement.tags.contains(tag))
+        .count() as i32
+        * 4;
+    score
+}
+
+fn effective_required_exits(requirement: &PieceRequirement) -> Vec<PieceExitRequirement> {
+    let mut by_direction: BTreeMap<&str, PieceExitRequirement> = BTreeMap::new();
+    for exit in &requirement.required_exits {
+        by_direction
+            .entry(exit.direction.as_str())
+            .and_modify(|existing| {
+                existing.width = existing.width.max(exit.width);
+                existing.tags.extend(exit.tags.clone());
+                existing.tags = dedupe_strings(std::mem::take(&mut existing.tags));
+            })
+            .or_insert_with(|| PieceExitRequirement {
+                id: exit.id.clone(),
+                direction: exit.direction.clone(),
+                width: exit.width,
+                tags: dedupe_strings(exit.tags.clone()),
+            });
+    }
+    by_direction.into_values().collect()
+}
+
+fn stable_match_tie_key(
+    seed: u64,
+    requirement: &PieceRequirement,
+    shape: &CatalogShape,
+    transform: &str,
+) -> u64 {
+    let input = format!(
+        "{}:{}:{}:{}",
+        seed, requirement.piece_id, shape.shape_id, transform
+    );
+    fnv1a64(input.as_bytes())
+}

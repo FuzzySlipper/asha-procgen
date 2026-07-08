@@ -14,6 +14,7 @@ pieces with exits and footprints.
 candidate + intermediate_breakdown + geometry_2d
   -> piece_build_plan
   -> shape_catalog matching
+  -> piece_shape_match
   -> piece_placement
   -> piece placement validation
   -> viewer build evidence
@@ -119,6 +120,38 @@ connector piece -> straight corridor piece -> bend piece -> straight corridor pi
 or into a shorter equivalent. The important rule is that corridor space is not
 an invisible runtime side effect. It is explicit catalog-matched build data.
 
+## Piece Shape Match Artifact
+
+Kind: `asha_procgen.piece_shape_match.v1`
+
+Shape match reports select catalog shapes for each build-plan requirement
+without placing them on an occupancy grid yet.
+
+Important fields:
+
+- `matchId`: stable generated id.
+- `planId`: source build-plan id.
+- `catalogId`: source shape catalog id.
+- `seed`: deterministic tie-break seed.
+- `matches`: selected piece/shape/transform records.
+- `rejections`: agent-readable rejected shape reasons.
+- `diagnostics`: fatal diagnostics for unmatched requirements.
+
+Important match fields:
+
+- `pieceId`: source requirement id.
+- `requirementKind`: source piece kind.
+- `shapeId`: selected catalog shape.
+- `transform`: selected transform such as `identity` or `rotate90`.
+- `exitMap`: requirement exits mapped to transformed catalog exits.
+- `socketMap`: required feature sockets mapped to catalog sockets.
+
+Matching filters by piece kind, required sockets, exit count, exit direction,
+and width. It considers allowed rotations/reflections and uses deterministic
+seeded tie-breaking when multiple shapes score equally. Rejections explain
+kind mismatches, missing sockets, exit-count gaps, and transform-specific exit
+compatibility failures.
+
 ## Piece Placement Artifact
 
 Kind: `asha_procgen.piece_placement.v1`
@@ -191,6 +224,12 @@ Piece build plan:
 - explicit room/corridor/bend/threshold requirements;
 - source refs and required exits/sockets;
 - no selected catalog shape or occupied cells.
+
+Piece shape match:
+
+- selected catalog shapes, transforms, exit maps, and socket maps;
+- rejected alternatives and unmatched requirement diagnostics;
+- no occupied cells or glued-exit authority yet.
 
 Piece placement:
 

@@ -96,7 +96,7 @@
     {
       "shapeId": "shape.corridor.straight.3",
       "label": "Straight corridor, length three",
-      "pieceKinds": ["corridor"],
+      "pieceKinds": ["corridor", "connector"],
       "footprint": [
         {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}
       ],
@@ -174,7 +174,8 @@
       ],
       "reservedCells": [],
       "exits": [
-        {"id": "exit.south", "x": 0, "y": 2, "direction": "south", "width": 1, "tags": ["pickup_pocket"]}
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["pickup_pocket"]},
+        {"id": "exit.east", "x": 2, "y": 0, "direction": "east", "width": 1, "tags": ["pickup_pocket"]}
       ],
       "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
       "featureSockets": [
@@ -248,7 +249,7 @@
     {
       "shapeId": "shape.connector.shortcut_return",
       "label": "Shortcut return connector",
-      "pieceKinds": ["shortcut", "corridor"],
+      "pieceKinds": ["shortcut", "corridor", "connector"],
       "footprint": [
         {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}
       ],

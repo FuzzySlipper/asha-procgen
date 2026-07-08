@@ -1379,6 +1379,138 @@ mod tests {
         );
     }
 
+    #[test]
+    fn shape_matcher_rotates_exits_for_piece_requirements() {
+        let catalog = test_shape_catalog(vec![test_catalog_shape(
+            "shape.room.one_east",
+            &["room"],
+            &["identity", "rotate90", "rotate180", "rotate270"],
+            vec![test_catalog_exit("exit.east", "east")],
+            Vec::new(),
+            &["standard_room"],
+        )]);
+        let plan = test_piece_plan(vec![test_piece_requirement(
+            "piece.room.start",
+            "room",
+            vec![test_piece_exit("exit.required.north", "north")],
+            Vec::new(),
+            &["room"],
+        )]);
+        let args = test_match_args(9001);
+        let report = match_shapes(&catalog, &plan, &args);
+
+        assert!(report.ok);
+        assert_eq!(report.matches.len(), 1);
+        assert_eq!(report.matches[0].shape_id, "shape.room.one_east");
+        assert_eq!(report.matches[0].transform, "rotate270");
+        assert_eq!(report.matches[0].exit_map[0].catalog_exit_id, "exit.east");
+    }
+
+    #[test]
+    fn shape_matcher_reports_missing_sockets_and_exit_count() {
+        let catalog = test_shape_catalog(vec![
+            test_catalog_shape(
+                "shape.threshold.no_gate_line",
+                &["threshold"],
+                &["identity"],
+                vec![test_catalog_exit("exit.west", "west"), test_catalog_exit("exit.east", "east")],
+                Vec::new(),
+                &["threshold"],
+            ),
+            test_catalog_shape(
+                "shape.corridor.one_exit",
+                &["corridor"],
+                &["identity"],
+                vec![test_catalog_exit("exit.east", "east")],
+                Vec::new(),
+                &["corridor"],
+            ),
+        ]);
+        let plan = test_piece_plan(vec![
+            test_piece_requirement(
+                "piece.threshold.locked",
+                "threshold",
+                vec![test_piece_exit("exit.required.west", "west")],
+                vec!["gate_line".to_owned()],
+                &["locked_threshold"],
+            ),
+            test_piece_requirement(
+                "piece.corridor.two_exit",
+                "corridor",
+                vec![
+                    test_piece_exit("exit.required.west", "west"),
+                    test_piece_exit("exit.required.east", "east"),
+                ],
+                Vec::new(),
+                &["corridor"],
+            ),
+        ]);
+        let report = match_shapes(&catalog, &plan, &test_match_args(9002));
+
+        assert!(!report.ok);
+        assert_eq!(report.unmatched_count, 2);
+        assert!(report.diagnostics.iter().all(|diagnostic| {
+            diagnostic.code == "shape_match_missing" && diagnostic.severity == Severity::Fatal
+        }));
+        assert!(report.rejections.iter().any(|rejection| {
+            rejection.piece_id == "piece.threshold.locked"
+                && rejection
+                    .reasons
+                    .iter()
+                    .any(|reason| reason.contains("missing_sockets: gate_line"))
+        }));
+        assert!(report.rejections.iter().any(|rejection| {
+            rejection.piece_id == "piece.corridor.two_exit"
+                && rejection
+                    .reasons
+                    .iter()
+                    .any(|reason| reason.contains("exit_count_mismatch"))
+        }));
+    }
+
+    #[test]
+    fn shape_matcher_tie_breaks_deterministically() {
+        let left = test_catalog_shape(
+            "shape.room.tie_left",
+            &["room"],
+            &["identity"],
+            vec![test_catalog_exit("exit.east", "east")],
+            Vec::new(),
+            &["standard_room"],
+        );
+        let right = test_catalog_shape(
+            "shape.room.tie_right",
+            &["room"],
+            &["identity"],
+            vec![test_catalog_exit("exit.east", "east")],
+            Vec::new(),
+            &["standard_room"],
+        );
+        let plan = test_piece_plan(vec![test_piece_requirement(
+            "piece.room.tie",
+            "room",
+            vec![test_piece_exit("exit.required.east", "east")],
+            Vec::new(),
+            &["room"],
+        )]);
+
+        let report_a = match_shapes(
+            &test_shape_catalog(vec![left.clone(), right.clone()]),
+            &plan,
+            &test_match_args(42),
+        );
+        let report_b = match_shapes(
+            &test_shape_catalog(vec![right, left]),
+            &plan,
+            &test_match_args(42),
+        );
+
+        assert!(report_a.ok);
+        assert!(report_b.ok);
+        assert_eq!(report_a.matches[0].shape_id, report_b.matches[0].shape_id);
+        assert_eq!(report_a.matches[0].transform, report_b.matches[0].transform);
+    }
+
     fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
         full_stack_geometry_inputs(seed).2
     }
@@ -1427,6 +1559,104 @@ mod tests {
 
     fn point_on_rect_boundary(point: &GeometryPoint, rect: &GeometryRect) -> bool {
         geometry_point_on_rect_boundary(point, rect)
+    }
+
+    fn test_shape_catalog(shapes: Vec<CatalogShape>) -> ShapeCatalog {
+        ShapeCatalog {
+            kind: "asha_procgen.shape_catalog.v1".to_owned(),
+            schema_version: 1,
+            catalog_id: "shape_catalog.test.v1".to_owned(),
+            cell_size: 1,
+            shapes,
+        }
+    }
+
+    fn test_catalog_shape(
+        shape_id: &str,
+        piece_kinds: &[&str],
+        allowed_transforms: &[&str],
+        exits: Vec<CatalogExit>,
+        feature_sockets: Vec<FeatureSocket>,
+        tags: &[&str],
+    ) -> CatalogShape {
+        CatalogShape {
+            shape_id: shape_id.to_owned(),
+            label: shape_id.to_owned(),
+            piece_kinds: piece_kinds.iter().map(|kind| (*kind).to_owned()).collect(),
+            footprint: vec![GridCell { x: 0, y: 0 }],
+            reserved_cells: Vec::new(),
+            exits,
+            allowed_transforms: allowed_transforms
+                .iter()
+                .map(|transform| (*transform).to_owned())
+                .collect(),
+            feature_sockets,
+            tags: tags.iter().map(|tag| (*tag).to_owned()).collect(),
+        }
+    }
+
+    fn test_catalog_exit(id: &str, direction: &str) -> CatalogExit {
+        CatalogExit {
+            id: id.to_owned(),
+            x: 0,
+            y: 0,
+            direction: direction.to_owned(),
+            width: 1,
+            tags: Vec::new(),
+        }
+    }
+
+    fn test_piece_plan(requirements: Vec<PieceRequirement>) -> PieceBuildPlan {
+        PieceBuildPlan {
+            kind: "asha_procgen.piece_build_plan.v1".to_owned(),
+            schema_version: 1,
+            plan_id: "piece_plan.test".to_owned(),
+            candidate_id: "candidate.test".to_owned(),
+            geometry_id: "geometry.test".to_owned(),
+            source_candidate_ref: "artifacts/test/candidate.json".to_owned(),
+            source_intermediate_ref: "artifacts/test/intermediate.json".to_owned(),
+            source_geometry_ref: "artifacts/test/geometry.json".to_owned(),
+            requirements,
+            links: Vec::new(),
+            content_requirements: Vec::new(),
+        }
+    }
+
+    fn test_piece_requirement(
+        piece_id: &str,
+        kind: &str,
+        required_exits: Vec<PieceExitRequirement>,
+        required_sockets: Vec<String>,
+        tags: &[&str],
+    ) -> PieceRequirement {
+        PieceRequirement {
+            piece_id: piece_id.to_owned(),
+            kind: kind.to_owned(),
+            role: kind.to_owned(),
+            source_refs: Vec::new(),
+            required_exits,
+            required_sockets,
+            tags: tags.iter().map(|tag| (*tag).to_owned()).collect(),
+            placement_hints: Vec::new(),
+        }
+    }
+
+    fn test_piece_exit(id: &str, direction: &str) -> PieceExitRequirement {
+        PieceExitRequirement {
+            id: id.to_owned(),
+            direction: direction.to_owned(),
+            width: 1,
+            tags: Vec::new(),
+        }
+    }
+
+    fn test_match_args(seed: u64) -> BuildMatchShapesArgs {
+        BuildMatchShapesArgs {
+            catalog: PathBuf::from("fixtures/shape-catalogs/2d-basic.json"),
+            piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
+            seed,
+            out: PathBuf::from("artifacts/test/piece-shape-match.json"),
+        }
     }
 
     #[test]

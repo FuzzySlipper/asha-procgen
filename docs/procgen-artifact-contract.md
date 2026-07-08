@@ -302,6 +302,16 @@ The top-level artifact records `planId`, `candidateId`, `geometryId`,
 `sourceCandidateRef`, `sourceIntermediateRef`, `sourceGeometryRef`,
 `requirements`, `links`, and `contentRequirements`.
 
+## Piece Shape Match Artifact
+
+Kind: `asha_procgen.piece_shape_match.v1`
+
+Piece shape match reports select catalog shape ids and transforms for each
+piece-plan requirement before occupancy placement. Each match records the
+source `pieceId`, selected `shapeId`, `transform`, mapped exits, mapped feature
+sockets, and deterministic score. Rejections preserve agent-readable reasons
+for incompatible shapes.
+
 ## Piece Placement Artifact
 
 Kind: `asha_procgen.piece_placement.v1`

@@ -54,7 +54,7 @@ These are the next command/artifact surfaces for #4886.
 
 ### Rule Metadata
 
-Goal command:
+Implemented command:
 
 ```bash
 npm run procgen -- graph rules --out artifacts/manual/rules.json
@@ -66,13 +66,13 @@ Artifact kind:
 asha_procgen.rule_metadata.v1
 ```
 
-The artifact should include rule id, intent, emitted node/edge tags, required
-existing patterns, duplicate marker ids, likely incompatibilities, and repair
-hints. This lets an agent choose a plausible next rule before mutating state.
+The artifact includes rule id, intent, emitted node/edge tags, required existing
+patterns, duplicate marker ids, compatibility hints, and repair hints. This lets
+an agent choose a plausible next rule before mutating state.
 
 ### Candidate Summary
 
-Goal command:
+Implemented command:
 
 ```bash
 npm run procgen -- graph summarize --state <candidate.json> --json --out <summary.json>
@@ -84,9 +84,10 @@ Artifact kind:
 asha_procgen.graph_summary.v1
 ```
 
-The summary should include node/edge counts, tags, locked items, dead ends,
-score metrics, validation status, and a short provenance tail. It should be
-small enough to paste into an agent context window.
+The summary includes node/edge counts, tags, locked items, dead ends, score
+metrics, validation status, node/edge summaries, and a short provenance tail. It
+is small enough to paste into an agent context window for most current
+candidates.
 
 ### Candidate Fork
 

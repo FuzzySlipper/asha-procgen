@@ -86,6 +86,17 @@ npm run procgen -- score graph \
 Use `npm run procgen -- graph summarize --state <candidate>` to print a compact
 agent-readable graph summary.
 
+For machine-readable planning context:
+
+```bash
+npm run procgen -- graph rules --out artifacts/manual/rules.json
+
+npm run procgen -- graph summarize \
+  --state artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --json \
+  --out artifacts/manual/summary.json
+```
+
 Implemented richer graph rules:
 
 ```text

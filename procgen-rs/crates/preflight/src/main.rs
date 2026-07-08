@@ -75,7 +75,8 @@ struct GraphCommand {
 #[derive(Subcommand)]
 enum GraphSubcommand {
     ApplyRule(ApplyRuleArgs),
-    Summarize(StateArg),
+    Rules(RuleMetadataArgs),
+    Summarize(SummarizeArgs),
 }
 
 #[derive(Args)]
@@ -165,6 +166,22 @@ enum EmbedSubcommand {
 struct StateArg {
     #[arg(long)]
     state: PathBuf,
+}
+
+#[derive(Args)]
+struct RuleMetadataArgs {
+    #[arg(long)]
+    out: Option<PathBuf>,
+}
+
+#[derive(Args)]
+struct SummarizeArgs {
+    #[arg(long)]
+    state: PathBuf,
+    #[arg(long)]
+    json: bool,
+    #[arg(long)]
+    out: Option<PathBuf>,
 }
 
 #[derive(Args)]
@@ -407,6 +424,69 @@ struct ScoreReport {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct RuleMetadataReport {
+    kind: String,
+    schema_version: u32,
+    rules: Vec<RuleMetadata>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct RuleMetadata {
+    id: String,
+    intent: String,
+    required_patterns: Vec<String>,
+    duplicate_markers: Vec<String>,
+    emitted_node_tags: Vec<String>,
+    emitted_edge_tags: Vec<String>,
+    compatibility_hints: Vec<String>,
+    repair_hints: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GraphSummaryReport {
+    kind: String,
+    schema_version: u32,
+    candidate_id: String,
+    state_hash: String,
+    validation_ok: bool,
+    fatal_count: usize,
+    score_overall: f64,
+    metrics: BTreeMap<String, f64>,
+    node_count: usize,
+    edge_count: usize,
+    tags: Vec<String>,
+    locked_items: Vec<String>,
+    dead_ends: Vec<String>,
+    provenance_tail: Vec<ProvenanceStep>,
+    nodes: Vec<NodeSummary>,
+    edges: Vec<EdgeSummary>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NodeSummary {
+    id: String,
+    kind: NodeKind,
+    tags: Vec<String>,
+    grants_item: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct EdgeSummary {
+    id: String,
+    from: String,
+    to: String,
+    kind: EdgeKind,
+    traversal: TraversalKind,
+    required_item: Option<String>,
+    tags: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct LayoutArtifact {
     kind: String,
     schema_version: u32,
@@ -495,6 +575,7 @@ fn run(cli: Cli) -> Result<(), String> {
         Command::Init(args) => init_candidate(args),
         Command::Graph(command) => match command.command {
             GraphSubcommand::ApplyRule(args) => apply_rule(args),
+            GraphSubcommand::Rules(args) => graph_rules_command(args),
             GraphSubcommand::Summarize(args) => summarize_candidate(args),
         },
         Command::Validate(command) => match command.command {
@@ -1371,10 +1452,188 @@ fn has_node(candidate: &Candidate, node_id: &str) -> bool {
     candidate.graph.nodes.iter().any(|node| node.id == node_id)
 }
 
-fn summarize_candidate(args: StateArg) -> Result<(), String> {
+fn graph_rules_command(args: RuleMetadataArgs) -> Result<(), String> {
+    let report = rule_metadata_report();
+    if let Some(out) = args.out {
+        write_json(&out, &report)
+    } else {
+        let text = serde_json::to_string_pretty(&report)
+            .map_err(|error| format!("failed to encode rule metadata: {error}"))?;
+        println!("{text}");
+        Ok(())
+    }
+}
+
+fn rule_metadata_report() -> RuleMetadataReport {
+    RuleMetadataReport {
+        kind: "asha_procgen.rule_metadata.v1".to_owned(),
+        schema_version: 1,
+        rules: vec![
+            RuleMetadata {
+                id: GraphRule::LockKeyLoop.as_str().to_owned(),
+                intent: "Replace direct start-goal route with a locked gate and reachable key branch."
+                    .to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["gate.locked_1".to_owned()],
+                emitted_node_tags: vec!["critical".to_owned(), "key".to_owned(), "lock".to_owned()],
+                emitted_edge_tags: vec!["approach".to_owned(), "branch".to_owned(), "return".to_owned()],
+                compatibility_hints: vec![
+                    "Useful first structural rule for nested locks and boss approaches.".to_owned(),
+                ],
+                repair_hints: vec!["Apply before nested_lock_key_chain.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::OptionalTreasureDetour.as_str().to_owned(),
+                intent: "Add a repeatable optional reward detour that rejoins the goal route.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: Vec::new(),
+                emitted_node_tags: vec!["optional".to_owned(), "reward".to_owned()],
+                emitted_edge_tags: vec!["detour".to_owned(), "rejoin".to_owned()],
+                compatibility_hints: vec![
+                    "Seed-derived ids allow multiple treasure detours when seeds differ.".to_owned(),
+                ],
+                repair_hints: vec!["Use when score needs branch value without changing critical path.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::OneWayShortcut.as_str().to_owned(),
+                intent: "Add a one-way return route from goal back to start.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["edge.goal.start.shortcut".to_owned()],
+                emitted_node_tags: vec!["shortcut".to_owned()],
+                emitted_edge_tags: vec!["return".to_owned(), "shortcut".to_owned()],
+                compatibility_hints: vec![
+                    "Best after the critical route is already meaningful.".to_owned(),
+                ],
+                repair_hints: vec!["Start from a pre-shortcut candidate if duplicate rejected.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::SecretBypass.as_str().to_owned(),
+                intent: "Add a hidden optional bypass from start to goal.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["edge.start.goal.secret".to_owned()],
+                emitted_node_tags: vec!["bypass".to_owned(), "secret".to_owned()],
+                emitted_edge_tags: vec!["bypass".to_owned(), "hidden".to_owned()],
+                compatibility_hints: vec![
+                    "Can reduce perceived lock importance; use when bypasses are desired.".to_owned(),
+                ],
+                repair_hints: vec!["Avoid if selection wants strict lock/key progression.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::HubSpokeCluster.as_str().to_owned(),
+                intent: "Create a wayfinding hub with optional spokes, returns, and rejoin routes."
+                    .to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["hub.central_1".to_owned()],
+                emitted_node_tags: vec![
+                    "hazard".to_owned(),
+                    "hub".to_owned(),
+                    "merge".to_owned(),
+                    "optional".to_owned(),
+                    "preparation".to_owned(),
+                    "reward".to_owned(),
+                    "wayfinding_anchor".to_owned(),
+                ],
+                emitted_edge_tags: vec![
+                    "approach".to_owned(),
+                    "branch".to_owned(),
+                    "pressure".to_owned(),
+                    "rejoin".to_owned(),
+                    "return".to_owned(),
+                ],
+                compatibility_hints: vec![
+                    "Good early rule when an agent needs local choice and orientation.".to_owned(),
+                ],
+                repair_hints: vec![
+                    "If hub diagnostics fire, add return/rejoin routes or a wayfinding anchor.".to_owned(),
+                ],
+            },
+            RuleMetadata {
+                id: GraphRule::NestedLockKeyChain.as_str().to_owned(),
+                intent: "Add a second gate/key layer behind the first lock.".to_owned(),
+                required_patterns: vec!["lock_key_loop".to_owned()],
+                duplicate_markers: vec!["gate.locked_2".to_owned()],
+                emitted_node_tags: vec![
+                    "branch".to_owned(),
+                    "critical".to_owned(),
+                    "key".to_owned(),
+                    "lock".to_owned(),
+                    "preparation".to_owned(),
+                ],
+                emitted_edge_tags: vec!["approach".to_owned(), "branch".to_owned(), "locked".to_owned(), "return".to_owned()],
+                compatibility_hints: vec![
+                    "Requires gate.locked_1; apply lock_key_loop first.".to_owned(),
+                ],
+                repair_hints: vec!["Move key branches before locked edges if validation fails.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::HazardResourceTradeoff.as_str().to_owned(),
+                intent: "Add a pressure branch paired with a preparation resource.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["hazard.sluice_1".to_owned()],
+                emitted_node_tags: vec!["hazard".to_owned(), "optional".to_owned(), "preparation".to_owned()],
+                emitted_edge_tags: vec!["branch".to_owned(), "preparation".to_owned(), "pressure".to_owned(), "rejoin".to_owned()],
+                compatibility_hints: vec![
+                    "Pairs well with hubs and boss preparation loops.".to_owned(),
+                ],
+                repair_hints: vec!["Add rejoin edges after hazards if diagnostics report terminal pressure.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::BossPreparationLoop.as_str().to_owned(),
+                intent: "Insert a boss gate with a preparation branch returning to the approach.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["gate.boss_1".to_owned()],
+                emitted_node_tags: vec!["boss".to_owned(), "critical".to_owned(), "optional".to_owned(), "preparation".to_owned()],
+                emitted_edge_tags: vec!["approach".to_owned(), "boss".to_owned(), "branch".to_owned(), "locked".to_owned(), "preparation".to_owned(), "return".to_owned()],
+                compatibility_hints: vec![
+                    "Uses deepest known lock gate as approach if one exists.".to_owned(),
+                ],
+                repair_hints: vec!["Keep preparation reachable before the boss locked edge.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::GatedTreasureBranch.as_str().to_owned(),
+                intent: "Add an optional key-gated treasure branch that rejoins progression.".to_owned(),
+                required_patterns: Vec::new(),
+                duplicate_markers: vec!["treasure.gated_1".to_owned()],
+                emitted_node_tags: vec!["key".to_owned(), "optional".to_owned(), "reward".to_owned()],
+                emitted_edge_tags: vec!["branch".to_owned(), "locked".to_owned(), "rejoin".to_owned()],
+                compatibility_hints: vec![
+                    "Useful when a candidate needs reward tension without blocking the goal.".to_owned(),
+                ],
+                repair_hints: vec!["Ensure the treasure key remains reachable before the gated reward.".to_owned()],
+            },
+            RuleMetadata {
+                id: GraphRule::BranchMergeShortcut.as_str().to_owned(),
+                intent: "Add a merge node and shortcut from an existing branch or hub back to goal.".to_owned(),
+                required_patterns: vec![
+                    "hub_spoke_cluster or gated_treasure_branch or lock_key_loop".to_owned(),
+                ],
+                duplicate_markers: vec!["junction.merge_1".to_owned()],
+                emitted_node_tags: vec!["merge".to_owned(), "wayfinding_anchor".to_owned()],
+                emitted_edge_tags: vec!["branch".to_owned(), "rejoin".to_owned(), "shortcut".to_owned()],
+                compatibility_hints: vec![
+                    "Requires an upstream branch source; hub_spoke_cluster is the clearest pairing.".to_owned(),
+                ],
+                repair_hints: vec!["Apply a branch or hub rule first if missing_required_pattern is reported.".to_owned()],
+            },
+        ],
+    }
+}
+
+fn summarize_candidate(args: SummarizeArgs) -> Result<(), String> {
     let candidate: Candidate = read_json(&args.state)?;
     let report = validate_graph(&candidate);
     let score = score_graph(&candidate);
+    if args.json || args.out.is_some() {
+        let summary = graph_summary_report(&candidate, &report, &score)?;
+        if let Some(out) = args.out {
+            write_json(&out, &summary)?;
+        } else {
+            let text = serde_json::to_string_pretty(&summary)
+                .map_err(|error| format!("failed to encode graph summary: {error}"))?;
+            println!("{text}");
+        }
+        return Ok(());
+    }
     println!("candidate: {}", candidate.candidate_id);
     println!("nodes: {}", candidate.graph.nodes.len());
     println!("edges: {}", candidate.graph.edges.len());
@@ -1384,6 +1643,84 @@ fn summarize_candidate(args: StateArg) -> Result<(), String> {
         println!("- node {} ({}) {}", node.id, node.kind.as_str(), node.label);
     }
     Ok(())
+}
+
+fn graph_summary_report(
+    candidate: &Candidate,
+    validation: &ValidationReport,
+    score: &ScoreReport,
+) -> Result<GraphSummaryReport, String> {
+    let mut locked_items = BTreeSet::new();
+    for edge in &candidate.graph.edges {
+        if let Some(item) = edge.required_item.as_deref() {
+            locked_items.insert(item.to_owned());
+        }
+    }
+    let dead_ends = candidate
+        .graph
+        .nodes
+        .iter()
+        .filter(|node| node.kind != NodeKind::Goal)
+        .filter(|node| {
+            !candidate
+                .graph
+                .edges
+                .iter()
+                .any(|edge| edge.from == node.id)
+        })
+        .map(|node| node.id.clone())
+        .collect();
+    let provenance_tail = candidate
+        .provenance
+        .iter()
+        .rev()
+        .take(5)
+        .cloned()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .rev()
+        .collect();
+    Ok(GraphSummaryReport {
+        kind: "asha_procgen.graph_summary.v1".to_owned(),
+        schema_version: 1,
+        candidate_id: candidate.candidate_id.clone(),
+        state_hash: hash_json(candidate)?,
+        validation_ok: validation.ok,
+        fatal_count: validation.fatal_count,
+        score_overall: score.overall,
+        metrics: score.metrics.clone(),
+        node_count: candidate.graph.nodes.len(),
+        edge_count: candidate.graph.edges.len(),
+        tags: collect_tags(candidate),
+        locked_items: locked_items.into_iter().collect(),
+        dead_ends,
+        provenance_tail,
+        nodes: candidate
+            .graph
+            .nodes
+            .iter()
+            .map(|node| NodeSummary {
+                id: node.id.clone(),
+                kind: node.kind,
+                tags: node.tags.clone(),
+                grants_item: node.grants_item.clone(),
+            })
+            .collect(),
+        edges: candidate
+            .graph
+            .edges
+            .iter()
+            .map(|edge| EdgeSummary {
+                id: edge.id.clone(),
+                from: edge.from.clone(),
+                to: edge.to.clone(),
+                kind: edge.kind,
+                traversal: edge.traversal,
+                required_item: edge.required_item.clone(),
+                tags: edge.tags.clone(),
+            })
+            .collect(),
+    })
 }
 
 fn validate_graph_command(args: ReportOutArgs) -> Result<(), String> {
@@ -2529,6 +2866,69 @@ mod tests {
                 .unwrap_or(0.0)
                 >= 2.0
         );
+    }
+
+    #[test]
+    fn rule_metadata_includes_v2_compatibility_hints() {
+        let report = rule_metadata_report();
+        assert_eq!(report.kind, "asha_procgen.rule_metadata.v1");
+        let nested = report
+            .rules
+            .iter()
+            .find(|rule| rule.id == "nested_lock_key_chain")
+            .expect("nested lock metadata should exist");
+        assert!(nested.required_patterns.contains(&"lock_key_loop".to_owned()));
+        assert!(nested
+            .compatibility_hints
+            .iter()
+            .any(|hint| hint.contains("lock_key_loop first")));
+        let merge = report
+            .rules
+            .iter()
+            .find(|rule| rule.id == "branch_merge_shortcut")
+            .expect("merge shortcut metadata should exist");
+        assert!(merge
+            .duplicate_markers
+            .contains(&"junction.merge_1".to_owned()));
+    }
+
+    #[test]
+    fn graph_summary_reports_metrics_and_provenance_tail() {
+        let intent = SeedIntent {
+            kind: "asha_procgen.seed_intent.v1".to_owned(),
+            id: "summary".to_owned(),
+            title: "Summary".to_owned(),
+            target_dimension: "topology_graph".to_owned(),
+            desired_patterns: Vec::new(),
+            notes: Vec::new(),
+        };
+        let mut candidate = create_initial_candidate(&intent, 31);
+        candidate.provenance.push(ProvenanceStep {
+            step: 1,
+            command: "init".to_owned(),
+            seed: Some(31),
+            summary: "Initialized test candidate".to_owned(),
+        });
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 32).is_empty());
+        candidate.provenance.push(ProvenanceStep {
+            step: 2,
+            command: "graph apply-rule lock_key_loop".to_owned(),
+            seed: Some(32),
+            summary: "Applied lock_key_loop".to_owned(),
+        });
+        let validation = validate_graph(&candidate);
+        let score = score_graph(&candidate);
+        let summary =
+            graph_summary_report(&candidate, &validation, &score).expect("summary should encode");
+        assert_eq!(summary.kind, "asha_procgen.graph_summary.v1");
+        assert!(summary.validation_ok);
+        assert_eq!(summary.node_count, candidate.graph.nodes.len());
+        assert!(summary
+            .locked_items
+            .contains(&"item.gate_key_1".to_owned()));
+        assert!(summary.tags.contains(&"critical".to_owned()));
+        assert_eq!(summary.provenance_tail.len(), 2);
+        assert!(summary.metrics.contains_key("lockedEdgeCount"));
     }
 
     #[test]

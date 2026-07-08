@@ -256,6 +256,31 @@ The first layout artifact is an inspectable 2D embedding. It preserves graph
 node and edge IDs so diagnostics and viewer labels map back to intent. It is
 not a renderer or final tile map.
 
+## Geometry 2D Artifact
+
+Kind: `asha_procgen.geometry_2d.v1`
+
+Geometry artifacts are the next layer after intermediate breakdowns. They hold
+variable room rectangles, routed corridor polylines, bounds, source refs,
+semantic style tags, and lightweight contents annotations for generated dungeon
+previews. They do not replace `layout_2d`; the older artifact remains the simple
+graph embedding.
+
+`contents` entries are room-scoped labels with source refs back to graph and
+intermediate structure. Current kinds include `start_marker`, `goal_marker`,
+`key_pickup`, `locked_gate`, `boss_threshold`, `reward_cache`, `hazard`,
+`resource_clue`, `shortcut_marker`, and `secret_route_marker`.
+
+See `docs/geometry-html-preview-contract.md`.
+
+## HTML Preview Artifact
+
+Kind: `asha_procgen.html_preview.v1`
+
+Preview metadata records geometry, validation, and standalone HTML refs. The
+HTML file itself should open from disk and render the generated 2D dungeon as
+dark-mode SVG with labels and annotations.
+
 ## Accepted Artifact
 
 Kind: `asha_procgen.accepted_artifact.v1`

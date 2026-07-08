@@ -36,6 +36,10 @@
       "spatialIntentRef": "artifacts/samples/batch-v2/candidate-005/spatial-intent.json",
       "intermediateBreakdownRef": "artifacts/samples/batch-v2/candidate-005/intermediate-breakdown.json",
       "intermediateValidationRef": "artifacts/samples/batch-v2/candidate-005/intermediate.validation.json",
+      "geometryRef": "artifacts/samples/batch-v2/candidate-005/geometry-2d.json",
+      "geometryValidationRef": "artifacts/samples/batch-v2/candidate-005/geometry-2d.validation.json",
+      "htmlPreviewRef": "artifacts/samples/batch-v2/candidate-005/html-preview.json",
+      "htmlRef": "artifacts/samples/batch-v2/candidate-005/geometry-2d.preview.html",
       "overall": 0.8,
       "metrics": {
         "bossCount": 1.0,

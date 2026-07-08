@@ -36,6 +36,9 @@ try {
   if (typeof top.intermediateBreakdownRef !== 'string') {
     throw new Error('top selection is missing intermediateBreakdownRef');
   }
+  if (typeof top.htmlRef !== 'string') {
+    throw new Error('top selection is missing htmlRef');
+  }
   const breakdown = await fetchArtifact(top.intermediateBreakdownRef);
   if (breakdown.kind !== 'asha_procgen.intermediate_breakdown.v1') {
     throw new Error(`unexpected intermediate kind: ${breakdown.kind}`);
@@ -50,8 +53,23 @@ try {
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
     throw new Error('viewer dark theme CSS was not found');
   }
+  const previewHtml = await fetchText(`/api/artifacts/by-path?path=${encodeURIComponent(top.htmlRef)}`);
+  const previewRoomCount = countOccurrences(previewHtml, '<rect ');
+  const previewCorridorCount = countOccurrences(previewHtml, '<polyline ');
+  if (!previewHtml.includes('background: #0b0d10')) {
+    throw new Error('standalone preview dark background was not found');
+  }
+  if (previewRoomCount < 2 || previewCorridorCount < 1) {
+    throw new Error(`standalone preview SVG looks sparse: rooms=${previewRoomCount}, corridors=${previewCorridorCount}`);
+  }
+  for (const label of ['Key Pickup', 'Boss Threshold']) {
+    if (!previewHtml.includes(label)) {
+      throw new Error(`standalone preview missing content label: ${label}`);
+    }
+  }
 
   const chromium = await findChromium();
+  const previewUrl = `${baseUrl}/api/artifacts/by-path?path=${encodeURIComponent(top.htmlRef)}`;
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -67,6 +85,16 @@ try {
       name: 'intermediate-mobile.png',
       url: `${baseUrl}/#intermediate`,
       size: '390,800',
+    },
+    {
+      name: 'standalone-preview-desktop.png',
+      url: previewUrl,
+      size: '1100,780',
+    },
+    {
+      name: 'standalone-preview-mobile.png',
+      url: previewUrl,
+      size: '390,820',
     },
   ];
   for (const screenshot of screenshots) {
@@ -94,6 +122,13 @@ try {
     candidateId: top.candidateId,
     regions: breakdown.regions.length,
     connectors: breakdown.connectors.length,
+    standalonePreview: {
+      htmlRef: top.htmlRef,
+      rooms: previewRoomCount,
+      corridors: previewCorridorCount,
+      hasDarkBackground: true,
+      requiredLabels: ['Key Pickup', 'Boss Threshold'],
+    },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };
   await writeFile(join(outDir, 'viewer-smoke-report.json'), `${JSON.stringify(report, null, 2)}\n`);
@@ -136,6 +171,10 @@ async function fetchText(path) {
 
 async function fetchArtifact(path) {
   return await fetchJson(`/api/artifacts/by-path?path=${encodeURIComponent(path)}`);
+}
+
+function countOccurrences(text, pattern) {
+  return text.split(pattern).length - 1;
 }
 
 async function findChromium() {

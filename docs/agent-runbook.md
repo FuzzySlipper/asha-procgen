@@ -70,6 +70,19 @@ by deterministic selection score. Accepted entries also carry refs to graph
 analysis, compatible rules, spatial intent, intermediate breakdown, and
 intermediate validation artifacts.
 
+`npm run batch:sample` also emits the full generated dungeon preview stack for
+the top selected accepted candidate:
+
+```text
+artifacts/samples/batch-v2/<top-candidate>/geometry-2d.json
+artifacts/samples/batch-v2/<top-candidate>/geometry-2d.validation.json
+artifacts/samples/batch-v2/<top-candidate>/geometry-2d.preview.html
+artifacts/samples/batch-v2/<top-candidate>/html-preview.json
+```
+
+The top `accepted` entry in `selection-report.json` carries `geometryRef`,
+`geometryValidationRef`, `htmlPreviewRef`, and `htmlRef`.
+
 ## Manual CLI Sequence
 
 ```bash
@@ -173,6 +186,45 @@ npm run procgen -- breakdown validate \
 
 This layer names regions, connectors, and constraints for later geometry passes.
 It does not emit rooms, meshes, voxels, or 3D placement.
+
+## Geometry HTML Preview
+
+The generated 2D dungeon preview target is documented in:
+
+```text
+docs/geometry-html-preview-contract.md
+```
+
+This is the planned path from intermediate breakdowns to standalone HTML/SVG
+floor-plan previews with variable rooms, corridors, labels, and contents. It is
+separate from the existing simple `layout-2d.json` graph embedding.
+
+Current geometry command:
+
+```bash
+npm run procgen -- geometry emit-2d \
+  --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --intermediate artifacts/samples/batch-v2/candidate-005/intermediate-breakdown.json \
+  --seed 6101 \
+  --out artifacts/manual/geometry-2d.json
+```
+
+Validate the emitted geometry before using it as preview evidence:
+
+```bash
+npm run procgen -- geometry validate-2d \
+  --state artifacts/manual/geometry-2d.json \
+  --out artifacts/manual/geometry-2d.validation.json
+```
+
+Render the standalone HTML/SVG preview:
+
+```bash
+npm run procgen -- preview html \
+  --geometry artifacts/manual/geometry-2d.json \
+  --validation artifacts/manual/geometry-2d.validation.json \
+  --out artifacts/manual/geometry-2d.preview.html
+```
 
 ## Pattern Catalog
 
@@ -285,9 +337,17 @@ For optional preview-site evidence:
 npm run viewer:smoke
 ```
 
+The standalone HTML preview smoke alias is:
+
+```bash
+npm run preview:smoke
+```
+
 This builds the viewer, starts the local preview server on `127.0.0.1`, checks
 the sample batch and intermediate artifact API, verifies the dark theme CSS, and
-uses Chromium to write layout/intermediate screenshots plus a report under:
+checks the top generated standalone HTML preview for dark styling, SVG room and
+corridor elements, and required content labels. It uses Chromium to write
+layout/intermediate/standalone-preview screenshots plus a report under:
 
 ```text
 /tmp/asha-procgen-viewer-smoke/

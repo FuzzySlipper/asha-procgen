@@ -1,0 +1,60 @@
+{
+  "kind": "asha_procgen.graph_analysis.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5301",
+  "stateHash": "fnv1a64:27a2fe49c77da678",
+  "criticalPath": [
+    "start",
+    "gate.locked_1",
+    "gate.locked_2",
+    "gate.boss_1",
+    "goal"
+  ],
+  "dominators": [
+    "gate.locked_1",
+    "gate.locked_2",
+    "gate.boss_1"
+  ],
+  "optionalBranches": [
+    {
+      "edgeId": "edge.approach.boss_prep_1",
+      "from": "gate.locked_2",
+      "to": "resource.boss_prep_1",
+      "classification": "optional",
+      "rejoinsGoalRoute": true
+    },
+    {
+      "edgeId": "edge.boss_prep_1.boss_1",
+      "from": "resource.boss_prep_1",
+      "to": "gate.boss_1",
+      "classification": "rejoin",
+      "rejoinsGoalRoute": true
+    }
+  ],
+  "lockKeyOrder": [
+    {
+      "edgeId": "edge.boss_1.goal",
+      "requiredItem": "item.boss_preparation_1",
+      "providerNode": "resource.boss_prep_1",
+      "providerReachableBeforeLock": true
+    }
+  ],
+  "loopSignals": [
+    {
+      "edgeId": "edge.key_1.gate_1",
+      "signal": "rejoin_loop",
+      "detail": "edge.key_1.gate_1 reconnects key.gate_1 to gate.locked_1"
+    },
+    {
+      "edgeId": "edge.key_2.gate_2",
+      "signal": "rejoin_loop",
+      "detail": "edge.key_2.gate_2 reconnects key.deep_2 to gate.locked_2"
+    },
+    {
+      "edgeId": "edge.boss_prep_1.boss_1",
+      "signal": "rejoin_loop",
+      "detail": "edge.boss_prep_1.boss_1 reconnects resource.boss_prep_1 to gate.boss_1"
+    }
+  ],
+  "shortcutBypassRisks": []
+}

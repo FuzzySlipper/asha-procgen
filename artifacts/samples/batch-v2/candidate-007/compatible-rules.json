@@ -1,0 +1,84 @@
+{
+  "kind": "asha_procgen.rule_compatibility.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5901",
+  "stateHash": "fnv1a64:bd0dbe9c9eb637b6",
+  "rules": [
+    {
+      "rule": "lock_key_loop",
+      "status": "duplicate",
+      "reasons": [
+        "Fixed marker for this rule already exists."
+      ],
+      "recommendedActions": [
+        "Fork from an earlier candidate or choose another rule."
+      ]
+    },
+    {
+      "rule": "optional_treasure_detour",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    },
+    {
+      "rule": "one_way_shortcut",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    },
+    {
+      "rule": "secret_bypass",
+      "status": "risky",
+      "reasons": [
+        "Secret bypass may trivialize existing locked progression."
+      ],
+      "recommendedActions": [
+        "Use only when bypass routes are intended."
+      ]
+    },
+    {
+      "rule": "hub_spoke_cluster",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    },
+    {
+      "rule": "nested_lock_key_chain",
+      "status": "duplicate",
+      "reasons": [
+        "Fixed marker for this rule already exists."
+      ],
+      "recommendedActions": [
+        "Fork from an earlier candidate or choose another rule."
+      ]
+    },
+    {
+      "rule": "hazard_resource_tradeoff",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    },
+    {
+      "rule": "boss_preparation_loop",
+      "status": "duplicate",
+      "reasons": [
+        "Fixed marker for this rule already exists."
+      ],
+      "recommendedActions": [
+        "Fork from an earlier candidate or choose another rule."
+      ]
+    },
+    {
+      "rule": "gated_treasure_branch",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    },
+    {
+      "rule": "branch_merge_shortcut",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
+    }
+  ]
+}

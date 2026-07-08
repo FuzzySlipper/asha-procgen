@@ -718,7 +718,7 @@ struct SpatialIntentAnnotation {
     rationale: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct IntermediateBreakdown {
     kind: String,
@@ -738,6 +738,16 @@ struct IntermediateRegion {
     node_ids: Vec<String>,
     role: String,
     anchor_node: Option<String>,
+    #[serde(default)]
+    geometry_role: String,
+    #[serde(default)]
+    footprint_class: String,
+    #[serde(default)]
+    scale_band: String,
+    #[serde(default)]
+    anchor_quality: String,
+    #[serde(default)]
+    entrance_expectations: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -748,6 +758,12 @@ struct IntermediateConnector {
     from_region: String,
     to_region: String,
     intents: Vec<String>,
+    #[serde(default)]
+    affordances: Vec<String>,
+    #[serde(default)]
+    traversal_hint: String,
+    #[serde(default)]
+    constraint_refs: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -755,6 +771,12 @@ struct IntermediateConnector {
 struct IntermediateConstraint {
     code: String,
     target: String,
+    #[serde(default)]
+    target_type: String,
+    #[serde(default)]
+    source_intents: Vec<String>,
+    #[serde(default)]
+    graph_refs: Vec<String>,
     detail: String,
 }
 
@@ -858,6 +880,11 @@ struct SelectionEntry {
     validation_ref: String,
     score_ref: String,
     layout_ref: String,
+    analysis_ref: String,
+    compatible_rules_ref: String,
+    spatial_intent_ref: String,
+    intermediate_breakdown_ref: String,
+    intermediate_validation_ref: String,
     overall: f64,
     metrics: BTreeMap<String, f64>,
     tags: Vec<String>,
@@ -889,6 +916,15 @@ struct BudgetCheck {
     code: String,
     ok: bool,
     detail: String,
+}
+
+#[derive(Clone, Debug)]
+struct IntermediateArtifactRefs {
+    analysis_ref: String,
+    compatible_rules_ref: String,
+    spatial_intent_ref: String,
+    intermediate_breakdown_ref: String,
+    intermediate_validation_ref: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -2453,31 +2489,34 @@ fn intermediate_breakdown(
             } else {
                 None
             };
+            let incoming_count = candidate
+                .graph
+                .edges
+                .iter()
+                .filter(|edge| edge.to == node.id)
+                .count();
+            let outgoing_count = candidate
+                .graph
+                .edges
+                .iter()
+                .filter(|edge| edge.from == node.id)
+                .count();
             IntermediateRegion {
                 id: region_id(node.id.as_str()),
                 node_ids: vec![node.id.clone()],
+                geometry_role: geometry_role(node, role.as_str(), &intents),
+                footprint_class: footprint_class(node, role.as_str(), &intents),
+                scale_band: scale_band(node, role.as_str(), &intents),
+                anchor_quality: anchor_quality(role.as_str(), anchor_node.as_deref()),
+                entrance_expectations: entrance_expectations(
+                    node,
+                    role.as_str(),
+                    &intents,
+                    incoming_count,
+                    outgoing_count,
+                ),
                 role,
                 anchor_node,
-            }
-        })
-        .collect::<Vec<_>>();
-    let connectors = candidate
-        .graph
-        .edges
-        .iter()
-        .map(|edge| {
-            let intents = annotations_by_target
-                .get(edge.id.as_str())
-                .into_iter()
-                .flat_map(|items| items.iter())
-                .flat_map(|annotation| annotation.intents.clone())
-                .collect::<Vec<_>>();
-            IntermediateConnector {
-                id: format!("connector.{}", slugify_label(edge.id.as_str())),
-                edge_id: edge.id.clone(),
-                from_region: region_id(edge.from.as_str()),
-                to_region: region_id(edge.to.as_str()),
-                intents: dedupe_strings(intents),
             }
         })
         .collect::<Vec<_>>();
@@ -2491,10 +2530,38 @@ fn intermediate_breakdown(
                 .filter_map(|intent| constraint_for_intent(annotation, intent))
                 .collect::<Vec<_>>()
         })
-        .collect();
+        .collect::<Vec<_>>();
+    let constraint_refs_by_target = constraint_refs_by_target(&constraints);
+    let connectors = candidate
+        .graph
+        .edges
+        .iter()
+        .map(|edge| {
+            let intents = annotations_by_target
+                .get(edge.id.as_str())
+                .into_iter()
+                .flat_map(|items| items.iter())
+                .flat_map(|annotation| annotation.intents.clone())
+                .collect::<Vec<_>>();
+            let intents = dedupe_strings(intents);
+            IntermediateConnector {
+                id: format!("connector.{}", slugify_label(edge.id.as_str())),
+                edge_id: edge.id.clone(),
+                from_region: region_id(edge.from.as_str()),
+                to_region: region_id(edge.to.as_str()),
+                affordances: connector_affordances(edge, &intents),
+                traversal_hint: traversal_hint(edge),
+                constraint_refs: constraint_refs_by_target
+                    .get(edge.id.as_str())
+                    .cloned()
+                    .unwrap_or_default(),
+                intents,
+            }
+        })
+        .collect::<Vec<_>>();
     Ok(IntermediateBreakdown {
         kind: "asha_procgen.intermediate_breakdown.v1".to_owned(),
-        schema_version: 1,
+        schema_version: 2,
         candidate_id: candidate.candidate_id.clone(),
         state_hash: hash_json(candidate)?,
         annotation_ref: display_path(annotation_path),
@@ -2524,24 +2591,203 @@ fn region_role(node: &Node, intents: &BTreeSet<&str>) -> String {
     }
 }
 
+fn geometry_role(node: &Node, role: &str, intents: &BTreeSet<&str>) -> String {
+    match role {
+        "start" => "entry".to_owned(),
+        "goal" => "destination".to_owned(),
+        "landmark_hub" => "landmark_junction".to_owned(),
+        "boss_gate" => "boss_threshold".to_owned(),
+        "pressure" => "hazard_route".to_owned(),
+        "reward" => "reward_pocket".to_owned(),
+        "gate" => "threshold".to_owned(),
+        _ if node.kind == NodeKind::Key => "key_pocket".to_owned(),
+        _ if node.kind == NodeKind::Shortcut => "shortcut_marker".to_owned(),
+        _ if node.kind == NodeKind::Secret => "secret_pocket".to_owned(),
+        _ if intents.contains("gated_reveal") => "threshold".to_owned(),
+        _ => "chamber".to_owned(),
+    }
+}
+
+fn footprint_class(node: &Node, role: &str, intents: &BTreeSet<&str>) -> String {
+    match role {
+        "landmark_hub" => "hub".to_owned(),
+        "boss_gate" => "threshold_large".to_owned(),
+        "pressure" => "pressure_lane".to_owned(),
+        "reward" => "pocket".to_owned(),
+        "gate" => "threshold".to_owned(),
+        "start" | "goal" => "marker_room".to_owned(),
+        _ if node.kind == NodeKind::Key || node.kind == NodeKind::Resource => {
+            "small_pocket".to_owned()
+        }
+        _ if node.kind == NodeKind::Shortcut || node.kind == NodeKind::Secret => {
+            "small_marker".to_owned()
+        }
+        _ if intents.contains("landmark_hub") => "hub".to_owned(),
+        _ => "standard_room".to_owned(),
+    }
+}
+
+fn scale_band(node: &Node, role: &str, intents: &BTreeSet<&str>) -> String {
+    match role {
+        "landmark_hub" | "boss_gate" => "large".to_owned(),
+        "pressure" | "start" | "goal" | "gate" => "medium".to_owned(),
+        "reward" => "small".to_owned(),
+        _ if node.kind == NodeKind::Key
+            || node.kind == NodeKind::Resource
+            || node.kind == NodeKind::Shortcut
+            || node.kind == NodeKind::Secret =>
+        {
+            "small".to_owned()
+        }
+        _ if intents.contains("landmark_hub") => "large".to_owned(),
+        _ => "medium".to_owned(),
+    }
+}
+
+fn anchor_quality(role: &str, anchor_node: Option<&str>) -> String {
+    if anchor_node.is_none() {
+        "derived".to_owned()
+    } else if matches!(role, "start" | "goal" | "landmark_hub" | "boss_gate") {
+        "explicit".to_owned()
+    } else {
+        "derived_anchor".to_owned()
+    }
+}
+
+fn entrance_expectations(
+    node: &Node,
+    role: &str,
+    intents: &BTreeSet<&str>,
+    incoming_count: usize,
+    outgoing_count: usize,
+) -> Vec<String> {
+    let mut expectations = Vec::new();
+    match role {
+        "start" => expectations.push("entry_spawn".to_owned()),
+        "goal" => expectations.push("destination_arrival".to_owned()),
+        "landmark_hub" => expectations.push("multi_spoke_orientation".to_owned()),
+        "boss_gate" => expectations.push("approach_then_reveal".to_owned()),
+        "pressure" => expectations.push("readable_hazard_approach".to_owned()),
+        "reward" => expectations.push("optional_reward_access".to_owned()),
+        "gate" => expectations.push("locked_threshold_preview".to_owned()),
+        _ => {}
+    }
+    if node.kind == NodeKind::Key || node.kind == NodeKind::Resource {
+        expectations.push("pickup_pocket".to_owned());
+    }
+    if intents.contains("gated_reveal") {
+        expectations.push("reveal_line".to_owned());
+    }
+    if incoming_count > 1 {
+        expectations.push("merge_readability".to_owned());
+    }
+    if outgoing_count > 1 {
+        expectations.push("choice_readability".to_owned());
+    }
+    if expectations.is_empty() {
+        expectations.push("standard_passage".to_owned());
+    }
+    dedupe_strings(expectations)
+}
+
 fn constraint_for_intent(
     annotation: &SpatialIntentAnnotation,
     intent: &str,
 ) -> Option<IntermediateConstraint> {
-    let code = match intent {
-        "visible_before_reachable" => "preserve_lock_preview",
-        "gated_reveal" => "preserve_reveal_sequence",
-        "landmark_hub" => "preserve_wayfinding_anchor",
-        "pressure_path" => "preserve_pressure_read",
-        "one_way_drop" => "preserve_one_way_return",
-        "hidden_route" => "preserve_hidden_route",
-        _ => return None,
-    };
+    let code = constraint_code_for_intent(intent)?;
     Some(IntermediateConstraint {
         code: code.to_owned(),
         target: annotation.target_id.clone(),
+        target_type: annotation.target_type.clone(),
+        source_intents: vec![intent.to_owned()],
+        graph_refs: vec![annotation.target_id.clone()],
         detail: format!("Preserve {intent} for {}.", annotation.target_id),
     })
+}
+
+fn constraint_code_for_intent(intent: &str) -> Option<&'static str> {
+    Some(match intent {
+        "visible_before_reachable" => "preserve_lock_preview",
+        "gated_connector" => "preserve_gated_connector",
+        "gated_reveal" => "preserve_reveal_sequence",
+        "landmark_hub" => "preserve_wayfinding_anchor",
+        "pressure_path" => "preserve_pressure_read",
+        "shortcut_connector" => "preserve_shortcut_connector",
+        "one_way_drop" => "preserve_one_way_return",
+        "hidden_route" => "preserve_hidden_route",
+        "merge_rejoin_clarity" => "preserve_rejoin_clarity",
+        "reward_pocket" => "preserve_reward_pocket",
+        "entry_orientation" => "preserve_entry_orientation",
+        "destination_readability" => "preserve_destination_readability",
+        _ => return None,
+    })
+}
+
+fn constraint_refs_by_target(
+    constraints: &[IntermediateConstraint],
+) -> BTreeMap<&str, Vec<String>> {
+    let mut refs: BTreeMap<&str, Vec<String>> = BTreeMap::new();
+    for constraint in constraints {
+        refs.entry(constraint.target.as_str())
+            .or_default()
+            .push(format!("{}:{}", constraint.code, constraint.target));
+    }
+    for values in refs.values_mut() {
+        values.sort();
+        values.dedup();
+    }
+    refs
+}
+
+fn connector_affordances(edge: &Edge, intents: &[String]) -> Vec<String> {
+    let mut affordances = Vec::new();
+    if edge.traversal == TraversalKind::Locked || edge.required_item.is_some() {
+        affordances.push("locked_threshold".to_owned());
+        affordances.push("preview_line".to_owned());
+    }
+    if edge.traversal == TraversalKind::Hidden
+        || intents.iter().any(|intent| intent == "hidden_route")
+    {
+        affordances.push("hidden_passage".to_owned());
+    }
+    if edge.traversal == TraversalKind::OneWayReturn
+        || intents.iter().any(|intent| intent == "one_way_drop")
+    {
+        affordances.push("one_way_return".to_owned());
+    }
+    if edge.kind == EdgeKind::Shortcut
+        || intents.iter().any(|intent| intent == "shortcut_connector")
+    {
+        affordances.push("shortcut_link".to_owned());
+    }
+    if intents.iter().any(|intent| intent == "pressure_path") {
+        affordances.push("pressure_route".to_owned());
+    }
+    if intents
+        .iter()
+        .any(|intent| intent == "merge_rejoin_clarity")
+    {
+        affordances.push("rejoin_corridor".to_owned());
+    }
+    if affordances.is_empty() {
+        affordances.push("corridor".to_owned());
+    }
+    dedupe_strings(affordances)
+}
+
+fn traversal_hint(edge: &Edge) -> String {
+    match edge.traversal {
+        TraversalKind::Open => {
+            if edge.required_item.is_some() {
+                "open_requires_context".to_owned()
+            } else {
+                "open".to_owned()
+            }
+        }
+        TraversalKind::Locked => "locked".to_owned(),
+        TraversalKind::OneWayReturn => "one_way_return".to_owned(),
+        TraversalKind::Hidden => "hidden".to_owned(),
+    }
 }
 
 fn breakdown_validate_command(args: ReportOutArgs) -> Result<(), String> {
@@ -2557,6 +2803,43 @@ fn breakdown_validate_command(args: ReportOutArgs) -> Result<(), String> {
             args.out.display()
         ))
     }
+}
+
+fn write_intermediate_artifacts(
+    candidate: &Candidate,
+    run_dir: &Path,
+) -> Result<(IntermediateArtifactRefs, ValidationReport), String> {
+    let analysis_path = run_dir.join("analysis.graph.json");
+    let analysis = analyze_graph(candidate)?;
+    write_json(&analysis_path, &analysis)?;
+
+    let compatible_rules_path = run_dir.join("compatible-rules.json");
+    let compatible_rules = compatible_rules_report(candidate)?;
+    write_json(&compatible_rules_path, &compatible_rules)?;
+
+    let spatial_intent_path = run_dir.join("spatial-intent.json");
+    let spatial_intent = spatial_intent_report(candidate, Some(&analysis_path))?;
+    write_json(&spatial_intent_path, &spatial_intent)?;
+
+    let intermediate_breakdown_path = run_dir.join("intermediate-breakdown.json");
+    let intermediate_breakdown =
+        intermediate_breakdown(candidate, &spatial_intent, &spatial_intent_path)?;
+    write_json(&intermediate_breakdown_path, &intermediate_breakdown)?;
+
+    let intermediate_validation_path = run_dir.join("intermediate.validation.json");
+    let intermediate_validation = validate_intermediate_breakdown(&intermediate_breakdown);
+    write_json(&intermediate_validation_path, &intermediate_validation)?;
+
+    Ok((
+        IntermediateArtifactRefs {
+            analysis_ref: display_path(&analysis_path),
+            compatible_rules_ref: display_path(&compatible_rules_path),
+            spatial_intent_ref: display_path(&spatial_intent_path),
+            intermediate_breakdown_ref: display_path(&intermediate_breakdown_path),
+            intermediate_validation_ref: display_path(&intermediate_validation_path),
+        },
+        intermediate_validation,
+    ))
 }
 
 fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> ValidationReport {
@@ -2587,12 +2870,51 @@ fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> Validat
         ));
     }
     for region in &breakdown.regions {
+        if region.geometry_role.is_empty()
+            || region.footprint_class.is_empty()
+            || region.scale_band.is_empty()
+            || region.anchor_quality.is_empty()
+        {
+            diagnostics.push(fatal(
+                "intermediate_region_geometry_prep_missing",
+                region.node_ids.first().map(String::as_str),
+                None,
+                "Region is missing geometry-prep role, footprint, scale, or anchor quality.",
+            ));
+        }
+        if !matches!(
+            region.scale_band.as_str(),
+            "" | "small" | "medium" | "large"
+        ) {
+            diagnostics.push(fatal(
+                "intermediate_region_scale_invalid",
+                region.node_ids.first().map(String::as_str),
+                None,
+                "Region scale band must be small, medium, or large.",
+            ));
+        }
         if region.role == "landmark_hub" && region.anchor_node.is_none() {
             diagnostics.push(fatal(
                 "intermediate_anchor_missing",
                 region.node_ids.first().map(String::as_str),
                 None,
                 "Landmark hub region must declare an anchor node.",
+            ));
+        }
+        if region.role == "landmark_hub" && region.geometry_role != "landmark_junction" {
+            diagnostics.push(fatal(
+                "intermediate_landmark_geometry_role_missing",
+                region.node_ids.first().map(String::as_str),
+                None,
+                "Landmark hub region must preserve a landmark geometry role.",
+            ));
+        }
+        if region_has_unsupported_3d_claim(region) {
+            diagnostics.push(fatal(
+                "intermediate_3d_claim_unsupported",
+                region.node_ids.first().map(String::as_str),
+                None,
+                "Region declares vertical or 3D geometry before a geometry-capable schema exists.",
             ));
         }
     }
@@ -2615,6 +2937,86 @@ fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> Validat
                 "Connector references a missing source or target region.",
             ));
         }
+        if connector.affordances.is_empty() {
+            diagnostics.push(fatal(
+                "intermediate_connector_affordance_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Connector must declare at least one geometry-prep affordance.",
+            ));
+        }
+        if connector.traversal_hint.is_empty() {
+            diagnostics.push(fatal(
+                "intermediate_connector_traversal_hint_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Connector must declare a traversal hint.",
+            ));
+        }
+        if connector
+            .intents
+            .iter()
+            .any(|intent| intent == "visible_before_reachable" || intent == "gated_connector")
+            && !connector.constraint_refs.iter().any(|reference| {
+                reference.contains("preserve_lock_preview")
+                    || reference.contains("preserve_gated_connector")
+            })
+        {
+            diagnostics.push(fatal(
+                "intermediate_gated_constraint_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Gated connectors must preserve lock preview or gated connector constraints.",
+            ));
+        }
+        if connector
+            .intents
+            .iter()
+            .any(|intent| intent == "hidden_route")
+            && !connector
+                .affordances
+                .iter()
+                .any(|affordance| affordance == "hidden_passage")
+        {
+            diagnostics.push(fatal(
+                "intermediate_hidden_affordance_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Hidden routes must declare a hidden_passage affordance.",
+            ));
+        }
+        if connector
+            .intents
+            .iter()
+            .any(|intent| intent == "shortcut_connector")
+            && !connector
+                .affordances
+                .iter()
+                .any(|affordance| affordance == "shortcut_link")
+        {
+            diagnostics.push(fatal(
+                "intermediate_shortcut_affordance_missing",
+                None,
+                Some(connector.id.as_str()),
+                "Shortcut connectors must declare a shortcut_link affordance.",
+            ));
+        }
+        if connector
+            .intents
+            .iter()
+            .any(|intent| intent == "one_way_drop")
+            && !connector
+                .affordances
+                .iter()
+                .any(|affordance| affordance == "one_way_return")
+        {
+            diagnostics.push(fatal(
+                "intermediate_one_way_affordance_missing",
+                None,
+                Some(connector.id.as_str()),
+                "One-way connectors must declare a one_way_return affordance.",
+            ));
+        }
         if connector
             .intents
             .iter()
@@ -2625,6 +3027,14 @@ fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> Validat
                 None,
                 Some(connector.id.as_str()),
                 "Vertical candidates require a later geometry-capable schema.",
+            ));
+        }
+        if connector_has_unsupported_3d_claim(connector) {
+            diagnostics.push(fatal(
+                "intermediate_3d_claim_unsupported",
+                None,
+                Some(connector.id.as_str()),
+                "Connector declares vertical or 3D geometry before a geometry-capable schema exists.",
             ));
         }
     }
@@ -2640,6 +3050,34 @@ fn validate_intermediate_breakdown(breakdown: &IntermediateBreakdown) -> Validat
         fatal_count,
         diagnostics,
     }
+}
+
+fn region_has_unsupported_3d_claim(region: &IntermediateRegion) -> bool {
+    [
+        region.geometry_role.as_str(),
+        region.footprint_class.as_str(),
+        region.scale_band.as_str(),
+    ]
+    .into_iter()
+    .chain(region.entrance_expectations.iter().map(String::as_str))
+    .any(contains_unsupported_3d_claim)
+}
+
+fn connector_has_unsupported_3d_claim(connector: &IntermediateConnector) -> bool {
+    connector
+        .affordances
+        .iter()
+        .map(String::as_str)
+        .chain([connector.traversal_hint.as_str()])
+        .any(contains_unsupported_3d_claim)
+}
+
+fn contains_unsupported_3d_claim(value: &str) -> bool {
+    value.contains("vertical")
+        || value.contains("3d")
+        || value.contains("three_d")
+        || value.contains("stair")
+        || value.contains("shaft")
 }
 
 fn region_id(node_id: &str) -> String {
@@ -3835,6 +4273,30 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             continue;
         }
 
+        let (intermediate_refs, intermediate_validation) =
+            write_intermediate_artifacts(&candidate, &run_dir)?;
+        append_transcript(
+            Some(&transcript),
+            "intermediate artifacts",
+            Some(Path::new(&intermediate_refs.intermediate_breakdown_ref)),
+            Some(Path::new(&intermediate_refs.intermediate_validation_ref)),
+            None,
+            json!({
+                "analysis": intermediate_refs.analysis_ref,
+                "compatibleRules": intermediate_refs.compatible_rules_ref,
+                "spatialIntent": intermediate_refs.spatial_intent_ref
+            }),
+        )?;
+        if !intermediate_validation.ok {
+            rejected.push(SelectionRejection {
+                candidate_id: candidate.candidate_id,
+                profile_sequence: sequence.label.clone(),
+                candidate_ref: display_path(&current),
+                diagnostics: intermediate_validation.diagnostics,
+            });
+            continue;
+        }
+
         let score = score_graph(&candidate);
         let topology_fingerprint = topology_fingerprint(&candidate);
         let duplicate_of = seen_fingerprints
@@ -3888,6 +4350,11 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             validation_ref: display_path(&validation_path),
             score_ref: display_path(&score_path),
             layout_ref: display_path(&layout_path),
+            analysis_ref: intermediate_refs.analysis_ref,
+            compatible_rules_ref: intermediate_refs.compatible_rules_ref,
+            spatial_intent_ref: intermediate_refs.spatial_intent_ref,
+            intermediate_breakdown_ref: intermediate_refs.intermediate_breakdown_ref,
+            intermediate_validation_ref: intermediate_refs.intermediate_validation_ref,
             overall: score.overall,
             metrics: score.metrics,
             tags: collect_tags(&candidate),
@@ -4869,6 +5336,203 @@ mod tests {
         assert!(invalid_connector.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "intermediate_vertical_candidate_unsupported"
         }));
+    }
+
+    #[test]
+    fn intermediate_breakdown_emits_geometry_prep_hints() {
+        let intent = test_intent("geometry-prep");
+        let mut candidate = create_initial_candidate(&intent, 121);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::HazardResourceTradeoff,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 122 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        assert_eq!(breakdown.schema_version, 2);
+        let hub = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["hub.central_1".to_owned()])
+            .expect("hub region should exist");
+        assert_eq!(hub.geometry_role, "landmark_junction");
+        assert_eq!(hub.footprint_class, "hub");
+        assert_eq!(hub.scale_band, "large");
+        assert_eq!(hub.anchor_quality, "explicit");
+        assert!(hub
+            .entrance_expectations
+            .contains(&"multi_spoke_orientation".to_owned()));
+
+        let gate = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["gate.locked_1".to_owned()])
+            .expect("gate region should exist");
+        assert_eq!(gate.geometry_role, "threshold");
+        assert!(gate
+            .entrance_expectations
+            .contains(&"locked_threshold_preview".to_owned()));
+
+        let hazard = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["hazard.sluice_1".to_owned()])
+            .expect("hazard region should exist");
+        assert_eq!(hazard.footprint_class, "pressure_lane");
+        assert!(hazard
+            .entrance_expectations
+            .contains(&"readable_hazard_approach".to_owned()));
+
+        let reward = breakdown
+            .regions
+            .iter()
+            .find(|region| region.node_ids == vec!["treasure.gated_1".to_owned()])
+            .expect("reward region should exist");
+        assert_eq!(reward.geometry_role, "reward_pocket");
+        assert_eq!(reward.scale_band, "small");
+
+        let locked_connector = breakdown
+            .connectors
+            .iter()
+            .find(|connector| connector.edge_id == "edge.gate_1.goal")
+            .expect("locked connector should exist");
+        assert_eq!(locked_connector.traversal_hint, "locked");
+        assert!(locked_connector
+            .affordances
+            .contains(&"locked_threshold".to_owned()));
+        assert!(locked_connector
+            .constraint_refs
+            .iter()
+            .any(|reference| reference.contains("preserve_lock_preview")));
+
+        let shortcut_connector = breakdown
+            .connectors
+            .iter()
+            .find(|connector| connector.edge_id == "edge.merge_1.goal.shortcut")
+            .expect("shortcut connector should exist");
+        assert!(shortcut_connector
+            .affordances
+            .contains(&"shortcut_link".to_owned()));
+        assert!(shortcut_connector
+            .constraint_refs
+            .iter()
+            .any(|reference| reference.contains("preserve_shortcut_connector")));
+
+        assert!(breakdown.constraints.iter().any(|constraint| {
+            constraint.target_type == "edge"
+                && constraint
+                    .graph_refs
+                    .contains(&"edge.gate_1.goal".to_owned())
+                && constraint
+                    .source_intents
+                    .contains(&"visible_before_reachable".to_owned())
+        }));
+    }
+
+    #[test]
+    fn intermediate_validation_catches_geometry_prep_gaps() {
+        let intent = test_intent("geometry-prep-validation");
+        let mut candidate = create_initial_candidate(&intent, 131);
+        for (index, rule) in [
+            GraphRule::LockKeyLoop,
+            GraphRule::HubSpokeCluster,
+            GraphRule::GatedTreasureBranch,
+            GraphRule::BranchMergeShortcut,
+            GraphRule::SecretBypass,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(apply_graph_rule(&mut candidate, rule, 132 + index as u64).is_empty());
+        }
+        let annotations = spatial_intent_report(&candidate, None).expect("spatial intent report");
+        let breakdown = intermediate_breakdown(
+            &candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("breakdown should encode");
+        let valid = validate_intermediate_breakdown(&breakdown);
+        assert!(valid.ok, "{valid:?}");
+
+        let mut missing_affordance = breakdown.clone();
+        missing_affordance
+            .connectors
+            .first_mut()
+            .expect("connector should exist")
+            .affordances
+            .clear();
+        let report = validate_intermediate_breakdown(&missing_affordance);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_connector_affordance_missing" }));
+
+        let mut missing_gated_constraint = breakdown.clone();
+        let locked = missing_gated_constraint
+            .connectors
+            .iter_mut()
+            .find(|connector| connector.edge_id == "edge.gate_1.goal")
+            .expect("locked connector should exist");
+        locked.constraint_refs.clear();
+        let report = validate_intermediate_breakdown(&missing_gated_constraint);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "intermediate_gated_constraint_missing"));
+
+        let mut missing_shortcut_affordance = breakdown.clone();
+        let shortcut = missing_shortcut_affordance
+            .connectors
+            .iter_mut()
+            .find(|connector| connector.edge_id == "edge.merge_1.goal.shortcut")
+            .expect("shortcut connector should exist");
+        shortcut
+            .affordances
+            .retain(|affordance| affordance != "shortcut_link");
+        let report = validate_intermediate_breakdown(&missing_shortcut_affordance);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_shortcut_affordance_missing" }));
+
+        let mut missing_region_prep = breakdown.clone();
+        missing_region_prep
+            .regions
+            .first_mut()
+            .expect("region should exist")
+            .geometry_role
+            .clear();
+        let report = validate_intermediate_breakdown(&missing_region_prep);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "intermediate_region_geometry_prep_missing" }));
+
+        let mut unsupported_3d = breakdown;
+        unsupported_3d
+            .connectors
+            .first_mut()
+            .expect("connector should exist")
+            .affordances
+            .push("vertical_shaft".to_owned());
+        let report = validate_intermediate_breakdown(&unsupported_3d);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "intermediate_3d_claim_unsupported"));
     }
 
     #[test]

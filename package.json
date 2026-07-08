@@ -11,6 +11,7 @@
     "batch:sample": "npm run procgen -- batch generate --profile fixtures/batch-profiles/v2-sample.json --out-dir artifacts/samples/batch-v2 --seed 5201 --count 10",
     "build:viewer": "tsc -p tsconfig.json",
     "viewer:serve": "npm run baseline && npm run batch:sample && npm run build:viewer && node scripts/serve-viewer.mjs",
+    "viewer:smoke": "npm run build:viewer && node scripts/smoke-viewer.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "rust:check": "cargo check --manifest-path procgen-rs/Cargo.toml",
     "rust:test": "cargo test --manifest-path procgen-rs/Cargo.toml",

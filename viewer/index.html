@@ -15,7 +15,11 @@
         <section id="diagnostics" class="diagnostics" aria-label="Batch diagnostics"></section>
       </aside>
       <section class="layout-panel">
-        <svg id="layout" role="img" aria-label="Generated dungeon layout"></svg>
+        <div class="view-tabs" aria-label="Preview mode">
+          <button class="view-tab" type="button" data-view="layout" data-selected="true">Layout</button>
+          <button class="view-tab" type="button" data-view="intermediate" data-selected="false">Intermediate</button>
+        </div>
+        <svg id="layout" role="img" aria-label="Generated dungeon preview"></svg>
       </section>
     </main>
     <script type="module" src="/viewer/app.js"></script>

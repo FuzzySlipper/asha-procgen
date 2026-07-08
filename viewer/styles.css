@@ -141,11 +141,37 @@ body {
   background: #10151c;
 }
 
+.view-tabs {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(112px, 1fr));
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.view-tab {
+  min-height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-strong);
+  color: var(--text-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.view-tab:hover,
+.view-tab[data-selected="true"] {
+  border-color: var(--border-strong);
+  background: #223543;
+  color: #eff8ff;
+}
+
 #layout {
   min-width: 900px;
   min-height: 620px;
   width: 100%;
-  height: calc(100vh - 48px);
+  height: calc(100vh - 94px);
   background: #151b23;
   border: 1px solid var(--border);
 }
@@ -219,6 +245,88 @@ body {
 .edge-label {
   fill: var(--text-soft);
   font-size: 10px;
+  text-anchor: middle;
+}
+
+.intermediate-role-label {
+  fill: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.intermediate-link {
+  fill: none;
+  opacity: 0.82;
+  stroke: var(--link);
+  stroke-width: 3;
+}
+
+.intermediate-link.locked {
+  stroke: var(--danger);
+  stroke-dasharray: 8 6;
+}
+
+.intermediate-link.hidden {
+  stroke: #c49be8;
+  stroke-dasharray: 4 6;
+}
+
+.intermediate-link.shortcut {
+  stroke: #58b7ba;
+}
+
+.intermediate-link.pressure {
+  stroke: var(--warning);
+}
+
+.intermediate-link.rejoin {
+  stroke: var(--ok);
+}
+
+.intermediate-edge-label {
+  fill: var(--text-soft);
+  font-size: 10px;
+  text-anchor: middle;
+}
+
+.intermediate-region rect {
+  fill: var(--surface-strong);
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.intermediate-region.landmark-hub rect {
+  stroke: var(--border-strong);
+}
+
+.intermediate-region.gate rect,
+.intermediate-region.boss-gate rect {
+  stroke: var(--danger);
+}
+
+.intermediate-region.pressure rect {
+  stroke: var(--warning);
+}
+
+.intermediate-region.reward rect {
+  stroke: #ccb949;
+}
+
+.intermediate-region-title {
+  fill: #eff8ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.intermediate-region-detail {
+  fill: var(--text-muted);
+  font-size: 10px;
+}
+
+.empty-svg-label {
+  fill: var(--text-muted);
+  font-size: 14px;
   text-anchor: middle;
 }
 

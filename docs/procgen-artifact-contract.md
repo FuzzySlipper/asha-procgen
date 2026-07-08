@@ -239,6 +239,11 @@ Accepted entries include:
 - `budgetChecks`
 - `budgetPenalty`
 - `selectionScore`
+- `analysisRef`
+- `compatibleRulesRef`
+- `spatialIntentRef`
+- `intermediateBreakdownRef`
+- `intermediateValidationRef`
 
 Accepted entries are sorted by descending `selectionScore`, then candidate id
 for stable tie-breaking.

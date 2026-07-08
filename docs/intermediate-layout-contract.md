@@ -1,6 +1,6 @@
 # Intermediate Layout Contract
 
-Status: first executable contract for graph analysis and pre-geometry layout intent.
+Status: executable contract for graph analysis and pre-geometry layout intent.
 
 This layer sits between topology graphs and any future 2D, 3D, mesh, or voxel
 embedding. It gives agents more structure to reason about without baking in
@@ -81,9 +81,52 @@ npm run procgen -- breakdown validate \
   `landmark_hub`, `visible_before_reachable`, `pressure_path`,
   `shortcut_connector`, `one_way_drop`, and `hidden_route`.
 - `asha_procgen.intermediate_breakdown.v1`: graph-derived regions,
-  connectors, and constraints for a later geometry pass.
+  connectors, constraints, and geometry-prep hints for a later geometry pass.
 - `asha_procgen.validation.intermediate.v1`: fatal diagnostics for invalid
   intermediate breakdowns.
+
+Stable intermediate validation diagnostic codes:
+
+- `intermediate_start_missing`
+- `intermediate_goal_missing`
+- `intermediate_region_geometry_prep_missing`
+- `intermediate_region_scale_invalid`
+- `intermediate_anchor_missing`
+- `intermediate_landmark_geometry_role_missing`
+- `intermediate_connector_unbound`
+- `intermediate_connector_endpoint_missing`
+- `intermediate_connector_affordance_missing`
+- `intermediate_connector_traversal_hint_missing`
+- `intermediate_gated_constraint_missing`
+- `intermediate_hidden_affordance_missing`
+- `intermediate_shortcut_affordance_missing`
+- `intermediate_one_way_affordance_missing`
+- `intermediate_vertical_candidate_unsupported`
+- `intermediate_3d_claim_unsupported`
+
+## Intermediate Schema Versioning
+
+The intermediate breakdown keeps kind `asha_procgen.intermediate_breakdown.v1`
+while the pre-geometry handoff is still evolving additively. The enriched
+geometry-prep shape uses `schemaVersion: 2`.
+
+Version 2 adds abstract planning hints only:
+
+- region `geometryRole`;
+- region `footprintClass`;
+- region `scaleBand`;
+- region `anchorQuality`;
+- region `entranceExpectations`;
+- connector `affordances`;
+- connector `traversalHint`;
+- connector `constraintRefs`;
+- constraint `targetType`;
+- constraint `sourceIntents`;
+- constraint `graphRefs`.
+
+These fields are intentionally not coordinates, room bounds, tile footprints,
+mesh handles, prefab ids, voxel volumes, or 3D transforms. Older v1 breakdowns
+should still deserialize with empty/default values for the added fields.
 
 ## Intentional Non-Geometry Boundary
 

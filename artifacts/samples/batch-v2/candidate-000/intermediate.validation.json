@@ -1,0 +1,8 @@
+{
+  "kind": "asha_procgen.validation.intermediate.v1",
+  "schemaVersion": 1,
+  "stateHash": "fnv1a64:59b79f2b4b2f91fb",
+  "ok": true,
+  "fatalCount": 0,
+  "diagnostics": []
+}

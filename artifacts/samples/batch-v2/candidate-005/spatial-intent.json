@@ -1,0 +1,220 @@
+{
+  "kind": "asha_procgen.spatial_intent.v1",
+  "schemaVersion": 1,
+  "candidateId": "candidate.first_slice.5701",
+  "stateHash": "fnv1a64:8267109b4fa09875",
+  "analysisRef": "artifacts/samples/batch-v2/candidate-005/analysis.graph.json",
+  "annotations": [
+    {
+      "targetType": "node",
+      "targetId": "start",
+      "intents": [
+        "entry_orientation"
+      ],
+      "rationale": "Node start carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "goal",
+      "intents": [
+        "destination_readability"
+      ],
+      "rationale": "Node goal carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "gate.locked_1",
+      "intents": [
+        "gated_reveal"
+      ],
+      "rationale": "Node gate.locked_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "hub.central_1",
+      "intents": [
+        "landmark_hub"
+      ],
+      "rationale": "Node hub.central_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "hazard.watch_1",
+      "intents": [
+        "pressure_path"
+      ],
+      "rationale": "Node hazard.watch_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "treasure.cache_1",
+      "intents": [
+        "reward_pocket"
+      ],
+      "rationale": "Node treasure.cache_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "gate.locked_2",
+      "intents": [
+        "gated_reveal"
+      ],
+      "rationale": "Node gate.locked_2 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "hazard.sluice_1",
+      "intents": [
+        "pressure_path"
+      ],
+      "rationale": "Node hazard.sluice_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "gate.boss_1",
+      "intents": [
+        "gated_reveal"
+      ],
+      "rationale": "Node gate.boss_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "treasure.gated_1",
+      "intents": [
+        "reward_pocket"
+      ],
+      "rationale": "Node treasure.gated_1 carries spatial role tags."
+    },
+    {
+      "targetType": "node",
+      "targetId": "junction.merge_1",
+      "intents": [
+        "landmark_hub"
+      ],
+      "rationale": "Node junction.merge_1 carries spatial role tags."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.key_1.gate_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.key_1.gate_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.hub_1.goal",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.hub_1.goal has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.clue_1.hub_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.clue_1.hub_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.hub_1.watch_1",
+      "intents": [
+        "pressure_path"
+      ],
+      "rationale": "Edge edge.hub_1.watch_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.watch_1.goal",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.watch_1.goal has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.cache_1.hub_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.cache_1.hub_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.key_2.gate_2",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.key_2.gate_2 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.start.sluice_1",
+      "intents": [
+        "pressure_path"
+      ],
+      "rationale": "Edge edge.start.sluice_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.sluice_1.goal",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.sluice_1.goal has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.boss_1.goal",
+      "intents": [
+        "gated_connector",
+        "visible_before_reachable"
+      ],
+      "rationale": "Edge edge.boss_1.goal has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.boss_prep_1.boss_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.boss_prep_1.boss_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.treasure_key_1.treasure_1",
+      "intents": [
+        "gated_connector",
+        "visible_before_reachable"
+      ],
+      "rationale": "Edge edge.treasure_key_1.treasure_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.treasure_1.goal",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.treasure_1.goal has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.secondary.merge_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "rationale": "Edge edge.secondary.merge_1 has traversal or topology intent."
+    },
+    {
+      "targetType": "edge",
+      "targetId": "edge.merge_1.goal.shortcut",
+      "intents": [
+        "merge_rejoin_clarity",
+        "shortcut_connector"
+      ],
+      "rationale": "Edge edge.merge_1.goal.shortcut has traversal or topology intent."
+    }
+  ]
+}

@@ -50,6 +50,11 @@ Important files:
 - `selection-report.json`
 - `candidate-000/accepted.json`
 - `candidate-000/validation.graph.json`
+- `candidate-000/analysis.graph.json`
+- `candidate-000/compatible-rules.json`
+- `candidate-000/spatial-intent.json`
+- `candidate-000/intermediate-breakdown.json`
+- `candidate-000/intermediate.validation.json`
 - `candidate-000/score.graph.json`
 - `candidate-000/transcript.jsonl`
 
@@ -61,7 +66,9 @@ fixtures/batch-profiles/v2-sample.json
 
 The selection report records the profile id/ref, the profile sequence used for
 each candidate, topology fingerprints, budget checks, and sorts accepted entries
-by deterministic selection score.
+by deterministic selection score. Accepted entries also carry refs to graph
+analysis, compatible rules, spatial intent, intermediate breakdown, and
+intermediate validation artifacts.
 
 ## Manual CLI Sequence
 
@@ -271,6 +278,20 @@ npm run verify
 
 The default gate checks ASHA dependency boundaries, TypeScript, Rust compile, and
 Rust tests. Browser smoke is not part of the default gate yet.
+
+For optional preview-site evidence:
+
+```bash
+npm run viewer:smoke
+```
+
+This builds the viewer, starts the local preview server on `127.0.0.1`, checks
+the sample batch and intermediate artifact API, verifies the dark theme CSS, and
+uses Chromium to write layout/intermediate screenshots plus a report under:
+
+```text
+/tmp/asha-procgen-viewer-smoke/
+```
 
 ## Current Non-Goals
 

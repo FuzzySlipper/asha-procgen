@@ -42,6 +42,18 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (url.pathname.startsWith('/fixtures/')) {
+    const filePath = resolve(repoRoot, url.pathname.slice(1));
+    const fixtureRoot = resolve(repoRoot, 'fixtures');
+    if (!isInside(filePath, fixtureRoot)) {
+      response.writeHead(400);
+      response.end('Invalid fixture path');
+      return;
+    }
+    await sendFile(response, filePath);
+    return;
+  }
+
   const filePath = routes.get(url.pathname);
   if (filePath === undefined) {
     response.writeHead(404);

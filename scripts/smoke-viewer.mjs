@@ -85,6 +85,10 @@ try {
   if (!Array.isArray(catalog.shapes) || catalog.shapes.length < 10) {
     throw new Error('shape catalog has too few shapes');
   }
+  const directCatalog = await fetchJson('/fixtures/shape-catalogs/2d-basic.json');
+  if (directCatalog.catalogId !== catalog.catalogId) {
+    throw new Error('direct fixture catalog route did not match artifact catalog route');
+  }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
     throw new Error('viewer dark theme CSS was not found');

@@ -375,9 +375,9 @@ if (initialSelection === null) {
   currentLayout = artifact.layout;
   currentIntermediate = emptyIntermediateContext();
   currentGeometry = null;
-  currentCatalog = null;
-  currentCatalogRef = null;
-  currentCatalogError = null;
+  currentCatalog = await fetchDefaultCatalog();
+  currentCatalogRef = currentCatalog === null ? null : 'fixtures/shape-catalogs/2d-basic.json';
+  currentCatalogError = currentCatalog === null ? 'failed to load default fixture catalog' : null;
   currentPlacement = null;
   currentPlacementValidation = null;
   renderBatchList(batchPanel, batch, null, selectEntry);
@@ -486,18 +486,20 @@ async function fetchCatalogForEntry(
     return value !== undefined && values.indexOf(value) === index;
   });
   for (const ref of refs) {
-    try {
-      const response = await fetch(artifactUrl(ref));
-      if (!response.ok) {
-        continue;
+    for (const url of catalogUrls(ref)) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          continue;
+        }
+        return {
+          catalog: (await response.json()) as ShapeCatalog,
+          ref,
+          error: null,
+        };
+      } catch {
+        // Try the next URL/ref. The visible tab reports the final failure below.
       }
-      return {
-        catalog: (await response.json()) as ShapeCatalog,
-        ref,
-        error: null,
-      };
-    } catch {
-      // Try the next ref. The visible tab reports the final failure below.
     }
   }
   return {
@@ -507,6 +509,28 @@ async function fetchCatalogForEntry(
       ? 'no catalog ref was available'
       : `failed to load ${refs.join(', ')}`,
   };
+}
+
+function catalogUrls(ref: string): readonly string[] {
+  const urls = [artifactUrl(ref)];
+  if (ref.startsWith('fixtures/')) {
+    urls.push(`/${ref}`);
+  }
+  return urls;
+}
+
+async function fetchDefaultCatalog(): Promise<ShapeCatalog | null> {
+  for (const url of catalogUrls('fixtures/shape-catalogs/2d-basic.json')) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        return (await response.json()) as ShapeCatalog;
+      }
+    } catch {
+      // Best-effort fallback for first-run/no-batch mode.
+    }
+  }
+  return null;
 }
 
 function emptyIntermediateContext(): IntermediateContext {

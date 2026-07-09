@@ -922,21 +922,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 9,
-        "y": 5
+        "x": 12,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 9,
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 12,
           "y": 5
         },
         {
-          "x": 9,
+          "x": 12,
           "y": 6
-        },
-        {
-          "x": 9,
-          "y": 7
         }
       ],
       "reservedCells": [],
@@ -980,21 +980,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 11,
-        "y": 2
+        "x": 8,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 11,
-          "y": 3
+          "x": 8,
+          "y": 7
         },
         {
-          "x": 11,
-          "y": 2
+          "x": 8,
+          "y": 6
         },
         {
-          "x": 12,
-          "y": 2
+          "x": 9,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -1038,21 +1038,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 4
+        "x": 14,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 4
-        },
-        {
-          "x": 13,
-          "y": 4
-        },
-        {
           "x": 14,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 15,
+          "y": 5
+        },
+        {
+          "x": 16,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1096,21 +1096,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 5
+        "x": 14,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 5
-        },
-        {
-          "x": 13,
-          "y": 5
-        },
-        {
           "x": 14,
-          "y": 5
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 16,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -1154,21 +1154,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 5,
-        "y": 6
+        "x": 4,
+        "y": 5
       },
       "occupiedCells": [
         {
+          "x": 4,
+          "y": 5
+        },
+        {
           "x": 5,
-          "y": 6
+          "y": 5
         },
         {
           "x": 6,
-          "y": 6
-        },
-        {
-          "x": 7,
-          "y": 6
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1212,21 +1212,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 6,
-        "y": 5
+        "x": 5,
+        "y": 8
       },
       "occupiedCells": [
         {
+          "x": 5,
+          "y": 8
+        },
+        {
           "x": 6,
-          "y": 5
+          "y": 8
         },
         {
           "x": 7,
-          "y": 5
-        },
-        {
-          "x": 8,
-          "y": 5
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -1271,20 +1271,20 @@
       "transform": "identity",
       "origin": {
         "x": 10,
-        "y": 6
+        "y": 7
       },
       "occupiedCells": [
         {
           "x": 10,
-          "y": 6
-        },
-        {
-          "x": 11,
-          "y": 6
+          "y": 7
         },
         {
           "x": 11,
           "y": 7
+        },
+        {
+          "x": 11,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -1444,21 +1444,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 11,
-        "y": 14
+        "x": 10,
+        "y": 17
       },
       "occupiedCells": [
         {
+          "x": 10,
+          "y": 17
+        },
+        {
           "x": 11,
-          "y": 14
+          "y": 17
         },
         {
           "x": 12,
-          "y": 14
-        },
-        {
-          "x": 13,
-          "y": 14
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -1561,20 +1561,20 @@
       "transform": "identity",
       "origin": {
         "x": 14,
-        "y": 14
+        "y": 17
       },
       "occupiedCells": [
         {
           "x": 14,
-          "y": 14
+          "y": 17
         },
         {
           "x": 15,
-          "y": 14
+          "y": 17
         },
         {
           "x": 16,
-          "y": 14
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -1620,21 +1620,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 15,
-        "y": 16
+        "x": 17,
+        "y": 17
       },
       "occupiedCells": [
         {
+          "x": 19,
+          "y": 17
+        },
+        {
+          "x": 18,
+          "y": 17
+        },
+        {
           "x": 17,
-          "y": 16
-        },
-        {
-          "x": 16,
-          "y": 16
-        },
-        {
-          "x": 15,
-          "y": 16
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -1680,21 +1680,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 17,
-        "y": 13
+        "x": 18,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 18,
+          "x": 19,
+          "y": 12
+        },
+        {
+          "x": 19,
           "y": 13
         },
         {
           "x": 18,
-          "y": 14
-        },
-        {
-          "x": 17,
-          "y": 14
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -1740,21 +1740,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 17,
-        "y": 8
+        "x": 18,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 17,
+          "x": 18,
+          "y": 12
+        },
+        {
+          "x": 18,
+          "y": 11
+        },
+        {
+          "x": 18,
           "y": 10
-        },
-        {
-          "x": 17,
-          "y": 9
-        },
-        {
-          "x": 17,
-          "y": 8
         }
       ],
       "reservedCells": [],
@@ -1800,20 +1800,20 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 15,
+        "x": 17,
         "y": 6
       },
       "occupiedCells": [
         {
-          "x": 15,
+          "x": 17,
           "y": 7
         },
         {
-          "x": 15,
+          "x": 17,
           "y": 6
         },
         {
-          "x": 16,
+          "x": 18,
           "y": 6
         }
       ],
@@ -1860,21 +1860,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 15,
-        "y": 5
+        "x": 14,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 17,
-          "y": 5
-        },
-        {
           "x": 16,
-          "y": 5
+          "y": 7
         },
         {
           "x": 15,
-          "y": 5
+          "y": 7
+        },
+        {
+          "x": 14,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -1920,21 +1920,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 16,
-        "y": 7
+        "x": 17,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 16,
-          "y": 7
-        },
-        {
           "x": 17,
-          "y": 7
+          "y": 3
         },
         {
           "x": 18,
-          "y": 7
+          "y": 3
+        },
+        {
+          "x": 19,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -1980,21 +1980,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 4
+        "x": 19,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 4
-        },
-        {
           "x": 19,
-          "y": 4
+          "y": 5
         },
         {
           "x": 20,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 21,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -2038,21 +2038,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 3
+        "x": 20,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 3
-        },
-        {
-          "x": 19,
-          "y": 3
-        },
-        {
           "x": 20,
-          "y": 3
+          "y": 4
+        },
+        {
+          "x": 21,
+          "y": 4
+        },
+        {
+          "x": 22,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -2096,21 +2096,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 22,
-        "y": 4
+        "x": 23,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 4
-        },
-        {
           "x": 23,
-          "y": 4
+          "y": 5
         },
         {
           "x": 24,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 25,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -2154,20 +2154,20 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 25,
+        "x": 24,
         "y": 4
       },
       "occupiedCells": [
+        {
+          "x": 24,
+          "y": 4
+        },
         {
           "x": 25,
           "y": 4
         },
         {
           "x": 26,
-          "y": 4
-        },
-        {
-          "x": 27,
           "y": 4
         }
       ],
@@ -2275,20 +2275,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 25,
+        "x": 27,
         "y": 5
       },
       "occupiedCells": [
         {
+          "x": 29,
+          "y": 5
+        },
+        {
+          "x": 28,
+          "y": 5
+        },
+        {
           "x": 27,
-          "y": 5
-        },
-        {
-          "x": 26,
-          "y": 5
-        },
-        {
-          "x": 25,
           "y": 5
         }
       ],
@@ -2338,21 +2338,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 25,
-        "y": 7
+        "x": 28,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 25,
-          "y": 7
-        },
-        {
-          "x": 26,
-          "y": 7
-        },
-        {
-          "x": 26,
+          "x": 28,
           "y": 8
+        },
+        {
+          "x": 29,
+          "y": 8
+        },
+        {
+          "x": 29,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -2401,21 +2401,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 27,
-        "y": 7
+        "x": 28,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 9
+          "x": 28,
+          "y": 12
         },
         {
-          "x": 27,
-          "y": 8
+          "x": 28,
+          "y": 11
         },
         {
-          "x": 27,
-          "y": 7
+          "x": 28,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -2464,21 +2464,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 27,
-        "y": 10
+        "x": 29,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 28,
-          "y": 11
+          "x": 30,
+          "y": 12
         },
         {
-          "x": 27,
-          "y": 11
+          "x": 29,
+          "y": 12
         },
         {
-          "x": 27,
-          "y": 10
+          "x": 29,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -2527,20 +2527,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 28,
+        "x": 23,
         "y": 7
       },
       "occupiedCells": [
         {
-          "x": 30,
+          "x": 25,
           "y": 7
         },
         {
-          "x": 29,
+          "x": 24,
           "y": 7
         },
         {
-          "x": 28,
+          "x": 23,
           "y": 7
         }
       ],
@@ -2590,20 +2590,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 28,
+        "x": 24,
         "y": 8
       },
       "occupiedCells": [
         {
-          "x": 28,
+          "x": 24,
           "y": 8
         },
         {
-          "x": 29,
+          "x": 25,
           "y": 8
         },
         {
-          "x": 30,
+          "x": 26,
           "y": 8
         }
       ],
@@ -2653,21 +2653,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 15,
-        "y": 4
+        "x": 18,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 15,
-          "y": 4
+          "x": 18,
+          "y": 8
         },
         {
-          "x": 16,
-          "y": 4
+          "x": 19,
+          "y": 8
         },
         {
-          "x": 17,
-          "y": 4
+          "x": 20,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -2711,21 +2711,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 6
+        "x": 19,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 6
-        },
-        {
           "x": 19,
-          "y": 6
+          "y": 7
         },
         {
           "x": 20,
-          "y": 6
+          "y": 7
+        },
+        {
+          "x": 21,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -2770,20 +2770,20 @@
       "transform": "identity",
       "origin": {
         "x": 21,
-        "y": 6
+        "y": 9
       },
       "occupiedCells": [
         {
           "x": 21,
-          "y": 6
+          "y": 9
         },
         {
           "x": 22,
-          "y": 6
+          "y": 9
         },
         {
           "x": 22,
-          "y": 7
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -2943,21 +2943,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 22,
-        "y": 21
+        "x": 21,
+        "y": 20
       },
       "occupiedCells": [
         {
+          "x": 21,
+          "y": 20
+        },
+        {
           "x": 22,
-          "y": 21
+          "y": 20
         },
         {
           "x": 23,
-          "y": 21
-        },
-        {
-          "x": 24,
-          "y": 21
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3060,20 +3060,20 @@
       "transform": "rotate180",
       "origin": {
         "x": 25,
-        "y": 21
+        "y": 20
       },
       "occupiedCells": [
         {
           "x": 27,
-          "y": 21
+          "y": 20
         },
         {
           "x": 26,
-          "y": 21
+          "y": 20
         },
         {
           "x": 25,
-          "y": 21
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3119,21 +3119,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 26,
-        "y": 23
+        "x": 28,
+        "y": 20
       },
       "occupiedCells": [
         {
+          "x": 30,
+          "y": 20
+        },
+        {
+          "x": 29,
+          "y": 20
+        },
+        {
           "x": 28,
-          "y": 23
-        },
-        {
-          "x": 27,
-          "y": 23
-        },
-        {
-          "x": 26,
-          "y": 23
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3180,20 +3180,20 @@
       "transform": "rotate90",
       "origin": {
         "x": 28,
-        "y": 20
+        "y": 23
       },
       "occupiedCells": [
         {
           "x": 29,
-          "y": 20
+          "y": 23
         },
         {
           "x": 29,
-          "y": 21
+          "y": 24
         },
         {
           "x": 28,
-          "y": 21
+          "y": 24
         }
       ],
       "reservedCells": [],
@@ -3239,21 +3239,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 26,
-        "y": 14
+        "x": 27,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 26,
-          "y": 16
-        },
-        {
-          "x": 26,
+          "x": 27,
           "y": 15
         },
         {
-          "x": 26,
+          "x": 27,
           "y": 14
+        },
+        {
+          "x": 27,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -3300,20 +3300,20 @@
       "transform": "rotate270",
       "origin": {
         "x": 28,
-        "y": 4
+        "y": 2
       },
       "occupiedCells": [
         {
           "x": 28,
-          "y": 5
+          "y": 3
         },
         {
           "x": 28,
-          "y": 4
+          "y": 2
         },
         {
           "x": 29,
-          "y": 4
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -3359,20 +3359,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 27,
+        "x": 29,
         "y": 3
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 3
-        },
-        {
-          "x": 28,
-          "y": 3
-        },
-        {
           "x": 29,
+          "y": 3
+        },
+        {
+          "x": 30,
+          "y": 3
+        },
+        {
+          "x": 31,
           "y": 3
         }
       ],
@@ -3419,21 +3419,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 29,
-        "y": 5
+        "x": 30,
+        "y": 4
       },
       "occupiedCells": [
         {
+          "x": 32,
+          "y": 4
+        },
+        {
           "x": 31,
-          "y": 5
+          "y": 4
         },
         {
           "x": 30,
-          "y": 5
-        },
-        {
-          "x": 29,
-          "y": 5
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -3479,20 +3479,20 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 4,
+        "x": 2,
         "y": 7
       },
       "occupiedCells": [
         {
+          "x": 2,
+          "y": 7
+        },
+        {
+          "x": 3,
+          "y": 7
+        },
+        {
           "x": 4,
-          "y": 7
-        },
-        {
-          "x": 5,
-          "y": 7
-        },
-        {
-          "x": 6,
           "y": 7
         }
       ],
@@ -3537,21 +3537,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 5,
-        "y": 8
+        "x": 8,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 5,
-          "y": 8
+          "x": 8,
+          "y": 9
         },
         {
-          "x": 6,
-          "y": 8
+          "x": 9,
+          "y": 9
         },
         {
-          "x": 7,
-          "y": 8
+          "x": 10,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -3595,21 +3595,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 6
+        "x": 6,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 6
+          "x": 6,
+          "y": 10
         },
         {
-          "x": 13,
-          "y": 6
+          "x": 7,
+          "y": 10
         },
         {
-          "x": 13,
-          "y": 7
+          "x": 7,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -3653,21 +3653,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 9,
-        "y": 13
+        "x": 8,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 9,
+          "x": 8,
+          "y": 12
+        },
+        {
+          "x": 8,
           "y": 13
         },
         {
-          "x": 9,
+          "x": 8,
           "y": 14
-        },
-        {
-          "x": 9,
-          "y": 15
         }
       ],
       "reservedCells": [],
@@ -3769,21 +3769,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 11,
-        "y": 21
+        "x": 10,
+        "y": 20
       },
       "occupiedCells": [
         {
+          "x": 10,
+          "y": 20
+        },
+        {
           "x": 11,
-          "y": 21
+          "y": 20
         },
         {
           "x": 12,
-          "y": 21
-        },
-        {
-          "x": 13,
-          "y": 21
+          "y": 20
         }
       ],
       "reservedCells": [],
@@ -3885,21 +3885,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 17,
-        "y": 23
+        "x": 16,
+        "y": 24
       },
       "occupiedCells": [
         {
+          "x": 16,
+          "y": 24
+        },
+        {
           "x": 17,
-          "y": 23
+          "y": 24
         },
         {
           "x": 18,
-          "y": 23
-        },
-        {
-          "x": 19,
-          "y": 23
+          "y": 24
         }
       ],
       "reservedCells": [],
@@ -3950,20 +3950,20 @@
       "transform": "identity",
       "origin": {
         "x": 18,
-        "y": 22
+        "y": 21
       },
       "occupiedCells": [
         {
           "x": 18,
-          "y": 22
+          "y": 21
         },
         {
           "x": 19,
-          "y": 22
+          "y": 21
         },
         {
           "x": 20,
-          "y": 22
+          "y": 21
         }
       ],
       "reservedCells": [],
@@ -4014,20 +4014,20 @@
       "transform": "rotate90",
       "origin": {
         "x": 19,
-        "y": 23
+        "y": 24
       },
       "occupiedCells": [
         {
           "x": 20,
-          "y": 23
+          "y": 24
         },
         {
           "x": 20,
-          "y": 24
+          "y": 25
         },
         {
           "x": 19,
-          "y": 24
+          "y": 25
         }
       ],
       "reservedCells": [],
@@ -4077,21 +4077,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 19,
-        "y": 19
+        "x": 23,
+        "y": 24
       },
       "occupiedCells": [
         {
-          "x": 19,
-          "y": 19
+          "x": 23,
+          "y": 24
         },
         {
-          "x": 19,
-          "y": 20
+          "x": 23,
+          "y": 25
         },
         {
-          "x": 19,
-          "y": 21
+          "x": 23,
+          "y": 26
         }
       ],
       "reservedCells": [],
@@ -4142,20 +4142,20 @@
       "transform": "rotate270",
       "origin": {
         "x": 20,
-        "y": 17
+        "y": 18
       },
       "occupiedCells": [
+        {
+          "x": 20,
+          "y": 19
+        },
         {
           "x": 20,
           "y": 18
         },
         {
-          "x": 20,
-          "y": 17
-        },
-        {
           "x": 21,
-          "y": 17
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -4206,20 +4206,20 @@
       "transform": "identity",
       "origin": {
         "x": 22,
-        "y": 17
+        "y": 18
       },
       "occupiedCells": [
         {
           "x": 22,
-          "y": 17
+          "y": 18
         },
         {
           "x": 23,
-          "y": 17
+          "y": 18
         },
         {
           "x": 24,
-          "y": 17
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -4269,20 +4269,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 25,
+        "x": 24,
         "y": 17
       },
       "occupiedCells": [
-        {
-          "x": 27,
-          "y": 17
-        },
         {
           "x": 26,
           "y": 17
         },
         {
           "x": 25,
+          "y": 17
+        },
+        {
+          "x": 24,
           "y": 17
         }
       ],
@@ -4333,21 +4333,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 27,
-        "y": 14
+        "x": 28,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 14
-        },
-        {
           "x": 28,
-          "y": 14
+          "y": 16
         },
         {
           "x": 29,
-          "y": 14
+          "y": 16
+        },
+        {
+          "x": 30,
+          "y": 16
         }
       ],
       "reservedCells": [],
@@ -4393,21 +4393,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 27,
-        "y": 15
+        "x": 28,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 15
-        },
-        {
           "x": 28,
-          "y": 15
+          "y": 17
         },
         {
           "x": 29,
-          "y": 15
+          "y": 17
+        },
+        {
+          "x": 30,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -4453,21 +4453,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 24,
-        "y": 13
+        "x": 22,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 25,
+          "x": 23,
+          "y": 12
+        },
+        {
+          "x": 23,
           "y": 13
         },
         {
-          "x": 25,
-          "y": 14
-        },
-        {
-          "x": 24,
-          "y": 14
+          "x": 22,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -4513,21 +4513,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 28,
-        "y": 16
+        "x": 31,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 28,
-          "y": 16
+          "x": 31,
+          "y": 9
         },
         {
-          "x": 28,
-          "y": 17
+          "x": 31,
+          "y": 10
         },
         {
-          "x": 28,
-          "y": 18
+          "x": 31,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -4573,21 +4573,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 26,
-        "y": 12
+        "x": 31,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 26,
-          "y": 13
+          "x": 31,
+          "y": 8
         },
         {
-          "x": 26,
-          "y": 12
+          "x": 31,
+          "y": 7
         },
         {
-          "x": 27,
-          "y": 12
+          "x": 32,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -4633,21 +4633,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 27,
-        "y": 13
+        "x": 29,
+        "y": 14
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 13
-        },
-        {
-          "x": 28,
-          "y": 13
-        },
-        {
           "x": 29,
-          "y": 13
+          "y": 14
+        },
+        {
+          "x": 30,
+          "y": 14
+        },
+        {
+          "x": 31,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -4693,21 +4693,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 28,
-        "y": 10
+        "x": 31,
+        "y": 13
       },
       "occupiedCells": [
         {
-          "x": 30,
-          "y": 10
+          "x": 33,
+          "y": 13
         },
         {
-          "x": 29,
-          "y": 10
+          "x": 32,
+          "y": 13
         },
         {
-          "x": 28,
-          "y": 10
+          "x": 31,
+          "y": 13
         }
       ],
       "reservedCells": [],
@@ -4753,21 +4753,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 7,
-        "y": 2
+        "x": 4,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 7,
-          "y": 2
+          "x": 4,
+          "y": 1
         },
         {
-          "x": 8,
-          "y": 2
+          "x": 5,
+          "y": 1
         },
         {
-          "x": 9,
-          "y": 2
+          "x": 6,
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -4811,20 +4811,20 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 6,
+        "x": 7,
         "y": 1
       },
       "occupiedCells": [
-        {
-          "x": 6,
-          "y": 1
-        },
         {
           "x": 7,
           "y": 1
         },
         {
           "x": 8,
+          "y": 1
+        },
+        {
+          "x": 9,
           "y": 1
         }
       ],
@@ -4869,20 +4869,20 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 9,
+        "x": 10,
         "y": 1
       },
       "occupiedCells": [
         {
-          "x": 9,
-          "y": 1
-        },
-        {
           "x": 10,
           "y": 1
         },
         {
-          "x": 10,
+          "x": 11,
+          "y": 1
+        },
+        {
+          "x": 11,
           "y": 2
         }
       ],
@@ -4927,21 +4927,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 10,
-        "y": 8
+        "x": 6,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 10,
-          "y": 8
+          "x": 6,
+          "y": 12
         },
         {
-          "x": 10,
-          "y": 9
+          "x": 6,
+          "y": 13
         },
         {
-          "x": 10,
-          "y": 10
+          "x": 6,
+          "y": 14
         }
       ],
       "reservedCells": [],
@@ -4985,21 +4985,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 11,
-        "y": 10
+        "x": 6,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 11
+          "x": 7,
+          "y": 16
         },
         {
-          "x": 11,
-          "y": 11
+          "x": 6,
+          "y": 16
         },
         {
-          "x": 11,
-          "y": 10
+          "x": 6,
+          "y": 15
         }
       ],
       "reservedCells": [],
@@ -5043,21 +5043,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 11,
-        "y": 8
+        "x": 6,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 11,
-          "y": 8
+          "x": 6,
+          "y": 17
         },
         {
-          "x": 12,
-          "y": 8
+          "x": 7,
+          "y": 17
         },
         {
-          "x": 13,
-          "y": 8
+          "x": 8,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -5101,21 +5101,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 14,
-        "y": 8
+        "x": 6,
+        "y": 18
       },
       "occupiedCells": [
         {
-          "x": 14,
-          "y": 8
+          "x": 6,
+          "y": 18
         },
         {
-          "x": 15,
-          "y": 8
+          "x": 7,
+          "y": 18
         },
         {
-          "x": 16,
-          "y": 8
+          "x": 8,
+          "y": 18
         }
       ],
       "reservedCells": [],
@@ -5159,21 +5159,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 23,
-        "y": 18
+        "x": 30,
+        "y": 22
       },
       "occupiedCells": [
         {
-          "x": 23,
-          "y": 18
+          "x": 30,
+          "y": 22
         },
         {
-          "x": 24,
-          "y": 18
+          "x": 31,
+          "y": 22
         },
         {
-          "x": 25,
-          "y": 18
+          "x": 32,
+          "y": 22
         }
       ],
       "reservedCells": [],
@@ -5219,20 +5219,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 21,
+        "x": 16,
         "y": 19
       },
       "occupiedCells": [
         {
-          "x": 23,
+          "x": 18,
           "y": 19
         },
         {
-          "x": 22,
+          "x": 17,
           "y": 19
         },
         {
-          "x": 21,
+          "x": 16,
           "y": 19
         }
       ],
@@ -5279,21 +5279,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 22,
-        "y": 15
+        "x": 20,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 23,
-          "y": 16
+          "x": 21,
+          "y": 11
         },
         {
-          "x": 22,
-          "y": 16
+          "x": 20,
+          "y": 11
         },
         {
-          "x": 22,
-          "y": 15
+          "x": 20,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -5339,21 +5339,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 23,
-        "y": 13
+        "x": 32,
+        "y": 15
       },
       "occupiedCells": [
         {
-          "x": 23,
-          "y": 13
-        },
-        {
-          "x": 23,
-          "y": 14
-        },
-        {
-          "x": 23,
+          "x": 32,
           "y": 15
+        },
+        {
+          "x": 32,
+          "y": 16
+        },
+        {
+          "x": 32,
+          "y": 17
         }
       ],
       "reservedCells": [],
@@ -5399,21 +5399,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 22,
-        "y": 11
+        "x": 31,
+        "y": 18
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 11
+          "x": 31,
+          "y": 18
         },
         {
-          "x": 23,
-          "y": 11
+          "x": 32,
+          "y": 18
         },
         {
-          "x": 23,
-          "y": 12
+          "x": 32,
+          "y": 19
         }
       ],
       "reservedCells": [],
@@ -5459,21 +5459,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 19,
-        "y": 10
+        "x": 20,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 19,
-          "y": 10
-        },
-        {
           "x": 20,
-          "y": 10
+          "y": 2
         },
         {
           "x": 21,
-          "y": 10
+          "y": 2
+        },
+        {
+          "x": 22,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -5519,21 +5519,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 19,
-        "y": 11
+        "x": 16,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 19,
-          "y": 11
+          "x": 16,
+          "y": 1
         },
         {
-          "x": 20,
-          "y": 11
+          "x": 17,
+          "y": 1
         },
         {
-          "x": 21,
-          "y": 11
+          "x": 18,
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -5579,21 +5579,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 12
+        "x": 12,
+        "y": 0
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 12
+          "x": 12,
+          "y": 0
         },
         {
-          "x": 19,
-          "y": 12
+          "x": 13,
+          "y": 0
         },
         {
-          "x": 20,
-          "y": 12
+          "x": 14,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -5642,21 +5642,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 19,
-        "y": 9
+        "x": 30,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 21,
-          "y": 9
+          "x": 32,
+          "y": 1
         },
         {
-          "x": 20,
-          "y": 9
+          "x": 31,
+          "y": 1
         },
         {
-          "x": 19,
-          "y": 9
+          "x": 30,
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -5705,21 +5705,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 21,
-        "y": 12
+        "x": 32,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 12
+          "x": 33,
+          "y": 1
         },
         {
-          "x": 22,
-          "y": 13
+          "x": 33,
+          "y": 2
         },
         {
-          "x": 21,
-          "y": 13
+          "x": 32,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -5768,21 +5768,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 20,
-        "y": 13
+        "x": 33,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 20,
-          "y": 15
+          "x": 33,
+          "y": 10
         },
         {
-          "x": 20,
-          "y": 14
+          "x": 33,
+          "y": 9
         },
         {
-          "x": 20,
-          "y": 13
+          "x": 33,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -5831,21 +5831,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 22,
-        "y": 9
+        "x": 23,
+        "y": 0
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 10
-        },
-        {
-          "x": 22,
-          "y": 9
+          "x": 23,
+          "y": 1
         },
         {
           "x": 23,
-          "y": 9
+          "y": 0
+        },
+        {
+          "x": 24,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -5894,21 +5894,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 20,
-        "y": 8
+        "x": 33,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 8
+          "x": 35,
+          "y": 5
         },
         {
-          "x": 21,
-          "y": 8
+          "x": 34,
+          "y": 5
         },
         {
-          "x": 20,
-          "y": 8
+          "x": 33,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -5957,21 +5957,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 23,
-        "y": 8
+        "x": 33,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 23,
-          "y": 8
+          "x": 33,
+          "y": 6
         },
         {
-          "x": 24,
-          "y": 8
+          "x": 34,
+          "y": 6
         },
         {
-          "x": 25,
-          "y": 8
+          "x": 35,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -7810,108 +7810,108 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "x": 12,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
+      "x": 12,
       "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "x": 12,
       "y": 6
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
+      "x": 8,
       "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 11,
-      "y": 3
+      "x": 8,
+      "y": 6
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 11,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 12,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 12,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 13,
-      "y": 4
+      "x": 9,
+      "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
       "x": 14,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 12,
       "y": 5
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 13,
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 15,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 16,
       "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
       "x": 14,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
+      "x": 15,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
+      "x": 16,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 4,
       "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
       "x": 5,
-      "y": 6
+      "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
       "x": 6,
-      "y": 6
+      "y": 5
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 7,
-      "y": 6
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
+      "x": 5,
+      "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
       "x": 6,
-      "y": 5
+      "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
       "x": 7,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
-      "x": 8,
-      "y": 5
+      "y": 8
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
       "x": 10,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 11,
-      "y": 6
+      "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
       "x": 11,
       "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 11,
+      "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
@@ -7945,18 +7945,18 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 10,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
       "x": 11,
-      "y": 14
+      "y": 17
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
       "x": 12,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
-      "x": 13,
-      "y": 14
+      "y": 17
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
@@ -7976,32 +7976,42 @@
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
       "x": 14,
-      "y": 14
+      "y": 17
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
       "x": 15,
-      "y": 14
+      "y": 17
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
       "x": 16,
-      "y": 14
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 19,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 18,
+      "y": 17
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
       "x": 17,
-      "y": 16
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 16,
-      "y": 16
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "x": 19,
+      "y": 12
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 15,
-      "y": 16
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "x": 19,
+      "y": 13
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
@@ -8009,117 +8019,112 @@
       "y": 13
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
       "x": 18,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 17,
-      "y": 14
+      "y": 12
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 17,
+      "x": 18,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
+      "x": 18,
       "y": 10
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 17,
-      "y": 9
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 17,
-      "y": 8
-    },
-    {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 15,
+      "x": 17,
       "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 15,
+      "x": 17,
       "y": 6
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 16,
+      "x": 18,
       "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 17,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
       "x": 16,
-      "y": 5
+      "y": 7
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
       "x": 15,
-      "y": 5
+      "y": 7
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 16,
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 14,
       "y": 7
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
       "x": 17,
-      "y": 7
+      "y": 3
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
       "x": 18,
-      "y": 7
+      "y": 3
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
-      "x": 18,
-      "y": 4
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 19,
+      "y": 3
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
       "x": 19,
-      "y": 4
+      "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
+      "x": 21,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
       "x": 20,
       "y": 4
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 18,
-      "y": 3
+      "x": 21,
+      "y": 4
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 19,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 20,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
       "x": 22,
       "y": 4
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
       "x": 23,
-      "y": 4
+      "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
+      "x": 24,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
+      "x": 25,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_end",
       "x": 24,
       "y": 4
     },
@@ -8134,11 +8139,6 @@
       "y": 4
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_end",
-      "x": 27,
-      "y": 4
-    },
-    {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_2_goal_start",
       "x": 28,
       "y": 6
@@ -8155,138 +8155,138 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_1",
+      "x": 29,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_1",
+      "x": 28,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_1",
       "x": 27,
       "y": 5
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_1",
-      "x": 26,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_1",
-      "x": 25,
-      "y": 5
-    },
-    {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_1",
-      "x": 25,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_1",
-      "x": 26,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_1",
-      "x": 26,
+      "x": 28,
       "y": 8
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_2",
-      "x": 27,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_1",
+      "x": 29,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_1",
+      "x": 29,
       "y": 9
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_2",
-      "x": 27,
-      "y": 8
+      "x": 28,
+      "y": 12
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_2",
-      "x": 27,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
       "x": 28,
       "y": 11
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
-      "x": 27,
-      "y": 11
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
-      "x": 27,
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_2",
+      "x": 28,
       "y": 10
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_3",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
       "x": 30,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
+      "x": 29,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_2_goal_bend_2",
+      "x": 29,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_3",
+      "x": 25,
       "y": 7
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_3",
-      "x": 29,
+      "x": 24,
       "y": 7
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_2_goal_segment_3",
-      "x": 28,
+      "x": 23,
       "y": 7
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_2_goal_end",
-      "x": 28,
+      "x": 24,
       "y": 8
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_2_goal_end",
-      "x": 29,
+      "x": 25,
       "y": 8
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_2_goal_end",
-      "x": 30,
+      "x": 26,
       "y": 8
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 15,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 16,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 17,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 18,
-      "y": 6
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
+      "x": 19,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
+      "x": 20,
+      "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 19,
-      "y": 6
+      "y": 7
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 20,
-      "y": 6
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
+      "x": 21,
+      "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
       "x": 21,
-      "y": 6
+      "y": 9
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
       "x": 22,
-      "y": 6
+      "y": 9
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
       "x": 22,
-      "y": 7
+      "y": 10
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_2",
@@ -8320,18 +8320,18 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
+      "x": 21,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
       "x": 22,
-      "y": 21
+      "y": 20
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
       "x": 23,
-      "y": 21
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
-      "x": 24,
-      "y": 21
+      "y": 20
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
@@ -8351,107 +8351,117 @@
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_start",
       "x": 27,
-      "y": 21
+      "y": 20
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_start",
       "x": 26,
-      "y": 21
+      "y": 20
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_start",
       "x": 25,
-      "y": 21
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
+      "x": 30,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
+      "x": 29,
+      "y": 20
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
       "x": 28,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
-      "x": 27,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
-      "x": 26,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
-      "x": 29,
       "y": 20
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
       "x": 29,
-      "y": 21
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
+      "x": 29,
+      "y": 24
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
       "x": 28,
-      "y": 21
+      "y": 24
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 26,
-      "y": 16
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 26,
+      "x": 27,
       "y": 15
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 26,
+      "x": 27,
       "y": 14
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 28,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 28,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 29,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
       "x": 27,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
+      "x": 28,
       "y": 3
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
       "x": 28,
-      "y": 3
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
+      "x": 29,
+      "y": 2
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
       "x": 29,
       "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "x": 30,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "x": 31,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
+      "x": 32,
+      "y": 4
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
       "x": 31,
-      "y": 5
+      "y": 4
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
       "x": 30,
-      "y": 5
+      "y": 4
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
-      "x": 29,
-      "y": 5
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_start",
+      "x": 2,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_start",
+      "x": 3,
+      "y": 7
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_start",
@@ -8459,61 +8469,51 @@
       "y": 7
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_start",
-      "x": 5,
-      "y": 7
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
+      "x": 8,
+      "y": 9
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_start",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
+      "x": 9,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
+      "x": 10,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_1",
       "x": 6,
-      "y": 7
+      "y": 10
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
-      "x": 5,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
-      "x": 6,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_1",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_1",
       "x": 7,
-      "y": 8
+      "y": 10
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_1",
-      "x": 12,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_1",
-      "x": 13,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_1",
-      "x": 13,
-      "y": 7
+      "x": 7,
+      "y": 11
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_2",
-      "x": 9,
+      "x": 8,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_2",
+      "x": 8,
       "y": 13
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_2",
-      "x": 9,
+      "x": 8,
       "y": 14
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_2",
-      "x": 9,
-      "y": 15
-    },
-    {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_treasure_key_1_bend_2",
       "x": 11,
       "y": 23
@@ -8530,128 +8530,123 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_3",
-      "x": 11,
-      "y": 21
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_3",
-      "x": 12,
-      "y": 21
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_3",
-      "x": 13,
-      "y": 21
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
-      "x": 15,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
-      "x": 16,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
-      "x": 17,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
-      "x": 17,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
-      "x": 18,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
-      "x": 19,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
-      "x": 18,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
-      "x": 19,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
-      "x": 20,
-      "y": 22
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
-      "x": 20,
-      "y": 23
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
-      "x": 20,
-      "y": 24
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
-      "x": 19,
-      "y": 24
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
-      "x": 19,
-      "y": 19
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
-      "x": 19,
+      "x": 10,
       "y": 20
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_3",
+      "x": 11,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_treasure_key_1_segment_3",
+      "x": 12,
+      "y": 20
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
+      "x": 15,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
+      "x": 16,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_treasure_key_1_end",
+      "x": 17,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
+      "x": 16,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
+      "x": 17,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_start",
+      "x": 18,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
+      "x": 18,
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
       "x": 19,
       "y": 21
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_2",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_1",
       "x": 20,
-      "y": 18
+      "y": 21
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
+      "x": 20,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
+      "x": 20,
+      "y": 25
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_1",
+      "x": 19,
+      "y": 25
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
+      "x": 23,
+      "y": 24
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
+      "x": 23,
+      "y": 25
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_2",
+      "x": 23,
+      "y": 26
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_2",
       "x": 20,
-      "y": 17
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_2",
+      "x": 20,
+      "y": 18
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_key_1_treasure_1_bend_2",
       "x": 21,
-      "y": 17
+      "y": 18
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_3",
       "x": 22,
-      "y": 17
+      "y": 18
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_3",
       "x": 23,
-      "y": 17
+      "y": 18
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_key_1_treasure_1_segment_3",
       "x": 24,
-      "y": 17
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_end",
-      "x": 27,
-      "y": 17
+      "y": 18
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_end",
@@ -8664,127 +8659,127 @@
       "y": 17
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
-      "x": 27,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
-      "x": 28,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
-      "x": 29,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
-      "x": 27,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
-      "x": 28,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
-      "x": 29,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
-      "x": 25,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
-      "x": 25,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_key_1_treasure_1_end",
       "x": 24,
-      "y": 14
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
       "x": 28,
       "y": 16
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
+      "x": 29,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_start",
+      "x": 30,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
       "x": 28,
       "y": 17
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
-      "x": 28,
-      "y": 18
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
-      "x": 26,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
-      "x": 26,
-      "y": 12
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
-      "x": 27,
-      "y": 12
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
-      "x": 27,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
-      "x": 28,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
       "x": 29,
-      "y": 13
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_end",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_1",
       "x": 30,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
+      "x": 23,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
+      "x": 23,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_1",
+      "x": 22,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
+      "x": 31,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
+      "x": 31,
       "y": 10
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_end",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_2",
+      "x": 31,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
+      "x": 31,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
+      "x": 31,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_treasure_1_goal_bend_2",
+      "x": 32,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
       "x": 29,
-      "y": 10
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
+      "x": 30,
+      "y": 14
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_treasure_1_goal_segment_3",
+      "x": 31,
+      "y": 14
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_end",
-      "x": 28,
-      "y": 10
+      "x": 33,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_end",
+      "x": 32,
+      "y": 13
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_treasure_1_goal_end",
+      "x": 31,
+      "y": 13
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 7,
-      "y": 2
+      "x": 4,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 8,
-      "y": 2
+      "x": 5,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_start",
-      "x": 9,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
       "x": 6,
       "y": 1
     },
@@ -8799,7 +8794,7 @@
       "y": 1
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_1",
       "x": 9,
       "y": 1
     },
@@ -8810,278 +8805,283 @@
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
-      "x": 10,
+      "x": 11,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_1",
+      "x": 11,
       "y": 2
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 10,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 10,
-      "y": 9
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
-      "x": 10,
-      "y": 10
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 12,
-      "y": 11
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 11,
-      "y": 11
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
-      "x": 11,
-      "y": 10
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 11,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 12,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
-      "x": 13,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 14,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 15,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
-      "x": 16,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 23,
-      "y": 18
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 24,
-      "y": 18
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
-      "x": 25,
-      "y": 18
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 23,
-      "y": 19
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 22,
-      "y": 19
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
-      "x": 21,
-      "y": 19
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
-      "x": 23,
-      "y": 16
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
-      "x": 22,
-      "y": 16
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
-      "x": 22,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
-      "x": 23,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
-      "x": 23,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
-      "x": 23,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
-      "x": 22,
-      "y": 11
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
-      "x": 23,
-      "y": 11
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
-      "x": 23,
+      "x": 6,
       "y": 12
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
-      "x": 19,
-      "y": 10
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
+      "x": 6,
+      "y": 13
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
-      "x": 20,
-      "y": 10
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_2",
+      "x": 6,
+      "y": 14
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
-      "x": 21,
-      "y": 10
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
+      "x": 7,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 19,
-      "y": 11
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
+      "x": 6,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 20,
-      "y": 11
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_merge_1_bend_2",
+      "x": 6,
+      "y": 15
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
-      "x": 21,
-      "y": 11
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 6,
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 7,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_merge_1_segment_3",
+      "x": 8,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
+      "x": 6,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
+      "x": 7,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_merge_1_end",
+      "x": 8,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 30,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 31,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_start",
+      "x": 32,
+      "y": 22
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
       "x": 18,
-      "y": 12
+      "y": 19
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
-      "x": 19,
-      "y": 12
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
+      "x": 17,
+      "y": 19
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
-      "x": 20,
-      "y": 12
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_1",
+      "x": 16,
+      "y": 19
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
       "x": 21,
-      "y": 9
+      "y": 11
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
       "x": 20,
-      "y": 9
+      "y": 11
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
-      "x": 19,
-      "y": 9
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 22,
-      "y": 12
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 22,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
-      "x": 21,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_1",
       "x": 20,
-      "y": 15
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
-      "x": 20,
-      "y": 14
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
-      "x": 20,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 22,
       "y": 10
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 22,
-      "y": 9
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
+      "x": 32,
+      "y": 15
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
-      "x": 23,
-      "y": 9
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
+      "x": 32,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
-      "x": 22,
-      "y": 8
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_2",
+      "x": 32,
+      "y": 17
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
-      "x": 21,
-      "y": 8
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
+      "x": 31,
+      "y": 18
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
+      "x": 32,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_secondary_merge_1_bend_2",
+      "x": 32,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
       "x": 20,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
+      "x": 21,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_secondary_merge_1_segment_3",
+      "x": 22,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 16,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 17,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_secondary_merge_1_end",
+      "x": 18,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 12,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 13,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_start",
+      "x": 14,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 32,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 31,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_1",
+      "x": 30,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
+      "x": 33,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
+      "x": 33,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_1",
+      "x": 32,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
+      "x": 33,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
+      "x": 33,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_2",
+      "x": 33,
       "y": 8
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
       "x": 23,
-      "y": 8
+      "y": 1
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
+      "x": 23,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_merge_1_goal_shortcut_bend_2",
       "x": 24,
-      "y": 8
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
+      "x": 35,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
+      "x": 34,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_merge_1_goal_shortcut_segment_3",
+      "x": 33,
+      "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
-      "x": 25,
-      "y": 8
+      "x": 33,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
+      "x": 34,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_merge_1_goal_shortcut_end",
+      "x": 35,
+      "y": 6
     }
   ],
   "connectionCells": [
@@ -9096,19 +9096,69 @@
       "y": 4
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
-      "x": 12,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_3",
+      "x": 11,
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_1",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_5",
+      "x": 11,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_5",
+      "x": 10,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 12,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 13,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 14,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_2",
       "x": 5,
-      "y": 5
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_2",
+      "x": 5,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_3",
+      "x": 8,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_3",
+      "x": 9,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_3",
+      "x": 10,
+      "y": 8
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
       "x": 10,
-      "y": 7
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
+      "x": 10,
+      "y": 10
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_5",
@@ -9116,24 +9166,59 @@
       "y": 14
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_6",
-      "x": 11,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
+      "x": 13,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
+      "x": 14,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
+      "x": 15,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
+      "x": 15,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_3",
+      "x": 19,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_3",
+      "x": 19,
       "y": 15
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
-      "x": 17,
-      "y": 13
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_3",
+      "x": 19,
+      "y": 14
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_5",
       "x": 17,
-      "y": 12
+      "y": 10
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_5",
       "x": 17,
-      "y": 11
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_5",
+      "x": 17,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_7",
+      "x": 17,
+      "y": 7
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_7",
@@ -9141,7 +9226,17 @@
       "y": 6
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_7",
+      "x": 17,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_7",
+      "x": 17,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_8",
       "x": 16,
       "y": 3
     },
@@ -9151,29 +9246,119 @@
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
-      "x": 21,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 18,
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
-      "x": 22,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 19,
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 19,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
+      "x": 23,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_1",
+      "x": 26,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_1",
+      "x": 26,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_3",
+      "x": 29,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_3",
+      "x": 29,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_4",
       "x": 28,
       "y": 9
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_2",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 28,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 27,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 26,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 25,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 25,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 25,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_2_goal_6",
+      "x": 25,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_1",
+      "x": 18,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_1",
       "x": 18,
       "y": 5
     },
     {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_1",
+      "x": 18,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_1",
+      "x": 18,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_3",
+      "x": 21,
+      "y": 8
+    },
+    {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
       "x": 21,
-      "y": 7
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 21,
+      "y": 11
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
@@ -9181,9 +9366,24 @@
       "y": 12
     },
     {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 21,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
+      "x": 21,
+      "y": 17
+    },
+    {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
       "x": 21,
       "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
+      "x": 21,
+      "y": 19
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_5",
@@ -9196,14 +9396,59 @@
       "y": 21
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_6",
-      "x": 22,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
+      "x": 24,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
+      "x": 25,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
+      "x": 26,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
+      "x": 26,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_1",
+      "x": 25,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_3",
+      "x": 29,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_3",
+      "x": 29,
       "y": 22
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
       "x": 28,
-      "y": 20
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 21
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
@@ -9212,18 +9457,28 @@
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
-      "x": 26,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
-      "x": 26,
+      "x": 27,
       "y": 19
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
-      "x": 26,
+      "x": 27,
       "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 27,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 13
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
@@ -9231,49 +9486,94 @@
       "y": 12
     },
     {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
+      "x": 28,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_8",
+      "x": 29,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_8",
+      "x": 27,
+      "y": 4
+    },
+    {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_1",
-      "x": 4,
+      "x": 2,
       "y": 5
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_1",
-      "x": 4,
+      "x": 2,
       "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_2",
+      "x": 6,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_2",
+      "x": 7,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_2",
+      "x": 8,
+      "y": 7
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
       "x": 8,
-      "y": 8
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
-      "x": 9,
-      "y": 8
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_3",
-      "x": 12,
-      "y": 7
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
-      "x": 9,
-      "y": 9
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
-      "x": 9,
       "y": 10
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
-      "x": 9,
+      "x": 8,
       "y": 11
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_4",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
       "x": 9,
-      "y": 12
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
+      "x": 10,
+      "y": 16
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_5",
@@ -9301,14 +9601,19 @@
       "y": 21
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_6",
-      "x": 11,
-      "y": 22
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
+      "x": 13,
+      "y": 20
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
       "x": 14,
-      "y": 21
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
+      "x": 15,
+      "y": 20
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_treasure_key_1_7",
@@ -9317,48 +9622,1043 @@
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_1",
-      "x": 15,
-      "y": 23
+      "x": 14,
+      "y": 24
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_1",
-      "x": 16,
+      "x": 15,
+      "y": 24
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_2",
+      "x": 18,
       "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_2",
+      "x": 18,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_3",
+      "x": 20,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_3",
+      "x": 20,
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_4",
+      "x": 21,
+      "y": 24
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_4",
+      "x": 22,
+      "y": 24
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_5",
       "x": 20,
-      "y": 19
+      "y": 24
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_5",
-      "x": 27,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_5",
+      "x": 20,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_key_1_treasure_1_5",
+      "x": 20,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_1",
+      "x": 26,
       "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_1",
-      "x": 5,
-      "y": 2
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 26,
+      "y": 17
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_1",
-      "x": 6,
-      "y": 2
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 25,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 24,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 23,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 23,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 23,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_3",
+      "x": 23,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 24,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 25,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 26,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 27,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 29,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 30,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_4",
+      "x": 31,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_6",
+      "x": 31,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_6",
+      "x": 31,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_6",
+      "x": 31,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_6",
+      "x": 31,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_8",
+      "x": 30,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_8",
+      "x": 29,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_8",
+      "x": 27,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_treasure_1_goal_8",
+      "x": 26,
+      "y": 13
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
       "x": 10,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 10,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 9,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 8,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 7,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 6,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 5,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 4,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 3,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 2,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 1,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
       "y": 4
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_6",
-      "x": 11,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 0,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 1,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 1,
       "y": 9
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
-      "x": 18,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 2,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 3,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 4,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 4,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 4,
       "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 5,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_4",
+      "x": 5,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 9,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 11,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 12,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 13,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 13,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 13,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_merge_1_8",
+      "x": 13,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 28,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 29,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_1",
+      "x": 30,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 28,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 26,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 25,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 24,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 23,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 22,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 21,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 19,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 18,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_2",
+      "x": 18,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 19,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_3",
+      "x": 20,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 22,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 23,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 24,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 29,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 30,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 32,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 32,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 32,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_4",
+      "x": 32,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 29,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 28,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 26,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 24,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 23,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 10
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_6",
+      "x": 22,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_7",
+      "x": 20,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_7",
+      "x": 19,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_secondary_merge_1_8",
+      "x": 16,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_1",
+      "x": 13,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 15,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 15,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 16,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 17,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 18,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 19,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 20,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 21,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 22,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 22,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 23,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 24,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 25,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 26,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 27,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 28,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 29,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 30,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 30,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_2",
+      "x": 30,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 34,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 35,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 36,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 37,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 36,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 36,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 35,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_4",
+      "x": 34,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 32,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 31,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 30,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 29,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 27,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 26,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 24,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_5",
+      "x": 23,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 24,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 25,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 26,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 27,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 28,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 29,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 30,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 31,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 32,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 33,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 33,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 33,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_6",
+      "x": 33,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 32,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 31,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 30,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 27,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 26,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_merge_1_goal_shortcut_8",
+      "x": 26,
+      "y": 7
     }
   ],
   "reservedCells": [

@@ -180,6 +180,12 @@ Important fields:
 - `danglingExits`: exits intentionally left open or invalid exits found during
   validation.
 
+When blank neighboring grid cells are interpreted as walls, occupied cells from
+different build pieces must not touch by 4-way adjacency unless those two
+pieces are joined by a glued exit. This prevents unrelated rooms and corridors
+from creating accidental passable connections just because two footprints
+butted against each other in the build grid.
+
 Important instance fields:
 
 - `instanceId`: stable instance id.
@@ -204,6 +210,7 @@ diagnostic families:
 - required exit unsatisfied;
 - incompatible glued exits;
 - occupied-cell overlap;
+- unplanned 4-way occupied-cell adjacency between non-glued piece instances;
 - reserved-cell conflict;
 - connection-cell overlap;
 - dangling required exit;

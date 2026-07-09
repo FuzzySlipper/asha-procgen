@@ -59,8 +59,9 @@ fn assemble_piece_placement(
     let mut instances = Vec::new();
     let mut occupied_cells = Vec::new();
     let mut reserved_cells = Vec::new();
-    let mut occupied_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    let mut occupied_positions: BTreeMap<(i32, i32), String> = BTreeMap::new();
     let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    let allowed_touching_by_piece = allowed_touching_by_piece(plan);
     for (index, matched) in shape_match.matches.iter().enumerate() {
         let Some(requirement) = requirements.get(matched.piece_id.as_str()).copied() else {
             return Err(format!(
@@ -75,18 +76,24 @@ fn assemble_piece_placement(
             ));
         };
         let instance_id = format!("instance.{}", slugify_label(matched.piece_id.as_str()));
+        let allowed_touching = allowed_touching_by_piece
+            .get(matched.piece_id.as_str())
+            .cloned()
+            .unwrap_or_default();
         let desired_origin = desired_origin_for_requirement(requirement, index);
         let origin = find_available_origin(
             shape,
             matched.transform.as_str(),
             &desired_origin,
+            &instance_id,
+            &allowed_touching,
             &occupied_positions,
             &reserved_positions,
         );
         let occupied = transform_cells(&shape.footprint, matched.transform.as_str(), &origin);
         let reserved = transform_cells(&shape.reserved_cells, matched.transform.as_str(), &origin);
         for cell in &occupied {
-            occupied_positions.insert((cell.x, cell.y));
+            occupied_positions.insert((cell.x, cell.y), instance_id.clone());
         }
         for cell in &reserved {
             reserved_positions.insert((cell.x, cell.y));
@@ -193,10 +200,12 @@ fn find_available_origin(
     shape: &CatalogShape,
     transform: &str,
     desired_origin: &GridCell,
-    occupied_positions: &BTreeSet<(i32, i32)>,
+    instance_id: &str,
+    allowed_touching: &BTreeSet<String>,
+    occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
 ) -> GridCell {
-    for radius in 0_i32..=40 {
+    for radius in 0_i32..=120 {
         for dy in -radius..=radius {
             for dx in -radius..=radius {
                 if dx.abs().max(dy.abs()) != radius {
@@ -210,6 +219,8 @@ fn find_available_origin(
                     shape,
                     transform,
                     &origin,
+                    instance_id,
+                    allowed_touching,
                     occupied_positions,
                     reserved_positions,
                 ) {
@@ -225,18 +236,43 @@ fn origin_available(
     shape: &CatalogShape,
     transform: &str,
     origin: &GridCell,
-    occupied_positions: &BTreeSet<(i32, i32)>,
+    instance_id: &str,
+    allowed_touching: &BTreeSet<String>,
+    occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
 ) -> bool {
     let occupied = transform_cells(&shape.footprint, transform, origin);
     let reserved = transform_cells(&shape.reserved_cells, transform, origin);
     occupied.iter().all(|cell| {
-        !occupied_positions.contains(&(cell.x, cell.y))
+        !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
+            && cardinal_neighbors((cell.x, cell.y)).into_iter().all(|neighbor| {
+                occupied_positions
+                    .get(&neighbor)
+                    .map(|owner| owner == instance_id || allowed_touching.contains(owner))
+                    .unwrap_or(true)
+            })
     }) && reserved.iter().all(|cell| {
-        !occupied_positions.contains(&(cell.x, cell.y))
+        !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
     })
+}
+
+fn allowed_touching_by_piece(plan: &PieceBuildPlan) -> BTreeMap<&str, BTreeSet<String>> {
+    let mut allowed: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
+    for link in &plan.links {
+        let from_instance = format!("instance.{}", slugify_label(link.from_piece.as_str()));
+        let to_instance = format!("instance.{}", slugify_label(link.to_piece.as_str()));
+        allowed
+            .entry(link.from_piece.as_str())
+            .or_default()
+            .insert(to_instance);
+        allowed
+            .entry(link.to_piece.as_str())
+            .or_default()
+            .insert(from_instance);
+    }
+    allowed
 }
 
 fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec<GluedExit> {
@@ -289,11 +325,17 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> 
         .iter()
         .map(|instance| (instance.instance_id.as_str(), instance))
         .collect::<BTreeMap<_, _>>();
-    let occupied = placement
+    let occupied_by_cell = placement
         .occupied_cells
+        .iter()
+        .map(|cell| ((cell.x, cell.y), cell.instance_id.as_str()))
+        .collect::<BTreeMap<_, _>>();
+    let reserved = placement
+        .reserved_cells
         .iter()
         .map(|cell| (cell.x, cell.y))
         .collect::<BTreeSet<_>>();
+    let bounds = placement_route_bounds(placement);
     let mut seen = BTreeSet::new();
     let mut cells = Vec::new();
     for glued in &placement.glued_exits {
@@ -314,10 +356,19 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> 
             continue;
         }
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
-        for cell in bridge_cells(start, end, placement.grid_connectivity) {
-            if occupied.contains(&(cell.x, cell.y)) {
-                continue;
-            }
+        let bridge = route_bridge_cells(
+            start,
+            end,
+            from.instance_id.as_str(),
+            to.instance_id.as_str(),
+            placement.grid_connectivity,
+            &occupied_by_cell,
+            &reserved,
+            &seen,
+            bounds,
+        )
+        .unwrap_or_else(|| bridge_cells(start, end, placement.grid_connectivity));
+        for cell in bridge {
             if seen.insert((cell.x, cell.y)) {
                 cells.push(PlacementCellRef {
                     instance_id: instance_id.clone(),
@@ -328,6 +379,125 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> 
         }
     }
     cells
+}
+
+fn placement_route_bounds(placement: &PiecePlacement) -> (i32, i32, i32, i32) {
+    let min_x = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| cell.x)
+        .min()
+        .unwrap_or(0)
+        - 80;
+    let max_x = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| cell.x)
+        .max()
+        .unwrap_or(0)
+        + 80;
+    let min_y = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| cell.y)
+        .min()
+        .unwrap_or(0)
+        - 80;
+    let max_y = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| cell.y)
+        .max()
+        .unwrap_or(0)
+        + 80;
+    (min_x, max_x, min_y, max_y)
+}
+
+fn route_bridge_cells(
+    start: &GridCell,
+    end: &GridCell,
+    from_instance: &str,
+    to_instance: &str,
+    connectivity: GridConnectivity,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    existing_connections: &BTreeSet<(i32, i32)>,
+    bounds: (i32, i32, i32, i32),
+) -> Option<Vec<GridCell>> {
+    let start_position = (start.x, start.y);
+    let end_position = (end.x, end.y);
+    let mut queue = VecDeque::new();
+    let mut previous: BTreeMap<(i32, i32), (i32, i32)> = BTreeMap::new();
+    let mut seen = BTreeSet::new();
+    queue.push_back(start_position);
+    seen.insert(start_position);
+    while let Some(position) = queue.pop_front() {
+        if position == end_position {
+            break;
+        }
+        for neighbor in grid_neighbors(position, connectivity) {
+            if !position_in_bounds(neighbor, bounds) || !seen.insert(neighbor) {
+                continue;
+            }
+            if neighbor != end_position
+                && !bridge_position_available(
+                    neighbor,
+                    from_instance,
+                    to_instance,
+                    occupied_by_cell,
+                    reserved,
+                    existing_connections,
+                )
+            {
+                continue;
+            }
+            previous.insert(neighbor, position);
+            queue.push_back(neighbor);
+        }
+    }
+    if !seen.contains(&end_position) {
+        return None;
+    }
+    let mut path = Vec::new();
+    let mut cursor = end_position;
+    while cursor != start_position {
+        if cursor != end_position {
+            path.push(GridCell {
+                x: cursor.0,
+                y: cursor.1,
+            });
+        }
+        cursor = *previous.get(&cursor)?;
+    }
+    path.reverse();
+    Some(path)
+}
+
+fn position_in_bounds(position: (i32, i32), bounds: (i32, i32, i32, i32)) -> bool {
+    position.0 >= bounds.0 && position.0 <= bounds.1 && position.1 >= bounds.2 && position.1 <= bounds.3
+}
+
+fn bridge_position_available(
+    position: (i32, i32),
+    from_instance: &str,
+    to_instance: &str,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    existing_connections: &BTreeSet<(i32, i32)>,
+) -> bool {
+    if occupied_by_cell.contains_key(&position)
+        || reserved.contains(&position)
+        || existing_connections.contains(&position)
+    {
+        return false;
+    }
+    cardinal_neighbors(position).into_iter().all(|neighbor| {
+        occupied_by_cell
+            .get(&neighbor)
+            .map(|owner| *owner == from_instance || *owner == to_instance)
+            .unwrap_or(true)
+            && !existing_connections.contains(&neighbor)
+    })
 }
 
 fn nearest_cell_pair<'a>(
@@ -400,6 +570,15 @@ fn cells_adjacent(from: &GridCell, to: &GridCell, connectivity: GridConnectivity
     }
 }
 
+fn cardinal_neighbors(cell: (i32, i32)) -> Vec<(i32, i32)> {
+    vec![
+        (cell.0 + 1, cell.1),
+        (cell.0 - 1, cell.1),
+        (cell.0, cell.1 + 1),
+        (cell.0, cell.1 - 1),
+    ]
+}
+
 fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
     let mut diagnostics = Vec::new();
     if placement.kind != "asha_procgen.piece_placement.v1" {
@@ -412,6 +591,7 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
     }
     validate_placement_cells(placement, &mut diagnostics);
     validate_placement_links(placement, &mut diagnostics);
+    validate_placement_unplanned_contacts(placement, &mut diagnostics);
     validate_placement_reachability(placement, &mut diagnostics);
     validate_placement_grid_reachability(placement, &mut diagnostics);
     let fatal_count = diagnostics
@@ -425,6 +605,54 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
         ok: fatal_count == 0,
         fatal_count,
         diagnostics,
+    }
+}
+
+fn validate_placement_unplanned_contacts(
+    placement: &PiecePlacement,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let allowed_pairs = placement
+        .glued_exits
+        .iter()
+        .map(|glued| sorted_pair(glued.from_instance.as_str(), glued.to_instance.as_str()))
+        .collect::<BTreeSet<_>>();
+    let occupied_by_cell = placement
+        .occupied_cells
+        .iter()
+        .map(|cell| ((cell.x, cell.y), cell.instance_id.as_str()))
+        .collect::<BTreeMap<_, _>>();
+    let mut reported_pairs = BTreeSet::new();
+    for cell in &placement.occupied_cells {
+        for neighbor in [(cell.x + 1, cell.y), (cell.x, cell.y + 1)] {
+            let Some(other_instance) = occupied_by_cell.get(&neighbor) else {
+                continue;
+            };
+            if *other_instance == cell.instance_id {
+                continue;
+            }
+            let pair = sorted_pair(cell.instance_id.as_str(), other_instance);
+            if allowed_pairs.contains(&pair) || !reported_pairs.insert(pair.clone()) {
+                continue;
+            }
+            diagnostics.push(fatal(
+                "piece_unplanned_occupied_adjacency",
+                None,
+                None,
+                format!(
+                    "Occupied piece cells touch without a glued exit: {} at {},{} touches {} at {},{}.",
+                    cell.instance_id, cell.x, cell.y, other_instance, neighbor.0, neighbor.1
+                ),
+            ));
+        }
+    }
+}
+
+fn sorted_pair(left: &str, right: &str) -> (String, String) {
+    if left <= right {
+        (left.to_owned(), right.to_owned())
+    } else {
+        (right.to_owned(), left.to_owned())
     }
 }
 

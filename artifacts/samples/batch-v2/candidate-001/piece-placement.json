@@ -870,21 +870,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 9,
-        "y": 5
+        "x": 12,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 9,
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 12,
           "y": 5
         },
         {
-          "x": 9,
+          "x": 12,
           "y": 6
-        },
-        {
-          "x": 9,
-          "y": 7
         }
       ],
       "reservedCells": [],
@@ -928,21 +928,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 11,
-        "y": 2
+        "x": 8,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 11,
-          "y": 3
+          "x": 8,
+          "y": 7
         },
         {
-          "x": 11,
-          "y": 2
+          "x": 8,
+          "y": 6
         },
         {
-          "x": 12,
-          "y": 2
+          "x": 9,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -986,21 +986,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 4
+        "x": 14,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 4
-        },
-        {
-          "x": 13,
-          "y": 4
-        },
-        {
           "x": 14,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 15,
+          "y": 5
+        },
+        {
+          "x": 16,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1044,21 +1044,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 5
+        "x": 14,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 12,
-          "y": 5
-        },
-        {
-          "x": 13,
-          "y": 5
-        },
-        {
           "x": 14,
-          "y": 5
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 16,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -1102,21 +1102,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 6,
-        "y": 5
+        "x": 4,
+        "y": 1
       },
       "occupiedCells": [
         {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
           "x": 6,
-          "y": 5
-        },
-        {
-          "x": 7,
-          "y": 5
-        },
-        {
-          "x": 8,
-          "y": 5
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -1161,20 +1161,20 @@
       "transform": "identity",
       "origin": {
         "x": 7,
-        "y": 2
+        "y": 1
       },
       "occupiedCells": [
         {
           "x": 7,
-          "y": 2
+          "y": 1
         },
         {
           "x": 8,
-          "y": 2
+          "y": 1
         },
         {
           "x": 9,
-          "y": 2
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -1219,20 +1219,20 @@
       "transform": "identity",
       "origin": {
         "x": 10,
-        "y": 6
+        "y": 1
       },
       "occupiedCells": [
         {
           "x": 10,
-          "y": 6
+          "y": 1
         },
         {
           "x": 11,
-          "y": 6
+          "y": 1
         },
         {
           "x": 11,
-          "y": 7
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -1392,21 +1392,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 12,
-        "y": 11
+        "x": 10,
+        "y": 12
       },
       "occupiedCells": [
         {
+          "x": 10,
+          "y": 12
+        },
+        {
+          "x": 11,
+          "y": 12
+        },
+        {
           "x": 12,
-          "y": 11
-        },
-        {
-          "x": 13,
-          "y": 11
-        },
-        {
-          "x": 14,
-          "y": 11
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -1450,21 +1450,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 11,
-        "y": 8
+        "x": 13,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 11,
-          "y": 8
-        },
-        {
-          "x": 12,
-          "y": 8
-        },
-        {
           "x": 13,
-          "y": 8
+          "y": 11
+        },
+        {
+          "x": 14,
+          "y": 11
+        },
+        {
+          "x": 15,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -1568,20 +1568,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 14,
+        "x": 15,
         "y": 8
       },
       "occupiedCells": [
+        {
+          "x": 17,
+          "y": 8
+        },
         {
           "x": 16,
           "y": 8
         },
         {
           "x": 15,
-          "y": 8
-        },
-        {
-          "x": 14,
           "y": 8
         }
       ],
@@ -1628,20 +1628,20 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 15,
+        "x": 17,
         "y": 10
       },
       "occupiedCells": [
         {
-          "x": 16,
+          "x": 18,
           "y": 10
         },
         {
-          "x": 16,
+          "x": 18,
           "y": 11
         },
         {
-          "x": 15,
+          "x": 17,
           "y": 11
         }
       ],
@@ -1688,21 +1688,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 15,
-        "y": 5
+        "x": 18,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 15,
+          "x": 18,
+          "y": 4
+        },
+        {
+          "x": 18,
           "y": 5
         },
         {
-          "x": 15,
+          "x": 18,
           "y": 6
-        },
-        {
-          "x": 15,
-          "y": 7
         }
       ],
       "reservedCells": [],
@@ -1748,21 +1748,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 16,
-        "y": 5
+        "x": 17,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 16,
-          "y": 6
-        },
-        {
-          "x": 16,
-          "y": 5
+          "x": 17,
+          "y": 3
         },
         {
           "x": 17,
-          "y": 5
+          "y": 2
+        },
+        {
+          "x": 18,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -1808,21 +1808,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 16,
-        "y": 7
+        "x": 19,
+        "y": 2
       },
       "occupiedCells": [
         {
-          "x": 16,
-          "y": 7
+          "x": 19,
+          "y": 2
         },
         {
-          "x": 17,
-          "y": 7
+          "x": 20,
+          "y": 2
         },
         {
-          "x": 18,
-          "y": 7
+          "x": 21,
+          "y": 2
         }
       ],
       "reservedCells": [],
@@ -1868,21 +1868,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 15,
-        "y": 4
+        "x": 19,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 17,
-          "y": 4
+          "x": 21,
+          "y": 3
         },
         {
-          "x": 16,
-          "y": 4
+          "x": 20,
+          "y": 3
         },
         {
-          "x": 15,
-          "y": 4
+          "x": 19,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -1928,21 +1928,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 4
+        "x": 20,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 4
-        },
-        {
-          "x": 19,
-          "y": 4
-        },
-        {
           "x": 20,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 21,
+          "y": 5
+        },
+        {
+          "x": 22,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -1986,21 +1986,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 3
+        "x": 20,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 3
-        },
-        {
-          "x": 19,
-          "y": 3
-        },
-        {
           "x": 20,
-          "y": 3
+          "y": 6
+        },
+        {
+          "x": 21,
+          "y": 6
+        },
+        {
+          "x": 22,
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -2044,21 +2044,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 22,
-        "y": 4
+        "x": 24,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 4
-        },
-        {
-          "x": 23,
-          "y": 4
-        },
-        {
           "x": 24,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 25,
+          "y": 5
+        },
+        {
+          "x": 26,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -2102,20 +2102,20 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 25,
+        "x": 24,
         "y": 4
       },
       "occupiedCells": [
+        {
+          "x": 24,
+          "y": 4
+        },
         {
           "x": 25,
           "y": 4
         },
         {
           "x": 26,
-          "y": 4
-        },
-        {
-          "x": 27,
           "y": 4
         }
       ],
@@ -2160,21 +2160,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 18,
-        "y": 5
+        "x": 14,
+        "y": 0
       },
       "occupiedCells": [
         {
-          "x": 18,
-          "y": 5
+          "x": 14,
+          "y": 0
         },
         {
-          "x": 19,
-          "y": 5
+          "x": 15,
+          "y": 0
         },
         {
-          "x": 20,
-          "y": 5
+          "x": 16,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -2219,20 +2219,20 @@
       "transform": "identity",
       "origin": {
         "x": 17,
-        "y": 2
+        "y": 0
       },
       "occupiedCells": [
         {
           "x": 17,
-          "y": 2
+          "y": 0
         },
         {
           "x": 18,
-          "y": 2
+          "y": 0
         },
         {
           "x": 19,
-          "y": 2
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -2277,20 +2277,20 @@
       "transform": "identity",
       "origin": {
         "x": 21,
-        "y": 5
+        "y": 0
       },
       "occupiedCells": [
         {
           "x": 21,
-          "y": 5
+          "y": 0
         },
         {
           "x": 22,
-          "y": 5
+          "y": 0
         },
         {
           "x": 22,
-          "y": 6
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -2334,21 +2334,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 21,
-        "y": 7
+        "x": 20,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 21,
-          "y": 7
-        },
-        {
-          "x": 21,
+          "x": 20,
           "y": 8
         },
         {
-          "x": 21,
+          "x": 20,
           "y": 9
+        },
+        {
+          "x": 20,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -2450,21 +2450,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 23,
-        "y": 11
+        "x": 20,
+        "y": 12
       },
       "occupiedCells": [
         {
-          "x": 23,
-          "y": 11
+          "x": 20,
+          "y": 12
         },
         {
-          "x": 24,
-          "y": 11
+          "x": 21,
+          "y": 12
         },
         {
-          "x": 25,
-          "y": 11
+          "x": 22,
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -2508,21 +2508,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 22,
-        "y": 8
+        "x": 24,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 22,
-          "y": 8
-        },
-        {
-          "x": 23,
-          "y": 8
-        },
-        {
           "x": 24,
-          "y": 8
+          "y": 11
+        },
+        {
+          "x": 25,
+          "y": 11
+        },
+        {
+          "x": 26,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -2626,20 +2626,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 25,
+        "x": 26,
         "y": 8
       },
       "occupiedCells": [
-        {
-          "x": 25,
-          "y": 8
-        },
         {
           "x": 26,
           "y": 8
         },
         {
           "x": 27,
+          "y": 8
+        },
+        {
+          "x": 28,
           "y": 8
         }
       ],
@@ -2686,20 +2686,20 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 26,
+        "x": 28,
         "y": 10
       },
       "occupiedCells": [
         {
-          "x": 27,
+          "x": 29,
           "y": 10
         },
         {
-          "x": 27,
+          "x": 29,
           "y": 11
         },
         {
-          "x": 26,
+          "x": 28,
           "y": 11
         }
       ],
@@ -2746,21 +2746,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "origin": {
-        "x": 24,
-        "y": 5
+        "x": 28,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 24,
-          "y": 7
-        },
-        {
-          "x": 24,
+          "x": 28,
           "y": 6
         },
         {
-          "x": 24,
+          "x": 28,
           "y": 5
+        },
+        {
+          "x": 28,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -2806,21 +2806,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 26,
-        "y": 6
+        "x": 29,
+        "y": 3
       },
       "occupiedCells": [
         {
-          "x": 26,
-          "y": 7
+          "x": 29,
+          "y": 4
         },
         {
-          "x": 26,
-          "y": 6
+          "x": 29,
+          "y": 3
         },
         {
-          "x": 27,
-          "y": 6
+          "x": 30,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -2866,21 +2866,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 25,
-        "y": 5
+        "x": 23,
+        "y": 7
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 5
-        },
-        {
-          "x": 26,
-          "y": 5
-        },
-        {
           "x": 25,
-          "y": 5
+          "y": 7
+        },
+        {
+          "x": 24,
+          "y": 7
+        },
+        {
+          "x": 23,
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -2926,20 +2926,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "origin": {
-        "x": 27,
+        "x": 29,
         "y": 7
       },
       "occupiedCells": [
         {
-          "x": 27,
-          "y": 7
-        },
-        {
-          "x": 28,
-          "y": 7
-        },
-        {
           "x": 29,
+          "y": 7
+        },
+        {
+          "x": 30,
+          "y": 7
+        },
+        {
+          "x": 31,
           "y": 7
         }
       ],
@@ -2986,21 +2986,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 29,
-        "y": 4
+        "x": 30,
+        "y": 5
       },
       "occupiedCells": [
         {
-          "x": 29,
-          "y": 4
-        },
-        {
           "x": 30,
-          "y": 4
+          "y": 5
         },
         {
           "x": 31,
-          "y": 4
+          "y": 5
+        },
+        {
+          "x": 32,
+          "y": 5
         }
       ],
       "reservedCells": [],
@@ -3044,21 +3044,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 29,
-        "y": 3
+        "x": 31,
+        "y": 4
       },
       "occupiedCells": [
         {
-          "x": 29,
-          "y": 3
-        },
-        {
-          "x": 30,
-          "y": 3
-        },
-        {
           "x": 31,
-          "y": 3
+          "y": 4
+        },
+        {
+          "x": 32,
+          "y": 4
+        },
+        {
+          "x": 33,
+          "y": 4
         }
       ],
       "reservedCells": [],
@@ -3102,21 +3102,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 32,
-        "y": 4
+        "x": 31,
+        "y": 2
       },
       "occupiedCells": [
         {
+          "x": 31,
+          "y": 2
+        },
+        {
           "x": 32,
-          "y": 4
+          "y": 2
         },
         {
-          "x": 33,
-          "y": 4
-        },
-        {
-          "x": 33,
-          "y": 5
+          "x": 32,
+          "y": 3
         }
       ],
       "reservedCells": [],
@@ -3160,21 +3160,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 31,
-        "y": 5
+        "x": 33,
+        "y": 6
       },
       "occupiedCells": [
         {
-          "x": 31,
-          "y": 5
-        },
-        {
-          "x": 31,
+          "x": 33,
           "y": 6
         },
         {
-          "x": 31,
+          "x": 33,
           "y": 7
+        },
+        {
+          "x": 33,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -3218,21 +3218,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 32,
-        "y": 5
+        "x": 28,
+        "y": 0
       },
       "occupiedCells": [
         {
-          "x": 33,
-          "y": 6
+          "x": 29,
+          "y": 1
         },
         {
-          "x": 32,
-          "y": 6
+          "x": 28,
+          "y": 1
         },
         {
-          "x": 32,
-          "y": 5
+          "x": 28,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -3276,21 +3276,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 32,
-        "y": 3
+        "x": 29,
+        "y": 0
       },
       "occupiedCells": [
         {
-          "x": 32,
-          "y": 3
+          "x": 29,
+          "y": 0
         },
         {
-          "x": 33,
-          "y": 3
+          "x": 30,
+          "y": 0
         },
         {
-          "x": 34,
-          "y": 3
+          "x": 31,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -3334,20 +3334,20 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 32,
+        "x": 33,
         "y": 1
       },
       "occupiedCells": [
-        {
-          "x": 32,
-          "y": 1
-        },
         {
           "x": 33,
           "y": 1
         },
         {
           "x": 34,
+          "y": 1
+        },
+        {
+          "x": 35,
           "y": 1
         }
       ],
@@ -3521,20 +3521,20 @@
       "transform": "rotate90",
       "origin": {
         "x": 43,
-        "y": 4
+        "y": 5
       },
       "occupiedCells": [
         {
           "x": 44,
-          "y": 4
+          "y": 5
         },
         {
           "x": 44,
-          "y": 5
+          "y": 6
         },
         {
           "x": 43,
-          "y": 5
+          "y": 6
         }
       ],
       "reservedCells": [],
@@ -3584,20 +3584,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "origin": {
-        "x": 42,
+        "x": 45,
         "y": 5
       },
       "occupiedCells": [
         {
-          "x": 42,
+          "x": 45,
           "y": 5
         },
         {
-          "x": 42,
+          "x": 45,
           "y": 6
         },
         {
-          "x": 42,
+          "x": 45,
           "y": 7
         }
       ],
@@ -3649,20 +3649,20 @@
       "transform": "rotate270",
       "origin": {
         "x": 44,
-        "y": 2
+        "y": 1
       },
       "occupiedCells": [
         {
           "x": 44,
-          "y": 3
+          "y": 2
         },
         {
           "x": 44,
-          "y": 2
+          "y": 1
         },
         {
           "x": 45,
-          "y": 2
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -3712,21 +3712,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 45,
-        "y": 5
+        "x": 41,
+        "y": 1
       },
       "occupiedCells": [
         {
-          "x": 47,
-          "y": 5
+          "x": 43,
+          "y": 1
         },
         {
-          "x": 46,
-          "y": 5
+          "x": 42,
+          "y": 1
         },
         {
-          "x": 45,
-          "y": 5
+          "x": 41,
+          "y": 1
         }
       ],
       "reservedCells": [],
@@ -3776,20 +3776,20 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 48,
+        "x": 47,
         "y": 5
       },
       "occupiedCells": [
-        {
-          "x": 50,
-          "y": 5
-        },
         {
           "x": 49,
           "y": 5
         },
         {
           "x": 48,
+          "y": 5
+        },
+        {
+          "x": 47,
           "y": 5
         }
       ],
@@ -3840,21 +3840,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 28,
-        "y": 5
+        "x": 24,
+        "y": -1
       },
       "occupiedCells": [
         {
-          "x": 28,
-          "y": 5
+          "x": 24,
+          "y": -1
         },
         {
-          "x": 29,
-          "y": 5
+          "x": 25,
+          "y": -1
         },
         {
-          "x": 30,
-          "y": 5
+          "x": 26,
+          "y": -1
         }
       ],
       "reservedCells": [],
@@ -3899,21 +3899,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 28,
-        "y": 2
+        "x": 32,
+        "y": -1
       },
       "occupiedCells": [
         {
-          "x": 28,
-          "y": 2
+          "x": 32,
+          "y": -1
         },
         {
-          "x": 29,
-          "y": 2
+          "x": 33,
+          "y": -1
         },
         {
-          "x": 30,
-          "y": 2
+          "x": 34,
+          "y": -1
         }
       ],
       "reservedCells": [],
@@ -3958,21 +3958,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "identity",
       "origin": {
-        "x": 30,
-        "y": 1
+        "x": 35,
+        "y": -1
       },
       "occupiedCells": [
         {
-          "x": 30,
-          "y": 1
+          "x": 35,
+          "y": -1
         },
         {
-          "x": 31,
-          "y": 1
+          "x": 36,
+          "y": -1
         },
         {
-          "x": 31,
-          "y": 2
+          "x": 36,
+          "y": 0
         }
       ],
       "reservedCells": [],
@@ -4017,21 +4017,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "rotate90",
       "origin": {
-        "x": 32,
-        "y": 7
+        "x": 31,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 32,
-          "y": 7
-        },
-        {
-          "x": 32,
-          "y": 8
-        },
-        {
-          "x": 32,
+          "x": 31,
           "y": 9
+        },
+        {
+          "x": 31,
+          "y": 10
+        },
+        {
+          "x": 31,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -4135,21 +4135,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 34,
-        "y": 11
+        "x": 32,
+        "y": 12
       },
       "occupiedCells": [
         {
+          "x": 32,
+          "y": 12
+        },
+        {
+          "x": 33,
+          "y": 12
+        },
+        {
           "x": 34,
-          "y": 11
-        },
-        {
-          "x": 35,
-          "y": 11
-        },
-        {
-          "x": 36,
-          "y": 11
+          "y": 12
         }
       ],
       "reservedCells": [],
@@ -4194,21 +4194,21 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "origin": {
-        "x": 33,
-        "y": 8
+        "x": 35,
+        "y": 11
       },
       "occupiedCells": [
         {
-          "x": 33,
-          "y": 8
-        },
-        {
-          "x": 34,
-          "y": 8
-        },
-        {
           "x": 35,
-          "y": 8
+          "y": 11
+        },
+        {
+          "x": 36,
+          "y": 11
+        },
+        {
+          "x": 37,
+          "y": 11
         }
       ],
       "reservedCells": [],
@@ -4313,21 +4313,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 38,
-        "y": 9
+        "x": 39,
+        "y": 7
       },
       "occupiedCells": [
         {
+          "x": 41,
+          "y": 7
+        },
+        {
           "x": 40,
-          "y": 9
+          "y": 7
         },
         {
           "x": 39,
-          "y": 9
-        },
-        {
-          "x": 38,
-          "y": 9
+          "y": 7
         }
       ],
       "reservedCells": [],
@@ -4373,21 +4373,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate90",
       "origin": {
-        "x": 37,
-        "y": 10
+        "x": 39,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 38,
-          "y": 10
+          "x": 40,
+          "y": 8
         },
         {
-          "x": 38,
-          "y": 11
+          "x": 40,
+          "y": 9
         },
         {
-          "x": 37,
-          "y": 11
+          "x": 39,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -4434,20 +4434,20 @@
       "transform": "rotate270",
       "origin": {
         "x": 39,
-        "y": 6
+        "y": 10
       },
       "occupiedCells": [
         {
           "x": 39,
-          "y": 8
+          "y": 12
         },
         {
           "x": 39,
-          "y": 7
+          "y": 11
         },
         {
           "x": 39,
-          "y": 6
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -4493,21 +4493,21 @@
       "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate270",
       "origin": {
-        "x": 39,
-        "y": 4
+        "x": 41,
+        "y": 10
       },
       "occupiedCells": [
         {
-          "x": 39,
-          "y": 5
+          "x": 41,
+          "y": 11
         },
         {
-          "x": 39,
-          "y": 4
+          "x": 41,
+          "y": 10
         },
         {
-          "x": 40,
-          "y": 4
+          "x": 42,
+          "y": 10
         }
       ],
       "reservedCells": [],
@@ -4553,21 +4553,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 36,
-        "y": 7
+        "x": 42,
+        "y": 8
       },
       "occupiedCells": [
         {
-          "x": 38,
-          "y": 7
+          "x": 44,
+          "y": 8
         },
         {
-          "x": 37,
-          "y": 7
+          "x": 43,
+          "y": 8
         },
         {
-          "x": 36,
-          "y": 7
+          "x": 42,
+          "y": 8
         }
       ],
       "reservedCells": [],
@@ -4613,21 +4613,21 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "origin": {
-        "x": 40,
-        "y": 8
+        "x": 43,
+        "y": 9
       },
       "occupiedCells": [
         {
-          "x": 42,
-          "y": 8
+          "x": 45,
+          "y": 9
         },
         {
-          "x": 41,
-          "y": 8
+          "x": 44,
+          "y": 9
         },
         {
-          "x": 40,
-          "y": 8
+          "x": 43,
+          "y": 9
         }
       ],
       "reservedCells": [],
@@ -6085,110 +6085,110 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "x": 12,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
+      "x": 12,
       "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "x": 12,
       "y": 6
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_2",
-      "x": 9,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
+      "x": 8,
       "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 11,
-      "y": 3
+      "x": 8,
+      "y": 6
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 11,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_gate_1_bend_2",
-      "x": 12,
-      "y": 2
+      "x": 9,
+      "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 12,
-      "y": 4
+      "x": 14,
+      "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
-      "x": 13,
-      "y": 4
+      "x": 15,
+      "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_gate_1_segment_3",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
       "x": 14,
       "y": 4
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 12,
-      "y": 5
+      "x": 15,
+      "y": 4
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 13,
-      "y": 5
+      "x": 16,
+      "y": 4
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_gate_1_end",
-      "x": 14,
-      "y": 5
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
+      "x": 5,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
       "x": 6,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 7,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_start",
-      "x": 8,
-      "y": 5
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
       "x": 7,
-      "y": 2
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
       "x": 8,
-      "y": 2
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_1",
       "x": 9,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 10,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 11,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
+      "x": 11,
       "y": 2
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 10,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 11,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_start_key_1_bend_1",
-      "x": 11,
-      "y": 7
-    },
-    {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_2",
       "x": 10,
       "y": 7
@@ -6220,33 +6220,33 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
-      "x": 12,
-      "y": 11
+      "x": 10,
+      "y": 12
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "x": 12,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
       "x": 13,
       "y": 11
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_start_key_1_segment_3",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
       "x": 14,
       "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 11,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 12,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_start_key_1_end",
-      "x": 13,
-      "y": 8
+      "x": 15,
+      "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_start",
@@ -6265,6 +6265,11 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
+      "x": 17,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
       "x": 16,
       "y": 8
     },
@@ -6274,127 +6279,127 @@
       "y": 8
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_1",
-      "x": 14,
-      "y": 8
-    },
-    {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 16,
+      "x": 18,
       "y": 10
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 16,
+      "x": 18,
       "y": 11
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_1",
-      "x": 15,
+      "x": 17,
       "y": 11
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 15,
+      "x": 18,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
+      "x": 18,
       "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 15,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_2",
-      "x": 15,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 16,
+      "x": 18,
       "y": 6
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
-      "x": 16,
-      "y": 5
+      "x": 17,
+      "y": 3
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
       "x": 17,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_1_gate_1_bend_2",
+      "x": 18,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 19,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 20,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
+      "x": 21,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 21,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 20,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
+      "x": 19,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
+      "x": 20,
       "y": 5
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 16,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 17,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_1_gate_1_segment_3",
-      "x": 18,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 17,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 16,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_1_gate_1_end",
-      "x": 15,
-      "y": 4
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
+      "x": 21,
+      "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
-      "x": 18,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
-      "x": 19,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_start",
-      "x": 20,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 18,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 19,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
-      "x": 20,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
       "x": 22,
-      "y": 4
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
+      "x": 20,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
+      "x": 21,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_1",
+      "x": 22,
+      "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
-      "x": 23,
-      "y": 4
+      "x": 24,
+      "y": 5
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
+      "x": 25,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_gate_2_segment_2",
+      "x": 26,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_end",
       "x": 24,
       "y": 4
     },
@@ -6409,69 +6414,64 @@
       "y": 4
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_gate_2_end",
-      "x": 27,
-      "y": 4
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
+      "x": 14,
+      "y": 0
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 18,
-      "y": 5
+      "x": 15,
+      "y": 0
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 19,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_start",
-      "x": 20,
-      "y": 5
+      "x": 16,
+      "y": 0
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 17,
-      "y": 2
+      "y": 0
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 18,
-      "y": 2
+      "y": 0
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_1",
       "x": 19,
-      "y": 2
+      "y": 0
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
       "x": 21,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
-      "x": 22,
-      "y": 5
+      "y": 0
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
       "x": 22,
-      "y": 6
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_1",
+      "x": 22,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_2",
-      "x": 21,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_2",
-      "x": 21,
+      "x": 20,
       "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_2",
-      "x": 21,
+      "x": 20,
       "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_2",
+      "x": 20,
+      "y": 10
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_gate_1_key_2_bend_2",
@@ -6490,33 +6490,33 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
-      "x": 23,
-      "y": 11
+      "x": 20,
+      "y": 12
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
+      "x": 21,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
+      "x": 22,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
       "x": 24,
       "y": 11
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_gate_1_key_2_segment_3",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
       "x": 25,
       "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
-      "x": 22,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
-      "x": 23,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_gate_1_key_2_end",
-      "x": 24,
-      "y": 8
+      "x": 26,
+      "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_start",
@@ -6535,11 +6535,6 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
-      "x": 25,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
       "x": 26,
       "y": 8
     },
@@ -6549,174 +6544,174 @@
       "y": 8
     },
     {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_1",
+      "x": 28,
+      "y": 8
+    },
+    {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
-      "x": 27,
+      "x": 29,
       "y": 10
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
-      "x": 27,
+      "x": 29,
       "y": 11
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_1",
-      "x": 26,
+      "x": 28,
       "y": 11
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 24,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 24,
+      "x": 28,
       "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
-      "x": 24,
+      "x": 28,
       "y": 5
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 26,
-      "y": 7
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_2",
+      "x": 28,
+      "y": 4
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 26,
-      "y": 6
+      "x": 29,
+      "y": 4
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
-      "x": 27,
-      "y": 6
+      "x": 29,
+      "y": 3
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
-      "x": 27,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
-      "x": 26,
-      "y": 5
+      "instanceId": "instance.piece_bend_corridor_connector_edge_key_2_gate_2_bend_2",
+      "x": 30,
+      "y": 3
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
       "x": 25,
-      "y": 5
+      "y": 7
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
-      "x": 27,
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "x": 24,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_key_2_gate_2_segment_3",
+      "x": 23,
       "y": 7
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
+      "x": 29,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
+      "x": 30,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
+      "x": 31,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
+      "x": 30,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
+      "x": 31,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
+      "x": 32,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
+      "x": 31,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
+      "x": 32,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
+      "x": 33,
+      "y": 4
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
+      "x": 31,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
+      "x": 32,
+      "y": 2
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
+      "x": 32,
+      "y": 3
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
+      "x": 33,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
+      "x": 33,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
+      "x": 33,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
+      "x": 29,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
       "x": 28,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_key_2_gate_2_end",
-      "x": 29,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
-      "x": 29,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
-      "x": 30,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_start",
-      "x": 31,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
-      "x": 29,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
-      "x": 30,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_1",
-      "x": 31,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
-      "x": 32,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
-      "x": 33,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_1",
-      "x": 33,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
-      "x": 31,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
-      "x": 31,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_2",
-      "x": 31,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
-      "x": 33,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
-      "x": 32,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
-      "x": 32,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
-      "x": 32,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
-      "x": 33,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
-      "x": 34,
-      "y": 3
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_end",
-      "x": 32,
       "y": 1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_1_bend_2",
+      "x": 28,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
+      "x": 29,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
+      "x": 30,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_1_segment_3",
+      "x": 31,
+      "y": 0
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_end",
@@ -6726,6 +6721,11 @@
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_end",
       "x": 34,
+      "y": 1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_1_end",
+      "x": 35,
       "y": 1
     },
     {
@@ -6761,67 +6761,62 @@
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_1",
       "x": 44,
-      "y": 4
+      "y": 5
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_1",
       "x": 44,
-      "y": 5
+      "y": 6
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_1",
       "x": 43,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_2",
-      "x": 42,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_2",
-      "x": 42,
       "y": 6
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_2",
-      "x": 42,
+      "x": 45,
+      "y": 5
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_2",
+      "x": 45,
+      "y": 6
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_2",
+      "x": 45,
       "y": 7
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_2",
       "x": 44,
-      "y": 3
+      "y": 2
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_2",
       "x": 44,
-      "y": 2
+      "y": 1
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_1_goal_bend_2",
       "x": 45,
-      "y": 2
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_3",
-      "x": 47,
-      "y": 5
+      "x": 43,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_3",
-      "x": 46,
-      "y": 5
+      "x": 42,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_1_goal_segment_3",
-      "x": 45,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_boss_1_goal_end",
-      "x": 50,
-      "y": 5
+      "x": 41,
+      "y": 1
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_boss_1_goal_end",
@@ -6834,64 +6829,69 @@
       "y": 5
     },
     {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_start",
-      "x": 28,
+      "instanceId": "instance.piece_connector_corridor_connector_edge_boss_1_goal_end",
+      "x": 47,
       "y": 5
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_start",
-      "x": 29,
-      "y": 5
+      "x": 24,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_start",
-      "x": 30,
-      "y": 5
+      "x": 25,
+      "y": -1
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_start",
+      "x": 26,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_1",
-      "x": 28,
-      "y": 2
+      "x": 32,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_1",
-      "x": 29,
-      "y": 2
+      "x": 33,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_1",
-      "x": 30,
-      "y": 2
+      "x": 34,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_prep_1_bend_1",
-      "x": 30,
-      "y": 1
+      "x": 35,
+      "y": -1
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_prep_1_bend_1",
+      "x": 36,
+      "y": -1
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_prep_1_bend_1",
+      "x": 36,
+      "y": 0
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
       "x": 31,
-      "y": 1
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_prep_1_bend_1",
-      "x": 31,
-      "y": 2
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
-      "x": 32,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
-      "x": 32,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
-      "x": 32,
       "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
+      "x": 31,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_2",
+      "x": 31,
+      "y": 11
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_approach_boss_prep_1_bend_2",
@@ -6910,33 +6910,33 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_3",
-      "x": 34,
-      "y": 11
+      "x": 32,
+      "y": 12
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_3",
+      "x": 33,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_3",
+      "x": 34,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_end",
       "x": 35,
       "y": 11
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_approach_boss_prep_1_segment_3",
+      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_end",
       "x": 36,
       "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_end",
-      "x": 33,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_end",
-      "x": 34,
-      "y": 8
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_approach_boss_prep_1_end",
-      "x": 35,
-      "y": 8
+      "x": 37,
+      "y": 11
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_boss_prep_1_boss_1_start",
@@ -6955,93 +6955,93 @@
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_1",
+      "x": 41,
+      "y": 7
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_1",
       "x": 40,
-      "y": 9
+      "y": 7
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_1",
       "x": 39,
-      "y": 9
+      "y": 7
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_1",
-      "x": 38,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_1",
+      "x": 40,
+      "y": 8
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_1",
+      "x": 40,
       "y": 9
     },
     {
       "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_1",
-      "x": 38,
+      "x": 39,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
+      "x": 39,
+      "y": 12
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
+      "x": 39,
+      "y": 11
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
+      "x": 39,
       "y": 10
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_1",
-      "x": 38,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
+      "x": 41,
       "y": 11
     },
     {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_1",
-      "x": 37,
-      "y": 11
+      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
+      "x": 41,
+      "y": 10
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
-      "x": 39,
+      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
+      "x": 42,
+      "y": 10
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_3",
+      "x": 44,
       "y": 8
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
-      "x": 39,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_2",
-      "x": 39,
-      "y": 6
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
-      "x": 39,
-      "y": 5
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
-      "x": 39,
-      "y": 4
-    },
-    {
-      "instanceId": "instance.piece_bend_corridor_connector_edge_boss_prep_1_boss_1_bend_2",
-      "x": 40,
-      "y": 4
+      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_3",
+      "x": 43,
+      "y": 8
     },
     {
       "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_3",
-      "x": 38,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_3",
-      "x": 37,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_connector_edge_boss_prep_1_boss_1_segment_3",
-      "x": 36,
-      "y": 7
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_connector_edge_boss_prep_1_boss_1_end",
       "x": 42,
       "y": 8
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_boss_prep_1_boss_1_end",
-      "x": 41,
-      "y": 8
+      "x": 45,
+      "y": 9
     },
     {
       "instanceId": "instance.piece_connector_corridor_connector_edge_boss_prep_1_boss_1_end",
-      "x": 40,
-      "y": 8
+      "x": 44,
+      "y": 9
+    },
+    {
+      "instanceId": "instance.piece_connector_corridor_connector_edge_boss_prep_1_boss_1_end",
+      "x": 43,
+      "y": 9
     }
   ],
   "connectionCells": [
@@ -7056,99 +7056,244 @@
       "y": 4
     },
     {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_3",
+      "x": 11,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_5",
+      "x": 11,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_5",
+      "x": 10,
+      "y": 6
+    },
+    {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
       "x": 12,
-      "y": 3
+      "y": 6
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_2",
-      "x": 7,
-      "y": 3
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 13,
+      "y": 6
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_3",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_gate_1_6",
+      "x": 14,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
       "x": 10,
       "y": 2
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_3",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
+      "x": 10,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
       "x": 10,
       "y": 4
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
-      "x": 12,
-      "y": 10
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_4",
+      "x": 10,
+      "y": 5
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_start_key_1_7",
-      "x": 12,
+      "x": 13,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_3",
+      "x": 18,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_3",
+      "x": 18,
       "y": 9
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_4",
-      "x": 15,
-      "y": 10
+      "x": 18,
+      "y": 7
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_5",
+      "x": 17,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_8",
+      "x": 18,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_8",
+      "x": 17,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_1_gate_1_8",
       "x": 16,
       "y": 3
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
-      "x": 17,
+      "x": 19,
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
-      "x": 21,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 20,
       "y": 3
     },
     {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_1",
+      "x": 20,
+      "y": 4
+    },
+    {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
-      "x": 22,
-      "y": 3
+      "x": 23,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_gate_2_3",
+      "x": 24,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_1",
+      "x": 14,
+      "y": 1
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_3",
       "x": 20,
-      "y": 2
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_3",
-      "x": 21,
-      "y": 2
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_3",
-      "x": 21,
-      "y": 4
+      "y": 0
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
-      "x": 21,
+      "x": 20,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 20,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 20,
       "y": 6
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
-      "x": 23,
-      "y": 10
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_4",
+      "x": 20,
+      "y": 7
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
       "x": 23,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_gate_1_key_2_7",
+      "x": 24,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_3",
+      "x": 29,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_3",
+      "x": 29,
       "y": 9
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
-      "x": 26,
+      "x": 28,
       "y": 10
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_5",
-      "x": 25,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 28,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 28,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_4",
+      "x": 28,
       "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 28,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 27,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 26,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 25,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 25,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_6",
+      "x": 25,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_7",
+      "x": 26,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_7",
+      "x": 27,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_8",
+      "x": 26,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_key_2_gate_2_8",
+      "x": 26,
+      "y": 5
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_1",
@@ -7161,48 +7306,363 @@
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_7",
-      "x": 32,
-      "y": 2
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_8",
-      "x": 35,
-      "y": 1
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_6",
-      "x": 45,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_1",
+      "x": 29,
       "y": 3
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_6",
-      "x": 45,
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_1",
+      "x": 30,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_1",
+      "x": 30,
       "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_4",
+      "x": 33,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_4",
+      "x": 33,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_4",
+      "x": 33,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 32,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 31,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 30,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 29,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 29,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 29,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_5",
+      "x": 29,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_7",
+      "x": 32,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_1_7",
+      "x": 33,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_1",
+      "x": 39,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_1",
+      "x": 40,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_3",
+      "x": 44,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_3",
+      "x": 44,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_5",
+      "x": 44,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 43,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 43,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 44,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 45,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 46,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 47,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 48,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 49,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 50,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 51,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 51,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 51,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 51,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 51,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 50,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 50,
+      "y": 4
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 50,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 50,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 49,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 48,
+      "y": 6
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_1_goal_7",
+      "x": 47,
+      "y": 6
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_1",
+      "x": 24,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_1",
+      "x": 24,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 27,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 27,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
       "x": 28,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 29,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 30,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 31,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_2",
+      "x": 32,
+      "y": -2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 34,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 33,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 32,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": -1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 0
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 1
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 2
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 3
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
       "y": 4
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_7",
-      "x": 34,
-      "y": 10
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 5
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 7
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_4",
+      "x": 31,
+      "y": 8
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_connector_edge_approach_boss_prep_1_7",
-      "x": 34,
+      "x": 35,
+      "y": 12
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_2",
+      "x": 39,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_5",
+      "x": 40,
+      "y": 11
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_6",
+      "x": 42,
       "y": 9
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_4",
-      "x": 39,
-      "y": 10
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
+      "x": 41,
+      "y": 9
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_7",
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
       "x": 40,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
+      "x": 39,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
+      "x": 38,
+      "y": 9
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
+      "x": 38,
+      "y": 8
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_connector_edge_boss_prep_1_boss_1_8",
+      "x": 38,
       "y": 7
     }
   ],

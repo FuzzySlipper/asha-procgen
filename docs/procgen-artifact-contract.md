@@ -330,6 +330,10 @@ diagonal contact counts as reachable. They are the first artifact layer that
 owns occupancy, while still stopping before mesh, voxel, renderer, collision,
 or ASHA runtime integration.
 
+Validation rejects unplanned 4-way contact between occupied cells from
+different non-glued piece instances so blank neighboring cells can safely be
+treated as walls.
+
 Validation uses kind `asha_procgen.validation.piece_placement.v1`.
 
 See `docs/piece-assembly-contract.md`.

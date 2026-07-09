@@ -1565,6 +1565,22 @@ mod tests {
             .iter()
             .any(|diagnostic| diagnostic.code == "piece_reserved_cell_conflict"));
 
+        let mut touching = placement.clone();
+        let first = touching.occupied_cells[0].clone();
+        let touching_index = touching
+            .occupied_cells
+            .iter()
+            .position(|cell| cell.instance_id != first.instance_id)
+            .expect("fixture should have more than one instance");
+        touching.occupied_cells[touching_index].x = first.x + 1;
+        touching.occupied_cells[touching_index].y = first.y;
+        touching.glued_exits.clear();
+        let report = validate_piece_placement(&touching);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "piece_unplanned_occupied_adjacency"));
+
         let mut dangling = placement.clone();
         dangling.dangling_exits.push(DanglingExit {
             instance_id: dangling.instances[0].instance_id.clone(),

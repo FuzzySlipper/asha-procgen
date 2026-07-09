@@ -67,7 +67,10 @@ async function sendFile(response, filePath) {
     if (!fileStat.isFile()) {
       throw new Error('not a file');
     }
-    response.writeHead(200, { 'Content-Type': contentType(filePath) });
+    response.writeHead(200, {
+      'Content-Type': contentType(filePath),
+      'Cache-Control': 'no-store',
+    });
     createReadStream(filePath).pipe(response);
   } catch {
     response.writeHead(404);

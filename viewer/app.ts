@@ -261,6 +261,7 @@ interface PiecePlacement {
   readonly planId: string;
   readonly catalogId: string;
   readonly matchId: string;
+  readonly sourceCatalogRef?: string;
   readonly cellSize: number;
   readonly gridConnectivity: 'four_way' | 'eight_way';
   readonly instances: readonly PieceInstance[];
@@ -352,6 +353,8 @@ let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
 let currentGeometry: Geometry2dArtifact | null = null;
 let currentCatalog: ShapeCatalog | null = null;
+let currentCatalogRef: string | null = null;
+let currentCatalogError: string | null = null;
 let currentPlacement: PiecePlacement | null = null;
 let currentPlacementValidation: ValidationReport | null = null;
 
@@ -373,6 +376,8 @@ if (initialSelection === null) {
   currentIntermediate = emptyIntermediateContext();
   currentGeometry = null;
   currentCatalog = null;
+  currentCatalogRef = null;
+  currentCatalogError = null;
   currentPlacement = null;
   currentPlacementValidation = null;
   renderBatchList(batchPanel, batch, null, selectEntry);
@@ -395,16 +400,18 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
-  const [geometry, catalog, placement, placementValidation] = await Promise.all([
+  const [geometry, placement, placementValidation] = await Promise.all([
     fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef),
-    fetchOptionalArtifact<ShapeCatalog>(entry.shapeCatalogRef),
     fetchOptionalArtifact<PiecePlacement>(entry.piecePlacementRef),
     fetchOptionalArtifact<ValidationReport>(entry.piecePlacementValidationRef),
   ]);
+  const catalogResult = await fetchCatalogForEntry(entry, placement);
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
   currentGeometry = geometry;
-  currentCatalog = catalog;
+  currentCatalog = catalogResult.catalog;
+  currentCatalogRef = catalogResult.ref;
+  currentCatalogError = catalogResult.error;
   currentPlacement = placement;
   currentPlacementValidation = placementValidation;
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
@@ -461,6 +468,45 @@ async function fetchOptionalArtifact<T>(path: string | undefined): Promise<T | n
     return null;
   }
   return (await response.json()) as T;
+}
+
+async function fetchCatalogForEntry(
+  entry: SelectionEntry,
+  placement: PiecePlacement | null,
+): Promise<{
+  readonly catalog: ShapeCatalog | null;
+  readonly ref: string | null;
+  readonly error: string | null;
+}> {
+  const refs = [
+    entry.shapeCatalogRef,
+    placement?.sourceCatalogRef,
+    'fixtures/shape-catalogs/2d-basic.json',
+  ].filter((value, index, values): value is string => {
+    return value !== undefined && values.indexOf(value) === index;
+  });
+  for (const ref of refs) {
+    try {
+      const response = await fetch(artifactUrl(ref));
+      if (!response.ok) {
+        continue;
+      }
+      return {
+        catalog: (await response.json()) as ShapeCatalog,
+        ref,
+        error: null,
+      };
+    } catch {
+      // Try the next ref. The visible tab reports the final failure below.
+    }
+  }
+  return {
+    catalog: null,
+    ref: refs[0] ?? null,
+    error: refs.length === 0
+      ? 'no catalog ref was available'
+      : `failed to load ${refs.join(', ')}`,
+  };
 }
 
 function emptyIntermediateContext(): IntermediateContext {
@@ -792,7 +838,7 @@ function renderActiveView(): void {
     return;
   }
   if (activeView === 'catalog') {
-    renderShapeCatalog(layoutSvg, currentCatalog);
+    renderShapeCatalog(layoutSvg, currentCatalog, currentCatalogRef, currentCatalogError);
     return;
   }
   if (activeView === 'intermediate') {
@@ -806,10 +852,16 @@ function renderActiveView(): void {
   renderLayout(layoutSvg, currentLayout);
 }
 
-function renderShapeCatalog(target: SVGSVGElement, catalog: ShapeCatalog | null): void {
+function renderShapeCatalog(
+  target: SVGSVGElement,
+  catalog: ShapeCatalog | null,
+  catalogRef: string | null,
+  catalogError: string | null,
+): void {
   target.replaceChildren();
   if (catalog === null) {
-    renderEmptySvg(target, 'No build piece catalog loaded.');
+    const detail = catalogError ?? (catalogRef === null ? 'no catalog ref was available' : `could not load ${catalogRef}`);
+    renderEmptySvg(target, `No build piece catalog loaded: ${detail}`);
     return;
   }
 
@@ -837,7 +889,7 @@ function renderShapeCatalog(target: SVGSVGElement, catalog: ShapeCatalog | null)
   stats.setAttribute('class', 'intermediate-region-detail');
   stats.setAttribute('x', String(margin));
   stats.setAttribute('y', '50');
-  stats.textContent = `${catalog.catalogId} / ${catalog.shapes.length} shapes / cell size ${catalog.cellSize}`;
+  stats.textContent = `${catalog.catalogId} / ${catalog.shapes.length} shapes / cell size ${catalog.cellSize} / ${catalogRef ?? 'catalog ref unknown'}`;
   target.append(stats);
 
   for (const [index, shape] of catalog.shapes.entries()) {

@@ -34,6 +34,30 @@ npm run rust:check
 npm run rust:test
 ```
 
+## Native ASHA Voxel Extrusion Proof
+
+The first engine-backed build test extrudes a validated 2D piece placement into
+a simple enclosed voxel volume. Placement `x/y` maps to ASHA voxel `x/z`; the
+proof adds a floor, three-voxel walls, and a ceiling, then submits bounded
+`generateChunk`, `fillRegion`, and `setVoxel` batches through a Rust-backed
+public `RuntimeSession`.
+
+```bash
+npm run voxel:asha-smoke
+```
+
+The command regenerates
+`artifacts/evidence/native-voxel-extrusion.json` with deterministic authority
+voxel-state hashes, command-phase receipts, and bounded comparison readbacks.
+
+The smoke test requires the sibling `asha-engine` checkout and its built native
+addon at `ts/packages/native-bridge/dist/native-bridge.node`. It proves native
+command acceptance, deterministic authority voxel-state hashes, and fail-closed
+unknown-material rejection. A separate voxel-conversion comparison preserves
+bounded model/material readback coverage, but it is not the mutation path under
+test. The proof does not claim 3D piece placement, exit-socket alignment,
+rendering, navigation, or performance evidence.
+
 ## ASHA Boundary
 
 Use public ASHA package roots and documented subpaths only. If a prototype needs

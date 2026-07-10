@@ -1,0 +1,131 @@
+{
+  "kind": "asha_procgen.evidence.native_voxel_extrusion.v1",
+  "sourcePlacement": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
+  "backend": "native_rust_runtime_session_voxel_commands",
+  "ashaEngineCommit": "58fabbf369d4a59d484917f165aa7eb250562d38",
+  "coordinateMapping": "placement_x_y_to_voxel_x_z",
+  "enclosure": {
+    "floorY": 0,
+    "wallY": [
+      1,
+      3
+    ],
+    "ceilingY": 4,
+    "floorMaterial": 2,
+    "wallMaterial": 1,
+    "ceilingMaterial": 3
+  },
+  "counts": {
+    "walkableCells": 652,
+    "boundaryCells": 314,
+    "solidVoxels": 2246,
+    "requiredChunksForDirectCommandLane": 672,
+    "sourceVertices": 6738,
+    "sourceTriangles": 2246
+  },
+  "buildBounds": {
+    "min": {
+      "x": 1,
+      "y": 0,
+      "z": -3
+    },
+    "maxExclusive": {
+      "x": 38,
+      "y": 5,
+      "z": 29
+    }
+  },
+  "authority": {
+    "mutationPath": "RuntimeSessionFacade.submitCommands",
+    "phases": [
+      {
+        "name": "generate_chunks",
+        "submitted": 672,
+        "accepted": 672,
+        "rejected": 0
+      },
+      {
+        "name": "clear_chunks",
+        "submitted": 672,
+        "accepted": 672,
+        "rejected": 0
+      },
+      {
+        "name": "set_solids",
+        "submitted": 2246,
+        "accepted": 2246,
+        "rejected": 0
+      }
+    ],
+    "submittedCommands": 3590,
+    "acceptedCommands": 3590,
+    "rejectedCommands": 0,
+    "historyEntryCount": 3,
+    "voxelStateHash": "fnv1a64:8c4b699dee918a54",
+    "deterministicRepeatHash": "fnv1a64:8c4b699dee918a54",
+    "deterministic": true,
+    "rejectedUnknownMaterialWithoutMutation": true
+  },
+  "conversionComparison": {
+    "role": "bounded_model_readback_comparison_only",
+    "registered": true,
+    "plannedOutputVoxels": 2246,
+    "previewVoxelCount": 2246,
+    "appliedVoxelCount": 2246,
+    "residentVoxelCount": 2246,
+    "materialCounts": [
+      {
+        "material": 1,
+        "voxelCount": 942
+      },
+      {
+        "material": 2,
+        "voxelCount": 652
+      },
+      {
+        "material": 3,
+        "voxelCount": 652
+      }
+    ],
+    "boundedReadbackSamples": [
+      {
+        "coord": {
+          "x": 1,
+          "y": 1,
+          "z": 2
+        },
+        "occupied": true,
+        "material": 1
+      },
+      {
+        "coord": {
+          "x": 2,
+          "y": 0,
+          "z": 2
+        },
+        "occupied": true,
+        "material": 2
+      },
+      {
+        "coord": {
+          "x": 2,
+          "y": 4,
+          "z": 2
+        },
+        "occupied": true,
+        "material": 3
+      }
+    ],
+    "outputHash": "fnv1a64:657364b362b02a4c",
+    "rejectedStalePreviewWithoutMutation": true
+  },
+  "nonClaims": [
+    "not_3d_piece_placement",
+    "not_exit_socket_alignment_proof",
+    "not_renderer_proof",
+    "not_navigation_proof",
+    "not_performance_proof",
+    "not_mesh_fidelity_proof"
+  ]
+}

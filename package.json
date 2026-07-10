@@ -14,11 +14,17 @@
     "viewer:smoke": "npm run build:viewer && node scripts/smoke-viewer.mjs",
     "preview:smoke": "npm run viewer:smoke",
     "piece:smoke": "node scripts/smoke-piece-build.mjs",
+    "voxel:asha-smoke": "npm run build:viewer && node scripts/smoke-asha-voxel-build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "rust:check": "cargo check --manifest-path procgen-rs/Cargo.toml",
     "rust:test": "cargo test --manifest-path procgen-rs/Cargo.toml",
     "test": "npm run check:asha-boundary && npm run typecheck && npm run rust:test",
     "verify": "npm run check:asha-boundary && npm run typecheck && npm run rust:check && npm run rust:test"
+  },
+  "dependencies": {
+    "@asha/contracts": "file:../asha-engine/ts/packages/contracts",
+    "@asha/runtime-bridge": "file:../asha-engine/ts/packages/runtime-bridge",
+    "@asha/runtime-session": "file:../asha-engine/ts/packages/runtime-session"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

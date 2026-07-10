@@ -12,7 +12,7 @@ const engineSurfaceManifestPath = resolve(repoRoot, engineSource, 'harness/publi
 const dependencySections = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const scannedExtensions = new Set(['.cjs', '.cts', '.js', '.json', '.jsx', '.mjs', '.mts', '.rs', '.toml', '.ts', '.tsx']);
 const ignoredDirectories = new Set(['.git', 'dist', 'node_modules', 'target']);
-const ignoredFiles = new Set(['scripts/check-asha-boundary.mjs']);
+const ignoredFiles = new Set(['package-lock.json', 'scripts/check-asha-boundary.mjs']);
 const errors = [];
 const { packageRoots: allowedPackageRoots, specifiers: allowedSpecifiers } = loadAllowedAshaSpecifiers();
 

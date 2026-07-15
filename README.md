@@ -32,11 +32,28 @@ npm run check:asha-boundary
 npm run typecheck
 npm run rust:check
 npm run rust:test
+npm run publish:asha-smoke
 ```
+
+## ASHA Prefab and ProjectBundle Publishing Proof
+
+The downstream publishing adapter maps representative Procgen shape matches
+and placements to generated ASHA prefab identities and a ProjectBundle-shaped
+durable artifact inventory:
+
+```bash
+npm run publish:asha-smoke
+```
+
+It uses public `@asha/contracts` and `@asha/game-workspace` roots, preserves
+generation provenance, and fails closed on missing mappings/roles, incompatible
+assets, duplicate identities, and invalid transforms. See
+[`docs/asha-publishing-boundary.md`](docs/asha-publishing-boundary.md) for the
+ownership, distribution, non-claims, and crate-disposition contract.
 
 ## Native ASHA Voxel Extrusion Proof
 
-The first engine-backed build test extrudes a validated 2D piece placement into
+The separate engine-backed authority smoke extrudes a validated 2D piece placement into
 a simple enclosed voxel volume. Placement `x/y` maps to ASHA voxel `x/z`; the
 proof adds a floor, three-voxel walls, and a ceiling, then submits bounded
 `generateChunk`, `fillRegion`, and `setVoxel` batches through a Rust-backed

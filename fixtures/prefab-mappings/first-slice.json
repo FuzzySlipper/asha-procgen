@@ -1,0 +1,65 @@
+{
+  "kind": "asha_procgen.prefab_publish_mapping.v1",
+  "candidateRef": "artifacts/samples/batch-v2/candidate-000/candidate-003-branch_merge_shortcut.json",
+  "selectedInstanceIds": [
+    "instance.piece_room_room_region_start",
+    "instance.piece_room_room_region_gate_locked_1"
+  ],
+  "mappings": [
+    {
+      "shapeId": "shape.room.standard.1_exit",
+      "prefabId": 1001,
+      "partId": 1,
+      "partNamespace": "procgen/geometry",
+      "stableRole": "geometry/root",
+      "source": {
+        "kind": "voxelObject",
+        "asset": "voxel-object/procgen-standard-room"
+      }
+    },
+    {
+      "shapeId": "shape.threshold.locked_gate",
+      "prefabId": 1002,
+      "partId": 1,
+      "partNamespace": "procgen/geometry",
+      "stableRole": "geometry/root",
+      "source": {
+        "kind": "voxelObject",
+        "asset": "voxel-object/procgen-locked-gate"
+      }
+    }
+  ],
+  "instanceIdentities": [
+    {
+      "procgenInstanceId": "instance.piece_room_room_region_start",
+      "prefabInstanceId": 2001
+    },
+    {
+      "procgenInstanceId": "instance.piece_room_room_region_gate_locked_1",
+      "prefabInstanceId": 2002
+    }
+  ],
+  "sourceAssets": [
+    {
+      "assetId": "voxel-object/procgen-standard-room",
+      "artifact": "voxel/prefabs/procgen-standard-room.voxel.json",
+      "contentHash": "1325fb908dde81e8"
+    },
+    {
+      "assetId": "voxel-object/procgen-locked-gate",
+      "artifact": "voxel/prefabs/procgen-locked-gate.voxel.json",
+      "contentHash": "f69ccacc55a08a92"
+    }
+  ],
+  "project": {
+    "id": 5721,
+    "name": "asha-procgen-prefab-publishing-proof"
+  },
+  "scene": {
+    "id": 5721,
+    "artifact": "scene/procgen-layout.scene.json"
+  },
+  "prefabRegistryArtifact": "prefabs/registry.json",
+  "prefabInstancesArtifact": "prefabs/instances.json",
+  "assetLockArtifact": "assets/lock.json"
+}

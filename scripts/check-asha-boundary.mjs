@@ -7,7 +7,7 @@ const packageJsonPath = join(repoRoot, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const projectName = packageJson.name ?? 'asha-procgen';
 const engineSource = packageJson.ashaDownstream?.engineSource ?? '../asha-engine';
-const consumerPolicyName = packageJson.ashaDownstream?.consumerPolicy ?? 'asha-demo';
+const consumerPolicyName = packageJson.ashaDownstream?.consumerPolicy;
 const engineSurfaceManifestPath = resolve(repoRoot, engineSource, 'harness/public-surface/ts-packages.json');
 const dependencySections = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const scannedExtensions = new Set(['.cjs', '.cts', '.js', '.json', '.jsx', '.mjs', '.mts', '.rs', '.toml', '.ts', '.tsx']);
@@ -30,30 +30,22 @@ if (errors.length > 0) {
 console.log(`${projectName} ASHA boundary check passed (${allowedPackageRoots.size} approved ASHA package roots).`);
 
 function loadAllowedAshaSpecifiers() {
-  const fallbackPackageRoots = [
-    '@asha/contracts',
-    '@asha/runtime-bridge',
-    '@asha/runtime-session',
-    '@asha/game-workspace',
-    '@asha/catalog-core',
-    '@asha/render-projection',
-    '@asha/renderer-host',
-    '@asha/command-registry',
-    '@asha/ui-dom',
-  ];
-  const fallbackSubpaths = ['@asha/runtime-bridge/reference'];
-
+  if (typeof consumerPolicyName !== 'string' || consumerPolicyName.length === 0) {
+    errors.push('package.json ashaDownstream.consumerPolicy must name an explicit upstream consumer role');
+    return buildSpecifierSets([], []);
+  }
   try {
     const manifest = JSON.parse(readFileSync(engineSurfaceManifestPath, 'utf8'));
     const consumerPolicy = (manifest.consumerPolicies ?? []).find((entry) => entry.consumerRole === consumerPolicyName);
-    if (consumerPolicy !== undefined) {
-      return buildSpecifierSets(consumerPolicy.approvedPackageRoots ?? [], consumerPolicy.approvedPackageSubpaths ?? []);
+    if (consumerPolicy === undefined) {
+      errors.push(`${engineSurfaceManifestPath} does not define configured consumer role ${consumerPolicyName}`);
+      return buildSpecifierSets([], []);
     }
+    return buildSpecifierSets(consumerPolicy.approvedPackageRoots ?? [], consumerPolicy.approvedPackageSubpaths ?? []);
   } catch (error) {
-    console.warn(`WARN: using fallback ASHA package policy because ${engineSurfaceManifestPath} could not be read: ${error.message}`);
+    errors.push(`cannot read required ASHA package policy ${engineSurfaceManifestPath}: ${error.message}`);
+    return buildSpecifierSets([], []);
   }
-
-  return buildSpecifierSets(fallbackPackageRoots, fallbackSubpaths);
 }
 
 function buildSpecifierSets(packageRoots, subpaths) {

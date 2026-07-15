@@ -14,15 +14,17 @@
     "viewer:smoke": "npm run build:viewer && node scripts/smoke-viewer.mjs",
     "preview:smoke": "npm run viewer:smoke",
     "piece:smoke": "node scripts/smoke-piece-build.mjs",
+    "publish:asha-smoke": "npm run build:viewer && node scripts/smoke-prefab-publish.mjs",
     "voxel:asha-smoke": "npm run build:viewer && node scripts/smoke-asha-voxel-build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "rust:check": "cargo check --manifest-path procgen-rs/Cargo.toml",
     "rust:test": "cargo test --manifest-path procgen-rs/Cargo.toml",
     "test": "npm run check:asha-boundary && npm run typecheck && npm run rust:test",
-    "verify": "npm run check:asha-boundary && npm run typecheck && npm run rust:check && npm run rust:test"
+    "verify": "npm run check:asha-boundary && npm run typecheck && npm run publish:asha-smoke && npm run rust:check && npm run rust:test"
   },
   "dependencies": {
     "@asha/contracts": "file:../asha-engine/ts/packages/contracts",
+    "@asha/game-workspace": "file:../asha-engine/ts/packages/game-workspace",
     "@asha/runtime-bridge": "file:../asha-engine/ts/packages/runtime-bridge",
     "@asha/runtime-session": "file:../asha-engine/ts/packages/runtime-session"
   },
@@ -32,6 +34,11 @@
   "ashaDownstream": {
     "template": "asha-downstream-template",
     "engineSource": "../asha-engine",
-    "consumerPolicy": "asha-demo"
+    "consumerPolicy": "asha-demo",
+    "consumerPolicyMigration": {
+      "status": "blocked_upstream",
+      "targetRole": "downstream-authoring",
+      "upstreamTask": "asha#5828"
+    }
   }
 }

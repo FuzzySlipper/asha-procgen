@@ -3,7 +3,7 @@
   "sourcePlacement": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
   "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
   "backend": "native_rust_runtime_session_voxel_commands",
-  "ashaEngineCommit": "58fabbf369d4a59d484917f165aa7eb250562d38",
+  "ashaEngineCommit": "7ab20d317d9430020afbdfad2c72526bb7716c26",
   "coordinateMapping": "placement_x_y_to_voxel_x_z",
   "enclosure": {
     "floorY": 0,
@@ -65,7 +65,11 @@
     "voxelStateHash": "fnv1a64:8c4b699dee918a54",
     "deterministicRepeatHash": "fnv1a64:8c4b699dee918a54",
     "deterministic": true,
-    "rejectedUnknownMaterialWithoutMutation": true
+    "rejectedUnknownMaterialWithoutMutation": true,
+    "unknownMaterialRejection": {
+      "reason": "unknownMaterial",
+      "material": 65535
+    }
   },
   "conversionComparison": {
     "role": "bounded_model_readback_comparison_only",

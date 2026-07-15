@@ -39,7 +39,10 @@ const rejected = first.session.submitCommands({
 });
 assert.equal(rejected.result.accepted, 0);
 assert.equal(rejected.result.rejected, 1);
-assert.equal(rejected.result.rejections.length, 1);
+assert.deepEqual(rejected.result.rejections, [{
+  reason: 'unknownMaterial',
+  material: 65535,
+}]);
 const afterRejected = readHistory(first.session);
 assert.equal(afterRejected.cursor.voxelStateHash, beforeRejected.cursor.voxelStateHash);
 assert.equal(afterRejected.cursor.entryCount, beforeRejected.cursor.entryCount);
@@ -119,6 +122,7 @@ const evidence = {
     rejectedUnknownMaterialWithoutMutation:
       afterRejected.cursor.voxelStateHash === beforeRejected.cursor.voxelStateHash
       && afterRejected.historyHash === beforeRejected.historyHash,
+    unknownMaterialRejection: rejected.result.rejections[0],
   },
   conversionComparison: {
     role: 'bounded_model_readback_comparison_only',

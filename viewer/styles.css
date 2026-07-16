@@ -143,9 +143,80 @@ body {
 
 .view-tabs {
   display: inline-grid;
-  grid-template-columns: repeat(4, minmax(112px, 1fr));
+  grid-template-columns: repeat(5, minmax(104px, 1fr));
   gap: 6px;
   margin-bottom: 12px;
+}
+
+.voxel-title {
+  fill: #eff8ff;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.voxel-detail,
+.voxel-source {
+  fill: var(--text-muted);
+  font-size: 12px;
+}
+
+.voxel-detail.verified {
+  fill: var(--ok);
+}
+
+.voxel-detail.unverified {
+  fill: var(--warning);
+}
+
+.voxel-face {
+  stroke: #0b1016;
+  stroke-width: 0.65;
+  stroke-linejoin: round;
+}
+
+.voxel-face.wall.top,
+.voxel-legend-swatch.wall {
+  fill: #8796a3;
+}
+
+.voxel-face.wall.east {
+  fill: #566571;
+}
+
+.voxel-face.wall.south {
+  fill: #6c7c88;
+}
+
+.voxel-face.floor.top,
+.voxel-legend-swatch.floor {
+  fill: #67a885;
+}
+
+.voxel-face.floor.east,
+.voxel-face.floor.south {
+  fill: #3e725a;
+}
+
+.voxel-face.ceiling,
+.voxel-legend-swatch.ceiling {
+  fill: #79bfe3;
+  opacity: 0.16;
+  stroke: #8dc9e5;
+  stroke-width: 0.4;
+}
+
+.voxel-face.unknown {
+  fill: #d78ad2;
+}
+
+.voxel-legend-swatch {
+  stroke: #0b1016;
+  stroke-width: 1;
+}
+
+.voxel-legend-label {
+  fill: var(--text-soft);
+  font-size: 10px;
 }
 
 .view-tab {

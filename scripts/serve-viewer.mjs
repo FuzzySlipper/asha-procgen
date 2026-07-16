@@ -16,6 +16,8 @@ const routes = new Map([
   ['/viewer/app.js', join(repoRoot, 'dist/ts/viewer/app.js')],
   ['/api/artifacts/first-run', join(repoRoot, 'artifacts/samples/first-run/accepted.json')],
   ['/api/batches/v2', join(repoRoot, 'artifacts/samples/batch-v2/selection-report.json')],
+  ['/api/evidence/native-voxel-extrusion', join(repoRoot, 'artifacts/evidence/native-voxel-extrusion.json')],
+  ['/src/voxel-extrusion.js', join(repoRoot, 'dist/ts/src/voxel-extrusion.js')],
 ]);
 
 const server = createServer(async (request, response) => {

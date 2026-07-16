@@ -89,6 +89,11 @@ try {
   if (directCatalog.catalogId !== catalog.catalogId) {
     throw new Error('direct fixture catalog route did not match artifact catalog route');
   }
+  const voxelEvidence = await fetchJson('/api/evidence/native-voxel-extrusion');
+  const voxelEntry = batch.accepted.find((entry) => entry.piecePlacementRef === voxelEvidence.sourcePlacement);
+  if (voxelEntry === undefined || voxelEvidence.authority?.deterministic !== true) {
+    throw new Error('native voxel evidence has no matching batch placement');
+  }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
     throw new Error('viewer dark theme CSS was not found');
@@ -136,6 +141,18 @@ try {
   if (catalogCardCount < 10 || catalogCellCount < 20) {
     throw new Error(`catalog tab rendered too little detail: cards=${catalogCardCount}, cells=${catalogCellCount}`);
   }
+  const voxelUrl = `${baseUrl}/?candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel`;
+  const voxelDom = await dumpDom(chromium, voxelUrl);
+  const voxelFaceCount = countOccurrences(voxelDom, 'class="voxel-face');
+  if (!voxelDom.includes('Native Voxel Extrusion Cutaway')) {
+    throw new Error('voxel tab did not render the extrusion cutaway');
+  }
+  if (!voxelDom.includes(voxelEvidence.authority.voxelStateHash)) {
+    throw new Error('voxel tab did not show matching native authority evidence');
+  }
+  if (voxelFaceCount < 500) {
+    throw new Error(`voxel tab rendered too few exposed faces: ${voxelFaceCount}`);
+  }
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -161,6 +178,11 @@ try {
       name: 'catalog-desktop.png',
       url: `${baseUrl}/#catalog`,
       size: '1100,780',
+    },
+    {
+      name: 'voxel-desktop.png',
+      url: voxelUrl,
+      size: '1200,820',
     },
     {
       name: 'standalone-preview-desktop.png',

@@ -401,6 +401,7 @@ Viewer API routes:
 - `/api/artifacts/first-run`
 - `/api/batches/v2`
 - `/api/artifacts/by-path?path=<artifact-ref-from-selection-report>`
+- `/api/evidence/native-voxel-extrusion`
 
 The batch viewer shows candidate scores, profile sequence, artifact refs,
 validation status, provenance steps, and any diagnostics/repair hints for the
@@ -409,6 +410,11 @@ selected artifact. Its Build tab renders catalog piece placements when
 cells, glued exits, piece labels, and socket/content markers.
 Its Catalog tab renders the active build-piece shape catalog when
 `shapeCatalogRef` is present.
+Its Voxel tab uses the same deterministic extrusion compiler as
+`npm run voxel:asha-smoke` to render an isometric floor/wall/ceiling cutaway.
+When the selected placement matches the committed native evidence, the tab also
+shows the Rust authority voxel-state hash and engine pin. Other candidates are
+clearly labelled as unverified voxel proposals.
 
 ## Verification
 
@@ -436,8 +442,9 @@ the sample batch and intermediate artifact API, verifies the dark theme CSS, and
 checks the top generated standalone HTML preview for dark styling, SVG room and
 corridor elements, and required content labels. It also checks the viewer Build
 tab for the catalog piece placement grid, rendered cells, socket markers, and
-glued-exit links. It uses Chromium to write
-layout/intermediate/build/standalone-preview screenshots plus a report under:
+glued-exit links, and checks the Voxel tab for exposed isometric faces plus a
+matching native authority receipt. It uses Chromium to write
+layout/intermediate/build/voxel/standalone-preview screenshots plus a report under:
 
 ```text
 /tmp/asha-procgen-viewer-smoke/
@@ -447,6 +454,7 @@ layout/intermediate/build/standalone-preview screenshots plus a report under:
 
 - No in-repo LLM harness.
 - No custom agent service.
-- No ASHA runtime or renderer integration.
+- No live ASHA runtime-backed viewer or renderer integration; the Voxel tab
+  projects committed native evidence and deterministic downstream build data.
 - No Daggerfall-style 3D embedding yet.
 - No large accepted-layout corpus yet.

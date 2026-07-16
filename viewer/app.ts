@@ -1,3 +1,5 @@
+import { compilePlacementExtrusion, type VoxelExtrusionPlan } from '../src/voxel-extrusion.js';
+
 interface AcceptedArtifact {
   readonly artifactId: string;
   readonly candidateHash: string;
@@ -257,6 +259,7 @@ interface CatalogSocket {
 }
 
 interface PiecePlacement {
+  readonly kind: string;
   readonly placementId: string;
   readonly planId: string;
   readonly catalogId: string;
@@ -330,6 +333,17 @@ interface MatchedSocket {
   readonly kind: string;
 }
 
+interface NativeVoxelEvidence {
+  readonly placementId: string;
+  readonly ashaEngineCommit: string;
+  readonly authority: {
+    readonly voxelStateHash: string;
+    readonly deterministic: boolean;
+    readonly acceptedCommands: number;
+    readonly rejectedCommands: number;
+  };
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -340,14 +354,18 @@ if (svg === null || summary === null || batchList === null || diagnostics === nu
   throw new Error('viewer mount elements are missing');
 }
 
-type ViewMode = 'layout' | 'intermediate' | 'build' | 'catalog';
+type ViewMode = 'layout' | 'intermediate' | 'build' | 'voxel' | 'catalog';
 
 const layoutSvg = svg;
 const summaryPanel = summary;
 const batchPanel = batchList;
 const diagnosticsPanel = diagnostics;
 const batch = await fetchBatch();
-const initialSelection = batch.accepted[0] ?? null;
+const voxelEvidence = await fetchVoxelEvidence();
+const requestedCandidate = new URLSearchParams(location.search).get('candidate');
+const initialSelection = batch.accepted.find((entry) => entry.candidateId === requestedCandidate)
+  ?? batch.accepted[0]
+  ?? null;
 let activeView: ViewMode = initialViewMode();
 let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
@@ -361,7 +379,7 @@ let currentPlacementValidation: ValidationReport | null = null;
 for (const tab of viewTabs) {
   tab.addEventListener('click', () => {
     const nextView = tab.dataset.view;
-    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build' || nextView === 'catalog') {
+    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build' || nextView === 'voxel' || nextView === 'catalog') {
       activeView = nextView;
       history.replaceState(null, '', `#${activeView}`);
       renderActiveView();
@@ -432,6 +450,14 @@ async function fetchBatch(): Promise<SelectionReport> {
     };
   }
   return (await response.json()) as SelectionReport;
+}
+
+async function fetchVoxelEvidence(): Promise<NativeVoxelEvidence | null> {
+  const response = await fetch('/api/evidence/native-voxel-extrusion');
+  if (!response.ok) {
+    return null;
+  }
+  return (await response.json()) as NativeVoxelEvidence;
 }
 
 async function fetchArtifact(url: string): Promise<AcceptedArtifact> {
@@ -550,6 +576,9 @@ function initialViewMode(): ViewMode {
   }
   if (location.hash === '#build') {
     return 'build';
+  }
+  if (location.hash === '#voxel') {
+    return 'voxel';
   }
   return 'layout';
 }
@@ -861,6 +890,10 @@ function renderActiveView(): void {
     renderBuildGrid(layoutSvg, currentGeometry, currentPlacement, currentPlacementValidation);
     return;
   }
+  if (activeView === 'voxel') {
+    renderVoxelBuild(layoutSvg, currentPlacement, voxelEvidence);
+    return;
+  }
   if (activeView === 'catalog') {
     renderShapeCatalog(layoutSvg, currentCatalog, currentCatalogRef, currentCatalogError);
     return;
@@ -874,6 +907,226 @@ function renderActiveView(): void {
     return;
   }
   renderLayout(layoutSvg, currentLayout);
+}
+
+interface VoxelPoint {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
+
+interface ProjectedPoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+function renderVoxelBuild(
+  target: SVGSVGElement,
+  placement: PiecePlacement | null,
+  evidence: NativeVoxelEvidence | null,
+): void {
+  target.replaceChildren();
+  if (placement === null) {
+    renderEmptySvg(target, 'No piece placement is available for voxel extrusion.');
+    return;
+  }
+
+  let plan: VoxelExtrusionPlan;
+  try {
+    plan = compilePlacementExtrusion(placement);
+  } catch (error) {
+    renderEmptySvg(target, `Voxel extrusion unavailable: ${describeError(error)}`);
+    return;
+  }
+
+  const margin = 36;
+  const headerHeight = 112;
+  const tileWidth = 15;
+  const tileHeight = 8;
+  const voxelHeight = 13;
+  const bounds = projectedVoxelBounds(plan, tileWidth, tileHeight, voxelHeight);
+  const width = Math.max(900, Math.ceil(bounds.maxX - bounds.minX + margin * 2));
+  const height = Math.max(620, Math.ceil(bounds.maxY - bounds.minY + margin * 2 + headerHeight));
+  const offsetX = margin - bounds.minX;
+  const offsetY = margin + headerHeight - bounds.minY;
+  target.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  target.style.height = `${height}px`;
+  target.style.minWidth = `${width}px`;
+
+  const title = createSvg('text');
+  title.setAttribute('class', 'voxel-title');
+  title.setAttribute('x', String(margin));
+  title.setAttribute('y', '30');
+  title.textContent = 'Native Voxel Extrusion Cutaway';
+  target.append(title);
+
+  const verified = evidence?.placementId === placement.placementId;
+  const detail = createSvg('text');
+  detail.setAttribute('class', `voxel-detail ${verified ? 'verified' : 'unverified'}`);
+  detail.setAttribute('x', String(margin));
+  detail.setAttribute('y', '53');
+  detail.textContent = verified && evidence !== null
+    ? `${plan.solidVoxelCount} voxels / ${evidence.authority.acceptedCommands} native commands / ${evidence.authority.voxelStateHash}`
+    : `${plan.solidVoxelCount} voxel proposal / selected placement has no matching native authority receipt`;
+  target.append(detail);
+
+  const source = createSvg('text');
+  source.setAttribute('class', 'voxel-source');
+  source.setAttribute('x', String(margin));
+  source.setAttribute('y', '75');
+  source.textContent = verified && evidence !== null
+    ? `ASHA ${evidence.ashaEngineCommit.slice(0, 12)} / deterministic ${evidence.authority.deterministic ? 'yes' : 'no'} / XZ floor plan with ghosted ceiling`
+    : `${placement.placementId} / XZ floor plan with ghosted ceiling`;
+  target.append(source);
+
+  appendVoxelLegend(target, margin, 91);
+
+  const solidKeys = new Set(plan.solidVoxels.map((voxel) => voxelKey3(voxel.coord)));
+  const voxels = [...plan.solidVoxels].sort((left, right) => {
+    const leftDepth = left.coord.x + left.coord.z;
+    const rightDepth = right.coord.x + right.coord.z;
+    return leftDepth - rightDepth || left.coord.y - right.coord.y || left.coord.x - right.coord.x;
+  });
+  for (const voxel of voxels) {
+    const materialClass = voxelMaterialClass(voxel.material);
+    const coord = voxel.coord;
+    if (!solidKeys.has(voxelKey3({ x: coord.x, y: coord.y + 1, z: coord.z }))) {
+      appendVoxelFace(target, voxelFacePoints(coord, 'top'), materialClass, 'top', offsetX, offsetY, tileWidth, tileHeight, voxelHeight);
+    }
+    if (!solidKeys.has(voxelKey3({ x: coord.x + 1, y: coord.y, z: coord.z }))) {
+      appendVoxelFace(target, voxelFacePoints(coord, 'east'), materialClass, 'east', offsetX, offsetY, tileWidth, tileHeight, voxelHeight);
+    }
+    if (!solidKeys.has(voxelKey3({ x: coord.x, y: coord.y, z: coord.z + 1 }))) {
+      appendVoxelFace(target, voxelFacePoints(coord, 'south'), materialClass, 'south', offsetX, offsetY, tileWidth, tileHeight, voxelHeight);
+    }
+  }
+}
+
+function projectedVoxelBounds(
+  plan: VoxelExtrusionPlan,
+  tileWidth: number,
+  tileHeight: number,
+  voxelHeight: number,
+): { readonly minX: number; readonly minY: number; readonly maxX: number; readonly maxY: number } {
+  const min = plan.buildBounds.min;
+  const max = plan.buildBounds.maxExclusive;
+  const corners: VoxelPoint[] = [];
+  for (const x of [min.x, max.x]) {
+    for (const y of [min.y, max.y]) {
+      for (const z of [min.z, max.z]) {
+        corners.push({ x, y, z });
+      }
+    }
+  }
+  const projected = corners.map((point) => projectVoxel(point, tileWidth, tileHeight, voxelHeight));
+  return {
+    minX: Math.min(...projected.map((point) => point.x)),
+    minY: Math.min(...projected.map((point) => point.y)),
+    maxX: Math.max(...projected.map((point) => point.x)),
+    maxY: Math.max(...projected.map((point) => point.y)),
+  };
+}
+
+function voxelFacePoints(coord: VoxelPoint, face: 'top' | 'east' | 'south'): readonly VoxelPoint[] {
+  const { x, y, z } = coord;
+  if (face === 'top') {
+    return [
+      { x, y: y + 1, z },
+      { x: x + 1, y: y + 1, z },
+      { x: x + 1, y: y + 1, z: z + 1 },
+      { x, y: y + 1, z: z + 1 },
+    ];
+  }
+  if (face === 'east') {
+    return [
+      { x: x + 1, y, z },
+      { x: x + 1, y: y + 1, z },
+      { x: x + 1, y: y + 1, z: z + 1 },
+      { x: x + 1, y, z: z + 1 },
+    ];
+  }
+  return [
+    { x, y, z: z + 1 },
+    { x, y: y + 1, z: z + 1 },
+    { x: x + 1, y: y + 1, z: z + 1 },
+    { x: x + 1, y, z: z + 1 },
+  ];
+}
+
+function appendVoxelFace(
+  target: SVGSVGElement,
+  points: readonly VoxelPoint[],
+  materialClass: string,
+  face: string,
+  offsetX: number,
+  offsetY: number,
+  tileWidth: number,
+  tileHeight: number,
+  voxelHeight: number,
+): void {
+  const polygon = createSvg('polygon');
+  polygon.setAttribute('class', `voxel-face ${materialClass} ${face}`);
+  polygon.setAttribute('points', points.map((point) => {
+    const projected = projectVoxel(point, tileWidth, tileHeight, voxelHeight);
+    return `${projected.x + offsetX},${projected.y + offsetY}`;
+  }).join(' '));
+  target.append(polygon);
+}
+
+function projectVoxel(
+  point: VoxelPoint,
+  tileWidth: number,
+  tileHeight: number,
+  voxelHeight: number,
+): ProjectedPoint {
+  return {
+    x: (point.x - point.z) * tileWidth / 2,
+    y: (point.x + point.z) * tileHeight / 2 - point.y * voxelHeight,
+  };
+}
+
+function appendVoxelLegend(target: SVGSVGElement, x: number, y: number): void {
+  const entries = [
+    ['wall', 'Wall'],
+    ['floor', 'Floor'],
+    ['ceiling', 'Ceiling (ghosted)'],
+  ] as const;
+  entries.forEach(([className, label], index) => {
+    const swatch = createSvg('rect');
+    swatch.setAttribute('class', `voxel-legend-swatch ${className}`);
+    swatch.setAttribute('x', String(x + index * 104));
+    swatch.setAttribute('y', String(y));
+    swatch.setAttribute('width', '12');
+    swatch.setAttribute('height', '12');
+    target.append(swatch);
+    const text = createSvg('text');
+    text.setAttribute('class', 'voxel-legend-label');
+    text.setAttribute('x', String(x + 17 + index * 104));
+    text.setAttribute('y', String(y + 11));
+    text.textContent = label;
+    target.append(text);
+  });
+}
+
+function voxelMaterialClass(material: number): string {
+  if (material === 1) {
+    return 'wall';
+  }
+  if (material === 2) {
+    return 'floor';
+  }
+  if (material === 3) {
+    return 'ceiling';
+  }
+  return 'unknown';
+}
+
+function voxelKey3(point: VoxelPoint): string {
+  return `${point.x},${point.y},${point.z}`;
+}
+
+function describeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function renderShapeCatalog(

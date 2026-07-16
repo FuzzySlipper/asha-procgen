@@ -55,14 +55,13 @@ reproducible external distribution contract. External consumption should use
 the shared ASHA package/version/distribution mechanism once that work is
 available; Procgen must not invent a private package-copying or tarball lane.
 
-The upstream public-surface manifest currently lacks an offline authoring
-consumer role. `package.json` therefore records the existing `asha-demo` role
-as an explicit temporary compatibility policy and names the intended
-`downstream-authoring` migration. Upstream ASHA task #5828 owns adding that
-reusable role for the narrow package set used here. The local boundary checker
-now fails closed when its configured role or the upstream manifest is missing;
-after #5828 lands, change `ashaDownstream.consumerPolicy` to
-`downstream-authoring` and remove the migration marker.
+Upstream ASHA task #5828 added the reusable `downstream-authoring` consumer
+role. It permits exactly the four package roots used here: `@asha/contracts`,
+`@asha/game-workspace`, `@asha/runtime-bridge`, and
+`@asha/runtime-session`, with no approved private subpaths. `package.json`
+selects that role explicitly, and the local boundary checker fails closed when
+the configured role, upstream manifest, package allowance, or imported public
+surface does not match.
 
 ## Voxel command lane
 

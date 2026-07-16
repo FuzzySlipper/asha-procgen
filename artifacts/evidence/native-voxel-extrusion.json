@@ -3,7 +3,7 @@
   "sourcePlacement": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
   "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
   "backend": "native_rust_runtime_session_voxel_commands",
-  "ashaEngineCommit": "7ab20d317d9430020afbdfad2c72526bb7716c26",
+  "ashaEngineCommit": "4fc7d5a810e102172fda87b32007b6259255fe8d",
   "coordinateMapping": "placement_x_y_to_voxel_x_z",
   "enclosure": {
     "floorY": 0,

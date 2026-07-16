@@ -34,11 +34,6 @@
   "ashaDownstream": {
     "template": "asha-downstream-template",
     "engineSource": "../asha-engine",
-    "consumerPolicy": "asha-demo",
-    "consumerPolicyMigration": {
-      "status": "blocked_upstream",
-      "targetRole": "downstream-authoring",
-      "upstreamTask": "asha#5828"
-    }
+    "consumerPolicy": "downstream-authoring"
   }
 }

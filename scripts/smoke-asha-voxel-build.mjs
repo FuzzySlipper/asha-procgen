@@ -204,7 +204,6 @@ function createSession(sessionId) {
     sessionId,
     seed: 5201,
     project: { gameId: 'asha-procgen', workspaceId: 'workspace.local' },
-    projectBundle: { bundleSchemaVersion: 1, protocolVersion: 1, sceneId: 1 },
   });
   return session;
 }

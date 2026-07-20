@@ -17,7 +17,7 @@ export interface VoxelInspectionProjection {
 }
 
 const MATERIAL_COLORS: Readonly<Record<number, readonly [number, number, number, number]>> = {
-  1: [0.45, 0.52, 0.58, 1],
+  1: [0.2, 0.24, 0.28, 1],
   2: [0.23, 0.58, 0.39, 1],
 };
 const UNKNOWN_MATERIAL_COLOR = [0.72, 0.31, 0.68, 1] as const;

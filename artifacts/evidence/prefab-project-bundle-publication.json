@@ -1,7 +1,7 @@
 {
   "kind": "asha_procgen.prefab_project_bundle_publication.v1",
   "manifest": {
-    "bundleSchemaVersion": 1,
+    "bundleSchemaVersion": 2,
     "protocolVersion": 1,
     "project": {
       "id": 5721,
@@ -30,7 +30,7 @@
         "path": "assets/lock.json",
         "class": "durable",
         "role": "assetLock",
-        "contentHash": "06cc67d1ba1fd81e"
+        "contentHash": "3a2ea662f8d51ac6"
       },
       {
         "path": "prefabs/registry.json",
@@ -41,26 +41,26 @@
       {
         "path": "prefabs/instances.json",
         "class": "durable",
-        "role": "prefabInstances",
+        "role": "resource:prefab-instances",
         "contentHash": "5c173d6c88cb677d"
       },
       {
         "path": "scene/procgen-layout.scene.json",
         "class": "durable",
         "role": "sceneDocument",
-        "contentHash": "f9ddbc07d0f79f0c"
+        "contentHash": "fb52d7451e9090f8"
       },
       {
         "path": "voxel/prefabs/procgen-standard-room.voxel.json",
         "class": "durable",
-        "role": "procgenPrefabSource",
-        "contentHash": "1325fb908dde81e8"
+        "role": "resource:procgen-prefab-source",
+        "contentHash": "b0a799554b12cb29"
       },
       {
         "path": "voxel/prefabs/procgen-locked-gate.voxel.json",
         "class": "durable",
-        "role": "procgenPrefabSource",
-        "contentHash": "f69ccacc55a08a92"
+        "role": "resource:procgen-prefab-source",
+        "contentHash": "ffd597098b8b5648"
       }
     ]
   },
@@ -166,14 +166,14 @@
         "version": {
           "req": "any"
         },
-        "hash": "1325fb908dde81e8"
+        "hash": "b0a799554b12cb29"
       },
       {
         "id": "voxel-object/procgen-locked-gate",
         "version": {
           "req": "any"
         },
-        "hash": "f69ccacc55a08a92"
+        "hash": "ffd597098b8b5648"
       }
     ],
     "nodes": [
@@ -212,7 +212,7 @@
             "version": {
               "req": "any"
             },
-            "hash": "1325fb908dde81e8"
+            "hash": "b0a799554b12cb29"
           }
         }
       },
@@ -251,7 +251,7 @@
             "version": {
               "req": "any"
             },
-            "hash": "f69ccacc55a08a92"
+            "hash": "ffd597098b8b5648"
           }
         }
       }
@@ -319,12 +319,12 @@
       {
         "assetId": "voxel-object/procgen-standard-room",
         "artifact": "voxel/prefabs/procgen-standard-room.voxel.json",
-        "contentHash": "1325fb908dde81e8"
+        "contentHash": "b0a799554b12cb29"
       },
       {
         "assetId": "voxel-object/procgen-locked-gate",
         "artifact": "voxel/prefabs/procgen-locked-gate.voxel.json",
-        "contentHash": "f69ccacc55a08a92"
+        "contentHash": "ffd597098b8b5648"
       }
     ]
   },
@@ -332,12 +332,12 @@
     {
       "assetId": "voxel-object/procgen-standard-room",
       "artifact": "voxel/prefabs/procgen-standard-room.voxel.json",
-      "contentHash": "1325fb908dde81e8"
+      "contentHash": "b0a799554b12cb29"
     },
     {
       "assetId": "voxel-object/procgen-locked-gate",
       "artifact": "voxel/prefabs/procgen-locked-gate.voxel.json",
-      "contentHash": "f69ccacc55a08a92"
+      "contentHash": "ffd597098b8b5648"
     }
   ],
   "provenance": {
@@ -380,8 +380,15 @@
     "adapter": "compileProcgenPrefabPublication",
     "publicPackages": [
       "@asha/contracts",
-      "@asha/game-workspace"
+      "@asha/game-workspace",
+      "@asha/runtime-bridge"
     ],
+    "canonicalSourceAdmission": {
+      "schemaVersion": 2,
+      "reachedRuntimeComposition": true,
+      "runtimeActivationNonClaim": "missingStaticComposition",
+      "legacySchemaRejectedAt": "sourceBatch"
+    },
     "failClosedCases": [
       "missingPrefabMapping",
       "missingStableRole",

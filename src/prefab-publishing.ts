@@ -463,7 +463,7 @@ function buildManifest(
   seed: number,
 ): ProjectBundleManifest {
   return {
-    bundleSchemaVersion: 1,
+    bundleSchemaVersion: 2,
     protocolVersion: 1,
     project: { id: projectId(configuration.project.id), name: configuration.project.name },
     entryScene: sceneArtifact.id,
@@ -496,7 +496,7 @@ function buildManifest(
       {
         path: configuration.prefabInstancesArtifact,
         class: 'durable',
-        role: 'prefabInstances',
+        role: 'resource:prefab-instances',
         contentHash: contentHash(prettyJson(prefabInstancesArtifact)),
       },
       {
@@ -508,7 +508,7 @@ function buildManifest(
       ...configuration.sourceAssets.map((source) => ({
         path: source.artifact,
         class: 'durable' as const,
-        role: 'procgenPrefabSource',
+        role: 'resource:procgen-prefab-source',
         contentHash: source.contentHash,
       })),
     ],

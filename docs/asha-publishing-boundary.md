@@ -55,10 +55,11 @@ reproducible external distribution contract. External consumption should use
 the shared ASHA package/version/distribution mechanism once that work is
 available; Procgen must not invent a private package-copying or tarball lane.
 
-Upstream ASHA task #5828 added the reusable `downstream-authoring` consumer
-role. It permits exactly the four package roots used here: `@asha/contracts`,
-`@asha/game-workspace`, `@asha/runtime-bridge`, and
-`@asha/runtime-session`, with no approved private subpaths. `package.json`
+Upstream ASHA tasks #5828 and #5979 established the reusable
+`downstream-visual-authoring` consumer role. It permits exactly the five package
+roots used here: `@asha/contracts`, `@asha/game-workspace`,
+`@asha/renderer-host`, `@asha/runtime-bridge`, and `@asha/runtime-session`, with
+no approved private subpaths. `package.json`
 selects that role explicitly, and the local boundary checker fails closed when
 the configured role, upstream manifest, package allowance, or imported public
 surface does not match.

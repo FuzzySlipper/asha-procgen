@@ -20,9 +20,21 @@
           <button class="view-tab" type="button" data-view="intermediate" data-selected="false">Intermediate</button>
           <button class="view-tab" type="button" data-view="build" data-selected="false">Build</button>
           <button class="view-tab" type="button" data-view="voxel" data-selected="false">Voxel</button>
+          <button class="view-tab" type="button" data-view="voxel3d" data-selected="false">Voxel 3D</button>
           <button class="view-tab" type="button" data-view="catalog" data-selected="false">Catalog</button>
         </div>
         <svg id="layout" role="img" aria-label="Generated dungeon preview"></svg>
+        <section id="voxel-3d-panel" class="voxel-3d-panel" aria-label="Engine-rendered voxel inspection" hidden>
+          <div class="voxel-3d-header">
+            <div>
+              <h2>Engine Voxel Inspection</h2>
+              <p>Projection-only preview. It is not runtime, collision, navigation, or native-render proof.</p>
+            </div>
+            <p class="voxel-3d-controls">Drag to orbit · W/A/S/D to move · click the view to focus</p>
+          </div>
+          <p id="voxel-3d-diagnostic" class="voxel-3d-diagnostic" role="status">Waiting for a voxel placement.</p>
+          <canvas id="voxel-3d-canvas" tabindex="0" aria-label="Interactive engine-rendered voxel projection"></canvas>
+        </section>
       </section>
     </main>
     <script type="module" src="/viewer/app.js"></script>

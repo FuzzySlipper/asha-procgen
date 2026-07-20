@@ -94,6 +94,12 @@ try {
   if (voxelEntry === undefined || voxelEvidence.authority?.deterministic !== true) {
     throw new Error('native voxel evidence has no matching batch placement');
   }
+  const alternateVoxelEntry = batch.accepted.find(
+    (entry) => entry.candidateId !== voxelEntry.candidateId && typeof entry.piecePlacementRef === 'string',
+  );
+  if (alternateVoxelEntry === undefined) {
+    throw new Error('viewer smoke requires a second voxel candidate');
+  }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
     throw new Error('viewer dark theme CSS was not found');
@@ -153,6 +159,46 @@ try {
   if (voxelFaceCount < 500) {
     throw new Error(`voxel tab rendered too few exposed faces: ${voxelFaceCount}`);
   }
+  const voxel3dUrl = `${baseUrl}/?inspection=once&candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel3d`;
+  const voxel3dDom = await dumpEngineDom(chromium, voxel3dUrl);
+  if (!voxel3dDom.includes('Engine Voxel Inspection')) {
+    throw new Error('Voxel 3D tab was not found');
+  }
+  if (!voxel3dDom.includes('data-renderer-host="asha_renderer_inspection_surface.v0"')) {
+    throw new Error('Voxel 3D tab did not mount the engine inspection surface');
+  }
+  if (!voxel3dDom.includes('data-renderer-authority="projection_only_inspection"')) {
+    throw new Error('Voxel 3D tab did not expose projection-only renderer authority');
+  }
+  if (!voxel3dDom.includes('data-state="ready"')) {
+    throw new Error(`Voxel 3D engine mount was not ready: ${attributeValue(voxel3dDom, 'data-state')}`);
+  }
+  const projectedVoxelCount = Number(attributeValue(voxel3dDom, 'data-projected-voxel-count'));
+  const omittedCeilingVoxelCount = Number(attributeValue(voxel3dDom, 'data-omitted-ceiling-voxel-count'));
+  const voxel3dFrameHash = attributeValue(voxel3dDom, 'data-frame-hash');
+  const voxel3dPlacementId = attributeValue(voxel3dDom, 'data-placement-id');
+  const voxel3dPickHitCount = Number(attributeValue(voxel3dDom, 'data-pick-hit-count'));
+  if (
+    projectedVoxelCount < 500
+    || omittedCeilingVoxelCount <= 0
+    || voxel3dFrameHash.length === 0
+    || voxel3dPickHitCount <= 0
+  ) {
+    throw new Error(
+      `Voxel 3D projection evidence is incomplete: projected=${projectedVoxelCount}, omitted=${omittedCeilingVoxelCount}, picks=${voxel3dPickHitCount}`,
+    );
+  }
+  const alternateVoxel3dUrl = `${baseUrl}/?inspection=once&candidate=${encodeURIComponent(alternateVoxelEntry.candidateId)}#voxel3d`;
+  const alternateVoxel3dDom = await dumpEngineDom(chromium, alternateVoxel3dUrl);
+  const alternatePlacementId = attributeValue(alternateVoxel3dDom, 'data-placement-id');
+  const alternateFrameHash = attributeValue(alternateVoxel3dDom, 'data-frame-hash');
+  if (
+    !alternateVoxel3dDom.includes('data-state="ready"')
+    || alternatePlacementId === voxel3dPlacementId
+    || alternateFrameHash === voxel3dFrameHash
+  ) {
+    throw new Error('Voxel 3D candidate switching did not refresh the engine frame deterministically');
+  }
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -185,6 +231,12 @@ try {
       size: '1200,820',
     },
     {
+      name: 'voxel-3d-desktop.png',
+      url: `${baseUrl}/?candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel3d`,
+      size: '1200,820',
+      engineRenderer: true,
+    },
+    {
       name: 'standalone-preview-desktop.png',
       url: previewUrl,
       size: '1100,780',
@@ -200,7 +252,7 @@ try {
     await execFileAsync(chromium, [
       '--headless',
       '--no-sandbox',
-      '--disable-gpu',
+      screenshot.engineRenderer ? '--enable-unsafe-swiftshader' : '--disable-gpu',
       '--run-all-compositor-stages-before-draw',
       '--virtual-time-budget=3000',
       `--window-size=${screenshot.size}`,
@@ -239,6 +291,16 @@ try {
       shapes: catalog.shapes.length,
       cards: catalogCardCount,
       cells: catalogCellCount,
+    },
+    voxel3dTab: {
+      placementId: voxel3dPlacementId,
+      projectedVoxels: projectedVoxelCount,
+      omittedCeilingVoxels: omittedCeilingVoxelCount,
+      frameHash: voxel3dFrameHash,
+      pickHits: voxel3dPickHitCount,
+      alternatePlacementId,
+      alternateFrameHash,
+      rendererAuthority: 'projection_only_inspection',
     },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };
@@ -299,6 +361,23 @@ async function dumpDom(chromium, url) {
     url,
   ]);
   return stdout;
+}
+
+async function dumpEngineDom(chromium, url) {
+  const { stdout } = await execFileAsync(chromium, [
+    '--headless',
+    '--no-sandbox',
+    '--enable-unsafe-swiftshader',
+    '--run-all-compositor-stages-before-draw',
+    '--virtual-time-budget=5000',
+    '--dump-dom',
+    url,
+  ], { maxBuffer: 16 * 1024 * 1024 });
+  return stdout;
+}
+
+function attributeValue(dom, name) {
+  return dom.match(new RegExp(`${name}="([^"]*)"`))?.[1] ?? '';
 }
 
 async function findChromium() {

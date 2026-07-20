@@ -33,6 +33,9 @@ assert.deepEqual(
 assert.deepEqual(publication.prefabInstancesArtifact.prefabInstances[1].transform.rotation, [0, 1, 0, 0]);
 assert.equal(publication.sceneArtifact.nodes.length, 2);
 assert.equal(publication.sceneArtifact.nodes[0].kind.kind, 'voxelVolume');
+assert.equal(publication.manifest.entryScene, publication.sceneArtifact.id);
+assert.deepEqual(publication.manifest.scenes.map((scene) => scene.id), [publication.sceneArtifact.id]);
+assert.equal(publication.manifest.generationProvenance?.provider, 'asha-procgen.prefab-publisher');
 assert.equal(publication.manifest.artifacts.find((artifact) => artifact.role === 'prefabRegistry')?.path, 'prefabs/registry.json');
 assert.equal(publication.manifest.artifacts.filter((artifact) => artifact.role === 'procgenPrefabSource').length, 2);
 assert.equal(publication.provenance.instances[0].shapeId, 'shape.room.standard.1_exit');

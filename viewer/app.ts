@@ -1,4 +1,14 @@
+import {
+  ASHA_RENDERER_EDITOR_VIEWPORT_MAX_FRAME_OPS,
+  mountAshaRendererInspectionSurface,
+  type AshaRendererInspectionSurface,
+} from '@asha/renderer-host';
+
 import { compilePlacementExtrusion, type VoxelExtrusionPlan } from '../src/voxel-extrusion.js';
+import {
+  buildVoxelInspectionProjection,
+  type VoxelInspectionProjection,
+} from '../src/voxel-inspection-projection.js';
 
 interface AcceptedArtifact {
   readonly artifactId: string;
@@ -349,20 +359,36 @@ const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
 const diagnostics = document.querySelector<HTMLElement>('#diagnostics');
 const viewTabs = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+const voxel3dPanel = document.querySelector<HTMLElement>('#voxel-3d-panel');
+const voxel3dCanvas = document.querySelector<HTMLCanvasElement>('#voxel-3d-canvas');
+const voxel3dDiagnostic = document.querySelector<HTMLElement>('#voxel-3d-diagnostic');
 
-if (svg === null || summary === null || batchList === null || diagnostics === null) {
+if (
+  svg === null
+  || summary === null
+  || batchList === null
+  || diagnostics === null
+  || voxel3dPanel === null
+  || voxel3dCanvas === null
+  || voxel3dDiagnostic === null
+) {
   throw new Error('viewer mount elements are missing');
 }
 
-type ViewMode = 'layout' | 'intermediate' | 'build' | 'voxel' | 'catalog';
+type ViewMode = 'layout' | 'intermediate' | 'build' | 'voxel' | 'voxel3d' | 'catalog';
 
 const layoutSvg = svg;
 const summaryPanel = summary;
 const batchPanel = batchList;
 const diagnosticsPanel = diagnostics;
+const voxelInspectionPanel = voxel3dPanel;
+const voxelInspectionCanvas = voxel3dCanvas;
+const voxelInspectionDiagnostic = voxel3dDiagnostic;
 const batch = await fetchBatch();
 const voxelEvidence = await fetchVoxelEvidence();
-const requestedCandidate = new URLSearchParams(location.search).get('candidate');
+const viewerSearch = new URLSearchParams(location.search);
+const requestedCandidate = viewerSearch.get('candidate');
+const renderInspectionOnce = viewerSearch.get('inspection') === 'once';
 const initialSelection = batch.accepted.find((entry) => entry.candidateId === requestedCandidate)
   ?? batch.accepted[0]
   ?? null;
@@ -375,11 +401,22 @@ let currentCatalogRef: string | null = null;
 let currentCatalogError: string | null = null;
 let currentPlacement: PiecePlacement | null = null;
 let currentPlacementValidation: ValidationReport | null = null;
+let voxelInspectionSurface: AshaRendererInspectionSurface | null = null;
+let voxelInspectionMount: Promise<AshaRendererInspectionSurface> | null = null;
+let voxelInspectionRevision = 0;
+
+voxelInspectionCanvas.addEventListener('pointerdown', () => voxelInspectionCanvas.focus());
+window.addEventListener('pagehide', () => {
+  voxelInspectionRevision += 1;
+  voxelInspectionSurface?.dispose();
+  voxelInspectionSurface = null;
+  voxelInspectionMount = null;
+});
 
 for (const tab of viewTabs) {
   tab.addEventListener('click', () => {
     const nextView = tab.dataset.view;
-    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build' || nextView === 'voxel' || nextView === 'catalog') {
+    if (nextView === 'layout' || nextView === 'intermediate' || nextView === 'build' || nextView === 'voxel' || nextView === 'voxel3d' || nextView === 'catalog') {
       activeView = nextView;
       history.replaceState(null, '', `#${activeView}`);
       renderActiveView();
@@ -579,6 +616,9 @@ function initialViewMode(): ViewMode {
   }
   if (location.hash === '#voxel') {
     return 'voxel';
+  }
+  if (location.hash === '#voxel3d') {
+    return 'voxel3d';
   }
   return 'layout';
 }
@@ -886,6 +926,17 @@ function renderActiveView(): void {
   }
   layoutSvg.style.height = '';
   layoutSvg.style.minWidth = '';
+  const inspectionActive = activeView === 'voxel3d';
+  layoutSvg.style.display = inspectionActive ? 'none' : '';
+  voxelInspectionPanel.hidden = !inspectionActive;
+  if (!inspectionActive) {
+    voxelInspectionRevision += 1;
+    voxelInspectionSurface?.stop();
+  }
+  if (inspectionActive) {
+    void renderVoxelInspection();
+    return;
+  }
   if (activeView === 'build') {
     renderBuildGrid(layoutSvg, currentGeometry, currentPlacement, currentPlacementValidation);
     return;
@@ -907,6 +958,116 @@ function renderActiveView(): void {
     return;
   }
   renderLayout(layoutSvg, currentLayout);
+}
+
+async function renderVoxelInspection(): Promise<void> {
+  const revision = ++voxelInspectionRevision;
+  let projection: VoxelInspectionProjection;
+  try {
+    if (currentPlacement === null) {
+      throw new Error('no piece placement is available for voxel extrusion');
+    }
+    projection = buildVoxelInspectionProjection(compilePlacementExtrusion(currentPlacement));
+    if (projection.frame.ops.length > ASHA_RENDERER_EDITOR_VIEWPORT_MAX_FRAME_OPS) {
+      throw new Error(
+        `projection has ${projection.frame.ops.length} ops; engine host limit is ${ASHA_RENDERER_EDITOR_VIEWPORT_MAX_FRAME_OPS}`,
+      );
+    }
+  } catch (error) {
+    setVoxelInspectionDiagnostic('error', `Voxel 3D unavailable: ${describeError(error)}`);
+    voxelInspectionSurface?.stop();
+    return;
+  }
+
+  voxelInspectionPanel.dataset.placementId = projection.placementId;
+  voxelInspectionPanel.dataset.projectedVoxelCount = String(projection.projectedVoxelCount);
+  voxelInspectionPanel.dataset.projectedNodeCount = String(projection.projectedNodeCount);
+  voxelInspectionPanel.dataset.omittedCeilingVoxelCount = String(projection.omittedCeilingVoxelCount);
+  voxelInspectionPanel.dataset.ceilingY = String(projection.ceilingY);
+  setVoxelInspectionDiagnostic('loading', `Mounting engine projection for ${projection.placementId}…`);
+
+  try {
+    const surface = await ensureVoxelInspectionSurface(projection);
+    if (revision !== voxelInspectionRevision || activeView !== 'voxel3d') {
+      surface.stop();
+      return;
+    }
+    const receipt = surface.replaceFrame(projection.frame);
+    if (!receipt.applied) {
+      const detail = receipt.diagnostics.map((diagnostic) => diagnostic.message).join('; ');
+      throw new Error(detail || 'engine renderer host rejected the projection frame');
+    }
+    surface.resizeToCanvas();
+    surface.renderOnce();
+    if (renderInspectionOnce) {
+      surface.start();
+      await waitForAnimationFrames(3);
+      surface.stop();
+    } else {
+      surface.start();
+    }
+    const readout = surface.readout();
+    voxelInspectionPanel.dataset.rendererHost = surface.kind;
+    voxelInspectionPanel.dataset.rendererAuthority = surface.authority;
+    voxelInspectionPanel.dataset.rendererStatus = readout.status;
+    voxelInspectionPanel.dataset.frameHash = readout.retainedFrameHash;
+    const pickPoints: readonly (readonly [number, number])[] = [
+      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.5],
+      [voxelInspectionCanvas.clientWidth * 0.25, voxelInspectionCanvas.clientHeight * 0.5],
+      [voxelInspectionCanvas.clientWidth * 0.75, voxelInspectionCanvas.clientHeight * 0.5],
+      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.35],
+      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.65],
+    ];
+    const pickHits = pickPoints
+      .map((point) => surface.pick({ point }).hint)
+      .filter((hint) => hint !== null);
+    voxelInspectionPanel.dataset.pickHitCount = String(pickHits.length);
+    setVoxelInspectionDiagnostic(
+      'ready',
+      `${projection.projectedVoxelCount} floor/wall voxels in ${projection.projectedNodeCount} engine nodes · ${projection.omittedCeilingVoxelCount} ceiling voxels omitted · engine frame ${readout.retainedFrameHash}`,
+    );
+  } catch (error) {
+    if (revision === voxelInspectionRevision) {
+      setVoxelInspectionDiagnostic('error', `Engine renderer unavailable: ${describeError(error)}`);
+    }
+  }
+}
+
+async function ensureVoxelInspectionSurface(
+  projection: VoxelInspectionProjection,
+): Promise<AshaRendererInspectionSurface> {
+  if (voxelInspectionSurface !== null) {
+    return voxelInspectionSurface;
+  }
+  voxelInspectionMount ??= mountAshaRendererInspectionSurface(voxelInspectionCanvas, {
+    autoStart: false,
+    clearColor: 0x10151c,
+    frame: projection.frame,
+    controls: {
+      initialPosition: projection.camera.position,
+      initialTarget: projection.camera.target,
+      moveSpeed: projection.camera.moveSpeed,
+      orbitDegreesPerPixel: 0.22,
+    },
+  });
+  try {
+    voxelInspectionSurface = await voxelInspectionMount;
+    return voxelInspectionSurface;
+  } catch (error) {
+    voxelInspectionMount = null;
+    throw error;
+  }
+}
+
+function setVoxelInspectionDiagnostic(state: 'loading' | 'ready' | 'error', message: string): void {
+  voxelInspectionDiagnostic.dataset.state = state;
+  voxelInspectionDiagnostic.textContent = message;
+}
+
+async function waitForAnimationFrames(count: number): Promise<void> {
+  for (let frame = 0; frame < count; frame += 1) {
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  }
 }
 
 interface VoxelPoint {

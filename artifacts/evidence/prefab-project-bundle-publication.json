@@ -7,16 +7,20 @@
       "id": 5721,
       "name": "asha-procgen-prefab-publishing-proof"
     },
-    "scene": {
-      "id": 5721,
-      "schemaVersion": 1,
-      "artifact": "scene/procgen-layout.scene.json"
-    },
+    "entryScene": 5721,
+    "scenes": [
+      {
+        "id": 5721,
+        "schemaVersion": 1,
+        "artifact": "scene/procgen-layout.scene.json"
+      }
+    ],
     "assetLock": {
       "artifact": "assets/lock.json",
       "assetCount": 2
     },
-    "generator": {
+    "generationProvenance": {
+      "provider": "asha-procgen.prefab-publisher",
       "seed": 14335,
       "version": 1,
       "params": "{\"candidateRef\":\"artifacts/samples/batch-v2/candidate-000/candidate-003-branch_merge_shortcut.json\",\"catalogId\":\"shape_catalog.2d_basic.v1\",\"matchId\":\"piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335\",\"placementId\":\"piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335\"}"

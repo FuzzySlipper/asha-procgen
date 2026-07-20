@@ -466,9 +466,11 @@ function buildManifest(
     bundleSchemaVersion: 1,
     protocolVersion: 1,
     project: { id: projectId(configuration.project.id), name: configuration.project.name },
-    scene: { id: sceneArtifact.id, schemaVersion: 1, artifact: configuration.scene.artifact },
+    entryScene: sceneArtifact.id,
+    scenes: [{ id: sceneArtifact.id, schemaVersion: 1, artifact: configuration.scene.artifact }],
     assetLock: { artifact: configuration.assetLockArtifact, assetCount: configuration.sourceAssets.length },
-    generator: {
+    generationProvenance: {
+      provider: 'asha-procgen.prefab-publisher',
       seed,
       version: 1,
       params: JSON.stringify({

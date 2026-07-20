@@ -415,6 +415,11 @@ Its Voxel tab uses the same deterministic extrusion compiler as
 When the selected placement matches the committed native evidence, the tab also
 shows the Rust authority voxel-state hash and engine pin. Other candidates are
 clearly labelled as unverified voxel proposals.
+Its separate Voxel 3D tab sends a ceiling-free floor/wall projection through
+the public engine-owned inspection renderer. Drag with the primary mouse button
+to orbit; focus the canvas and use W/A/S/D to move. Candidate changes atomically
+replace the retained frame. This tab is projection-only inspection and does not
+claim runtime, collision, navigation, native-render, or performance authority.
 
 ## Verification
 
@@ -442,9 +447,11 @@ the sample batch and intermediate artifact API, verifies the dark theme CSS, and
 checks the top generated standalone HTML preview for dark styling, SVG room and
 corridor elements, and required content labels. It also checks the viewer Build
 tab for the catalog piece placement grid, rendered cells, socket markers, and
-glued-exit links, and checks the Voxel tab for exposed isometric faces plus a
-matching native authority receipt. It uses Chromium to write
-layout/intermediate/build/voxel/standalone-preview screenshots plus a report under:
+glued-exit links, checks the Voxel tab for exposed isometric faces plus a
+matching native authority receipt, and exercises the engine-owned Voxel 3D
+mount, ceiling omission, public picking, and candidate frame replacement. It
+uses Chromium to write layout/intermediate/build/voxel/voxel-3d/standalone-preview
+screenshots plus a report under:
 
 ```text
 /tmp/asha-procgen-viewer-smoke/
@@ -454,7 +461,6 @@ layout/intermediate/build/voxel/standalone-preview screenshots plus a report und
 
 - No in-repo LLM harness.
 - No custom agent service.
-- No live ASHA runtime-backed viewer or renderer integration; the Voxel tab
-  projects committed native evidence and deterministic downstream build data.
-- No Daggerfall-style 3D embedding yet.
+- No runtime-backed 3D authority; Voxel 3D is an engine-rendered, projection-only
+  inspection of deterministic downstream build data.
 - No large accepted-layout corpus yet.

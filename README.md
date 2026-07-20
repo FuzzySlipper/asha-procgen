@@ -33,6 +33,7 @@ npm run typecheck
 npm run rust:check
 npm run rust:test
 npm run publish:asha-smoke
+npm run viewer:smoke
 ```
 
 ## ASHA Prefab and ProjectBundle Publishing Proof
@@ -74,6 +75,15 @@ unknown-material rejection. A separate voxel-conversion comparison preserves
 bounded model/material readback coverage, but it is not the mutation path under
 test. The proof does not claim 3D piece placement, exit-socket alignment,
 rendering, navigation, or performance evidence.
+
+## Engine Voxel Inspection
+
+The LAN viewer keeps the existing isometric `Voxel` evidence tab and adds a
+separate `Voxel 3D` inspection tab. The 3D view compiles the same placement
+extrusion, omits only its ceiling from the presentation frame, and mounts the
+public `@asha/renderer-host` inspection surface with mouse orbit and focused
+W/A/S/D controls. It is projection-only visual evidence, not RuntimeSession,
+collision, navigation, native-render, or performance authority.
 
 ## ASHA Boundary
 

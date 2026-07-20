@@ -999,11 +999,7 @@ async function renderVoxelInspection(): Promise<void> {
     }
     surface.resizeToCanvas();
     surface.renderOnce();
-    if (renderInspectionOnce) {
-      surface.start();
-      await waitForAnimationFrames(3);
-      surface.stop();
-    } else {
+    if (!renderInspectionOnce) {
       surface.start();
     }
     const readout = surface.readout();
@@ -1062,12 +1058,6 @@ async function ensureVoxelInspectionSurface(
 function setVoxelInspectionDiagnostic(state: 'loading' | 'ready' | 'error', message: string): void {
   voxelInspectionDiagnostic.dataset.state = state;
   voxelInspectionDiagnostic.textContent = message;
-}
-
-async function waitForAnimationFrames(count: number): Promise<void> {
-  for (let frame = 0; frame < count; frame += 1) {
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-  }
 }
 
 interface VoxelPoint {

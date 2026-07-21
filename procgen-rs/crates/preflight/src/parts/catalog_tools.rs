@@ -167,6 +167,14 @@ fn validate_piece_placement_policy(
             "Placement policy doorwayWidthCells must be a positive odd number.",
         ));
     }
+    if policy.doorway_width_cells != 1 {
+        diagnostics.push(fatal(
+            "catalog_doorway_width_unsupported",
+            None,
+            None,
+            "Placement policy schemaVersion 1 supports doorwayWidthCells=1 only; wider openings require authoritative oriented-footprint routing.",
+        ));
+    }
     if !policy.preserve_piece_boundaries {
         diagnostics.push(fatal(
             "catalog_piece_boundary_preservation_required",

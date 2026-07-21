@@ -45,8 +45,10 @@ Important top-level fields:
 
 Placement policy schema v1 has one supported contact mode,
 `glued_exits_only`, and requires `preservePieceBoundaries: true`. Its tunable
-values are `minimumClearanceCells`, `wallThicknessCells`, and the positive odd
-`doorwayWidthCells`. Clearance must be at least
+values are `minimumClearanceCells` and `wallThicknessCells`.
+`doorwayWidthCells` is versioned policy data, but schema v1 deliberately
+accepts only `1`; wider openings fail closed until placement routing owns their
+complete oriented footprint. Clearance must be at least
 `2 * wallThicknessCells + 1`; this leaves a route cell between the wall
 envelopes of separate pieces. Hinted origins are deterministically expanded by
 clearance plus wall thickness before the local placement search, so a dense
@@ -159,7 +161,9 @@ Matching filters by piece kind, required sockets, exit count, exit direction,
 and width. It considers allowed rotations/reflections and uses deterministic
 seeded tie-breaking when multiple shapes score equally. Rejections explain
 kind mismatches, missing sockets, exit-count gaps, and transform-specific exit
-compatibility failures.
+compatibility failures. Each matched exit retains its transformed shape-local
+`x`/`y`, direction, and width; placed instances translate those coordinates to
+absolute placement cells.
 
 ## Piece Placement Artifact
 
@@ -198,6 +202,14 @@ footprints to touch. The route search rejects occupied/reserved crossings and
 keeps every route outside the wall envelope of unrelated pieces. If no origin
 or route satisfies those constraints, assembly fails instead of falling back
 to an unsafe straight bridge.
+
+Each glued exit carries both placed endpoint cells, directions, and widths.
+Its owned connection route must include both endpoint cells, remain connected,
+and may enter an endpoint piece's wall envelope only through the outward tunnel
+defined by that exact transformed exit. Non-exit boundary cells are therefore
+walls even when another boundary happens to be closer. Placement protects an
+outward approach lane for every matched exit so later pieces cannot box in a
+declared route.
 
 Important instance fields:
 

@@ -21,6 +21,8 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_start_gate_1.east",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -44,12 +46,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_gate_1_goal.east",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 1,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_start_gate_1.west",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         }
@@ -73,12 +79,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_secondary_merge_1.east",
           "catalogExitId": "exit.south",
+          "x": 4,
+          "y": 2,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_start_merge_1.west",
           "catalogExitId": "exit.north",
+          "x": -1,
+          "y": 2,
           "direction": "west",
           "width": 1
         }
@@ -96,12 +106,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_safety_1_sluice_1.west",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_sluice_1_goal.east",
           "catalogExitId": "exit.east",
+          "x": 4,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -125,12 +139,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_key_1_gate_1.east",
           "catalogExitId": "exit.east",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_start_key_1.west",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -154,12 +172,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_start_treasure_key_1.west",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_treasure_key_1_treasure_1.east",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -183,12 +205,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_safety_1_sluice_1.east",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 1,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_start_safety_1.west",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         }
@@ -212,6 +238,8 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_gate_1_goal.west",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         }
@@ -235,12 +263,16 @@
         {
           "requirementExitId": "exit.corridor_connector_edge_treasure_1_goal.east",
           "catalogExitId": "exit.east",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.corridor_connector_edge_treasure_key_1_treasure_1.west",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -264,12 +296,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -287,12 +323,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -310,12 +350,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -333,12 +377,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -356,12 +404,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -379,12 +431,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -402,12 +458,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -425,12 +485,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -448,12 +512,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -471,12 +539,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -494,12 +566,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -517,12 +593,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -540,12 +620,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -563,12 +647,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -586,12 +674,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -609,12 +701,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -632,12 +728,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -655,12 +755,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -678,12 +782,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -701,12 +809,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -724,12 +836,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -747,12 +863,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -770,12 +890,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -793,12 +917,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -816,12 +944,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -839,12 +971,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -862,12 +998,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -885,12 +1025,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -908,12 +1052,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -931,12 +1079,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -954,12 +1106,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -977,12 +1133,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -1000,12 +1160,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -1023,12 +1187,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1046,12 +1214,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1069,12 +1241,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1092,12 +1268,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1115,12 +1295,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1138,12 +1322,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1161,12 +1349,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1184,12 +1376,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1207,12 +1403,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1230,12 +1430,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1253,12 +1457,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1276,12 +1484,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -1299,12 +1511,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -1322,12 +1538,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -1345,12 +1565,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1368,12 +1592,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1391,12 +1619,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1414,12 +1646,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1437,12 +1673,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1460,12 +1700,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1483,12 +1727,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1506,12 +1754,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1529,12 +1781,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1552,12 +1808,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1575,12 +1835,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1598,12 +1862,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -1621,12 +1889,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -1644,12 +1916,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -1667,12 +1943,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1690,12 +1970,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1713,12 +1997,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1736,12 +2024,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1759,12 +2051,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1782,12 +2078,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1805,12 +2105,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1828,12 +2132,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1851,12 +2159,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1874,12 +2186,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -1897,12 +2213,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1920,12 +2240,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1943,12 +2267,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -1966,12 +2294,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -1989,12 +2321,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2012,12 +2348,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2035,12 +2375,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -2058,12 +2402,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2081,12 +2429,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.south",
+          "x": 1,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -2104,12 +2456,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -2127,12 +2483,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.south",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.west",
+          "x": 2,
+          "y": 1,
           "direction": "east",
           "width": 1
         }
@@ -2150,12 +2510,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2173,12 +2537,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2196,12 +2564,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2219,12 +2591,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -2242,12 +2618,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         }
@@ -2265,12 +2645,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         }
@@ -2288,12 +2672,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         }
@@ -2311,12 +2699,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -2334,12 +2726,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -2357,12 +2753,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         }
@@ -2380,12 +2780,16 @@
         {
           "requirementExitId": "exit.segment_1.in",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_1.out",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2403,12 +2807,16 @@
         {
           "requirementExitId": "exit.bend_1.in",
           "catalogExitId": "exit.south",
+          "x": -1,
+          "y": 1,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_1.out",
           "catalogExitId": "exit.west",
+          "x": 1,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -2426,12 +2834,16 @@
         {
           "requirementExitId": "exit.segment_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 3,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_2.out",
           "catalogExitId": "exit.east",
+          "x": 0,
+          "y": -1,
           "direction": "north",
           "width": 1
         }
@@ -2449,12 +2861,16 @@
         {
           "requirementExitId": "exit.bend_2.in",
           "catalogExitId": "exit.west",
+          "x": 0,
+          "y": 2,
           "direction": "south",
           "width": 1
         },
         {
           "requirementExitId": "exit.bend_2.out",
           "catalogExitId": "exit.south",
+          "x": 2,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2472,12 +2888,16 @@
         {
           "requirementExitId": "exit.segment_3.in",
           "catalogExitId": "exit.east",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.segment_3.out",
           "catalogExitId": "exit.west",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }
@@ -2495,12 +2915,16 @@
         {
           "requirementExitId": "exit.corridor",
           "catalogExitId": "exit.west",
+          "x": -1,
+          "y": 0,
           "direction": "west",
           "width": 1
         },
         {
           "requirementExitId": "exit.room",
           "catalogExitId": "exit.east",
+          "x": 3,
+          "y": 0,
           "direction": "east",
           "width": 1
         }

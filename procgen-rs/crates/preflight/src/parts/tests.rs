@@ -1381,14 +1381,25 @@ mod tests {
 
     #[test]
     fn shape_matcher_rotates_exits_for_piece_requirements() {
-        let catalog = test_shape_catalog(vec![test_catalog_shape(
+        let mut shape = test_catalog_shape(
             "shape.room.one_east",
             &["room"],
             &["identity", "rotate90", "rotate180", "rotate270"],
             vec![test_catalog_exit("exit.east", "east")],
             Vec::new(),
             &["standard_room"],
-        )]);
+        );
+        shape.footprint = vec![
+            GridCell { x: 0, y: 0 },
+            GridCell { x: 1, y: 0 },
+            GridCell { x: 2, y: 0 },
+            GridCell { x: 0, y: 1 },
+            GridCell { x: 1, y: 1 },
+            GridCell { x: 2, y: 1 },
+        ];
+        shape.exits[0].x = 3;
+        shape.exits[0].y = 1;
+        let catalog = test_shape_catalog(vec![shape]);
         let plan = test_piece_plan(vec![test_piece_requirement(
             "piece.room.start",
             "room",
@@ -1404,6 +1415,9 @@ mod tests {
         assert_eq!(report.matches[0].shape_id, "shape.room.one_east");
         assert_eq!(report.matches[0].transform, "rotate270");
         assert_eq!(report.matches[0].exit_map[0].catalog_exit_id, "exit.east");
+        assert_eq!(report.matches[0].exit_map[0].x, 1);
+        assert_eq!(report.matches[0].exit_map[0].y, -1);
+        assert_eq!(report.matches[0].exit_map[0].direction, "north");
     }
 
     #[test]
@@ -1535,6 +1549,17 @@ mod tests {
                 && !instance.source_refs.is_empty()
         }));
         assert!(!placement.glued_exits.is_empty());
+        for glued in &placement.glued_exits {
+            let owner = format!("connection.{}", slugify_label(glued.id.as_str()));
+            let routed = placement
+                .connection_cells
+                .iter()
+                .filter(|cell| cell.instance_id == owner)
+                .map(|cell| (cell.x, cell.y))
+                .collect::<BTreeSet<_>>();
+            assert!(routed.contains(&(glued.from_cell.x, glued.from_cell.y)));
+            assert!(routed.contains(&(glued.to_cell.x, glued.to_cell.y)));
+        }
         assert!(placement.dangling_exits.is_empty());
     }
 
@@ -1613,12 +1638,14 @@ mod tests {
             .iter()
             .map(|cell| (cell.x, cell.y))
             .collect::<BTreeSet<_>>();
-        let unsafe_route_cell = unsafe_connection
+        let from_instance = unsafe_connection
+            .instances
+            .iter()
+            .find(|instance| instance.instance_id == glued.from_instance)
+            .expect("glued from instance should exist");
+        let unsafe_route_cell = from_instance
             .occupied_cells
             .iter()
-            .filter(|cell| {
-                cell.instance_id != glued.from_instance && cell.instance_id != glued.to_instance
-            })
             .flat_map(|cell| {
                 [
                     (cell.x + 1, cell.y),
@@ -1629,10 +1656,15 @@ mod tests {
             })
             .find(|position| {
                 !occupied_positions.contains(position) && !reserved_positions.contains(position)
+                    && *position != (glued.from_cell.x, glued.from_cell.y)
+                    && *position != (glued.to_cell.x, glued.to_cell.y)
             })
-            .expect("fixture should expose an unrelated piece wall-clearance cell");
-        unsafe_connection.connection_cells[0].x = unsafe_route_cell.0;
-        unsafe_connection.connection_cells[0].y = unsafe_route_cell.1;
+            .expect("fixture should expose a non-exit boundary cell");
+        unsafe_connection.connection_cells.push(PlacementCellRef {
+            instance_id: connection_owner,
+            x: unsafe_route_cell.0,
+            y: unsafe_route_cell.1,
+        });
         let report = validate_piece_placement(&unsafe_connection);
         assert!(report.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "piece_connection_wall_clearance_violated"
@@ -1658,13 +1690,51 @@ mod tests {
 
     #[test]
     fn grid_connectivity_distinguishes_cardinal_and_diagonal_neighbors() {
-        let origin = GridCell { x: 0, y: 0 };
-        let cardinal = GridCell { x: 1, y: 0 };
-        let diagonal = GridCell { x: 1, y: 1 };
+        let cardinal = (1, 0);
+        let diagonal = (1, 1);
 
-        assert!(cells_adjacent(&origin, &cardinal, GridConnectivity::FourWay));
-        assert!(!cells_adjacent(&origin, &diagonal, GridConnectivity::FourWay));
-        assert!(cells_adjacent(&origin, &diagonal, GridConnectivity::EightWay));
+        assert!(grid_neighbors((0, 0), GridConnectivity::FourWay).contains(&cardinal));
+        assert!(!grid_neighbors((0, 0), GridConnectivity::FourWay).contains(&diagonal));
+        assert!(grid_neighbors((0, 0), GridConnectivity::EightWay).contains(&diagonal));
+    }
+
+    #[test]
+    fn connection_routing_uses_declared_exits_instead_of_nearer_walls() {
+        let from_owner = "instance.room_a";
+        let to_owner = "instance.room_b";
+        let occupied_by_cell = [
+            ((0, 0), from_owner),
+            ((1, 0), from_owner),
+            ((0, 1), from_owner),
+            ((1, 1), from_owner),
+            ((5, 3), to_owner),
+            ((6, 3), to_owner),
+            ((5, 4), to_owner),
+            ((6, 4), to_owner),
+        ]
+        .into_iter()
+        .collect::<BTreeMap<_, _>>();
+        let start = GridCell { x: 2, y: 0 };
+        let end = GridCell { x: 4, y: 4 };
+        let route = route_bridge_cells(
+            &start,
+            &end,
+            from_owner,
+            to_owner,
+            "east",
+            "west",
+            GridConnectivity::FourWay,
+            &occupied_by_cell,
+            &BTreeSet::new(),
+            1,
+            (-10, 10, -10, 10),
+        )
+        .expect("declared transformed exits should have a safe route");
+
+        assert_eq!(route.first(), Some(&start));
+        assert_eq!(route.last(), Some(&end));
+        assert!(!route.contains(&GridCell { x: 2, y: 1 }));
+        assert!(!route.contains(&GridCell { x: 4, y: 3 }));
     }
 
     fn full_stack_geometry_fixture(seed: u64) -> Geometry2dArtifact {
@@ -1786,10 +1856,11 @@ mod tests {
     }
 
     fn test_catalog_exit(id: &str, direction: &str) -> CatalogExit {
+        let (x, y) = direction_vector(direction);
         CatalogExit {
             id: id.to_owned(),
-            x: 0,
-            y: 0,
+            x,
+            y,
             direction: direction.to_owned(),
             width: 1,
             tags: Vec::new(),
@@ -2031,6 +2102,16 @@ mod tests {
         assert!(codes.contains("catalog_minimum_clearance_too_small_for_walls"));
         assert!(codes.contains("catalog_doorway_width_invalid"));
         assert!(codes.contains("catalog_piece_boundary_preservation_required"));
+
+        catalog.placement_policy.minimum_clearance_cells = 3;
+        catalog.placement_policy.wall_thickness_cells = 1;
+        catalog.placement_policy.doorway_width_cells = 3;
+        catalog.placement_policy.preserve_piece_boundaries = true;
+        let report = inspect_shape_catalog(&catalog, Path::new("fixtures/test-catalog.json"));
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "catalog_doorway_width_unsupported"));
     }
 
     #[test]

@@ -61,10 +61,12 @@ proof adds a floor, three-voxel walls, and a ceiling, then submits bounded
 public `RuntimeSession`.
 
 The source placement carries a versioned policy for minimum inter-piece
-clearance, wall thickness, and doorway width. Occupied cells retain their piece
+clearance, wall thickness, and doorway width (schema v1 supports width one).
+Occupied cells retain their piece
 owners through extrusion; walls surround the separated footprints and only
-declared glued-exit connection routes become openings. The compiler rejects
-unsafe policy combinations and routes that would open an unrelated piece.
+connection routes anchored to exact transformed glued exits become openings.
+The compiler rejects unsafe policy combinations, wider unsupported openings,
+and routes that would open a non-exit boundary or unrelated piece.
 
 ```bash
 npm run voxel:asha-smoke

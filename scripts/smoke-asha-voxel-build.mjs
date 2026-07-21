@@ -160,7 +160,7 @@ function runDirectAuthorityBuild(sessionId, commands) {
     ['generate_chunks', commands.filter((command) => command.op === 'generateChunk')],
     ['clear_chunks', commands.filter((command) => command.op === 'fillRegion')],
     ['set_solids', commands.filter((command) => command.op === 'setVoxel')],
-  ];
+  ].flatMap(([name, phaseCommands]) => chunkCommands(name, phaseCommands, 5_000));
   const phases = commandPhases.map(([name, phaseCommands]) => {
     assert.ok(phaseCommands.length > 0, `${name} phase must not be empty`);
     const receipt = session.submitCommands({ commands: phaseCommands });
@@ -180,6 +180,14 @@ function runDirectAuthorityBuild(sessionId, commands) {
   assert.equal(history.cursor.entryCount, commandPhases.length);
   assert.deepEqual(history.entries.map((entry) => entry.commandCount), commandPhases.map(([, batch]) => batch.length));
   return { session, phases, history };
+}
+
+function chunkCommands(name, commands, limit) {
+  const chunks = [];
+  for (let index = 0; index < commands.length; index += limit) {
+    chunks.push([`${name}_${chunks.length + 1}`, commands.slice(index, index + limit)]);
+  }
+  return chunks;
 }
 
 function runConversionComparison(sourceInput, planRequest) {

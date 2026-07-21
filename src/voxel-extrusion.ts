@@ -21,7 +21,13 @@ export interface PiecePlacementPolicy {
 export interface PlacementGluedExit {
   readonly id: string;
   readonly fromInstance: string;
+  readonly fromCell: PlacementCell;
+  readonly fromDirection: 'north' | 'east' | 'south' | 'west';
+  readonly fromWidth: number;
   readonly toInstance: string;
+  readonly toCell: PlacementCell;
+  readonly toDirection: 'north' | 'east' | 'south' | 'west';
+  readonly toWidth: number;
 }
 
 export interface PiecePlacementForExtrusion {
@@ -31,6 +37,7 @@ export interface PiecePlacementForExtrusion {
   readonly placementPolicy: PiecePlacementPolicy;
   readonly occupiedCells: readonly PlacementOwnedCell[];
   readonly connectionCells: readonly PlacementOwnedCell[];
+  readonly reservedCells: readonly PlacementOwnedCell[];
   readonly gluedExits: readonly PlacementGluedExit[];
 }
 
@@ -96,9 +103,10 @@ export function compilePlacementExtrusion(
   const options = { ...DEFAULT_OPTIONS, ...overrides };
   validateOptions(options);
 
-  const occupiedByCell = ownedCellsByPosition(placement.occupiedCells);
+  const occupiedByCell = ownedCellsByPosition(placement.occupiedCells, 'occupied');
+  const reservedByCell = ownedCellsByPosition(placement.reservedCells, 'reserved');
   validateOwnedClearance(occupiedByCell, placement.placementPolicy);
-  const opening = declaredOpeningCells(placement, occupiedByCell);
+  const opening = declaredOpeningCells(placement, occupiedByCell, reservedByCell);
   const walkable = new Map<string, PlacementCell>();
   for (const cell of placement.occupiedCells) {
     walkable.set(cellKey(cell.x, cell.y), cell);
@@ -220,6 +228,11 @@ function validatePlacementPolicy(policy: PiecePlacementPolicy): void {
   ) {
     throw new Error('placement policy doorwayWidthCells must be a positive odd integer');
   }
+  if (policy.doorwayWidthCells !== 1) {
+    throw new Error(
+      'placement policy schema 1 supports doorwayWidthCells=1 only; wider openings require oriented placement routing',
+    );
+  }
   if (policy.preservePieceBoundaries !== true) {
     throw new Error('placement policy schema 1 requires preservePieceBoundaries=true');
   }
@@ -239,20 +252,21 @@ function validateOptions(options: VoxelExtrusionOptions): void {
 
 function ownedCellsByPosition(
   cells: readonly PlacementOwnedCell[],
+  kind: 'occupied' | 'reserved',
 ): ReadonlyMap<string, PlacementOwnedCell> {
   const byCell = new Map<string, PlacementOwnedCell>();
   for (const cell of cells) {
     if (!Number.isInteger(cell.x) || !Number.isInteger(cell.y)) {
-      throw new Error('piece placement occupied coordinates must be integers');
+      throw new Error(`piece placement ${kind} coordinates must be integers`);
     }
     if (typeof cell.instanceId !== 'string' || cell.instanceId.length === 0) {
-      throw new Error(`piece placement occupied cell ${cell.x},${cell.y} has no instance owner`);
+      throw new Error(`piece placement ${kind} cell ${cell.x},${cell.y} has no instance owner`);
     }
     const key = cellKey(cell.x, cell.y);
     const existing = byCell.get(key);
     if (existing !== undefined) {
       throw new Error(
-        `piece placement occupied cell ${key} is shared by ${existing.instanceId} and ${cell.instanceId}`,
+        `piece placement ${kind} cell ${key} is shared by ${existing.instanceId} and ${cell.instanceId}`,
       );
     }
     byCell.set(key, cell);
@@ -286,6 +300,7 @@ function validateOwnedClearance(
 function declaredOpeningCells(
   placement: PiecePlacementForExtrusion,
   occupiedByCell: ReadonlyMap<string, PlacementOwnedCell>,
+  reservedByCell: ReadonlyMap<string, PlacementOwnedCell>,
 ): ReadonlyMap<string, PlacementCell> {
   const openingsByOwner = new Map<string, PlacementGluedExit>();
   for (const glued of placement.gluedExits) {
@@ -296,9 +311,20 @@ function declaredOpeningCells(
       || glued.fromInstance.length === 0
       || typeof glued.toInstance !== 'string'
       || glued.toInstance.length === 0
+      || !validCell(glued.fromCell)
+      || !validCell(glued.toCell)
+      || !validDirection(glued.fromDirection)
+      || !validDirection(glued.toDirection)
+      || glued.fromWidth !== 1
+      || glued.toWidth !== 1
     ) {
-      throw new Error('piece placement glued exits require non-empty ids and endpoint instances');
+      throw new Error('piece placement glued exits require valid width-1 transformed endpoints');
     }
+    if (oppositeDirection(glued.fromDirection) !== glued.toDirection) {
+      throw new Error(`piece placement glued exit ${glued.id} has incompatible directions`);
+    }
+    validateEndpointGeometry(glued.id, glued.fromInstance, glued.fromCell, glued.fromDirection, occupiedByCell);
+    validateEndpointGeometry(glued.id, glued.toInstance, glued.toCell, glued.toDirection, occupiedByCell);
     const owner = `connection.${slugifyLabel(glued.id)}`;
     if (openingsByOwner.has(owner)) {
       throw new Error(`piece placement has duplicate routed opening owner ${owner}`);
@@ -306,9 +332,8 @@ function declaredOpeningCells(
     openingsByOwner.set(owner, glued);
   }
 
-  const seenOwners = new Set<string>();
   const openings = new Map<string, PlacementCell>();
-  const openingRadius = Math.floor(placement.placementPolicy.doorwayWidthCells / 2);
+  const routeCellsByOwner = new Map<string, Map<string, PlacementCell>>();
   for (const cell of placement.connectionCells) {
     if (!Number.isInteger(cell.x) || !Number.isInteger(cell.y)) {
       throw new Error('piece placement connection coordinates must be integers');
@@ -317,33 +342,57 @@ function declaredOpeningCells(
     if (glued === undefined) {
       throw new Error(`connection cell ${cell.x},${cell.y} is not owned by a declared glued exit`);
     }
-    seenOwners.add(cell.instanceId);
-    for (let dy = -openingRadius; dy <= openingRadius; dy += 1) {
-      for (let dx = -openingRadius; dx <= openingRadius; dx += 1) {
-        const opened = { x: cell.x + dx, y: cell.y + dy };
-        const occupied = occupiedByCell.get(cellKey(opened.x, opened.y));
-        if (
-          occupied !== undefined
-          && occupied.instanceId !== glued.fromInstance
-          && occupied.instanceId !== glued.toInstance
-        ) {
-          throw new Error(
-            `doorway ${glued.id} would open unrelated piece ${occupied.instanceId} at ${opened.x},${opened.y}`,
-          );
+    const key = cellKey(cell.x, cell.y);
+    const route = routeCellsByOwner.get(cell.instanceId) ?? new Map<string, PlacementCell>();
+    if (route.has(key)) {
+      throw new Error(`connection ${cell.instanceId} repeats route cell ${key}`);
+    }
+    route.set(key, cell);
+    routeCellsByOwner.set(cell.instanceId, route);
+    if (occupiedByCell.has(key)) {
+      throw new Error(`doorway ${glued.id} crosses occupied cell ${key}`);
+    }
+    const reserved = reservedByCell.get(key);
+    const declaredEndpointReservation = reserved !== undefined && (
+      (sameCell(cell, glued.fromCell) && reserved.instanceId === glued.fromInstance)
+      || (sameCell(cell, glued.toCell) && reserved.instanceId === glued.toInstance)
+    );
+    if (reserved !== undefined && !declaredEndpointReservation) {
+      throw new Error(`doorway ${glued.id} crosses reservation ${reserved.instanceId} at ${key}`);
+    }
+    validateOpeningWallClearance(
+      cell,
+      glued,
+      occupiedByCell,
+      placement.placementPolicy.wallThicknessCells,
+    );
+    openings.set(key, cell);
+  }
+  for (const [owner, glued] of openingsByOwner) {
+    const route = routeCellsByOwner.get(owner);
+    if (route === undefined) {
+      throw new Error(`declared glued exit ${owner} has no routed connection cells`);
+    }
+    const fromKey = cellKey(glued.fromCell.x, glued.fromCell.y);
+    const toKey = cellKey(glued.toCell.x, glued.toCell.y);
+    if (!route.has(fromKey) || !route.has(toKey)) {
+      throw new Error(`declared glued exit ${owner} route does not include both transformed exit cells`);
+    }
+    const reachable = new Set<string>([fromKey]);
+    const queue = [glued.fromCell];
+    while (queue.length > 0) {
+      const position = queue.shift();
+      if (position === undefined) break;
+      for (const neighbor of cardinalNeighbors(position)) {
+        const neighborKey = cellKey(neighbor.x, neighbor.y);
+        if (route.has(neighborKey) && !reachable.has(neighborKey)) {
+          reachable.add(neighborKey);
+          queue.push(neighbor);
         }
-        validateOpeningWallClearance(
-          opened,
-          glued,
-          occupiedByCell,
-          placement.placementPolicy.wallThicknessCells,
-        );
-        openings.set(cellKey(opened.x, opened.y), opened);
       }
     }
-  }
-  for (const owner of openingsByOwner.keys()) {
-    if (!seenOwners.has(owner)) {
-      throw new Error(`declared glued exit ${owner} has no routed connection cells`);
+    if (!reachable.has(toKey) || reachable.size !== route.size) {
+      throw new Error(`declared glued exit ${owner} route is disconnected`);
     }
   }
   return openings;
@@ -361,17 +410,82 @@ function validateOpeningWallClearance(
         continue;
       }
       const occupied = occupiedByCell.get(cellKey(opened.x + dx, opened.y + dy));
-      if (
-        occupied !== undefined
-        && occupied.instanceId !== glued.fromInstance
-        && occupied.instanceId !== glued.toInstance
-      ) {
+      if (occupied === undefined) continue;
+      const allowed = occupied.instanceId === glued.fromInstance
+        ? endpointTunnelContains(opened, glued.fromCell, glued.fromDirection, wallThickness)
+        : occupied.instanceId === glued.toInstance
+          ? endpointTunnelContains(opened, glued.toCell, glued.toDirection, wallThickness)
+          : false;
+      if (!allowed) {
         throw new Error(
-          `doorway ${glued.id} enters wall clearance of unrelated piece ${occupied.instanceId}`,
+          `doorway ${glued.id} enters non-exit wall clearance of piece ${occupied.instanceId}`,
         );
       }
     }
   }
+}
+
+function validateEndpointGeometry(
+  gluedId: string,
+  instanceId: string,
+  exit: PlacementCell,
+  direction: PlacementGluedExit['fromDirection'],
+  occupiedByCell: ReadonlyMap<string, PlacementOwnedCell>,
+): void {
+  const vector = directionVector(direction);
+  const inside = occupiedByCell.get(cellKey(exit.x - vector.x, exit.y - vector.y));
+  if (inside?.instanceId !== instanceId) {
+    throw new Error(
+      `glued exit ${gluedId} endpoint ${exit.x},${exit.y} is not on the declared ${direction} boundary of ${instanceId}`,
+    );
+  }
+}
+
+function endpointTunnelContains(
+  position: PlacementCell,
+  exit: PlacementCell,
+  direction: PlacementGluedExit['fromDirection'],
+  wallThickness: number,
+): boolean {
+  const vector = directionVector(direction);
+  for (let step = 0; step < wallThickness; step += 1) {
+    if (position.x === exit.x + vector.x * step && position.y === exit.y + vector.y * step) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function directionVector(direction: PlacementGluedExit['fromDirection']): PlacementCell {
+  switch (direction) {
+    case 'north': return { x: 0, y: -1 };
+    case 'east': return { x: 1, y: 0 };
+    case 'south': return { x: 0, y: 1 };
+    case 'west': return { x: -1, y: 0 };
+  }
+}
+
+function oppositeDirection(
+  direction: PlacementGluedExit['fromDirection'],
+): PlacementGluedExit['fromDirection'] {
+  switch (direction) {
+    case 'north': return 'south';
+    case 'east': return 'west';
+    case 'south': return 'north';
+    case 'west': return 'east';
+  }
+}
+
+function validCell(cell: PlacementCell | null | undefined): cell is PlacementCell {
+  return cell !== undefined && cell !== null && Number.isInteger(cell.x) && Number.isInteger(cell.y);
+}
+
+function validDirection(value: string | undefined): value is PlacementGluedExit['fromDirection'] {
+  return value === 'north' || value === 'east' || value === 'south' || value === 'west';
+}
+
+function sameCell(left: PlacementCell, right: PlacementCell): boolean {
+  return left.x === right.x && left.y === right.y;
 }
 
 function buildWallShell(

@@ -76,6 +76,7 @@ fn assemble_piece_placement(
     let mut reserved_cells = Vec::new();
     let mut occupied_positions: BTreeMap<(i32, i32), String> = BTreeMap::new();
     let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    let mut exit_protected_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
     for (index, matched) in shape_match.matches.iter().enumerate() {
         let Some(requirement) = requirements.get(matched.piece_id.as_str()).copied() else {
             return Err(format!(
@@ -96,11 +97,13 @@ fn assemble_piece_placement(
         );
         let origin = find_available_origin(
             shape,
+            &matched.exit_map,
             matched.transform.as_str(),
             &desired_origin,
             &catalog.placement_policy,
             &occupied_positions,
             &reserved_positions,
+            &exit_protected_positions,
         )
         .ok_or_else(|| {
             format!(
@@ -113,12 +116,19 @@ fn assemble_piece_placement(
         })?;
         let occupied = transform_cells(&shape.footprint, matched.transform.as_str(), &origin);
         let reserved = transform_cells(&shape.reserved_cells, matched.transform.as_str(), &origin);
+        let exit_protection = exit_route_protection(
+            &matched.exit_map,
+            &origin,
+            &occupied,
+            &catalog.placement_policy,
+        );
         for cell in &occupied {
             occupied_positions.insert((cell.x, cell.y), instance_id.clone());
         }
         for cell in &reserved {
             reserved_positions.insert((cell.x, cell.y));
         }
+        exit_protected_positions.extend(exit_protection);
 
         occupied_cells.extend(occupied.iter().map(|cell| PlacementCellRef {
             instance_id: instance_id.clone(),
@@ -131,6 +141,18 @@ fn assemble_piece_placement(
             y: cell.y,
         }));
 
+        let exit_map = matched
+            .exit_map
+            .iter()
+            .map(|exit| MatchedExit {
+                requirement_exit_id: exit.requirement_exit_id.clone(),
+                catalog_exit_id: exit.catalog_exit_id.clone(),
+                x: exit.x + origin.x,
+                y: exit.y + origin.y,
+                direction: exit.direction.clone(),
+                width: exit.width,
+            })
+            .collect();
         instances.push(PieceInstance {
             instance_id,
             piece_id: matched.piece_id.clone(),
@@ -141,7 +163,7 @@ fn assemble_piece_placement(
             origin,
             occupied_cells: occupied,
             reserved_cells: reserved,
-            exit_map: matched.exit_map.clone(),
+            exit_map,
             feature_placements: matched.socket_map.clone(),
             source_requirement_ref: matched.source_requirement_ref.clone(),
             source_refs: requirement.source_refs.clone(),
@@ -228,11 +250,13 @@ fn parse_i32_parts(value: &str) -> Vec<i32> {
 
 fn find_available_origin(
     shape: &CatalogShape,
+    exit_map: &[MatchedExit],
     transform: &str,
     desired_origin: &GridCell,
     policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
+    exit_protected_positions: &BTreeSet<(i32, i32)>,
 ) -> Option<GridCell> {
     for radius in 0_i32..=120 {
         for dy in -radius..=radius {
@@ -246,11 +270,13 @@ fn find_available_origin(
                 };
                 if origin_available(
                     shape,
+                    exit_map,
                     transform,
                     &origin,
                     policy,
                     occupied_positions,
                     reserved_positions,
+                    exit_protected_positions,
                 ) {
                     return Some(origin);
                 }
@@ -262,17 +288,21 @@ fn find_available_origin(
 
 fn origin_available(
     shape: &CatalogShape,
+    exit_map: &[MatchedExit],
     transform: &str,
     origin: &GridCell,
     policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
+    exit_protected_positions: &BTreeSet<(i32, i32)>,
 ) -> bool {
     let occupied = transform_cells(&shape.footprint, transform, origin);
     let reserved = transform_cells(&shape.reserved_cells, transform, origin);
+    let exit_protection = exit_route_protection(exit_map, origin, &occupied, policy);
     occupied.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
+            && !exit_protected_positions.contains(&(cell.x, cell.y))
             && clearance_available(
                 (cell.x, cell.y),
                 policy.minimum_clearance_cells,
@@ -281,7 +311,48 @@ fn origin_available(
     }) && reserved.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
+            && !exit_protected_positions.contains(&(cell.x, cell.y))
+    }) && exit_protection.iter().all(|position| {
+        !occupied_positions.contains_key(position)
+            && !reserved_positions.contains(position)
+            && !exit_protected_positions.contains(position)
     })
+}
+
+fn exit_route_protection(
+    exit_map: &[MatchedExit],
+    origin: &GridCell,
+    occupied: &[GridCell],
+    policy: &PiecePlacementPolicy,
+) -> BTreeSet<(i32, i32)> {
+    let occupied = occupied
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    let approach_length = policy.minimum_clearance_cells + policy.wall_thickness_cells;
+    let mut protected = BTreeSet::new();
+    for exit in exit_map {
+        let exit_position = (exit.x + origin.x, exit.y + origin.y);
+        let (direction_x, direction_y) = direction_vector(exit.direction.as_str());
+        for step in 0..=approach_length {
+            let lane = (
+                exit_position.0 + direction_x * step,
+                exit_position.1 + direction_y * step,
+            );
+            for dy in -policy.wall_thickness_cells..=policy.wall_thickness_cells {
+                for dx in -policy.wall_thickness_cells..=policy.wall_thickness_cells {
+                    if dx.abs() + dy.abs() > policy.wall_thickness_cells {
+                        continue;
+                    }
+                    let position = (lane.0 + dx, lane.1 + dy);
+                    if !occupied.contains(&position) {
+                        protected.insert(position);
+                    }
+                }
+            }
+        }
+    }
+    protected
 }
 
 fn clearance_available(
@@ -323,8 +394,20 @@ fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec
             link_id: link.id.clone(),
             from_instance: from.instance_id.clone(),
             from_exit: from_exit.requirement_exit_id.clone(),
+            from_cell: GridCell {
+                x: from_exit.x,
+                y: from_exit.y,
+            },
+            from_direction: from_exit.direction.clone(),
+            from_width: from_exit.width,
             to_instance: to.instance_id.clone(),
             to_exit: to_exit.requirement_exit_id.clone(),
+            to_cell: GridCell {
+                x: to_exit.x,
+                y: to_exit.y,
+            },
+            to_direction: to_exit.direction.clone(),
+            to_width: to_exit.width,
             source_ref: link.source_ref.clone(),
             tags: link.tags.clone(),
         });
@@ -373,8 +456,7 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
         };
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
         let bridge = route_instance_connection(
-            from,
-            to,
+            glued,
             placement.grid_connectivity,
             &occupied_by_cell,
             &reserved,
@@ -383,8 +465,16 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
         )
         .ok_or_else(|| {
             format!(
-                "no clearance-safe connection route exists for glued exit {} between {} and {}",
-                glued.id, from.instance_id, to.instance_id
+                "no clearance-safe connection route exists for glued exit {} between {} at {},{} {} and {} at {},{} {}",
+                glued.id,
+                from.instance_id,
+                glued.from_cell.x,
+                glued.from_cell.y,
+                glued.from_direction,
+                to.instance_id,
+                glued.to_cell.x,
+                glued.to_cell.y,
+                glued.to_direction
             )
         })?;
         for cell in bridge {
@@ -399,50 +489,26 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
 }
 
 fn route_instance_connection(
-    from: &PieceInstance,
-    to: &PieceInstance,
+    glued: &GluedExit,
     connectivity: GridConnectivity,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
-    let mut pairs = from
-        .occupied_cells
-        .iter()
-        .flat_map(|from_cell| {
-            to.occupied_cells
-                .iter()
-                .map(move |to_cell| (from_cell, to_cell, grid_distance(from_cell, to_cell, connectivity)))
-        })
-        .collect::<Vec<_>>();
-    pairs.sort_by(|left, right| {
-        left.2
-            .cmp(&right.2)
-            .then_with(|| left.0.x.cmp(&right.0.x))
-            .then_with(|| left.0.y.cmp(&right.0.y))
-            .then_with(|| left.1.x.cmp(&right.1.x))
-            .then_with(|| left.1.y.cmp(&right.1.y))
-    });
-    for (start, end, _) in pairs {
-        if cells_adjacent(start, end, connectivity) {
-            continue;
-        }
-        if let Some(route) = route_bridge_cells(
-            start,
-            end,
-            from.instance_id.as_str(),
-            to.instance_id.as_str(),
-            connectivity,
-            occupied_by_cell,
-            reserved,
-            wall_clearance,
-            bounds,
-        ) {
-            return Some(route);
-        }
-    }
-    None
+    route_bridge_cells(
+        &glued.from_cell,
+        &glued.to_cell,
+        glued.from_instance.as_str(),
+        glued.to_instance.as_str(),
+        glued.from_direction.as_str(),
+        glued.to_direction.as_str(),
+        connectivity,
+        occupied_by_cell,
+        reserved,
+        wall_clearance,
+        bounds,
+    )
 }
 
 fn placement_route_bounds(placement: &PiecePlacement) -> (i32, i32, i32, i32) {
@@ -482,6 +548,8 @@ fn route_bridge_cells(
     end: &GridCell,
     from_instance: &str,
     to_instance: &str,
+    from_direction: &str,
+    to_direction: &str,
     connectivity: GridConnectivity,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
@@ -508,6 +576,10 @@ fn route_bridge_cells(
                     neighbor,
                     from_instance,
                     to_instance,
+                    start,
+                    from_direction,
+                    end,
+                    to_direction,
                     occupied_by_cell,
                     reserved,
                     wall_clearance,
@@ -522,16 +594,17 @@ fn route_bridge_cells(
     if !seen.contains(&end_position) {
         return None;
     }
-    let mut path = Vec::new();
+    let mut path = vec![GridCell {
+        x: end_position.0,
+        y: end_position.1,
+    }];
     let mut cursor = end_position;
     while cursor != start_position {
-        if cursor != end_position {
-            path.push(GridCell {
-                x: cursor.0,
-                y: cursor.1,
-            });
-        }
         cursor = *previous.get(&cursor)?;
+        path.push(GridCell {
+            x: cursor.0,
+            y: cursor.1,
+        });
     }
     path.reverse();
     Some(path)
@@ -545,6 +618,10 @@ fn bridge_position_available(
     position: (i32, i32),
     from_instance: &str,
     to_instance: &str,
+    from_exit: &GridCell,
+    from_direction: &str,
+    to_exit: &GridCell,
+    to_direction: &str,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
@@ -558,7 +635,14 @@ fn bridge_position_available(
                 continue;
             }
             if let Some(owner) = occupied_by_cell.get(&(position.0 + dx, position.1 + dy)) {
-                if *owner != from_instance && *owner != to_instance {
+                let allowed = if *owner == from_instance {
+                    endpoint_tunnel_contains(position, from_exit, from_direction, wall_clearance)
+                } else if *owner == to_instance {
+                    endpoint_tunnel_contains(position, to_exit, to_direction, wall_clearance)
+                } else {
+                    false
+                };
+                if !allowed {
                     return false;
                 }
             }
@@ -567,24 +651,24 @@ fn bridge_position_available(
     true
 }
 
-fn grid_distance(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> i32 {
-    let dx = (from.x - to.x).abs();
-    let dy = (from.y - to.y).abs();
-    match connectivity {
-        GridConnectivity::FourWay => dx + dy,
-        GridConnectivity::EightWay => dx.max(dy),
-    }
+fn endpoint_tunnel_contains(
+    position: (i32, i32),
+    exit: &GridCell,
+    direction: &str,
+    wall_clearance: i32,
+) -> bool {
+    let (dx, dy) = direction_vector(direction);
+    (0..wall_clearance)
+        .any(|step| position == (exit.x + dx * step, exit.y + dy * step))
 }
 
-fn cells_adjacent(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> bool {
-    if from.x == to.x && from.y == to.y {
-        return true;
-    }
-    let dx = (from.x - to.x).abs();
-    let dy = (from.y - to.y).abs();
-    match connectivity {
-        GridConnectivity::FourWay => dx + dy == 1,
-        GridConnectivity::EightWay => dx.max(dy) == 1,
+fn direction_vector(direction: &str) -> (i32, i32) {
+    match direction {
+        "north" => (0, -1),
+        "east" => (1, 0),
+        "south" => (0, 1),
+        "west" => (-1, 0),
+        _ => (0, 0),
     }
 }
 
@@ -726,16 +810,17 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
         .iter()
         .map(|glued| format!("connection.{}", slugify_label(glued.id.as_str())))
         .collect::<BTreeSet<_>>();
-    let connection_endpoints = placement
+    let connection_specs = placement
         .glued_exits
         .iter()
         .map(|glued| {
             (
                 format!("connection.{}", slugify_label(glued.id.as_str())),
-                (glued.from_instance.as_str(), glued.to_instance.as_str()),
+                glued,
             )
         })
         .collect::<BTreeMap<_, _>>();
+    let mut connection_by_owner: BTreeMap<&str, BTreeSet<(i32, i32)>> = BTreeMap::new();
     let mut used_connection_owners = BTreeSet::new();
     for cell in &placement.connection_cells {
         if !declared_connection_owners.contains(&cell.instance_id) {
@@ -761,7 +846,17 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 ),
             ));
         }
+        let connection_spec = connection_specs.get(&cell.instance_id).copied();
         if let Some(reserver) = reserved_by_cell.get(&(cell.x, cell.y)) {
+            let declared_endpoint_reservation = connection_spec
+                .map(|glued| {
+                    ((cell.x == glued.from_cell.x && cell.y == glued.from_cell.y)
+                        && *reserver == glued.from_instance)
+                        || ((cell.x == glued.to_cell.x && cell.y == glued.to_cell.y)
+                            && *reserver == glued.to_instance)
+                })
+                .unwrap_or(false);
+            if !declared_endpoint_reservation {
             diagnostics.push(fatal(
                 "piece_connection_cell_reserved",
                 None,
@@ -771,8 +866,9 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                     cell.x, cell.y, cell.instance_id, reserver
                 ),
             ));
+            }
         }
-        if let Some((from_instance, to_instance)) = connection_endpoints.get(&cell.instance_id) {
+        if let Some(glued) = connection_spec {
             let wall_clearance = placement.placement_policy.wall_thickness_cells;
             'clearance: for dy in -wall_clearance..=wall_clearance {
                 for dx in -wall_clearance..=wall_clearance {
@@ -782,7 +878,25 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                     let Some(occupier) = occupied_by_cell.get(&(cell.x + dx, cell.y + dy)) else {
                         continue;
                     };
-                    if occupier != from_instance && occupier != to_instance {
+                    let position = (cell.x, cell.y);
+                    let allowed = if *occupier == glued.from_instance {
+                        endpoint_tunnel_contains(
+                            position,
+                            &glued.from_cell,
+                            glued.from_direction.as_str(),
+                            wall_clearance,
+                        )
+                    } else if *occupier == glued.to_instance {
+                        endpoint_tunnel_contains(
+                            position,
+                            &glued.to_cell,
+                            glued.to_direction.as_str(),
+                            wall_clearance,
+                        )
+                    } else {
+                        false
+                    };
+                    if !allowed {
                         diagnostics.push(fatal(
                             "piece_connection_wall_clearance_violated",
                             None,
@@ -809,6 +923,10 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 ),
             ));
         }
+        connection_by_owner
+            .entry(cell.instance_id.as_str())
+            .or_default()
+            .insert((cell.x, cell.y));
     }
     for owner in declared_connection_owners {
         if !used_connection_owners.contains(owner.as_str()) {
@@ -817,6 +935,49 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 None,
                 None,
                 format!("Declared glued exit {owner} has no routed connection cells."),
+            ));
+            continue;
+        }
+        let Some(glued) = connection_specs.get(owner.as_str()).copied() else {
+            continue;
+        };
+        let owner_cells = connection_by_owner
+            .get(owner.as_str())
+            .cloned()
+            .unwrap_or_default();
+        let from_position = (glued.from_cell.x, glued.from_cell.y);
+        let to_position = (glued.to_cell.x, glued.to_cell.y);
+        if !owner_cells.contains(&from_position) || !owner_cells.contains(&to_position) {
+            diagnostics.push(fatal(
+                "piece_connection_exit_endpoint_missing",
+                None,
+                None,
+                format!(
+                    "Connection {} must include declared exit cells {},{} and {},{}.",
+                    owner,
+                    from_position.0,
+                    from_position.1,
+                    to_position.0,
+                    to_position.1
+                ),
+            ));
+            continue;
+        }
+        let mut reachable = BTreeSet::from([from_position]);
+        let mut queue = VecDeque::from([from_position]);
+        while let Some(position) = queue.pop_front() {
+            for neighbor in grid_neighbors(position, placement.grid_connectivity) {
+                if owner_cells.contains(&neighbor) && reachable.insert(neighbor) {
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+        if !reachable.contains(&to_position) || reachable.len() != owner_cells.len() {
+            diagnostics.push(fatal(
+                "piece_connection_route_disconnected",
+                None,
+                None,
+                format!("Connection {owner} is not one connected declared-exit route."),
             ));
         }
     }
@@ -882,6 +1043,27 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             ));
             continue;
         };
+        if glued.from_cell.x != from_exit.x
+            || glued.from_cell.y != from_exit.y
+            || glued.from_direction != from_exit.direction
+            || glued.from_width != from_exit.width
+            || glued.to_cell.x != to_exit.x
+            || glued.to_cell.y != to_exit.y
+            || glued.to_direction != to_exit.direction
+            || glued.to_width != to_exit.width
+        {
+            diagnostics.push(fatal(
+                "piece_glued_exit_metadata_mismatch",
+                None,
+                None,
+                format!(
+                    "Glued exit {} endpoint metadata does not match its placed transformed exits.",
+                    glued.id
+                ),
+            ));
+        }
+        validate_instance_exit_geometry(from, from_exit, glued.id.as_str(), diagnostics);
+        validate_instance_exit_geometry(to, to_exit, glued.id.as_str(), diagnostics);
         if opposite_direction(from_exit.direction.as_str()) != to_exit.direction {
             diagnostics.push(fatal(
                 "piece_glued_exit_incompatible",
@@ -902,6 +1084,36 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             format!(
                 "Instance {} has dangling required exit {} ({})",
                 dangling.instance_id, dangling.exit_id, dangling.reason
+            ),
+        ));
+    }
+}
+
+fn validate_instance_exit_geometry(
+    instance: &PieceInstance,
+    exit: &MatchedExit,
+    glued_id: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let (dx, dy) = direction_vector(exit.direction.as_str());
+    let inside = (exit.x - dx, exit.y - dy);
+    if !instance
+        .occupied_cells
+        .iter()
+        .any(|cell| (cell.x, cell.y) == inside)
+    {
+        diagnostics.push(fatal(
+            "piece_glued_exit_not_on_boundary",
+            None,
+            None,
+            format!(
+                "Glued exit {} uses {} exit {} at {},{}, which is not outside its declared boundary direction {}.",
+                glued_id,
+                instance.instance_id,
+                exit.requirement_exit_id,
+                exit.x,
+                exit.y,
+                exit.direction
             ),
         ));
     }

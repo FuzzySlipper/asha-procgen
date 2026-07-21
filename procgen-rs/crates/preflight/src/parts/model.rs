@@ -639,6 +639,8 @@ struct MatchedPiece {
 struct MatchedExit {
     requirement_exit_id: String,
     catalog_exit_id: String,
+    x: i32,
+    y: i32,
     direction: String,
     width: i32,
 }
@@ -709,8 +711,14 @@ struct GluedExit {
     link_id: String,
     from_instance: String,
     from_exit: String,
+    from_cell: GridCell,
+    from_direction: String,
+    from_width: i32,
     to_instance: String,
     to_exit: String,
+    to_cell: GridCell,
+    to_direction: String,
+    to_width: i32,
     source_ref: String,
     tags: Vec<String>,
 }
@@ -812,7 +820,7 @@ struct CatalogShape {
     tags: Vec<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 #[allow(dead_code)]
 struct GridCell {

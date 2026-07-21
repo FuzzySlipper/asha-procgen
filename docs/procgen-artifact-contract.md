@@ -292,9 +292,11 @@ runtime authority.
 
 The top-level `placementPolicy` is copied into generated placement artifacts.
 Schema v1 exposes minimum piece clearance, glued-exits-only contact, wall
-thickness, odd doorway width, and mandatory boundary preservation. It rejects
+thickness, doorway width, and mandatory boundary preservation. It rejects
 clearance smaller than `2 * wallThicknessCells + 1` so downstream extrusion can
-preserve walls and open only declared routed connections.
+preserve walls and open only declared routed connections. Schema v1 supports
+only `doorwayWidthCells: 1`; wider values fail closed until the placement
+artifact can carry an authoritative oriented opening footprint.
 
 Catalog inspection uses kind `asha_procgen.catalog_inspection.v1` and reports
 shape counts, piece kinds, feature socket kinds, exit directions, transforms,
@@ -340,7 +342,8 @@ or ASHA runtime integration.
 Validation rejects configured-clearance violations between all distinct piece
 instances. Linked pieces remain separate and connect only through
 glued-exit-owned route cells. Routes may share cells, but may not cross
-occupied/reserved cells or enter the wall clearance of an unrelated piece.
+occupied/reserved cells, enter a non-exit wall, or omit their exact transformed
+catalog exit endpoints.
 
 Validation uses kind `asha_procgen.validation.piece_placement.v1`.
 

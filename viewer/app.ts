@@ -324,8 +324,14 @@ interface GluedExit {
   readonly linkId: string;
   readonly fromInstance: string;
   readonly fromExit: string;
+  readonly fromCell: GridCell;
+  readonly fromDirection: 'north' | 'east' | 'south' | 'west';
+  readonly fromWidth: number;
   readonly toInstance: string;
   readonly toExit: string;
+  readonly toCell: GridCell;
+  readonly toDirection: 'north' | 'east' | 'south' | 'west';
+  readonly toWidth: number;
   readonly sourceRef: string;
   readonly tags: readonly string[];
 }
@@ -339,6 +345,8 @@ interface DanglingExit {
 interface MatchedExit {
   readonly requirementExitId: string;
   readonly catalogExitId: string;
+  readonly x: number;
+  readonly y: number;
   readonly direction: string;
   readonly width: number;
 }

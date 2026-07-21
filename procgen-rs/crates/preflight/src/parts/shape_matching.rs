@@ -181,16 +181,34 @@ fn static_shape_rejection_reasons(
 }
 
 fn transformed_catalog_exits(shape: &CatalogShape, transform: &str) -> Vec<CatalogExit> {
+    let transformed_footprint = shape
+        .footprint
+        .iter()
+        .map(|cell| transform_cell(cell.x, cell.y, transform))
+        .collect::<Vec<_>>();
+    let min_x = transformed_footprint
+        .iter()
+        .map(|cell| cell.0)
+        .min()
+        .unwrap_or(0);
+    let min_y = transformed_footprint
+        .iter()
+        .map(|cell| cell.1)
+        .min()
+        .unwrap_or(0);
     shape
         .exits
         .iter()
-        .map(|exit| CatalogExit {
-            id: exit.id.clone(),
-            x: exit.x,
-            y: exit.y,
-            direction: transform_direction(exit.direction.as_str(), transform).to_owned(),
-            width: exit.width,
-            tags: exit.tags.clone(),
+        .map(|exit| {
+            let (x, y) = transform_cell(exit.x, exit.y, transform);
+            CatalogExit {
+                id: exit.id.clone(),
+                x: x - min_x,
+                y: y - min_y,
+                direction: transform_direction(exit.direction.as_str(), transform).to_owned(),
+                width: exit.width,
+                tags: exit.tags.clone(),
+            }
         })
         .collect()
 }
@@ -255,7 +273,9 @@ fn match_exits(
         mapped.push(MatchedExit {
             requirement_exit_id: required_exit.id.clone(),
             catalog_exit_id: catalog_exit.id.clone(),
-            direction: required_exit.direction.clone(),
+            x: catalog_exit.x,
+            y: catalog_exit.y,
+            direction: catalog_exit.direction.clone(),
             width: catalog_exit.width,
         });
     }

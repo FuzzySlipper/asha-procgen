@@ -469,3 +469,5 @@ screenshots plus a report under:
 - No runtime-backed 3D authority; Voxel 3D is an engine-rendered, projection-only
   inspection of deterministic downstream build data.
 - No large accepted-layout corpus yet.
+- No doorway widths above one in placement-policy schema v1. Wider values fail
+  closed until Rust routing validates the complete oriented opening footprint.

@@ -25,54 +25,66 @@
     "ceilingMaterial": 3
   },
   "counts": {
-    "walkableCells": 1571,
-    "declaredOpeningCells": 1169,
-    "boundaryCells": 1923,
-    "solidVoxels": 8911,
-    "requiredChunksForDirectCommandLane": 2706,
-    "sourceVertices": 26733,
-    "sourceTriangles": 8911
+    "walkableCells": 2334,
+    "declaredOpeningCells": 1932,
+    "boundaryCells": 2805,
+    "solidVoxels": 13083,
+    "requiredChunksForDirectCommandLane": 3960,
+    "sourceVertices": 39249,
+    "sourceTriangles": 13083
   },
   "buildBounds": {
     "min": {
       "x": 7,
       "y": 0,
-      "z": 7
+      "z": 5
     },
     "maxExclusive": {
-      "x": 112,
+      "x": 119,
       "y": 5,
-      "z": 93
+      "z": 97
     }
   },
   "authority": {
     "mutationPath": "RuntimeSessionFacade.submitCommands",
     "phases": [
       {
-        "name": "generate_chunks",
-        "submitted": 2706,
-        "accepted": 2706,
+        "name": "generate_chunks_1",
+        "submitted": 3960,
+        "accepted": 3960,
         "rejected": 0
       },
       {
-        "name": "clear_chunks",
-        "submitted": 2706,
-        "accepted": 2706,
+        "name": "clear_chunks_1",
+        "submitted": 3960,
+        "accepted": 3960,
         "rejected": 0
       },
       {
-        "name": "set_solids",
-        "submitted": 8911,
-        "accepted": 8911,
+        "name": "set_solids_1",
+        "submitted": 5000,
+        "accepted": 5000,
+        "rejected": 0
+      },
+      {
+        "name": "set_solids_2",
+        "submitted": 5000,
+        "accepted": 5000,
+        "rejected": 0
+      },
+      {
+        "name": "set_solids_3",
+        "submitted": 3083,
+        "accepted": 3083,
         "rejected": 0
       }
     ],
-    "submittedCommands": 14323,
-    "acceptedCommands": 14323,
+    "submittedCommands": 21003,
+    "acceptedCommands": 21003,
     "rejectedCommands": 0,
-    "historyEntryCount": 3,
-    "voxelStateHash": "fnv1a64:5e44bbb7cdec236d",
-    "deterministicRepeatHash": "fnv1a64:5e44bbb7cdec236d",
+    "historyEntryCount": 5,
+    "voxelStateHash": "fnv1a64:933d069f1822e623",
+    "deterministicRepeatHash": "fnv1a64:933d069f1822e623",
     "deterministic": true,
     "rejectedUnknownMaterialWithoutMutation": true,
     "unknownMaterialRejection": {
@@ -83,22 +95,22 @@
   "conversionComparison": {
     "role": "bounded_model_readback_comparison_only",
     "registered": true,
-    "plannedOutputVoxels": 8911,
-    "previewVoxelCount": 8911,
-    "appliedVoxelCount": 8911,
-    "residentVoxelCount": 8911,
+    "plannedOutputVoxels": 13083,
+    "previewVoxelCount": 13083,
+    "appliedVoxelCount": 13083,
+    "residentVoxelCount": 13083,
     "materialCounts": [
       {
         "material": 1,
-        "voxelCount": 5769
+        "voxelCount": 8415
       },
       {
         "material": 2,
-        "voxelCount": 1571
+        "voxelCount": 2334
       },
       {
         "material": 3,
-        "voxelCount": 1571
+        "voxelCount": 2334
       }
     ],
     "boundedReadbackSamples": [
@@ -130,7 +142,7 @@
         "material": 3
       }
     ],
-    "outputHash": "fnv1a64:3e74d6a2cb3f0224",
+    "outputHash": "fnv1a64:78488a03c2d05f98",
     "rejectedStalePreviewWithoutMutation": true
   },
   "nonClaims": [

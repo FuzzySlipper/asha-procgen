@@ -110,6 +110,18 @@ if (JSON.stringify(placement.placementPolicy) !== JSON.stringify(catalog.placeme
 if (!Array.isArray(placement.connectionCells) || placement.connectionCells.length === 0) {
   throw new Error('placement emitted no connection cells');
 }
+for (const glued of placement.gluedExits) {
+  const owner = `connection.${slugifyLabel(glued.id)}`;
+  const routed = new Set(placement.connectionCells
+    .filter((cell) => cell.instanceId === owner)
+    .map((cell) => `${cell.x},${cell.y}`));
+  if (
+    !routed.has(`${glued.fromCell.x},${glued.fromCell.y}`)
+    || !routed.has(`${glued.toCell.x},${glued.toCell.y}`)
+  ) {
+    throw new Error(`placement route ${owner} omitted a transformed catalog exit endpoint`);
+  }
+}
 
 console.log(
   JSON.stringify({
@@ -126,3 +138,11 @@ console.log(
     validationOk: validation.ok,
   }),
 );
+
+function slugifyLabel(label) {
+  const slug = label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return slug.length === 0 ? 'fork' : slug;
+}

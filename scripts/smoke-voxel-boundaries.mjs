@@ -22,11 +22,18 @@ const placement = {
   gridConnectivity: 'four_way',
   placementPolicy: policy,
   occupiedCells,
+  reservedCells: [],
   connectionCells: [2, 3, 4].map((x) => ({ instanceId: connectionOwner, x, y: 0 })),
   gluedExits: [{
     id: 'glue.room_a.room_b',
     fromInstance: 'instance.room_a',
+    fromCell: { x: 2, y: 0 },
+    fromDirection: 'east',
+    fromWidth: 1,
     toInstance: 'instance.room_b',
+    toCell: { x: 4, y: 0 },
+    toDirection: 'west',
+    toWidth: 1,
   }],
 };
 
@@ -40,6 +47,32 @@ for (const x of [2, 3, 4]) {
 }
 assert.ok(hasSolid(plan, 2, 1, 1, 1), 'room-facing wall is missing outside the declared opening');
 assert.ok(hasSolid(plan, 4, 1, 1, 1), 'second room-facing wall is missing outside the declared opening');
+
+const offsetPlacement = {
+  ...placement,
+  placementId: 'piece_placement.offset_exit_smoke',
+  occupiedCells: [
+    ...ownedSquare('instance.room_a', 0, 0),
+    ...ownedSquare('instance.room_b', 5, 3),
+  ],
+  connectionCells: [
+    { instanceId: connectionOwner, x: 2, y: 0 },
+    { instanceId: connectionOwner, x: 3, y: 0 },
+    { instanceId: connectionOwner, x: 3, y: 1 },
+    { instanceId: connectionOwner, x: 3, y: 2 },
+    { instanceId: connectionOwner, x: 3, y: 3 },
+    { instanceId: connectionOwner, x: 3, y: 4 },
+    { instanceId: connectionOwner, x: 4, y: 4 },
+  ],
+  gluedExits: [{
+    ...placement.gluedExits[0],
+    toCell: { x: 4, y: 4 },
+  }],
+};
+const offsetPlan = compilePlacementExtrusion(offsetPlacement);
+assert.equal(offsetPlan.openingCellCount, 7);
+assert.ok(hasSolid(offsetPlan, 2, 1, 1, 1), 'nearer non-exit wall on room A was opened');
+assert.ok(hasSolid(offsetPlan, 4, 1, 3, 1), 'nearer non-exit wall on room B was opened');
 
 assert.throws(
   () => compilePlacementExtrusion({
@@ -68,13 +101,30 @@ assert.throws(
 assert.throws(
   () => compilePlacementExtrusion({
     ...placement,
+    placementPolicy: { ...policy, doorwayWidthCells: 3 },
+  }),
+  /supports doorwayWidthCells=1 only/,
+);
+assert.throws(
+  () => compilePlacementExtrusion({
+    ...placement,
     connectionCells: [{ instanceId: 'connection.undeclared', x: 2, y: 0 }],
   }),
   /not owned by a declared glued exit/,
 );
+assert.throws(
+  () => compilePlacementExtrusion({
+    ...placement,
+    connectionCells: [
+      ...placement.connectionCells,
+      { instanceId: connectionOwner, x: 2, y: 1 },
+    ],
+  }),
+  /enters non-exit wall clearance/,
+);
 
 console.log(
-  `voxel boundary smoke passed; ${plan.walkableCellCount} walkable cells, ${plan.openingCellCount} declared opening cells, ${plan.boundaryCellCount} boundary cells`,
+  `voxel boundary smoke passed; ${plan.walkableCellCount} walkable cells, ${plan.openingCellCount} declared opening cells, ${plan.boundaryCellCount} boundary cells; offset exits kept nearer walls closed`,
 );
 
 function ownedSquare(instanceId, minX, minY) {

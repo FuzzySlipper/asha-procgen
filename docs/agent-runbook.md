@@ -416,9 +416,10 @@ When the selected placement matches the committed native evidence, the tab also
 shows the Rust authority voxel-state hash and engine pin. Other candidates are
 clearly labelled as unverified voxel proposals.
 Its separate Voxel 3D tab sends a ceiling-free floor/wall projection through
-the public engine-owned inspection renderer. Drag with the primary mouse button
-to orbit; focus the canvas and use W/A/S/D to move. Candidate changes atomically
-replace the retained frame. This tab is projection-only inspection and does not
+the public engine-owned inspection renderer and procedural grid. Drag with the
+primary mouse button or use Arrow keys to orbit; focus the canvas and use
+W/A/S/D to move, and use +/− or the wheel to zoom. Candidate changes atomically
+replace the retained frame and grid. This tab is projection-only inspection and does not
 claim runtime, collision, navigation, native-render, or performance authority.
 
 ## Verification

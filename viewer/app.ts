@@ -404,10 +404,12 @@ let currentPlacementValidation: ValidationReport | null = null;
 let voxelInspectionSurface: AshaRendererInspectionSurface | null = null;
 let voxelInspectionMount: Promise<AshaRendererInspectionSurface> | null = null;
 let voxelInspectionRevision = 0;
+let voxelInspectionReadoutFrame: number | null = null;
 
 voxelInspectionCanvas.addEventListener('pointerdown', () => voxelInspectionCanvas.focus());
 window.addEventListener('pagehide', () => {
   voxelInspectionRevision += 1;
+  stopVoxelInspectionReadoutSync();
   voxelInspectionSurface?.dispose();
   voxelInspectionSurface = null;
   voxelInspectionMount = null;
@@ -644,6 +646,7 @@ function renderBatchList(
     const button = document.createElement('button');
     button.className = 'candidate-button';
     button.type = 'button';
+    button.dataset.candidateId = entry.candidateId;
     button.dataset.selected = entry.candidateId === selectedCandidateId ? 'true' : 'false';
     button.addEventListener('click', () => onSelect(entry));
 
@@ -932,6 +935,7 @@ function renderActiveView(): void {
   if (!inspectionActive) {
     voxelInspectionRevision += 1;
     voxelInspectionSurface?.stop();
+    stopVoxelInspectionReadoutSync();
   }
   if (inspectionActive) {
     void renderVoxelInspection();
@@ -997,12 +1001,18 @@ async function renderVoxelInspection(): Promise<void> {
       const detail = receipt.diagnostics.map((diagnostic) => diagnostic.message).join('; ');
       throw new Error(detail || 'engine renderer host rejected the projection frame');
     }
+    const gridReceipt = surface.setGrid(projection.grid);
+    if (!gridReceipt.applied || gridReceipt.grid === null) {
+      const detail = gridReceipt.diagnostics.map((diagnostic) => diagnostic.message).join('; ');
+      throw new Error(detail || 'engine renderer host rejected the inspection grid');
+    }
     surface.resizeToCanvas();
     surface.renderOnce();
     if (!renderInspectionOnce) {
       surface.start();
     }
-    const readout = surface.readout();
+    const readout = syncVoxelInspectionReadout(surface);
+    startVoxelInspectionReadoutSync(surface);
     voxelInspectionPanel.dataset.rendererHost = surface.kind;
     voxelInspectionPanel.dataset.rendererAuthority = surface.authority;
     voxelInspectionPanel.dataset.rendererStatus = readout.status;
@@ -1039,6 +1049,7 @@ async function ensureVoxelInspectionSurface(
     autoStart: false,
     clearColor: 0x10151c,
     frame: projection.frame,
+    initialGrid: projection.grid,
     controls: {
       initialPosition: projection.camera.position,
       initialTarget: projection.camera.target,
@@ -1052,6 +1063,41 @@ async function ensureVoxelInspectionSurface(
   } catch (error) {
     voxelInspectionMount = null;
     throw error;
+  }
+}
+
+function syncVoxelInspectionReadout(
+  surface: AshaRendererInspectionSurface,
+): ReturnType<AshaRendererInspectionSurface['readout']> {
+  const readout = surface.readout();
+  voxelInspectionPanel.dataset.cameraRevision = String(readout.cameraRevision);
+  voxelInspectionPanel.dataset.cameraDistance = readout.cameraDistance.toFixed(3);
+  voxelInspectionPanel.dataset.lastCameraChange = readout.lastCameraChange;
+  voxelInspectionPanel.dataset.dragging = String(readout.dragging);
+  voxelInspectionPanel.dataset.pressedMovementKeys = readout.pressedMovementKeys.join(',');
+  voxelInspectionPanel.dataset.pressedOrbitKeys = readout.pressedOrbitKeys.join(',');
+  voxelInspectionPanel.dataset.gridRevision = String(readout.gridRevision);
+  voxelInspectionPanel.dataset.gridLineCount = String(readout.grid?.renderedLineCount ?? 0);
+  return readout;
+}
+
+function startVoxelInspectionReadoutSync(surface: AshaRendererInspectionSurface): void {
+  stopVoxelInspectionReadoutSync();
+  const sync = (): void => {
+    if (surface !== voxelInspectionSurface || activeView !== 'voxel3d') {
+      voxelInspectionReadoutFrame = null;
+      return;
+    }
+    syncVoxelInspectionReadout(surface);
+    voxelInspectionReadoutFrame = requestAnimationFrame(sync);
+  };
+  voxelInspectionReadoutFrame = requestAnimationFrame(sync);
+}
+
+function stopVoxelInspectionReadoutSync(): void {
+  if (voxelInspectionReadoutFrame !== null) {
+    cancelAnimationFrame(voxelInspectionReadoutFrame);
+    voxelInspectionReadoutFrame = null;
   }
 }
 

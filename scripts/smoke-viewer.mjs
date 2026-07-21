@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
@@ -173,19 +173,26 @@ try {
   if (!voxel3dDom.includes('data-state="ready"')) {
     throw new Error(`Voxel 3D engine mount was not ready: ${attributeValue(voxel3dDom, 'data-state')}`);
   }
+  if (!voxel3dDom.includes('Arrow keys to orbit') || !voxel3dDom.includes('wheel to zoom')) {
+    throw new Error('Voxel 3D tab did not expose keyboard orbit and zoom controls');
+  }
   const projectedVoxelCount = Number(attributeValue(voxel3dDom, 'data-projected-voxel-count'));
   const omittedCeilingVoxelCount = Number(attributeValue(voxel3dDom, 'data-omitted-ceiling-voxel-count'));
   const voxel3dFrameHash = attributeValue(voxel3dDom, 'data-frame-hash');
   const voxel3dPlacementId = attributeValue(voxel3dDom, 'data-placement-id');
   const voxel3dPickHitCount = Number(attributeValue(voxel3dDom, 'data-pick-hit-count'));
+  const voxel3dGridLineCount = Number(attributeValue(voxel3dDom, 'data-grid-line-count'));
+  const voxel3dGridRevision = Number(attributeValue(voxel3dDom, 'data-grid-revision'));
   if (
     projectedVoxelCount < 500
     || omittedCeilingVoxelCount <= 0
     || voxel3dFrameHash.length === 0
     || voxel3dPickHitCount <= 0
+    || voxel3dGridLineCount <= 0
+    || voxel3dGridRevision < 1
   ) {
     throw new Error(
-      `Voxel 3D projection evidence is incomplete: projected=${projectedVoxelCount}, omitted=${omittedCeilingVoxelCount}, picks=${voxel3dPickHitCount}`,
+      `Voxel 3D projection evidence is incomplete: projected=${projectedVoxelCount}, omitted=${omittedCeilingVoxelCount}, picks=${voxel3dPickHitCount}, grid=${voxel3dGridLineCount}`,
     );
   }
   const alternateVoxel3dUrl = `${baseUrl}/?inspection=once&candidate=${encodeURIComponent(alternateVoxelEntry.candidateId)}#voxel3d`;
@@ -199,6 +206,11 @@ try {
   ) {
     throw new Error('Voxel 3D candidate switching did not refresh the engine frame deterministically');
   }
+  const voxel3dInteraction = await exerciseEngineInspection(
+    chromium,
+    `${baseUrl}/?candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel3d`,
+    alternateVoxelEntry.candidateId,
+  );
   const screenshots = [
     {
       name: 'layout-desktop.png',
@@ -234,7 +246,7 @@ try {
       name: 'voxel-3d-desktop.png',
       url: `${baseUrl}/?candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel3d`,
       size: '1200,820',
-      engineRenderer: true,
+      capturedByInteractionProbe: true,
     },
     {
       name: 'standalone-preview-desktop.png',
@@ -249,10 +261,17 @@ try {
   ];
   for (const screenshot of screenshots) {
     const out = join(outDir, screenshot.name);
+    if (screenshot.capturedByInteractionProbe) {
+      const file = await stat(out);
+      if (file.size < 10_000) {
+        throw new Error(`${screenshot.name} looks too small to be a useful screenshot`);
+      }
+      continue;
+    }
     await execFileAsync(chromium, [
       '--headless',
       '--no-sandbox',
-      screenshot.engineRenderer ? '--enable-unsafe-swiftshader' : '--disable-gpu',
+      '--disable-gpu',
       '--run-all-compositor-stages-before-draw',
       '--virtual-time-budget=3000',
       `--window-size=${screenshot.size}`,
@@ -298,9 +317,12 @@ try {
       omittedCeilingVoxels: omittedCeilingVoxelCount,
       frameHash: voxel3dFrameHash,
       pickHits: voxel3dPickHitCount,
+      gridLines: voxel3dGridLineCount,
+      gridRevision: voxel3dGridRevision,
       alternatePlacementId,
       alternateFrameHash,
       rendererAuthority: 'projection_only_inspection',
+      interaction: voxel3dInteraction,
     },
     screenshots: screenshots.map((screenshot) => join(outDir, screenshot.name)),
   };
@@ -374,6 +396,210 @@ async function dumpEngineDom(chromium, url) {
     url,
   ], { maxBuffer: 16 * 1024 * 1024 });
   return stdout;
+}
+
+async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
+  const profileDir = join(outDir, 'chromium-cdp-profile');
+  const cdpPort = Number(process.env.VIEWER_SMOKE_CDP_PORT ?? port + 1000);
+  await rm(profileDir, { recursive: true, force: true });
+  const browser = spawn(chromium, [
+    '--headless',
+    '--no-sandbox',
+    '--enable-unsafe-swiftshader',
+    `--remote-debugging-port=${cdpPort}`,
+    `--user-data-dir=${profileDir}`,
+    '--window-size=1200,820',
+    url,
+  ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  let browserLog = '';
+  browser.stderr.on('data', (chunk) => {
+    browserLog += chunk.toString();
+  });
+  let cdp;
+  try {
+    const page = await waitForCdpPage(cdpPort, url);
+    cdp = await connectCdp(page.webSocketDebuggerUrl);
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
+    const initial = await inspectionDataset(cdp);
+    if (initial.gridLineCount <= 0 || initial.gridRevision < 1) {
+      throw new Error(`engine grid was not realized: lines=${initial.gridLineCount}, revision=${initial.gridRevision}`);
+    }
+    const rect = await evaluateCdp(cdp, `(() => {
+      const rect = document.querySelector('#voxel-3d-canvas').getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    })()`);
+    const x = rect.x + rect.width * 0.5;
+    const y = rect.y + rect.height * 0.5;
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
+
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowRight', code: 'ArrowRight' });
+    await delay(180);
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight' });
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'keyboard_orbit');
+    const keyboardOrbit = await inspectionDataset(cdp);
+
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'w', code: 'KeyW' });
+    await delay(180);
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'w', code: 'KeyW' });
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'keyboard_movement');
+    const keyboardMovement = await inspectionDataset(cdp);
+
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: '+', code: 'NumpadAdd' });
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: '+', code: 'NumpadAdd' });
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'keyboard_zoom');
+    const keyboardZoom = await inspectionDataset(cdp);
+
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x + 80, y: y + 30, button: 'left', buttons: 1 });
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x + 80, y: y + 30, button: 'left', clickCount: 1 });
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'pointer_orbit');
+    const pointerOrbit = await inspectionDataset(cdp);
+
+    await cdp.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x, y, deltaX: 0, deltaY: -120 });
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'wheel_zoom');
+    const wheelZoom = await inspectionDataset(cdp);
+
+    const screenshot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+    await writeFile(join(outDir, 'voxel-3d-desktop.png'), screenshot.data, 'base64');
+
+    const switched = await evaluateCdp(cdp, `(() => {
+      const button = [...document.querySelectorAll('.candidate-button')]
+        .find((candidate) => candidate.dataset.candidateId === ${JSON.stringify(alternateCandidateId)});
+      button?.click();
+      return button !== undefined;
+    })()`);
+    if (!switched) {
+      throw new Error(`alternate candidate button was not found: ${alternateCandidateId}`);
+    }
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.placementId !== ${JSON.stringify(initial.placementId)}`, true);
+    const replacement = await inspectionDataset(cdp);
+    if (replacement.gridRevision <= initial.gridRevision || replacement.gridLineCount <= 0) {
+      throw new Error(
+        `candidate replacement did not replace the engine grid: initial=${initial.gridRevision}, replacement=${replacement.gridRevision}`,
+      );
+    }
+    const revisions = [
+      initial.cameraRevision,
+      keyboardOrbit.cameraRevision,
+      keyboardMovement.cameraRevision,
+      keyboardZoom.cameraRevision,
+      pointerOrbit.cameraRevision,
+      wheelZoom.cameraRevision,
+    ];
+    if (revisions.some((revision, index) => index > 0 && revision <= revisions[index - 1])) {
+      throw new Error(`engine camera revisions did not advance for every control path: ${revisions.join(',')}`);
+    }
+    return {
+      cameraRevisions: revisions,
+      initialDistance: initial.cameraDistance,
+      finalDistance: wheelZoom.cameraDistance,
+      controlPaths: ['keyboard_orbit', 'keyboard_movement', 'keyboard_zoom', 'pointer_orbit', 'wheel_zoom'],
+      gridLines: replacement.gridLineCount,
+      initialGridRevision: initial.gridRevision,
+      replacementGridRevision: replacement.gridRevision,
+      replacementPlacementId: replacement.placementId,
+    };
+  } catch (error) {
+    throw new Error(`${error.message}\nChromium log:\n${browserLog}`);
+  } finally {
+    cdp?.close();
+    browser.kill('SIGTERM');
+    await waitForChildExit(browser);
+    await rm(profileDir, { recursive: true, force: true });
+  }
+}
+
+async function inspectionDataset(cdp) {
+  return await evaluateCdp(cdp, `(() => {
+    const data = document.querySelector('#voxel-3d-panel').dataset;
+    return {
+      cameraRevision: Number(data.cameraRevision),
+      cameraDistance: Number(data.cameraDistance),
+      gridRevision: Number(data.gridRevision),
+      gridLineCount: Number(data.gridLineCount),
+      lastCameraChange: data.lastCameraChange,
+      placementId: data.placementId,
+    };
+  })()`);
+}
+
+async function waitForCdpPage(cdpPort, url) {
+  const started = Date.now();
+  while (Date.now() - started < 10_000) {
+    try {
+      const targets = await fetch(`http://127.0.0.1:${cdpPort}/json/list`).then((response) => response.json());
+      const page = targets.find((target) => target.type === 'page' && target.url.startsWith(url.split('#')[0]));
+      if (page?.webSocketDebuggerUrl) return page;
+    } catch {
+      // Chromium is still starting.
+    }
+    await delay(50);
+  }
+  throw new Error(`Chromium CDP page did not start on port ${cdpPort}`);
+}
+
+async function connectCdp(url) {
+  const socket = new WebSocket(url);
+  await new Promise((resolve, reject) => {
+    socket.addEventListener('open', resolve, { once: true });
+    socket.addEventListener('error', reject, { once: true });
+  });
+  let nextId = 0;
+  const pending = new Map();
+  socket.addEventListener('message', (event) => {
+    const message = JSON.parse(event.data);
+    const request = pending.get(message.id);
+    if (request === undefined) return;
+    pending.delete(message.id);
+    if (message.error) request.reject(new Error(message.error.message));
+    else request.resolve(message.result);
+  });
+  return {
+    send(method, params = {}) {
+      const id = ++nextId;
+      return new Promise((resolve, reject) => {
+        pending.set(id, { resolve, reject });
+        socket.send(JSON.stringify({ id, method, params }));
+      });
+    },
+    close() {
+      socket.close();
+    },
+  };
+}
+
+async function evaluateCdp(cdp, expression) {
+  const response = await cdp.send('Runtime.evaluate', {
+    expression,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  if (response.exceptionDetails) {
+    throw new Error(response.exceptionDetails.exception?.description ?? response.exceptionDetails.text);
+  }
+  return response.result.value;
+}
+
+async function waitForCdpValue(cdp, expression, expected) {
+  const started = Date.now();
+  let actual;
+  while (Date.now() - started < 10_000) {
+    actual = await evaluateCdp(cdp, expression);
+    if (actual === expected) return;
+    await delay(50);
+  }
+  throw new Error(`timed out waiting for ${expression}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+}
+
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function waitForChildExit(child) {
+  if (child.exitCode !== null || child.signalCode !== null) return;
+  await new Promise((resolve) => child.once('exit', resolve));
 }
 
 function attributeValue(dom, name) {

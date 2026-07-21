@@ -248,7 +248,8 @@ body {
 }
 
 .voxel-3d-panel {
-  min-width: 900px;
+  width: 100%;
+  min-width: 720px;
   min-height: 620px;
   height: calc(100vh - 94px);
   border: 1px solid var(--border);
@@ -268,9 +269,16 @@ body {
   right: 14px;
   left: 14px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 24px;
   pointer-events: none;
+}
+
+.voxel-3d-header > * {
+  padding: 6px 8px;
+  border-radius: 5px;
+  background: rgb(15 21 28 / 82%);
 }
 
 .voxel-3d-header h2,
@@ -292,6 +300,7 @@ body {
 }
 
 .voxel-3d-controls {
+  max-width: 360px;
   text-align: right;
 }
 

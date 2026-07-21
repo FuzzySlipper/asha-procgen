@@ -44,6 +44,14 @@ for (const entry of entries.slice(0, 2)) {
   if (projection.frame.ops.filter((op) => op.op === 'createLight').length !== 2) {
     throw new Error(`inspection frame for ${plan.placementId} is missing engine light descriptors`);
   }
+  if (
+    projection.grid.visible !== true
+    || projection.grid.plane !== 'xz'
+    || projection.grid.grid.coordinateSystem !== 'rightHandedYUp'
+    || projection.grid.grid.spacing.some((spacing) => spacing !== 1)
+  ) {
+    throw new Error(`inspection projection for ${plan.placementId} has an invalid engine grid descriptor`);
+  }
   projections.push(projection);
 }
 
@@ -58,6 +66,9 @@ const viewerSource = await readFile(resolve(repoRoot, 'viewer/app.ts'), 'utf8');
 const projectionSource = await readFile(resolve(repoRoot, 'src/voxel-inspection-projection.ts'), 'utf8');
 if (!/from '@asha\/renderer-host'/.test(viewerSource)) {
   throw new Error('viewer does not import the engine renderer host from its package root');
+}
+if (!/initialGrid: projection\.grid/.test(viewerSource) || !/surface\.setGrid\(projection\.grid\)/.test(viewerSource)) {
+  throw new Error('viewer does not mount and replace the public engine grid with its voxel projection');
 }
 const forbiddenRendererImport = /(?:from\s+|import\()['"](?:three(?:\/|['"])|@asha\/renderer-three)/;
 if (forbiddenRendererImport.test(`${viewerSource}\n${projectionSource}`)) {

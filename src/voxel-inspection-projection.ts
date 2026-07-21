@@ -1,4 +1,9 @@
-import { renderHandle, type RenderDiff, type RenderFrameDiff } from '@asha/contracts';
+import {
+  renderHandle,
+  type EditorGridDescriptor,
+  type RenderDiff,
+  type RenderFrameDiff,
+} from '@asha/contracts';
 
 import type { VoxelExtrusionPlan } from './voxel-extrusion.js';
 
@@ -9,6 +14,7 @@ export interface VoxelInspectionProjection {
   readonly projectedVoxelCount: number;
   readonly projectedNodeCount: number;
   readonly omittedCeilingVoxelCount: number;
+  readonly grid: EditorGridDescriptor;
   readonly camera: {
     readonly position: readonly [number, number, number];
     readonly target: readonly [number, number, number];
@@ -111,6 +117,7 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
   const centerZ = plan.buildBounds.min.z + depth / 2;
   const radius = Math.max(width, depth, height, 8);
   const target = [centerX, plan.buildBounds.min.y + Math.min(height / 2, 2), centerZ] as const;
+  const gridFadeEnd = Math.max(radius * 3, 48);
 
   return {
     frame: { ops: [...voxelOps, ...lightOps] },
@@ -119,6 +126,28 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
     projectedVoxelCount: projectedVoxels.length,
     projectedNodeCount: boxes.length,
     omittedCeilingVoxelCount,
+    grid: {
+      visible: true,
+      grid: {
+        coordinateSystem: 'rightHandedYUp',
+        // Keep the presentation grid just above the top of the floor cubes so it remains legible.
+        origin: [plan.buildBounds.min.x, plan.buildBounds.min.y + 1.002, plan.buildBounds.min.z],
+        spacing: [1, 1, 1],
+      },
+      plane: 'xz',
+      snapAnchor: 'boundary',
+      style: {
+        minorColor: [0.36, 0.42, 0.48, 0.7],
+        majorColor: [0.58, 0.64, 0.7, 0.9],
+        xAxisColor: [0.8, 0.25, 0.22, 1],
+        yAxisColor: [0.28, 0.75, 0.38, 1],
+        zAxisColor: [0.25, 0.48, 0.9, 1],
+        majorLineEvery: 5,
+        opacity: 0.78,
+        fadeStart: Math.max(radius, 16),
+        fadeEnd: gridFadeEnd,
+      },
+    },
     camera: {
       position: [
         centerX + radius * 0.5,

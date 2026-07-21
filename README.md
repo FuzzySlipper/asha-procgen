@@ -81,8 +81,9 @@ rendering, navigation, or performance evidence.
 The LAN viewer keeps the existing isometric `Voxel` evidence tab and adds a
 separate `Voxel 3D` inspection tab. The 3D view compiles the same placement
 extrusion, omits only its ceiling from the presentation frame, and mounts the
-public `@asha/renderer-host` inspection surface with mouse orbit and focused
-W/A/S/D controls. It is projection-only visual evidence, not RuntimeSession,
+public `@asha/renderer-host` inspection surface with its procedural grid, mouse
+or arrow-key orbit, focused W/A/S/D movement, and keyboard/wheel zoom. It is
+projection-only visual evidence, not RuntimeSession,
 collision, navigation, native-render, or performance authority.
 
 ## ASHA Boundary

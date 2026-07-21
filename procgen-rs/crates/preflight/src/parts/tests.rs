@@ -1519,6 +1519,7 @@ mod tests {
         assert!(report.ok, "{:?}", report.diagnostics);
         assert_eq!(placement.kind, "asha_procgen.piece_placement.v1");
         assert_eq!(placement.grid_connectivity, GridConnectivity::FourWay);
+        assert_eq!(placement.placement_policy, PiecePlacementPolicy::default());
         assert!(placement.occupied_cells.len() >= placement.instances.len());
         assert!(!placement.connection_cells.is_empty());
         assert!(placement
@@ -1579,7 +1580,7 @@ mod tests {
         assert!(report
             .diagnostics
             .iter()
-            .any(|diagnostic| diagnostic.code == "piece_unplanned_occupied_adjacency"));
+            .any(|diagnostic| diagnostic.code == "piece_minimum_clearance_violated"));
 
         let mut dangling = placement.clone();
         dangling.dangling_exits.push(DanglingExit {
@@ -1592,6 +1593,50 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "piece_required_exit_dangling"));
+
+        let mut unsafe_connection = placement.clone();
+        let connection_owner = unsafe_connection.connection_cells[0].instance_id.clone();
+        let glued = unsafe_connection
+            .glued_exits
+            .iter()
+            .find(|glued| {
+                format!("connection.{}", slugify_label(glued.id.as_str())) == connection_owner
+            })
+            .expect("connection owner should resolve to a glued exit");
+        let occupied_positions = unsafe_connection
+            .occupied_cells
+            .iter()
+            .map(|cell| (cell.x, cell.y))
+            .collect::<BTreeSet<_>>();
+        let reserved_positions = unsafe_connection
+            .reserved_cells
+            .iter()
+            .map(|cell| (cell.x, cell.y))
+            .collect::<BTreeSet<_>>();
+        let unsafe_route_cell = unsafe_connection
+            .occupied_cells
+            .iter()
+            .filter(|cell| {
+                cell.instance_id != glued.from_instance && cell.instance_id != glued.to_instance
+            })
+            .flat_map(|cell| {
+                [
+                    (cell.x + 1, cell.y),
+                    (cell.x - 1, cell.y),
+                    (cell.x, cell.y + 1),
+                    (cell.x, cell.y - 1),
+                ]
+            })
+            .find(|position| {
+                !occupied_positions.contains(position) && !reserved_positions.contains(position)
+            })
+            .expect("fixture should expose an unrelated piece wall-clearance cell");
+        unsafe_connection.connection_cells[0].x = unsafe_route_cell.0;
+        unsafe_connection.connection_cells[0].y = unsafe_route_cell.1;
+        let report = validate_piece_placement(&unsafe_connection);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "piece_connection_wall_clearance_violated"
+        }));
 
         let mut unreachable = placement;
         unreachable.glued_exits.clear();
@@ -1711,6 +1756,7 @@ mod tests {
             schema_version: 1,
             catalog_id: "shape_catalog.test.v1".to_owned(),
             cell_size: 1,
+            placement_policy: PiecePlacementPolicy::default(),
             shapes,
         }
     }
@@ -1957,6 +2003,7 @@ mod tests {
         assert_eq!(report.kind, "asha_procgen.catalog_inspection.v1");
         assert_eq!(report.catalog_id, "shape_catalog.2d_basic.v1");
         assert_eq!(report.shape_count, catalog.shapes.len());
+        assert_eq!(report.placement_policy, PiecePlacementPolicy::default());
         assert!(report.diagnostics.is_empty(), "{:?}", report.diagnostics);
         for required in ["room", "corridor", "connector", "threshold", "reward", "key"] {
             assert!(report.piece_kinds.contains(&required.to_owned()));
@@ -1965,6 +2012,25 @@ mod tests {
             assert!(report.exit_directions.contains(&required.to_owned()));
         }
         assert!(report.transforms.contains(&"rotate90".to_owned()));
+    }
+
+    #[test]
+    fn placement_policy_fails_closed_when_walls_or_boundaries_are_unsafe() {
+        let mut catalog = test_shape_catalog(Vec::new());
+        catalog.placement_policy.minimum_clearance_cells = 2;
+        catalog.placement_policy.wall_thickness_cells = 1;
+        catalog.placement_policy.doorway_width_cells = 2;
+        catalog.placement_policy.preserve_piece_boundaries = false;
+        let report = inspect_shape_catalog(&catalog, Path::new("fixtures/test-catalog.json"));
+        let codes = report
+            .diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.code.as_str())
+            .collect::<BTreeSet<_>>();
+
+        assert!(codes.contains("catalog_minimum_clearance_too_small_for_walls"));
+        assert!(codes.contains("catalog_doorway_width_invalid"));
+        assert!(codes.contains("catalog_piece_boundary_preservation_required"));
     }
 
     #[test]

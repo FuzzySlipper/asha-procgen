@@ -4,7 +4,11 @@ import {
   type AshaRendererInspectionSurface,
 } from '@asha/renderer-host';
 
-import { compilePlacementExtrusion, type VoxelExtrusionPlan } from '../src/voxel-extrusion.js';
+import {
+  compilePlacementExtrusion,
+  type PiecePlacementPolicy,
+  type VoxelExtrusionPlan,
+} from '../src/voxel-extrusion.js';
 import {
   buildVoxelInspectionProjection,
   type VoxelInspectionProjection,
@@ -236,6 +240,7 @@ interface ShapeCatalog {
   readonly kind: string;
   readonly catalogId: string;
   readonly cellSize: number;
+  readonly placementPolicy: PiecePlacementPolicy;
   readonly shapes: readonly CatalogShape[];
 }
 
@@ -277,6 +282,7 @@ interface PiecePlacement {
   readonly sourceCatalogRef?: string;
   readonly cellSize: number;
   readonly gridConnectivity: 'four_way' | 'eight_way';
+  readonly placementPolicy: PiecePlacementPolicy;
   readonly instances: readonly PieceInstance[];
   readonly gluedExits: readonly GluedExit[];
   readonly occupiedCells: readonly PlacementCellRef[];
@@ -1363,7 +1369,7 @@ function renderShapeCatalog(
   stats.setAttribute('class', 'intermediate-region-detail');
   stats.setAttribute('x', String(margin));
   stats.setAttribute('y', '50');
-  stats.textContent = `${catalog.catalogId} / ${catalog.shapes.length} shapes / cell size ${catalog.cellSize} / ${catalogRef ?? 'catalog ref unknown'}`;
+  stats.textContent = `${catalog.catalogId} / ${catalog.shapes.length} shapes / clearance ${catalog.placementPolicy.minimumClearanceCells} / wall ${catalog.placementPolicy.wallThicknessCells} / door ${catalog.placementPolicy.doorwayWidthCells} / ${catalogRef ?? 'catalog ref unknown'}`;
   target.append(stats);
 
   for (const [index, shape] of catalog.shapes.entries()) {
@@ -1861,7 +1867,7 @@ function renderPiecePlacementGrid(
   stats.setAttribute('x', String(margin));
   stats.setAttribute('y', '50');
   const connectivity = placement.gridConnectivity.replace('_', '-');
-  stats.textContent = `${placement.instances.length} pieces / ${placement.occupiedCells.length} occupied / ${placement.connectionCells.length} connection / ${connectivity} / ${validation?.ok === false ? `${validation.fatalCount} fatal` : 'valid'}`;
+  stats.textContent = `${placement.instances.length} pieces / ${placement.occupiedCells.length} occupied / ${placement.connectionCells.length} connection / clearance ${placement.placementPolicy.minimumClearanceCells} / wall ${placement.placementPolicy.wallThicknessCells} / ${connectivity} / ${validation?.ok === false ? `${validation.fatalCount} fatal` : 'valid'}`;
   target.append(stats);
 
   const grid = createSvg('g');

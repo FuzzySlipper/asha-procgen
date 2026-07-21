@@ -121,9 +121,16 @@ const repeatedShapeConfiguration = {
 const repeatedShapePublication = compile({ configuration: repeatedShapeConfiguration });
 assert.equal(repeatedShapePublication.prefabRegistry.definitions.length, 1);
 assert.equal(repeatedShapePublication.sceneArtifact.dependencies.length, 1);
+const expectedRepeatedShapeTransforms = repeatedShapeConfiguration.instanceIdentities.map((identity) => {
+  const instance = placement.instances.find(
+    (candidate) => candidate.instanceId === identity.procgenInstanceId,
+  );
+  assert.ok(instance, `missing repeated-shape placement ${identity.procgenInstanceId}`);
+  return [identity.prefabInstanceId, [instance.origin.x, 0, instance.origin.y]];
+});
 assert.deepEqual(
   repeatedShapePublication.sceneArtifact.nodes.map((node) => [node.id, node.transform.translation]),
-  [[2010, [13, 0, 9]], [2009, [12, 0, 16]]],
+  expectedRepeatedShapeTransforms,
 );
 
 expectFailure('missingPrefabMapping', () => compile({

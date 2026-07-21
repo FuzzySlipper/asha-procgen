@@ -96,6 +96,17 @@ if (!validation.ok) {
 if (placement.gridConnectivity !== 'four_way') {
   throw new Error(`unexpected placement connectivity: ${placement.gridConnectivity}`);
 }
+if (
+  placement.placementPolicy?.contactPolicy !== 'glued_exits_only'
+  || placement.placementPolicy?.preservePieceBoundaries !== true
+  || placement.placementPolicy?.minimumClearanceCells
+    < placement.placementPolicy?.wallThicknessCells * 2 + 1
+) {
+  throw new Error(`placement emitted an unsafe boundary policy: ${JSON.stringify(placement.placementPolicy)}`);
+}
+if (JSON.stringify(placement.placementPolicy) !== JSON.stringify(catalog.placementPolicy)) {
+  throw new Error('placement policy does not match the inspected shape catalog policy');
+}
 if (!Array.isArray(placement.connectionCells) || placement.connectionCells.length === 0) {
   throw new Error('placement emitted no connection cells');
 }
@@ -110,6 +121,7 @@ console.log(
     gluedExits: placement.gluedExits.length,
     occupiedCells: placement.occupiedCells.length,
     connectionCells: placement.connectionCells.length,
+    placementPolicy: placement.placementPolicy,
     gridConnectivity: placement.gridConnectivity,
     validationOk: validation.ok,
   }),

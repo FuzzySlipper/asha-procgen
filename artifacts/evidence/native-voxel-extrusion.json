@@ -3,8 +3,16 @@
   "sourcePlacement": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
   "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
   "backend": "native_rust_runtime_session_voxel_commands",
-  "ashaEngineCommit": "e6da1f99cc5346df06fc85fd0ab1b9bf28a68e9a",
+  "ashaEngineCommit": "2414d1ef4da9b8eea8bddc2b2526ca3b3b119562",
   "coordinateMapping": "placement_x_y_to_voxel_x_z",
+  "placementPolicy": {
+    "schemaVersion": 1,
+    "minimumClearanceCells": 3,
+    "contactPolicy": "glued_exits_only",
+    "wallThicknessCells": 1,
+    "doorwayWidthCells": 1,
+    "preservePieceBoundaries": true
+  },
   "enclosure": {
     "floorY": 0,
     "wallY": [
@@ -17,23 +25,24 @@
     "ceilingMaterial": 3
   },
   "counts": {
-    "walkableCells": 652,
-    "boundaryCells": 314,
-    "solidVoxels": 2246,
-    "requiredChunksForDirectCommandLane": 672,
-    "sourceVertices": 6738,
-    "sourceTriangles": 2246
+    "walkableCells": 1571,
+    "declaredOpeningCells": 1169,
+    "boundaryCells": 1923,
+    "solidVoxels": 8911,
+    "requiredChunksForDirectCommandLane": 2706,
+    "sourceVertices": 26733,
+    "sourceTriangles": 8911
   },
   "buildBounds": {
     "min": {
-      "x": 1,
+      "x": 7,
       "y": 0,
-      "z": -3
+      "z": 7
     },
     "maxExclusive": {
-      "x": 38,
+      "x": 112,
       "y": 5,
-      "z": 29
+      "z": 93
     }
   },
   "authority": {
@@ -41,29 +50,29 @@
     "phases": [
       {
         "name": "generate_chunks",
-        "submitted": 672,
-        "accepted": 672,
+        "submitted": 2706,
+        "accepted": 2706,
         "rejected": 0
       },
       {
         "name": "clear_chunks",
-        "submitted": 672,
-        "accepted": 672,
+        "submitted": 2706,
+        "accepted": 2706,
         "rejected": 0
       },
       {
         "name": "set_solids",
-        "submitted": 2246,
-        "accepted": 2246,
+        "submitted": 8911,
+        "accepted": 8911,
         "rejected": 0
       }
     ],
-    "submittedCommands": 3590,
-    "acceptedCommands": 3590,
+    "submittedCommands": 14323,
+    "acceptedCommands": 14323,
     "rejectedCommands": 0,
     "historyEntryCount": 3,
-    "voxelStateHash": "fnv1a64:8c4b699dee918a54",
-    "deterministicRepeatHash": "fnv1a64:8c4b699dee918a54",
+    "voxelStateHash": "fnv1a64:5e44bbb7cdec236d",
+    "deterministicRepeatHash": "fnv1a64:5e44bbb7cdec236d",
     "deterministic": true,
     "rejectedUnknownMaterialWithoutMutation": true,
     "unknownMaterialRejection": {
@@ -74,54 +83,54 @@
   "conversionComparison": {
     "role": "bounded_model_readback_comparison_only",
     "registered": true,
-    "plannedOutputVoxels": 2246,
-    "previewVoxelCount": 2246,
-    "appliedVoxelCount": 2246,
-    "residentVoxelCount": 2246,
+    "plannedOutputVoxels": 8911,
+    "previewVoxelCount": 8911,
+    "appliedVoxelCount": 8911,
+    "residentVoxelCount": 8911,
     "materialCounts": [
       {
         "material": 1,
-        "voxelCount": 942
+        "voxelCount": 5769
       },
       {
         "material": 2,
-        "voxelCount": 652
+        "voxelCount": 1571
       },
       {
         "material": 3,
-        "voxelCount": 652
+        "voxelCount": 1571
       }
     ],
     "boundedReadbackSamples": [
       {
         "coord": {
-          "x": 1,
+          "x": 7,
           "y": 1,
-          "z": 2
+          "z": 8
         },
         "occupied": true,
         "material": 1
       },
       {
         "coord": {
-          "x": 2,
+          "x": 8,
           "y": 0,
-          "z": 2
+          "z": 8
         },
         "occupied": true,
         "material": 2
       },
       {
         "coord": {
-          "x": 2,
+          "x": 8,
           "y": 4,
-          "z": 2
+          "z": 8
         },
         "occupied": true,
         "material": 3
       }
     ],
-    "outputHash": "fnv1a64:657364b362b02a4c",
+    "outputHash": "fnv1a64:3e74d6a2cb3f0224",
     "rejectedStalePreviewWithoutMutation": true
   },
   "nonClaims": [

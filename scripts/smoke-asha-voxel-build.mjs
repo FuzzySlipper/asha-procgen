@@ -92,6 +92,7 @@ const evidence = {
   backend: 'native_rust_runtime_session_voxel_commands',
   ashaEngineCommit: engineCommit,
   coordinateMapping: plan.coordinateMapping,
+  placementPolicy: placement.placementPolicy,
   enclosure: {
     floorY: 0,
     wallY: [1, 3],
@@ -102,6 +103,7 @@ const evidence = {
   },
   counts: {
     walkableCells: plan.walkableCellCount,
+    declaredOpeningCells: plan.openingCellCount,
     boundaryCells: plan.boundaryCellCount,
     solidVoxels: plan.solidVoxelCount,
     requiredChunksForDirectCommandLane: plan.residentChunkCount,

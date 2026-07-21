@@ -290,6 +290,12 @@ cells, exits, allowed transforms, tags, and feature sockets. Catalog shapes are
 JSON metadata in this repo; they are not final art assets, meshes, voxels, or
 runtime authority.
 
+The top-level `placementPolicy` is copied into generated placement artifacts.
+Schema v1 exposes minimum piece clearance, glued-exits-only contact, wall
+thickness, odd doorway width, and mandatory boundary preservation. It rejects
+clearance smaller than `2 * wallThicknessCells + 1` so downstream extrusion can
+preserve walls and open only declared routed connections.
+
 Catalog inspection uses kind `asha_procgen.catalog_inspection.v1` and reports
 shape counts, piece kinds, feature socket kinds, exit directions, transforms,
 per-shape summaries, and catalog diagnostics.
@@ -324,15 +330,17 @@ Kind: `asha_procgen.piece_placement.v1`
 
 Piece placements record selected catalog shapes, transforms, occupied cells,
 reserved cells, glued exits, generated connection cells, dangling exits, and
-feature/socket placements. They also declare `gridConnectivity` (`four_way` by
+feature/socket placements. They carry the catalog `placementPolicy` and also
+declare `gridConnectivity` (`four_way` by
 default, optionally `eight_way`) so validators and previews agree on whether
 diagonal contact counts as reachable. They are the first artifact layer that
 owns occupancy, while still stopping before mesh, voxel, renderer, collision,
 or ASHA runtime integration.
 
-Validation rejects unplanned 4-way contact between occupied cells from
-different non-glued piece instances so blank neighboring cells can safely be
-treated as walls.
+Validation rejects configured-clearance violations between all distinct piece
+instances. Linked pieces remain separate and connect only through
+glued-exit-owned route cells. Routes may share cells, but may not cross
+occupied/reserved cells or enter the wall clearance of an unrelated piece.
 
 Validation uses kind `asha_procgen.validation.piece_placement.v1`.
 

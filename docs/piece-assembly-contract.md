@@ -39,7 +39,18 @@ Important top-level fields:
 - `catalogId`: stable catalog id.
 - `schemaVersion`: additive schema version.
 - `cellSize`: authoring grid size in abstract cells.
+- `placementPolicy`: versioned room-boundary, clearance, wall, and doorway
+  policy copied into each placement artifact.
 - `shapes`: reusable shape records.
+
+Placement policy schema v1 has one supported contact mode,
+`glued_exits_only`, and requires `preservePieceBoundaries: true`. Its tunable
+values are `minimumClearanceCells`, `wallThicknessCells`, and the positive odd
+`doorwayWidthCells`. Clearance must be at least
+`2 * wallThicknessCells + 1`; this leaves a route cell between the wall
+envelopes of separate pieces. Hinted origins are deterministically expanded by
+clearance plus wall thickness before the local placement search, so a dense
+geometry hint does not silently collapse room boundaries.
 
 Important shape fields:
 
@@ -70,12 +81,10 @@ Exit directions use a 2D vocabulary now:
 Later 3D catalogs may add `up`, `down`, or vector-style exits. The 2D matcher
 must reject unsupported 3D exits until placement validation can prove them.
 
-Two exits can glue when:
-
-- their transformed positions touch across a cell edge;
-- their directions are opposite;
-- their widths are compatible;
-- required tags are satisfied.
+Two exits can glue when the build plan links their pieces, their mapped
+directions are opposite, their widths are compatible, and required tags are
+satisfied. Placement then owns the physical route between the separated
+footprints; catalog exit compatibility does not grant arbitrary cell contact.
 
 ## Piece Build Plan Artifact
 
@@ -171,6 +180,8 @@ Important fields:
 - `cellSize`: placement grid cell size.
 - `gridConnectivity`: physical grid adjacency policy, currently `four_way`
   or `eight_way`; CLI assembly defaults to `four_way`.
+- `placementPolicy`: the exact catalog policy used to place and later extrude
+  the build.
 - `instances`: placed piece instances.
 - `gluedExits`: validated exit-to-exit joins.
 - `occupiedCells`: optional flattened occupancy index for quick inspection.
@@ -180,11 +191,13 @@ Important fields:
 - `danglingExits`: exits intentionally left open or invalid exits found during
   validation.
 
-When blank neighboring grid cells are interpreted as walls, occupied cells from
-different build pieces must not touch by 4-way adjacency unless those two
-pieces are joined by a glued exit. This prevents unrelated rooms and corridors
-from creating accidental passable connections just because two footprints
-butted against each other in the build grid.
+Occupied cells from different build pieces must remain beyond the configured
+minimum clearance even when the pieces are linked. A glued exit is represented
+only by owned `connectionCells`; it is not blanket permission for two
+footprints to touch. The route search rejects occupied/reserved crossings and
+keeps every route outside the wall envelope of unrelated pieces. If no origin
+or route satisfies those constraints, assembly fails instead of falling back
+to an unsafe straight bridge.
 
 Important instance fields:
 
@@ -210,9 +223,9 @@ diagnostic families:
 - required exit unsatisfied;
 - incompatible glued exits;
 - occupied-cell overlap;
-- unplanned 4-way occupied-cell adjacency between non-glued piece instances;
+- configured minimum-clearance violations between piece instances;
 - reserved-cell conflict;
-- connection-cell overlap;
+- undeclared, occupied, reserved, or wall-clearance-violating connection cells;
 - dangling required exit;
 - missing feature socket;
 - start-to-goal unreachable through glued exits;

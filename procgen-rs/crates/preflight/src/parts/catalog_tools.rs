@@ -29,6 +29,7 @@ fn inspect_shape_catalog(catalog: &ShapeCatalog, catalog_path: &Path) -> Catalog
             "Catalog cellSize must be positive.",
         ));
     }
+    validate_piece_placement_policy(&catalog.placement_policy, &mut diagnostics);
 
     for shape in &catalog.shapes {
         if !seen_shapes.insert(shape.shape_id.as_str()) {
@@ -105,11 +106,73 @@ fn inspect_shape_catalog(catalog: &ShapeCatalog, catalog_path: &Path) -> Catalog
         catalog_id: catalog.catalog_id.clone(),
         catalog_ref: display_path(catalog_path),
         shape_count: catalog.shapes.len(),
+        placement_policy: catalog.placement_policy.clone(),
         piece_kinds: piece_kinds.into_iter().collect(),
         feature_sockets: feature_sockets.into_iter().collect(),
         exit_directions: exit_directions.into_iter().collect(),
         transforms: transforms.into_iter().collect(),
         shapes,
         diagnostics,
+    }
+}
+
+fn validate_piece_placement_policy(
+    policy: &PiecePlacementPolicy,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    if policy.schema_version != 1 {
+        diagnostics.push(fatal(
+            "catalog_placement_policy_schema_invalid",
+            None,
+            None,
+            format!(
+                "Placement policy schemaVersion must be 1, got {}.",
+                policy.schema_version
+            ),
+        ));
+    }
+    if policy.minimum_clearance_cells < 0 {
+        diagnostics.push(fatal(
+            "catalog_minimum_clearance_invalid",
+            None,
+            None,
+            "Placement policy minimumClearanceCells must be non-negative.",
+        ));
+    }
+    if policy.wall_thickness_cells <= 0 {
+        diagnostics.push(fatal(
+            "catalog_wall_thickness_invalid",
+            None,
+            None,
+            "Placement policy wallThicknessCells must be positive.",
+        ));
+    }
+    if policy.minimum_clearance_cells < policy.wall_thickness_cells * 2 + 1 {
+        diagnostics.push(fatal(
+            "catalog_minimum_clearance_too_small_for_walls",
+            None,
+            None,
+            format!(
+                "Placement policy minimumClearanceCells must be at least twice wallThicknessCells plus one (minimum {} for wall thickness {}).",
+                policy.wall_thickness_cells * 2 + 1,
+                policy.wall_thickness_cells
+            ),
+        ));
+    }
+    if policy.doorway_width_cells <= 0 || policy.doorway_width_cells % 2 == 0 {
+        diagnostics.push(fatal(
+            "catalog_doorway_width_invalid",
+            None,
+            None,
+            "Placement policy doorwayWidthCells must be a positive odd number.",
+        ));
+    }
+    if !policy.preserve_piece_boundaries {
+        diagnostics.push(fatal(
+            "catalog_piece_boundary_preservation_required",
+            None,
+            None,
+            "Placement policy schemaVersion 1 requires preservePieceBoundaries=true.",
+        ));
     }
 }

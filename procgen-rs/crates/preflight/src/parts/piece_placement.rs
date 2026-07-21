@@ -26,6 +26,21 @@ fn assemble_piece_placement(
     shape_match: &PieceShapeMatchReport,
     args: &BuildAssembleArgs,
 ) -> Result<PiecePlacement, String> {
+    let mut policy_diagnostics = Vec::new();
+    validate_piece_placement_policy(&catalog.placement_policy, &mut policy_diagnostics);
+    if policy_diagnostics
+        .iter()
+        .any(|diagnostic| diagnostic.severity == Severity::Fatal)
+    {
+        return Err(format!(
+            "shape catalog placement policy is invalid: {}",
+            policy_diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.detail.as_str())
+                .collect::<Vec<_>>()
+                .join("; ")
+        ));
+    }
     if shape_match.plan_id != plan.plan_id {
         return Err(format!(
             "shape match plan {} does not match piece plan {}",
@@ -61,7 +76,6 @@ fn assemble_piece_placement(
     let mut reserved_cells = Vec::new();
     let mut occupied_positions: BTreeMap<(i32, i32), String> = BTreeMap::new();
     let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
-    let allowed_touching_by_piece = allowed_touching_by_piece(plan);
     for (index, matched) in shape_match.matches.iter().enumerate() {
         let Some(requirement) = requirements.get(matched.piece_id.as_str()).copied() else {
             return Err(format!(
@@ -76,20 +90,27 @@ fn assemble_piece_placement(
             ));
         };
         let instance_id = format!("instance.{}", slugify_label(matched.piece_id.as_str()));
-        let allowed_touching = allowed_touching_by_piece
-            .get(matched.piece_id.as_str())
-            .cloned()
-            .unwrap_or_default();
-        let desired_origin = desired_origin_for_requirement(requirement, index);
+        let desired_origin = scaled_desired_origin(
+            desired_origin_for_requirement(requirement, index),
+            &catalog.placement_policy,
+        );
         let origin = find_available_origin(
             shape,
             matched.transform.as_str(),
             &desired_origin,
-            &instance_id,
-            &allowed_touching,
+            &catalog.placement_policy,
             &occupied_positions,
             &reserved_positions,
-        );
+        )
+        .ok_or_else(|| {
+            format!(
+                "no placement origin satisfies {} clearance cell(s) for {} near {},{}",
+                catalog.placement_policy.minimum_clearance_cells,
+                matched.piece_id,
+                desired_origin.x,
+                desired_origin.y
+            )
+        })?;
         let occupied = transform_cells(&shape.footprint, matched.transform.as_str(), &origin);
         let reserved = transform_cells(&shape.reserved_cells, matched.transform.as_str(), &origin);
         for cell in &occupied {
@@ -140,6 +161,7 @@ fn assemble_piece_placement(
         source_match_ref: display_path(&args.shape_match),
         cell_size: catalog.cell_size,
         grid_connectivity: args.connectivity,
+        placement_policy: catalog.placement_policy.clone(),
         instances,
         glued_exits: Vec::new(),
         occupied_cells,
@@ -148,8 +170,16 @@ fn assemble_piece_placement(
         dangling_exits: Vec::new(),
     };
     placement.glued_exits = derive_glued_exits(plan, &placement.instances);
-    placement.connection_cells = derive_connection_cells(&placement);
+    placement.connection_cells = derive_connection_cells(&placement)?;
     Ok(placement)
+}
+
+fn scaled_desired_origin(origin: GridCell, policy: &PiecePlacementPolicy) -> GridCell {
+    let scale = policy.minimum_clearance_cells + policy.wall_thickness_cells;
+    GridCell {
+        x: origin.x.saturating_mul(scale),
+        y: origin.y.saturating_mul(scale),
+    }
 }
 
 fn desired_origin_for_requirement(requirement: &PieceRequirement, index: usize) -> GridCell {
@@ -200,11 +230,10 @@ fn find_available_origin(
     shape: &CatalogShape,
     transform: &str,
     desired_origin: &GridCell,
-    instance_id: &str,
-    allowed_touching: &BTreeSet<String>,
+    policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
-) -> GridCell {
+) -> Option<GridCell> {
     for radius in 0_i32..=120 {
         for dy in -radius..=radius {
             for dx in -radius..=radius {
@@ -219,25 +248,23 @@ fn find_available_origin(
                     shape,
                     transform,
                     &origin,
-                    instance_id,
-                    allowed_touching,
+                    policy,
                     occupied_positions,
                     reserved_positions,
                 ) {
-                    return origin;
+                    return Some(origin);
                 }
             }
         }
     }
-    desired_origin.clone()
+    None
 }
 
 fn origin_available(
     shape: &CatalogShape,
     transform: &str,
     origin: &GridCell,
-    instance_id: &str,
-    allowed_touching: &BTreeSet<String>,
+    policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
 ) -> bool {
@@ -246,33 +273,33 @@ fn origin_available(
     occupied.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
-            && cardinal_neighbors((cell.x, cell.y)).into_iter().all(|neighbor| {
-                occupied_positions
-                    .get(&neighbor)
-                    .map(|owner| owner == instance_id || allowed_touching.contains(owner))
-                    .unwrap_or(true)
-            })
+            && clearance_available(
+                (cell.x, cell.y),
+                policy.minimum_clearance_cells,
+                occupied_positions,
+            )
     }) && reserved.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
     })
 }
 
-fn allowed_touching_by_piece(plan: &PieceBuildPlan) -> BTreeMap<&str, BTreeSet<String>> {
-    let mut allowed: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
-    for link in &plan.links {
-        let from_instance = format!("instance.{}", slugify_label(link.from_piece.as_str()));
-        let to_instance = format!("instance.{}", slugify_label(link.to_piece.as_str()));
-        allowed
-            .entry(link.from_piece.as_str())
-            .or_default()
-            .insert(to_instance);
-        allowed
-            .entry(link.to_piece.as_str())
-            .or_default()
-            .insert(from_instance);
+fn clearance_available(
+    cell: (i32, i32),
+    minimum_clearance_cells: i32,
+    occupied_positions: &BTreeMap<(i32, i32), String>,
+) -> bool {
+    for dy in -minimum_clearance_cells..=minimum_clearance_cells {
+        for dx in -minimum_clearance_cells..=minimum_clearance_cells {
+            if dx.abs() + dy.abs() > minimum_clearance_cells {
+                continue;
+            }
+            if occupied_positions.contains_key(&(cell.0 + dx, cell.1 + dy)) {
+                return false;
+            }
+        }
     }
-    allowed
+    true
 }
 
 fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec<GluedExit> {
@@ -319,7 +346,7 @@ fn compatible_exit_pair<'a>(
     None
 }
 
-fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> {
+fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCellRef>, String> {
     let instances = placement
         .instances
         .iter()
@@ -336,7 +363,6 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> 
         .map(|cell| (cell.x, cell.y))
         .collect::<BTreeSet<_>>();
     let bounds = placement_route_bounds(placement);
-    let mut seen = BTreeSet::new();
     let mut cells = Vec::new();
     for glued in &placement.glued_exits {
         let Some(from) = instances.get(glued.from_instance.as_str()) else {
@@ -345,40 +371,78 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Vec<PlacementCellRef> 
         let Some(to) = instances.get(glued.to_instance.as_str()) else {
             continue;
         };
-        let Some((start, end)) = nearest_cell_pair(
-            &from.occupied_cells,
-            &to.occupied_cells,
+        let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
+        let bridge = route_instance_connection(
+            from,
+            to,
             placement.grid_connectivity,
-        ) else {
-            continue;
-        };
-        if cells_adjacent(start, end, placement.grid_connectivity) {
+            &occupied_by_cell,
+            &reserved,
+            placement.placement_policy.wall_thickness_cells,
+            bounds,
+        )
+        .ok_or_else(|| {
+            format!(
+                "no clearance-safe connection route exists for glued exit {} between {} and {}",
+                glued.id, from.instance_id, to.instance_id
+            )
+        })?;
+        for cell in bridge {
+            cells.push(PlacementCellRef {
+                instance_id: instance_id.clone(),
+                x: cell.x,
+                y: cell.y,
+            });
+        }
+    }
+    Ok(cells)
+}
+
+fn route_instance_connection(
+    from: &PieceInstance,
+    to: &PieceInstance,
+    connectivity: GridConnectivity,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    wall_clearance: i32,
+    bounds: (i32, i32, i32, i32),
+) -> Option<Vec<GridCell>> {
+    let mut pairs = from
+        .occupied_cells
+        .iter()
+        .flat_map(|from_cell| {
+            to.occupied_cells
+                .iter()
+                .map(move |to_cell| (from_cell, to_cell, grid_distance(from_cell, to_cell, connectivity)))
+        })
+        .collect::<Vec<_>>();
+    pairs.sort_by(|left, right| {
+        left.2
+            .cmp(&right.2)
+            .then_with(|| left.0.x.cmp(&right.0.x))
+            .then_with(|| left.0.y.cmp(&right.0.y))
+            .then_with(|| left.1.x.cmp(&right.1.x))
+            .then_with(|| left.1.y.cmp(&right.1.y))
+    });
+    for (start, end, _) in pairs {
+        if cells_adjacent(start, end, connectivity) {
             continue;
         }
-        let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
-        let bridge = route_bridge_cells(
+        if let Some(route) = route_bridge_cells(
             start,
             end,
             from.instance_id.as_str(),
             to.instance_id.as_str(),
-            placement.grid_connectivity,
-            &occupied_by_cell,
-            &reserved,
-            &seen,
+            connectivity,
+            occupied_by_cell,
+            reserved,
+            wall_clearance,
             bounds,
-        )
-        .unwrap_or_else(|| bridge_cells(start, end, placement.grid_connectivity));
-        for cell in bridge {
-            if seen.insert((cell.x, cell.y)) {
-                cells.push(PlacementCellRef {
-                    instance_id: instance_id.clone(),
-                    x: cell.x,
-                    y: cell.y,
-                });
-            }
+        ) {
+            return Some(route);
         }
     }
-    cells
+    None
 }
 
 fn placement_route_bounds(placement: &PiecePlacement) -> (i32, i32, i32, i32) {
@@ -421,7 +485,7 @@ fn route_bridge_cells(
     connectivity: GridConnectivity,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
-    existing_connections: &BTreeSet<(i32, i32)>,
+    wall_clearance: i32,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     let start_position = (start.x, start.y);
@@ -446,7 +510,7 @@ fn route_bridge_cells(
                     to_instance,
                     occupied_by_cell,
                     reserved,
-                    existing_connections,
+                    wall_clearance,
                 )
             {
                 continue;
@@ -483,41 +547,24 @@ fn bridge_position_available(
     to_instance: &str,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
-    existing_connections: &BTreeSet<(i32, i32)>,
+    wall_clearance: i32,
 ) -> bool {
-    if occupied_by_cell.contains_key(&position)
-        || reserved.contains(&position)
-        || existing_connections.contains(&position)
-    {
+    if occupied_by_cell.contains_key(&position) || reserved.contains(&position) {
         return false;
     }
-    cardinal_neighbors(position).into_iter().all(|neighbor| {
-        occupied_by_cell
-            .get(&neighbor)
-            .map(|owner| *owner == from_instance || *owner == to_instance)
-            .unwrap_or(true)
-            && !existing_connections.contains(&neighbor)
-    })
-}
-
-fn nearest_cell_pair<'a>(
-    from: &'a [GridCell],
-    to: &'a [GridCell],
-    connectivity: GridConnectivity,
-) -> Option<(&'a GridCell, &'a GridCell)> {
-    let mut best: Option<(&GridCell, &GridCell, i32)> = None;
-    for from_cell in from {
-        for to_cell in to {
-            let distance = grid_distance(from_cell, to_cell, connectivity);
-            if best
-                .map(|(_, _, best_distance)| distance < best_distance)
-                .unwrap_or(true)
-            {
-                best = Some((from_cell, to_cell, distance));
+    for dy in -wall_clearance..=wall_clearance {
+        for dx in -wall_clearance..=wall_clearance {
+            if dx.abs() + dy.abs() > wall_clearance {
+                continue;
+            }
+            if let Some(owner) = occupied_by_cell.get(&(position.0 + dx, position.1 + dy)) {
+                if *owner != from_instance && *owner != to_instance {
+                    return false;
+                }
             }
         }
     }
-    best.map(|(from_cell, to_cell, _)| (from_cell, to_cell))
+    true
 }
 
 fn grid_distance(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> i32 {
@@ -527,35 +574,6 @@ fn grid_distance(from: &GridCell, to: &GridCell, connectivity: GridConnectivity)
         GridConnectivity::FourWay => dx + dy,
         GridConnectivity::EightWay => dx.max(dy),
     }
-}
-
-fn bridge_cells(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> Vec<GridCell> {
-    let mut cells = Vec::new();
-    let mut x = from.x;
-    let mut y = from.y;
-    while x != to.x || y != to.y {
-        match connectivity {
-            GridConnectivity::FourWay => {
-                if x != to.x {
-                    x += (to.x - x).signum();
-                } else if y != to.y {
-                    y += (to.y - y).signum();
-                }
-            }
-            GridConnectivity::EightWay => {
-                if x != to.x {
-                    x += (to.x - x).signum();
-                }
-                if y != to.y {
-                    y += (to.y - y).signum();
-                }
-            }
-        }
-        if x != to.x || y != to.y {
-            cells.push(GridCell { x, y });
-        }
-    }
-    cells
 }
 
 fn cells_adjacent(from: &GridCell, to: &GridCell, connectivity: GridConnectivity) -> bool {
@@ -570,15 +588,6 @@ fn cells_adjacent(from: &GridCell, to: &GridCell, connectivity: GridConnectivity
     }
 }
 
-fn cardinal_neighbors(cell: (i32, i32)) -> Vec<(i32, i32)> {
-    vec![
-        (cell.0 + 1, cell.1),
-        (cell.0 - 1, cell.1),
-        (cell.0, cell.1 + 1),
-        (cell.0, cell.1 - 1),
-    ]
-}
-
 fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
     let mut diagnostics = Vec::new();
     if placement.kind != "asha_procgen.piece_placement.v1" {
@@ -589,6 +598,7 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
             "Placement artifact kind must be asha_procgen.piece_placement.v1.",
         ));
     }
+    validate_piece_placement_policy(&placement.placement_policy, &mut diagnostics);
     validate_placement_cells(placement, &mut diagnostics);
     validate_placement_links(placement, &mut diagnostics);
     validate_placement_unplanned_contacts(placement, &mut diagnostics);
@@ -612,38 +622,48 @@ fn validate_placement_unplanned_contacts(
     placement: &PiecePlacement,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
-    let allowed_pairs = placement
-        .glued_exits
-        .iter()
-        .map(|glued| sorted_pair(glued.from_instance.as_str(), glued.to_instance.as_str()))
-        .collect::<BTreeSet<_>>();
     let occupied_by_cell = placement
         .occupied_cells
         .iter()
         .map(|cell| ((cell.x, cell.y), cell.instance_id.as_str()))
         .collect::<BTreeMap<_, _>>();
     let mut reported_pairs = BTreeSet::new();
+    let clearance = placement.placement_policy.minimum_clearance_cells;
     for cell in &placement.occupied_cells {
-        for neighbor in [(cell.x + 1, cell.y), (cell.x, cell.y + 1)] {
-            let Some(other_instance) = occupied_by_cell.get(&neighbor) else {
-                continue;
-            };
-            if *other_instance == cell.instance_id {
-                continue;
+        for dy in -clearance..=clearance {
+            for dx in -clearance..=clearance {
+                let distance = dx.abs() + dy.abs();
+                if distance == 0 || distance > clearance {
+                    continue;
+                }
+                let neighbor = (cell.x + dx, cell.y + dy);
+                let Some(other_instance) = occupied_by_cell.get(&neighbor) else {
+                    continue;
+                };
+                if *other_instance == cell.instance_id {
+                    continue;
+                }
+                let pair = sorted_pair(cell.instance_id.as_str(), other_instance);
+                if !reported_pairs.insert(pair.clone()) {
+                    continue;
+                }
+                diagnostics.push(fatal(
+                    "piece_minimum_clearance_violated",
+                    None,
+                    None,
+                    format!(
+                        "Occupied pieces violate minimum clearance {}: {} at {},{} is distance {} from {} at {},{}; declared links must use routed connection cells.",
+                        clearance,
+                        cell.instance_id,
+                        cell.x,
+                        cell.y,
+                        distance,
+                        other_instance,
+                        neighbor.0,
+                        neighbor.1
+                    ),
+                ));
             }
-            let pair = sorted_pair(cell.instance_id.as_str(), other_instance);
-            if allowed_pairs.contains(&pair) || !reported_pairs.insert(pair.clone()) {
-                continue;
-            }
-            diagnostics.push(fatal(
-                "piece_unplanned_occupied_adjacency",
-                None,
-                None,
-                format!(
-                    "Occupied piece cells touch without a glued exit: {} at {},{} touches {} at {},{}.",
-                    cell.instance_id, cell.x, cell.y, other_instance, neighbor.0, neighbor.1
-                ),
-            ));
         }
     }
 }
@@ -700,19 +720,103 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             }
         }
     }
-    let mut connection_by_cell: BTreeMap<(i32, i32), &str> = BTreeMap::new();
+    let mut connection_by_cell: BTreeMap<(i32, i32), BTreeSet<&str>> = BTreeMap::new();
+    let declared_connection_owners = placement
+        .glued_exits
+        .iter()
+        .map(|glued| format!("connection.{}", slugify_label(glued.id.as_str())))
+        .collect::<BTreeSet<_>>();
+    let connection_endpoints = placement
+        .glued_exits
+        .iter()
+        .map(|glued| {
+            (
+                format!("connection.{}", slugify_label(glued.id.as_str())),
+                (glued.from_instance.as_str(), glued.to_instance.as_str()),
+            )
+        })
+        .collect::<BTreeMap<_, _>>();
+    let mut used_connection_owners = BTreeSet::new();
     for cell in &placement.connection_cells {
-        if let Some(existing) =
-            connection_by_cell.insert((cell.x, cell.y), cell.instance_id.as_str())
-        {
+        if !declared_connection_owners.contains(&cell.instance_id) {
             diagnostics.push(fatal(
-                "piece_connection_cell_overlap",
+                "piece_connection_owner_undeclared",
                 None,
                 None,
                 format!(
-                    "Connection cell {},{} is shared by {} and {}.",
-                    cell.x, cell.y, existing, cell.instance_id
+                    "Connection cell {},{} uses undeclared owner {}.",
+                    cell.x, cell.y, cell.instance_id
                 ),
+            ));
+        }
+        used_connection_owners.insert(cell.instance_id.as_str());
+        if let Some(occupier) = occupied_by_cell.get(&(cell.x, cell.y)) {
+            diagnostics.push(fatal(
+                "piece_connection_cell_occupied",
+                None,
+                None,
+                format!(
+                    "Connection cell {},{} for {} crosses occupied piece {}.",
+                    cell.x, cell.y, cell.instance_id, occupier
+                ),
+            ));
+        }
+        if let Some(reserver) = reserved_by_cell.get(&(cell.x, cell.y)) {
+            diagnostics.push(fatal(
+                "piece_connection_cell_reserved",
+                None,
+                None,
+                format!(
+                    "Connection cell {},{} for {} crosses reservation {}.",
+                    cell.x, cell.y, cell.instance_id, reserver
+                ),
+            ));
+        }
+        if let Some((from_instance, to_instance)) = connection_endpoints.get(&cell.instance_id) {
+            let wall_clearance = placement.placement_policy.wall_thickness_cells;
+            'clearance: for dy in -wall_clearance..=wall_clearance {
+                for dx in -wall_clearance..=wall_clearance {
+                    if dx.abs() + dy.abs() > wall_clearance {
+                        continue;
+                    }
+                    let Some(occupier) = occupied_by_cell.get(&(cell.x + dx, cell.y + dy)) else {
+                        continue;
+                    };
+                    if occupier != from_instance && occupier != to_instance {
+                        diagnostics.push(fatal(
+                            "piece_connection_wall_clearance_violated",
+                            None,
+                            None,
+                            format!(
+                                "Connection cell {},{} for {} enters the wall clearance of unrelated piece {}.",
+                                cell.x, cell.y, cell.instance_id, occupier
+                            ),
+                        ));
+                        break 'clearance;
+                    }
+                }
+            }
+        }
+        let owners = connection_by_cell.entry((cell.x, cell.y)).or_default();
+        if !owners.insert(cell.instance_id.as_str()) {
+            diagnostics.push(fatal(
+                "piece_connection_cell_duplicate",
+                None,
+                None,
+                format!(
+                    "Connection cell {},{} is repeated for {}.",
+                    cell.x, cell.y, cell.instance_id
+                ),
+            ));
+        }
+    }
+    for owner in declared_connection_owners {
+        if !used_connection_owners.contains(owner.as_str()) {
+            diagnostics.push(fatal(
+                "piece_glued_exit_route_missing",
+                None,
+                None,
+                format!("Declared glued exit {owner} has no routed connection cells."),
             ));
         }
     }

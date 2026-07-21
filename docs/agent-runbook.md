@@ -412,6 +412,9 @@ Its Catalog tab renders the active build-piece shape catalog when
 `shapeCatalogRef` is present.
 Its Voxel tab uses the same deterministic extrusion compiler as
 `npm run voxel:asha-smoke` to render an isometric floor/wall/ceiling cutaway.
+The compiler consumes the placement's versioned clearance/wall/doorway policy,
+keeps piece ownership through validation, and turns only glued-exit-owned
+connection routes into openings.
 When the selected placement matches the committed native evidence, the tab also
 shows the Rust authority voxel-state hash and engine pin. Other candidates are
 clearly labelled as unverified voxel proposals.
@@ -428,8 +431,9 @@ claim runtime, collision, navigation, native-render, or performance authority.
 npm run verify
 ```
 
-The default gate checks ASHA dependency boundaries, TypeScript, Rust compile, and
-Rust tests. Browser smoke is not part of the default gate yet.
+The default gate checks ASHA dependency boundaries, TypeScript, Rust compile,
+Rust tests, publishing, and a focused two-room voxel-boundary smoke. Browser
+smoke is not part of the default gate yet.
 
 For optional preview-site evidence:
 

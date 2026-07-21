@@ -11,7 +11,7 @@
     "batch:sample": "npm run procgen -- batch generate --profile fixtures/batch-profiles/v2-sample.json --out-dir artifacts/samples/batch-v2 --seed 5201 --count 10",
     "build:viewer": "tsc -p tsconfig.json && esbuild viewer/app.ts --bundle --format=esm --platform=browser --target=es2022 --outfile=dist/ts/viewer/app.js",
     "viewer:serve": "npm run baseline && npm run batch:sample && npm run build:viewer && node scripts/serve-viewer.mjs",
-    "viewer:smoke": "npm run build:viewer && node scripts/smoke-voxel-inspection-frame.mjs && node scripts/smoke-viewer.mjs",
+    "viewer:smoke": "npm run build:viewer && node scripts/smoke-voxel-boundaries.mjs && node scripts/smoke-voxel-inspection-frame.mjs && node scripts/smoke-viewer.mjs",
     "preview:smoke": "npm run viewer:smoke",
     "piece:smoke": "node scripts/smoke-piece-build.mjs",
     "publish:asha-smoke": "npm run build:viewer && node scripts/smoke-prefab-publish.mjs",
@@ -20,7 +20,7 @@
     "rust:check": "cargo check --manifest-path procgen-rs/Cargo.toml",
     "rust:test": "cargo test --manifest-path procgen-rs/Cargo.toml",
     "test": "npm run check:asha-boundary && npm run typecheck && npm run rust:test",
-    "verify": "npm run check:asha-boundary && npm run typecheck && npm run publish:asha-smoke && npm run rust:check && npm run rust:test"
+    "verify": "npm run check:asha-boundary && npm run typecheck && npm run publish:asha-smoke && node scripts/smoke-voxel-boundaries.mjs && npm run rust:check && npm run rust:test"
   },
   "dependencies": {
     "@asha/contracts": "file:../asha-engine/ts/packages/contracts",

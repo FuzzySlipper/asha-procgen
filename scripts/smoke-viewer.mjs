@@ -94,9 +94,24 @@ try {
   if (voxelEntry === undefined || voxelEvidence.authority?.deterministic !== true) {
     throw new Error('native voxel evidence has no matching batch placement');
   }
-  const alternateVoxelEntry = batch.accepted.find(
-    (entry) => entry.candidateId !== voxelEntry.candidateId && typeof entry.piecePlacementRef === 'string',
-  );
+  const alternateVoxelEntries = await Promise.all(batch.accepted
+    .filter((entry) => (
+      entry.candidateId !== voxelEntry.candidateId
+      && typeof entry.piecePlacementRef === 'string'
+    ))
+    .map(async (entry) => {
+      const candidatePlacement = await fetchArtifact(entry.piecePlacementRef);
+      return {
+        entry,
+        projectedCellCount:
+          candidatePlacement.occupiedCells.length + candidatePlacement.connectionCells.length,
+      };
+    }));
+  alternateVoxelEntries.sort((left, right) => (
+    left.projectedCellCount - right.projectedCellCount
+    || left.entry.candidateId.localeCompare(right.entry.candidateId)
+  ));
+  const alternateVoxelEntry = alternateVoxelEntries[0]?.entry;
   if (alternateVoxelEntry === undefined) {
     throw new Error('viewer smoke requires a second voxel candidate');
   }
@@ -204,7 +219,9 @@ try {
     || alternatePlacementId === voxel3dPlacementId
     || alternateFrameHash === voxel3dFrameHash
   ) {
-    throw new Error('Voxel 3D candidate switching did not refresh the engine frame deterministically');
+    throw new Error(
+      `Voxel 3D candidate switching did not refresh the engine frame deterministically: ready=${alternateVoxel3dDom.includes('data-state="ready"')}, placement=${voxel3dPlacementId}->${alternatePlacementId}, frame=${voxel3dFrameHash}->${alternateFrameHash}`,
+    );
   }
   const voxel3dInteraction = await exerciseEngineInspection(
     chromium,
@@ -381,7 +398,7 @@ async function dumpDom(chromium, url) {
     '--virtual-time-budget=3000',
     '--dump-dom',
     url,
-  ]);
+  ], { maxBuffer: 16 * 1024 * 1024 });
   return stdout;
 }
 
@@ -401,7 +418,7 @@ async function dumpEngineDom(chromium, url) {
 async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
   const profileDir = join(outDir, 'chromium-cdp-profile');
   const cdpPort = Number(process.env.VIEWER_SMOKE_CDP_PORT ?? port + 1000);
-  await rm(profileDir, { recursive: true, force: true });
+  await rm(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   const browser = spawn(chromium, [
     '--headless',
     '--no-sandbox',
@@ -507,7 +524,7 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     cdp?.close();
     browser.kill('SIGTERM');
     await waitForChildExit(browser);
-    await rm(profileDir, { recursive: true, force: true });
+    await rm(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
 }
 

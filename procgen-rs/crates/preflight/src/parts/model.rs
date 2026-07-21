@@ -674,6 +674,7 @@ struct PiecePlacement {
     source_match_ref: String,
     cell_size: i32,
     grid_connectivity: GridConnectivity,
+    placement_policy: PiecePlacementPolicy,
     instances: Vec<PieceInstance>,
     glued_exits: Vec<GluedExit>,
     occupied_cells: Vec<PlacementCellRef>,
@@ -758,7 +759,40 @@ struct ShapeCatalog {
     schema_version: u32,
     catalog_id: String,
     cell_size: i32,
+    #[serde(default)]
+    placement_policy: PiecePlacementPolicy,
     shapes: Vec<CatalogShape>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PiecePlacementPolicy {
+    schema_version: u32,
+    minimum_clearance_cells: i32,
+    contact_policy: PieceContactPolicy,
+    wall_thickness_cells: i32,
+    doorway_width_cells: i32,
+    preserve_piece_boundaries: bool,
+}
+
+impl Default for PiecePlacementPolicy {
+    fn default() -> Self {
+        Self {
+            schema_version: 1,
+            minimum_clearance_cells: 3,
+            contact_policy: PieceContactPolicy::GluedExitsOnly,
+            wall_thickness_cells: 1,
+            doorway_width_cells: 1,
+            preserve_piece_boundaries: true,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum PieceContactPolicy {
+    #[default]
+    GluedExitsOnly,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -817,6 +851,7 @@ struct CatalogInspectionReport {
     catalog_id: String,
     catalog_ref: String,
     shape_count: usize,
+    placement_policy: PiecePlacementPolicy,
     piece_kinds: Vec<String>,
     feature_sockets: Vec<String>,
     exit_directions: Vec<String>,

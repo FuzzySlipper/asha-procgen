@@ -20,6 +20,7 @@ fn run(cli: Cli) -> Result<(), String> {
             BreakdownSubcommand::Validate(args) => breakdown_validate_command(args),
         },
         Command::Geometry(command) => match command.command {
+            GeometrySubcommand::PlanConnections(args) => physical_connection_plan_command(args),
             GeometrySubcommand::Emit2d(args) => geometry_emit_2d_command(args),
             GeometrySubcommand::Validate2d(args) => geometry_validate_2d_command(args),
         },

@@ -1,0 +1,11 @@
+{
+  "kind": "asha_procgen.receipt.v1",
+  "schemaVersion": 1,
+  "command": "graph apply-rule gated_treasure_branch",
+  "status": "ok",
+  "seed": 6104,
+  "inputHash": "fnv1a64:99410001eae4e2aa",
+  "outputHash": "fnv1a64:a8b9fefb21d30bc3",
+  "outputRef": "artifacts/samples/batch-v2/candidate-009/candidate-003-gated_treasure_branch.json",
+  "diagnostics": []
+}

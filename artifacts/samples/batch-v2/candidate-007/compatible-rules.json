@@ -2,7 +2,7 @@
   "kind": "asha_procgen.rule_compatibility.v1",
   "schemaVersion": 1,
   "candidateId": "candidate.first_slice.5901",
-  "stateHash": "fnv1a64:bd0dbe9c9eb637b6",
+  "stateHash": "fnv1a64:ff7099bbf506277f",
   "rules": [
     {
       "rule": "lock_key_loop",
@@ -38,12 +38,6 @@
     },
     {
       "rule": "hub_spoke_cluster",
-      "status": "applicable",
-      "reasons": [],
-      "recommendedActions": []
-    },
-    {
-      "rule": "nested_lock_key_chain",
       "status": "duplicate",
       "reasons": [
         "Fixed marker for this rule already exists."
@@ -51,6 +45,12 @@
       "recommendedActions": [
         "Fork from an earlier candidate or choose another rule."
       ]
+    },
+    {
+      "rule": "nested_lock_key_chain",
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
     },
     {
       "rule": "hazard_resource_tradeoff",
@@ -60,13 +60,9 @@
     },
     {
       "rule": "boss_preparation_loop",
-      "status": "duplicate",
-      "reasons": [
-        "Fixed marker for this rule already exists."
-      ],
-      "recommendedActions": [
-        "Fork from an earlier candidate or choose another rule."
-      ]
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
     },
     {
       "rule": "gated_treasure_branch",
@@ -76,9 +72,13 @@
     },
     {
       "rule": "branch_merge_shortcut",
-      "status": "applicable",
-      "reasons": [],
-      "recommendedActions": []
+      "status": "duplicate",
+      "reasons": [
+        "Fixed marker for this rule already exists."
+      ],
+      "recommendedActions": [
+        "Fork from an earlier candidate or choose another rule."
+      ]
     }
   ]
 }

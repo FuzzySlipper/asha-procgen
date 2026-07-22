@@ -208,12 +208,18 @@ This is the planned path from intermediate breakdowns to standalone HTML/SVG
 floor-plan previews with variable rooms, corridors, labels, and contents. It is
 separate from the existing simple `layout-2d.json` graph embedding.
 
-Current geometry command:
+Plan physical connections, then emit geometry from that exact plan:
 
 ```bash
+npm run procgen -- geometry plan-connections \
+  --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
+  --intermediate artifacts/samples/batch-v2/candidate-005/intermediate-breakdown.json \
+  --out artifacts/manual/physical-connection-plan.json
+
 npm run procgen -- geometry emit-2d \
   --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
   --intermediate artifacts/samples/batch-v2/candidate-005/intermediate-breakdown.json \
+  --connection-plan artifacts/manual/physical-connection-plan.json \
   --seed 6101 \
   --out artifacts/manual/geometry-2d.json
 ```

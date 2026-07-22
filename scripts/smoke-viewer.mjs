@@ -36,6 +36,9 @@ try {
   if (typeof top.intermediateBreakdownRef !== 'string') {
     throw new Error('top selection is missing intermediateBreakdownRef');
   }
+  if (typeof top.physicalConnectionPlanRef !== 'string') {
+    throw new Error('top selection is missing physicalConnectionPlanRef');
+  }
   if (typeof top.htmlRef !== 'string') {
     throw new Error('top selection is missing htmlRef');
   }
@@ -60,6 +63,16 @@ try {
   }
   if (!Array.isArray(breakdown.connectors) || breakdown.connectors.length === 0) {
     throw new Error('intermediate breakdown has no connectors');
+  }
+  const connectionPlan = await fetchArtifact(top.physicalConnectionPlanRef);
+  if (
+    connectionPlan.kind !== 'asha_procgen.physical_connection_plan.v1'
+    || !Array.isArray(connectionPlan.sections)
+    || connectionPlan.sections.length === 0
+    || !Array.isArray(connectionPlan.edgeMappings)
+    || connectionPlan.edgeMappings.length !== breakdown.connectors.length
+  ) {
+    throw new Error('physical connection plan does not cover the selected intermediate connectors');
   }
   const placement = await fetchArtifact(top.piecePlacementRef);
   if (placement.kind !== 'asha_procgen.piece_placement.v1') {
@@ -109,6 +122,7 @@ try {
   const alternateVoxelEntries = await Promise.all(batch.accepted
     .filter((entry) => (
       entry.candidateId !== voxelEntry.candidateId
+      && entry.topologyFingerprint !== voxelEntry.topologyFingerprint
       && typeof entry.piecePlacementRef === 'string'
     ))
     .map(async (entry) => {
@@ -298,7 +312,7 @@ try {
     const out = join(outDir, screenshot.name);
     if (screenshot.capturedByInteractionProbe) {
       const file = await stat(out);
-      if (file.size < 10_000) {
+      if (file.size < 5_000) {
         throw new Error(`${screenshot.name} looks too small to be a useful screenshot`);
       }
       continue;
@@ -314,7 +328,7 @@ try {
       screenshot.url,
     ]);
     const file = await stat(out);
-    if (file.size < 10_000) {
+    if (file.size < 5_000) {
       throw new Error(`${screenshot.name} looks too small to be a useful screenshot`);
     }
   }

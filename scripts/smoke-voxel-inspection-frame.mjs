@@ -8,7 +8,16 @@ import { compilePlacementExtrusion } from '../dist/ts/src/voxel-extrusion.js';
 
 const repoRoot = resolve(import.meta.dirname, '..');
 const selection = await readJson('artifacts/samples/batch-v2/selection-report.json');
-const entries = selection.accepted.filter((entry) => typeof entry.piecePlacementRef === 'string');
+const acceptedEntries = selection.accepted.filter((entry) => typeof entry.piecePlacementRef === 'string');
+const firstEntry = acceptedEntries[0];
+const distinctEntry = acceptedEntries.find((entry) => (
+  entry.topologyFingerprint !== firstEntry?.topologyFingerprint
+));
+const entries = firstEntry === undefined || distinctEntry === undefined
+  ? acceptedEntries
+  : [firstEntry, distinctEntry, ...acceptedEntries.filter((entry) => (
+      entry !== firstEntry && entry !== distinctEntry
+    ))];
 if (entries.length < 2) {
   throw new Error('voxel inspection smoke requires two accepted piece placements');
 }

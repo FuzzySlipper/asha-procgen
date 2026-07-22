@@ -70,11 +70,13 @@ and routes that would open a non-exit boundary or unrelated piece.
 
 ## Built Flow Validation
 
-Piece plans retain link-specific exit ids, source edge/corridor ids, traversal,
-and `requiredItem` as structured fields. Shape matching consumes every required
-exit exactly once; it no longer merges same-direction exits. Assembly emits one
-stable gate portal per source edge, including the exact cell, orientation,
-width, item requirement, controlling pieces, and provenance chain.
+Piece plans retain link-specific exit ids, physical-section ids, all mapped
+source edge/corridor ids, traversal refs, and item requirements as structured
+fields. Shape matching consumes every required exit exactly once. Assembly
+emits one stable gate portal per physical section, including the exact cell,
+orientation, width, mapped logical edges, controlling pieces, and provenance
+chain. Compatible reciprocal open edges therefore share one corridor and one
+portal instead of creating overlapping physical routes.
 
 Every accepted batch entry includes `built-flow.validation.json`. The report
 checks the candidate → geometry → ordered piece links → glued exits → routed
@@ -95,6 +97,14 @@ npm run procgen -- build validate-flow \
 Procgen owns this generation and validation evidence. Portals are not gameplay
 doors: this work does not claim inventory, collision, navigation, persistence,
 animation, or RuntimeSession door authority.
+
+Before geometry, batch generation now emits
+`physical-connection-plan.json`. The plan normalizes compatible reciprocal open
+edges into one physical corridor, assigns explicit room ports, and carries the
+section id through piece placement and built-flow validation. Dense candidates
+that cannot be routed on one floor without unrelated corridor contact are kept
+as `selection_physical_embedding_failed` rejections rather than being rendered
+with accidental junctions.
 
 ```bash
 npm run voxel:asha-smoke

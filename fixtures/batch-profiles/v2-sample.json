@@ -2,7 +2,7 @@
   "kind": "asha_procgen.batch_profile.v1",
   "schemaVersion": 1,
   "profileId": "asha_procgen.batch_profile.v2_sample",
-  "description": "Default v2 sample profile cycling through richer graph grammar combinations.",
+  "description": "Default v2 sample profile cycling through an embeddable lock-key baseline and richer graph grammar combinations.",
   "budgets": {
     "minOptionalBranches": 2,
     "maxDeadEnds": 0
@@ -61,6 +61,12 @@
         "boss_preparation_loop",
         "gated_treasure_branch",
         "branch_merge_shortcut"
+      ]
+    },
+    {
+      "label": "lock-key-baseline",
+      "rules": [
+        "lock_key_loop"
       ]
     }
   ]

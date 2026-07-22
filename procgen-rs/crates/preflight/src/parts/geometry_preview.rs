@@ -1,7 +1,129 @@
+fn physical_connection_plan_command(args: PhysicalConnectionPlanArgs) -> Result<(), String> {
+    let candidate: Candidate = read_json(&args.candidate)?;
+    let intermediate: IntermediateBreakdown = read_json(&args.intermediate)?;
+    let plan = plan_physical_connections(&candidate, &intermediate, &args)?;
+    write_json(&args.out, &plan)
+}
+
+fn plan_physical_connections(
+    candidate: &Candidate,
+    intermediate: &IntermediateBreakdown,
+    args: &PhysicalConnectionPlanArgs,
+) -> Result<PhysicalConnectionPlan, String> {
+    if intermediate.candidate_id != candidate.candidate_id {
+        return Err(format!(
+            "intermediate candidate {} does not match candidate {}",
+            intermediate.candidate_id, candidate.candidate_id
+        ));
+    }
+    let edges = candidate
+        .graph
+        .edges
+        .iter()
+        .map(|edge| (edge.id.as_str(), edge))
+        .collect::<BTreeMap<_, _>>();
+    let mut grouped: BTreeMap<String, Vec<(&IntermediateConnector, &Edge)>> = BTreeMap::new();
+    for connector in &intermediate.connectors {
+        let edge = edges.get(connector.edge_id.as_str()).copied().ok_or_else(|| {
+            format!("connector {} references missing edge {}", connector.id, connector.edge_id)
+        })?;
+        let mergeable_open = edge.traversal == TraversalKind::Open
+            && edge.required_item.is_none()
+            && connector.traversal_hint == "open";
+        let key = if mergeable_open {
+            let mut terminals = [connector.from_region.as_str(), connector.to_region.as_str()];
+            terminals.sort();
+            format!("open:{}:{}", terminals[0], terminals[1])
+        } else {
+            format!("edge:{}", connector.id)
+        };
+        grouped.entry(key).or_default().push((connector, edge));
+    }
+
+    let mut sections = Vec::new();
+    let mut edge_mappings = Vec::new();
+    for (group_key, members) in grouped {
+        let mut terminal_regions = members
+            .iter()
+            .flat_map(|(connector, _)| [connector.from_region.clone(), connector.to_region.clone()])
+            .collect::<Vec<_>>();
+        terminal_regions.sort();
+        terminal_regions.dedup();
+        if terminal_regions.len() != 2 {
+            return Err(format!(
+                "physical connection group {group_key} requires exactly two terminals; found {}",
+                terminal_regions.len()
+            ));
+        }
+        let section_suffix = group_key
+            .strip_prefix("edge:")
+            .map(slugify_label)
+            .unwrap_or_else(|| "open".to_owned());
+        let section_id = format!(
+            "section.{}.{}.{}",
+            slugify_label(terminal_regions[0].as_str()),
+            slugify_label(terminal_regions[1].as_str()),
+            section_suffix
+        );
+        let mut source_connectors = Vec::new();
+        let mut source_edges = Vec::new();
+        let mut traversal_refs = Vec::new();
+        let mut semantic_tags = Vec::new();
+        let mut width = 0;
+        for (connector, edge) in members {
+            source_connectors.push(connector.id.clone());
+            source_edges.push(edge.id.clone());
+            semantic_tags.extend(corridor_semantic_tags(connector));
+            width = width.max(corridor_width(connector));
+            traversal_refs.push(PhysicalTraversalRef {
+                connector_id: connector.id.clone(),
+                edge_id: edge.id.clone(),
+                from_region: connector.from_region.clone(),
+                to_region: connector.to_region.clone(),
+                traversal: edge.traversal.as_str().to_owned(),
+                required_item: edge.required_item.clone(),
+            });
+            edge_mappings.push(PhysicalEdgeMapping {
+                edge_id: edge.id.clone(),
+                connector_id: connector.id.clone(),
+                section_id: section_id.clone(),
+                from_region: connector.from_region.clone(),
+                to_region: connector.to_region.clone(),
+            });
+        }
+        source_connectors.sort();
+        source_edges.sort();
+        traversal_refs.sort_by(|left, right| left.edge_id.cmp(&right.edge_id));
+        sections.push(PhysicalConnectionSection {
+            id: section_id,
+            topology: "corridor_2".to_owned(),
+            terminal_regions,
+            source_connectors,
+            source_edges,
+            traversal_refs,
+            width,
+            semantic_tags: dedupe_strings(semantic_tags),
+        });
+    }
+    sections.sort_by(|left, right| left.id.cmp(&right.id));
+    edge_mappings.sort_by(|left, right| left.edge_id.cmp(&right.edge_id));
+    Ok(PhysicalConnectionPlan {
+        kind: "asha_procgen.physical_connection_plan.v1".to_owned(),
+        schema_version: 1,
+        plan_id: format!("physical_connections.{}", candidate.candidate_id),
+        candidate_id: candidate.candidate_id.clone(),
+        source_candidate_ref: display_path(&args.candidate),
+        source_intermediate_ref: display_path(&args.intermediate),
+        sections,
+        edge_mappings,
+    })
+}
+
 fn geometry_emit_2d_command(args: GeometryEmit2dArgs) -> Result<(), String> {
     let candidate: Candidate = read_json(&args.candidate)?;
     let intermediate: IntermediateBreakdown = read_json(&args.intermediate)?;
-    let geometry = emit_geometry_2d(&candidate, &intermediate, &args, args.seed)?;
+    let connection_plan: PhysicalConnectionPlan = read_json(&args.connection_plan)?;
+    let geometry = emit_geometry_2d(&candidate, &intermediate, &connection_plan, &args, args.seed)?;
     write_json(&args.out, &geometry)
 }
 
@@ -312,8 +434,17 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
             "Geometry bounds width, height, and grid must be positive.",
         ));
     }
+    if geometry.source_connection_plan_ref.is_empty() || geometry.connection_plan_id.is_empty() {
+        diagnostics.push(fatal(
+            "geometry_connection_plan_ref_missing",
+            None,
+            None,
+            "Geometry must identify the exact physical connection plan it projects.",
+        ));
+    }
 
     let mut rooms_by_id = BTreeMap::new();
+    let mut rooms_by_region = BTreeMap::new();
     for room in &geometry.rooms {
         if room.id.is_empty() {
             diagnostics.push(fatal(
@@ -331,6 +462,35 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
                 None,
                 format!("Room id {} appears more than once.", room.id),
             ));
+        }
+        rooms_by_region.insert(room.source_region.as_str(), room);
+        let mut room_port_positions = BTreeSet::new();
+        let mut room_port_sections = BTreeSet::new();
+        for port in &room.ports {
+            if !geometry_point_on_rect_boundary(&port.point, &room.rect) {
+                diagnostics.push(fatal(
+                    "geometry_room_port_detached",
+                    room.source_nodes.first().map(String::as_str),
+                    None,
+                    format!("Room port {} is not on room {} boundary.", port.id, room.id),
+                ));
+            }
+            if !room_port_positions.insert((port.point.x, port.point.y)) {
+                diagnostics.push(fatal(
+                    "geometry_room_port_span_reused",
+                    room.source_nodes.first().map(String::as_str),
+                    None,
+                    format!("Room {} reuses doorway position {},{}.", room.id, port.point.x, port.point.y),
+                ));
+            }
+            if !room_port_sections.insert(port.section_id.as_str()) {
+                diagnostics.push(fatal(
+                    "geometry_room_port_section_duplicate",
+                    room.source_nodes.first().map(String::as_str),
+                    None,
+                    format!("Room {} has duplicate ports for section {}.", room.id, port.section_id),
+                ));
+            }
         }
         if room.rect.width <= 0 || room.rect.height <= 0 {
             diagnostics.push(fatal(
@@ -367,6 +527,8 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
     }
 
     let mut represented_connectors = BTreeSet::new();
+    let mut represented_edges = BTreeSet::new();
+    let mut represented_sections = BTreeSet::new();
     let mut adjacency: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
     if geometry.rooms.len() > 1
         && geometry.corridors.is_empty()
@@ -380,23 +542,75 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
         ));
     }
     for corridor in &geometry.corridors {
-        if corridor.source_connector.is_empty() || corridor.source_edge.is_empty() {
+        if !represented_sections.insert(corridor.physical_section.as_str()) {
+            diagnostics.push(fatal(
+                "geometry_physical_section_duplicate",
+                None,
+                Some(corridor.id.as_str()),
+                format!(
+                    "Physical section {} is represented by more than one corridor.",
+                    corridor.physical_section
+                ),
+            ));
+        }
+        if corridor.physical_section.is_empty()
+            || corridor.source_connectors.is_empty()
+            || corridor.source_edges.is_empty()
+            || corridor.traversal_refs.is_empty()
+        {
             diagnostics.push(fatal(
                 "geometry_corridor_source_missing",
                 None,
                 Some(corridor.id.as_str()),
                 "Corridor must preserve source connector and source edge refs.",
             ));
-        } else if !represented_connectors.insert(corridor.source_connector.as_str()) {
-            diagnostics.push(fatal(
-                "geometry_corridor_duplicate_connector",
-                None,
-                Some(corridor.id.as_str()),
-                format!(
-                    "Connector {} is represented by more than one corridor.",
-                    corridor.source_connector
-                ),
-            ));
+        } else {
+            for connector in &corridor.source_connectors {
+                if !represented_connectors.insert(connector.as_str()) {
+                    diagnostics.push(fatal(
+                        "geometry_corridor_duplicate_connector",
+                        None,
+                        Some(corridor.id.as_str()),
+                        format!("Connector {connector} is represented by more than one physical section."),
+                    ));
+                }
+            }
+            for edge in &corridor.source_edges {
+                if !represented_edges.insert(edge.as_str()) {
+                    diagnostics.push(fatal(
+                        "geometry_corridor_duplicate_edge",
+                        None,
+                        Some(corridor.id.as_str()),
+                        format!("Source edge {edge} is mapped to more than one physical section."),
+                    ));
+                }
+            }
+            let traversal_edges = corridor
+                .traversal_refs
+                .iter()
+                .map(|reference| reference.edge_id.as_str())
+                .collect::<BTreeSet<_>>();
+            let traversal_connectors = corridor
+                .traversal_refs
+                .iter()
+                .map(|reference| reference.connector_id.as_str())
+                .collect::<BTreeSet<_>>();
+            if traversal_edges
+                != corridor.source_edges.iter().map(String::as_str).collect::<BTreeSet<_>>()
+                || traversal_connectors
+                    != corridor
+                        .source_connectors
+                        .iter()
+                        .map(String::as_str)
+                        .collect::<BTreeSet<_>>()
+            {
+                diagnostics.push(fatal(
+                    "geometry_corridor_traversal_mapping_mismatch",
+                    None,
+                    Some(corridor.id.as_str()),
+                    "Corridor traversal refs must exactly cover its source connectors and edges.",
+                ));
+            }
         }
         let from_room = rooms_by_id.get(corridor.from_room.as_str()).copied();
         let to_room = rooms_by_id.get(corridor.to_room.as_str()).copied();
@@ -438,12 +652,51 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
                     ),
                 ));
             }
-            adjacency
-                .entry(corridor.from_room.as_str())
-                .or_default()
-                .push(corridor.to_room.as_str());
+            if !from_room
+                .ports
+                .iter()
+                .any(|port| port.id == corridor.from_port && port.section_id == corridor.physical_section)
+                || !to_room
+                    .ports
+                    .iter()
+                    .any(|port| port.id == corridor.to_port && port.section_id == corridor.physical_section)
+            {
+                diagnostics.push(fatal(
+                    "geometry_corridor_port_mismatch",
+                    None,
+                    Some(corridor.id.as_str()),
+                    format!("Corridor {} does not identify its planned terminal ports.", corridor.id),
+                ));
+            }
+            for traversal in &corridor.traversal_refs {
+                let terminal_pair = sorted_pair(
+                    traversal.from_region.as_str(),
+                    traversal.to_region.as_str(),
+                );
+                let room_pair = sorted_pair(
+                    from_room.source_region.as_str(),
+                    to_room.source_region.as_str(),
+                );
+                if terminal_pair != room_pair {
+                    diagnostics.push(fatal(
+                        "geometry_corridor_terminal_mapping_mismatch",
+                        None,
+                        Some(traversal.edge_id.as_str()),
+                        format!(
+                            "Traversal {} does not terminate at corridor rooms {} and {}.",
+                            traversal.edge_id, from_room.source_region, to_room.source_region
+                        ),
+                    ));
+                }
+                if let (Some(source), Some(target)) = (
+                    rooms_by_region.get(traversal.from_region.as_str()),
+                    rooms_by_region.get(traversal.to_region.as_str()),
+                ) {
+                    adjacency.entry(source.id.as_str()).or_default().push(target.id.as_str());
+                }
+            }
         }
-        if corridor.traversal_hint == "locked"
+        if corridor.traversal_refs.iter().any(|reference| reference.traversal == "locked")
             && !corridor
                 .semantic_tags
                 .iter()
@@ -456,7 +709,7 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
                 "Locked corridors must preserve locked_threshold semantics.",
             ));
         }
-        if corridor.traversal_hint == "hidden"
+        if corridor.traversal_refs.iter().any(|reference| reference.traversal == "hidden")
             && !corridor
                 .semantic_tags
                 .iter()
@@ -483,6 +736,8 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
             ));
         }
     }
+
+    validate_exclusive_geometry_routes(geometry, &rooms_by_id, &mut diagnostics);
 
     let mut skipped_connectors = BTreeSet::new();
     for skipped in &geometry.skipped_connectors {
@@ -653,9 +908,118 @@ fn geometry_point_on_rect_boundary(point: &GeometryPoint, rect: &GeometryRect) -
     on_vertical || on_horizontal
 }
 
+fn validate_exclusive_geometry_routes(
+    geometry: &Geometry2dArtifact,
+    rooms_by_id: &BTreeMap<&str, &GeometryRoom>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let mut cells = BTreeMap::<(i32, i32), (&str, i32)>::new();
+    let mut route_cells = Vec::new();
+    for corridor in &geometry.corridors {
+        for point in rasterize_geometry_corridor(corridor) {
+            for room in &geometry.rooms {
+                if room.id != corridor.from_room
+                    && room.id != corridor.to_room
+                    && point.x > room.rect.x
+                    && point.x < room.rect.x + room.rect.width
+                    && point.y > room.rect.y
+                    && point.y < room.rect.y + room.rect.height
+                {
+                    diagnostics.push(fatal(
+                        "geometry_corridor_room_intrusion",
+                        room.source_nodes.first().map(String::as_str),
+                        Some(corridor.id.as_str()),
+                        format!("Physical section {} enters unrelated room {}.", corridor.physical_section, room.id),
+                    ));
+                }
+            }
+            if let Some((other, _)) = cells.insert(
+                (point.x, point.y),
+                (corridor.physical_section.as_str(), corridor.width),
+            ) {
+                if other != corridor.physical_section {
+                    diagnostics.push(fatal(
+                        "geometry_physical_section_overlap",
+                        None,
+                        Some(corridor.id.as_str()),
+                        format!("Physical sections {} and {} overlap at {},{}.", other, corridor.physical_section, point.x, point.y),
+                    ));
+                }
+            }
+            route_cells.push(((point.x, point.y), corridor.physical_section.as_str(), corridor.width));
+        }
+    }
+    let mut reported = BTreeSet::new();
+    for (position, section, width) in route_cells {
+        let max_radius = align_geometry(width / 2 + 10 + GEOMETRY_CORRIDOR_SEPARATION, GEOMETRY_ROUTE_GRID)
+            / GEOMETRY_ROUTE_GRID;
+        for dy in -max_radius..=max_radius {
+            for dx in -max_radius..=max_radius {
+                let Some((other_section, other_width)) = cells.get(&(
+                    position.0 + dx * GEOMETRY_ROUTE_GRID,
+                    position.1 + dy * GEOMETRY_ROUTE_GRID,
+                )) else {
+                    continue;
+                };
+                if *other_section == section {
+                    continue;
+                }
+                let distance = (dx.abs() + dy.abs()) * GEOMETRY_ROUTE_GRID;
+                let required = width / 2 + *other_width / 2 + GEOMETRY_CORRIDOR_SEPARATION;
+                if distance < required {
+                    let pair = sorted_pair(section, other_section);
+                    if reported.insert(pair.clone()) {
+                        diagnostics.push(fatal(
+                            "geometry_physical_section_contact",
+                            None,
+                            None,
+                            format!("Unrelated physical sections {} and {} violate separation.", pair.0, pair.1),
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    let _ = rooms_by_id;
+}
+
+fn rasterize_geometry_corridor(corridor: &GeometryCorridor) -> Vec<GeometryPoint> {
+    let mut cells = Vec::new();
+    for segment in corridor.points.windows(2) {
+        let from = &segment[0];
+        let to = &segment[1];
+        let dx = (to.x - from.x).signum() * GEOMETRY_ROUTE_GRID;
+        let dy = (to.y - from.y).signum() * GEOMETRY_ROUTE_GRID;
+        let mut cursor = (from.x, from.y);
+        cells.push(GeometryPoint { x: cursor.0, y: cursor.1 });
+        while cursor != (to.x, to.y) {
+            cursor = (cursor.0 + dx, cursor.1 + dy);
+            cells.push(GeometryPoint { x: cursor.0, y: cursor.1 });
+        }
+    }
+    dedupe_points(cells)
+}
+
+const GEOMETRY_ROUTE_GRID: i32 = 8;
+const GEOMETRY_ROOM_MARGIN: i32 = 192;
+const GEOMETRY_COLUMN_GAP: i32 = 288;
+const GEOMETRY_ROW_GAP: i32 = 144;
+const GEOMETRY_PORT_MARGIN: i32 = 32;
+const GEOMETRY_PORT_SPACING: i32 = 48;
+const GEOMETRY_CORRIDOR_SEPARATION: i32 = 8;
+
+#[derive(Clone, Debug)]
+struct PhysicalPortDemand {
+    section_id: String,
+    side: String,
+    width: i32,
+    opposite_order: usize,
+}
+
 fn emit_geometry_2d(
     candidate: &Candidate,
     intermediate: &IntermediateBreakdown,
+    connection_plan: &PhysicalConnectionPlan,
     args: &GeometryEmit2dArgs,
     seed: u64,
 ) -> Result<Geometry2dArtifact, String> {
@@ -664,6 +1028,11 @@ fn emit_geometry_2d(
             "intermediate candidate {} does not match candidate {}",
             intermediate.candidate_id, candidate.candidate_id
         ));
+    }
+    if connection_plan.candidate_id != candidate.candidate_id
+        || connection_plan.kind != "asha_procgen.physical_connection_plan.v1"
+    {
+        return Err("physical connection plan does not match the supplied candidate".to_owned());
     }
     let depths = graph_depths(candidate);
     let mut region_specs = intermediate
@@ -686,15 +1055,114 @@ fn emit_geometry_2d(
             .then_with(|| left.2.cmp(&right.2))
     });
 
-    let mut rows_by_depth: BTreeMap<usize, usize> = BTreeMap::new();
+    let (rooms, corridors, bounds) = place_and_route_physical_geometry(
+        &region_specs,
+        connection_plan,
+        seed,
+    )?;
+    let contents = geometry_contents(candidate, intermediate, &rooms);
+    Ok(Geometry2dArtifact {
+        kind: "asha_procgen.geometry_2d.v1".to_owned(),
+        schema_version: 1,
+        geometry_id: format!("geometry.{}.{}", candidate.candidate_id, seed),
+        candidate_id: candidate.candidate_id.clone(),
+        seed,
+        source_candidate_ref: display_path(&args.candidate),
+        source_intermediate_ref: display_path(&args.intermediate),
+        source_connection_plan_ref: display_path(&args.connection_plan),
+        connection_plan_id: connection_plan.plan_id.clone(),
+        bounds,
+        rooms,
+        corridors,
+        contents,
+        skipped_connectors: Vec::new(),
+    })
+}
+
+fn place_and_route_physical_geometry(
+    base_specs: &[(usize, String, String, &IntermediateRegion)],
+    connection_plan: &PhysicalConnectionPlan,
+    seed: u64,
+) -> Result<(Vec<GeometryRoom>, Vec<GeometryCorridor>, GeometryBounds), String> {
+    let mut last_error = None;
+    for attempt in 0..12_u64 {
+        let mut specs = base_specs.to_vec();
+        specs.sort_by(|left, right| {
+            left.0.cmp(&right.0).then_with(|| {
+                if attempt == 0 {
+                    left.1.cmp(&right.1).then_with(|| left.2.cmp(&right.2))
+                } else {
+                    geometry_layout_order_key(left.3.id.as_str(), seed, attempt)
+                        .cmp(&geometry_layout_order_key(right.3.id.as_str(), seed, attempt))
+                        .then_with(|| left.2.cmp(&right.2))
+                }
+            })
+        });
+        match place_and_route_physical_geometry_attempt(&specs, connection_plan) {
+            Ok(result) => return Ok(result),
+            Err(error) => last_error = Some(error),
+        }
+    }
+    Err(last_error.unwrap_or_else(|| "no connection-aware room distribution was attempted".to_owned()))
+}
+
+fn geometry_layout_order_key(id: &str, seed: u64, attempt: u64) -> u64 {
+    let mut value = seed ^ attempt.wrapping_mul(0x9E37_79B9_7F4A_7C15);
+    for byte in id.bytes() {
+        value ^= u64::from(byte);
+        value = value.wrapping_mul(0x100_0000_01B3);
+        value ^= value >> 29;
+    }
+    value
+}
+
+fn place_and_route_physical_geometry_attempt(
+    region_specs: &[(usize, String, String, &IntermediateRegion)],
+    connection_plan: &PhysicalConnectionPlan,
+) -> Result<(Vec<GeometryRoom>, Vec<GeometryCorridor>, GeometryBounds), String> {
+    let region_depths = region_specs
+        .iter()
+        .map(|(depth, _, _, region)| (region.id.as_str(), *depth))
+        .collect::<BTreeMap<_, _>>();
+    let region_orders = region_specs
+        .iter()
+        .enumerate()
+        .map(|(index, (_, _, _, region))| (region.id.as_str(), index))
+        .collect::<BTreeMap<_, _>>();
+    let port_demands = physical_port_demands(connection_plan, &region_depths, &region_orders)?;
+    let mut column_widths = BTreeMap::<usize, i32>::new();
+    for (depth, _, _, region) in region_specs {
+        let (width, _) = connection_aware_room_size(
+            region,
+            port_demands
+                .get(region.id.as_str())
+                .map(Vec::as_slice)
+                .unwrap_or_default(),
+        );
+        column_widths
+            .entry(*depth)
+            .and_modify(|existing| *existing = (*existing).max(width))
+            .or_insert(width);
+    }
+    let mut column_origins = BTreeMap::new();
+    let mut next_x = GEOMETRY_ROOM_MARGIN;
+    for (depth, width) in &column_widths {
+        column_origins.insert(*depth, next_x);
+        next_x += *width + GEOMETRY_COLUMN_GAP;
+    }
+    let mut next_y_by_depth = BTreeMap::<usize, i32>::new();
     let mut rooms = Vec::new();
-    let grid = 8;
-    for (depth, _role, _id, region) in region_specs {
-        let row = rows_by_depth.entry(depth).or_insert(0);
-        let (width, height) = room_size_for_region(region);
-        let x = 64 + depth as i32 * 260;
-        let y = 64 + *row as i32 * 156;
-        *row += 1;
+    for (depth, _role, _id, region) in region_specs.iter().cloned() {
+        let demands = port_demands
+            .get(region.id.as_str())
+            .map(Vec::as_slice)
+            .unwrap_or_default();
+        let (width, height) = connection_aware_room_size(region, demands);
+        let x = *column_origins
+            .get(&depth)
+            .ok_or_else(|| format!("missing room column for graph depth {depth}"))?;
+        let y = *next_y_by_depth.entry(depth).or_insert(GEOMETRY_ROOM_MARGIN);
+        next_y_by_depth.insert(depth, y + height + GEOMETRY_ROW_GAP);
         rooms.push(GeometryRoom {
             id: room_id(region.id.as_str()),
             source_region: region.id.clone(),
@@ -708,48 +1176,121 @@ fn emit_geometry_2d(
                 width,
                 height,
             },
+            ports: Vec::new(),
             style_tags: geometry_room_style_tags(region),
         });
     }
-    let bounds = geometry_bounds(&rooms, grid);
-    let room_by_region = rooms
-        .iter()
-        .map(|room| (room.source_region.as_str(), room))
-        .collect::<BTreeMap<_, _>>();
-    let mut corridors = Vec::new();
-    let mut skipped_connectors = Vec::new();
-    for connector in &intermediate.connectors {
-        let Some(from_room) = room_by_region.get(connector.from_region.as_str()).copied() else {
-            skipped_connectors.push(SkippedConnector {
-                source_connector: connector.id.clone(),
-                reason: "missing_from_room".to_owned(),
-            });
-            continue;
+    assign_physical_room_ports(&mut rooms, &port_demands)?;
+    let bounds = geometry_bounds(&rooms, GEOMETRY_ROUTE_GRID);
+    let corridors = route_physical_sections(connection_plan, &rooms, &bounds)?;
+    Ok((rooms, corridors, bounds))
+}
+
+fn physical_port_demands(
+    plan: &PhysicalConnectionPlan,
+    depths: &BTreeMap<&str, usize>,
+    orders: &BTreeMap<&str, usize>,
+) -> Result<BTreeMap<String, Vec<PhysicalPortDemand>>, String> {
+    let mut demands = BTreeMap::<String, Vec<PhysicalPortDemand>>::new();
+    for section in &plan.sections {
+        if section.topology != "corridor_2" || section.terminal_regions.len() != 2 {
+            return Err(format!("unsupported physical section topology on {}", section.id));
+        }
+        let left = section.terminal_regions[0].as_str();
+        let right = section.terminal_regions[1].as_str();
+        let left_depth = depths.get(left).copied().unwrap_or(0);
+        let right_depth = depths.get(right).copied().unwrap_or(0);
+        let left_order = orders.get(left).copied().unwrap_or(0);
+        let right_order = orders.get(right).copied().unwrap_or(0);
+        let (left_side, right_side) = if left_depth < right_depth {
+            ("east", "west")
+        } else if left_depth > right_depth {
+            ("west", "east")
+        } else if left_order <= right_order {
+            ("south", "north")
+        } else {
+            ("north", "south")
         };
-        let Some(to_room) = room_by_region.get(connector.to_region.as_str()).copied() else {
-            skipped_connectors.push(SkippedConnector {
-                source_connector: connector.id.clone(),
-                reason: "missing_to_room".to_owned(),
-            });
-            continue;
-        };
-        corridors.push(route_corridor(connector, from_room, to_room));
+        demands.entry(left.to_owned()).or_default().push(PhysicalPortDemand {
+            section_id: section.id.clone(),
+            side: left_side.to_owned(),
+            width: section.width,
+            opposite_order: right_order,
+        });
+        demands.entry(right.to_owned()).or_default().push(PhysicalPortDemand {
+            section_id: section.id.clone(),
+            side: right_side.to_owned(),
+            width: section.width,
+            opposite_order: left_order,
+        });
     }
-    let contents = geometry_contents(candidate, intermediate, &rooms);
-    Ok(Geometry2dArtifact {
-        kind: "asha_procgen.geometry_2d.v1".to_owned(),
-        schema_version: 1,
-        geometry_id: format!("geometry.{}.{}", candidate.candidate_id, seed),
-        candidate_id: candidate.candidate_id.clone(),
-        seed,
-        source_candidate_ref: display_path(&args.candidate),
-        source_intermediate_ref: display_path(&args.intermediate),
-        bounds,
-        rooms,
-        corridors,
-        contents,
-        skipped_connectors,
-    })
+    for room_demands in demands.values_mut() {
+        room_demands.sort_by(|left, right| {
+            left.side
+                .cmp(&right.side)
+                .then_with(|| left.opposite_order.cmp(&right.opposite_order))
+                .then_with(|| left.section_id.cmp(&right.section_id))
+        });
+    }
+    Ok(demands)
+}
+
+fn connection_aware_room_size(
+    region: &IntermediateRegion,
+    demands: &[PhysicalPortDemand],
+) -> (i32, i32) {
+    let (base_width, base_height) = room_size_for_region(region);
+    let count = |side: &str| demands.iter().filter(|demand| demand.side == side).count() as i32;
+    let horizontal = count("north").max(count("south"));
+    let vertical = count("east").max(count("west"));
+    let span = |ports: i32| {
+        if ports == 0 { 0 } else { GEOMETRY_PORT_MARGIN * 2 + (ports - 1) * GEOMETRY_PORT_SPACING }
+    };
+    (
+        align_geometry(base_width.max(span(horizontal)), GEOMETRY_ROUTE_GRID * 2),
+        align_geometry(base_height.max(span(vertical)), GEOMETRY_ROUTE_GRID * 2),
+    )
+}
+
+fn align_geometry(value: i32, grid: i32) -> i32 {
+    ((value + grid - 1) / grid) * grid
+}
+
+fn assign_physical_room_ports(
+    rooms: &mut [GeometryRoom],
+    demands: &BTreeMap<String, Vec<PhysicalPortDemand>>,
+) -> Result<(), String> {
+    for room in rooms {
+        let room_demands = demands
+            .get(room.source_region.as_str())
+            .map(Vec::as_slice)
+            .unwrap_or_default();
+        for side in ["north", "east", "south", "west"] {
+            let side_demands = room_demands
+                .iter()
+                .filter(|demand| demand.side == side)
+                .collect::<Vec<_>>();
+            let count = side_demands.len() as i32;
+            for (index, demand) in side_demands.into_iter().enumerate() {
+                let offset = (index as i32 * 2 - (count - 1)) * GEOMETRY_PORT_SPACING / 2;
+                let point = match side {
+                    "north" => GeometryPoint { x: room.rect.x + room.rect.width / 2 + offset, y: room.rect.y },
+                    "east" => GeometryPoint { x: room.rect.x + room.rect.width, y: room.rect.y + room.rect.height / 2 + offset },
+                    "south" => GeometryPoint { x: room.rect.x + room.rect.width / 2 + offset, y: room.rect.y + room.rect.height },
+                    "west" => GeometryPoint { x: room.rect.x, y: room.rect.y + room.rect.height / 2 + offset },
+                    _ => return Err(format!("unsupported room port side {side}")),
+                };
+                room.ports.push(GeometryRoomPort {
+                    id: format!("port.{}.{}", slugify_label(room.id.as_str()), slugify_label(demand.section_id.as_str())),
+                    section_id: demand.section_id.clone(),
+                    side: side.to_owned(),
+                    point,
+                    width: demand.width,
+                });
+            }
+        }
+    }
+    Ok(())
 }
 
 fn geometry_contents(
@@ -837,56 +1378,288 @@ fn content_annotation_for_node(
     Some((kind.to_owned(), label.to_owned(), dedupe_strings(tags)))
 }
 
-fn route_corridor(
-    connector: &IntermediateConnector,
+fn route_physical_sections(
+    plan: &PhysicalConnectionPlan,
+    rooms: &[GeometryRoom],
+    bounds: &GeometryBounds,
+) -> Result<Vec<GeometryCorridor>, String> {
+    let rooms_by_region = rooms
+        .iter()
+        .map(|room| (room.source_region.as_str(), room))
+        .collect::<BTreeMap<_, _>>();
+    let mut sections = plan.sections.iter().collect::<Vec<_>>();
+    sections.sort_by(|left, right| {
+        let left_rooms = section_rooms(left, &rooms_by_region);
+        let right_rooms = section_rooms(right, &rooms_by_region);
+        let left_distance = left_rooms
+            .map(|(from, to)| geometry_room_distance(from, to))
+            .unwrap_or(0);
+        let right_distance = right_rooms
+            .map(|(from, to)| geometry_room_distance(from, to))
+            .unwrap_or(0);
+        right_distance.cmp(&left_distance).then_with(|| left.id.cmp(&right.id))
+    });
+    let mut orders = vec![sections.clone()];
+    let mut reversed = sections.clone();
+    reversed.reverse();
+    orders.push(reversed);
+    let mut by_id = sections.clone();
+    by_id.sort_by(|left, right| left.id.cmp(&right.id));
+    orders.push(by_id.clone());
+    by_id.reverse();
+    orders.push(by_id);
+    let mut last_error = None;
+    for order in orders {
+        match try_route_physical_sections(&order, &rooms_by_region, rooms, bounds) {
+            Ok(corridors) => return Ok(corridors),
+            Err(error) => last_error = Some(error),
+        }
+    }
+    Err(last_error.unwrap_or_else(|| "physical connection plan has no sections".to_owned()))
+}
+
+fn section_rooms<'a>(
+    section: &PhysicalConnectionSection,
+    rooms: &BTreeMap<&str, &'a GeometryRoom>,
+) -> Option<(&'a GeometryRoom, &'a GeometryRoom)> {
+    if section.terminal_regions.len() != 2 {
+        return None;
+    }
+    Some((
+        *rooms.get(section.terminal_regions[0].as_str())?,
+        *rooms.get(section.terminal_regions[1].as_str())?,
+    ))
+}
+
+fn geometry_room_distance(left: &GeometryRoom, right: &GeometryRoom) -> u32 {
+    let left = rect_center(&left.rect);
+    let right = rect_center(&right.rect);
+    left.x.abs_diff(right.x) + left.y.abs_diff(right.y)
+}
+
+fn try_route_physical_sections(
+    sections: &[&PhysicalConnectionSection],
+    rooms_by_region: &BTreeMap<&str, &GeometryRoom>,
+    rooms: &[GeometryRoom],
+    bounds: &GeometryBounds,
+) -> Result<Vec<GeometryCorridor>, String> {
+    let mut reserved = BTreeSet::new();
+    let mut corridors = Vec::new();
+    for section in sections {
+        let (from_room, to_room) = section_rooms(section, rooms_by_region)
+            .ok_or_else(|| format!("section {} references missing terminal room", section.id))?;
+        let from_port = from_room
+            .ports
+            .iter()
+            .find(|port| port.section_id == section.id)
+            .ok_or_else(|| format!("room {} lacks port for {}", from_room.id, section.id))?;
+        let to_port = to_room
+            .ports
+            .iter()
+            .find(|port| port.section_id == section.id)
+            .ok_or_else(|| format!("room {} lacks port for {}", to_room.id, section.id))?;
+        let path = route_physical_section(
+            from_room,
+            from_port,
+            to_room,
+            to_port,
+            section.width,
+            rooms,
+            &reserved,
+            bounds,
+        )
+        .ok_or_else(|| {
+            format!(
+                "single-floor route unavailable for physical section {}",
+                section.id
+            )
+        })?;
+        reserve_geometry_route(&path, section.width, &mut reserved);
+        let source_connector = section.source_connectors.first().cloned().unwrap_or_default();
+        let source_edge = section.source_edges.first().cloned().unwrap_or_default();
+        let traversal_hint = if section
+            .traversal_refs
+            .iter()
+            .all(|reference| reference.traversal == "open")
+        {
+            "open".to_owned()
+        } else {
+            section
+                .traversal_refs
+                .first()
+                .map(|reference| reference.traversal.clone())
+                .unwrap_or_else(|| "open".to_owned())
+        };
+        corridors.push(GeometryCorridor {
+            id: format!("corridor.{}", slugify_label(section.id.as_str())),
+            physical_section: section.id.clone(),
+            source_connector,
+            source_edge,
+            source_connectors: section.source_connectors.clone(),
+            source_edges: section.source_edges.clone(),
+            traversal_refs: section.traversal_refs.clone(),
+            from_room: from_room.id.clone(),
+            to_room: to_room.id.clone(),
+            traversal_hint,
+            semantic_tags: section.semantic_tags.clone(),
+            width: section.width,
+            from_port: from_port.id.clone(),
+            to_port: to_port.id.clone(),
+            points: compress_geometry_route(path),
+        });
+    }
+    corridors.sort_by(|left, right| left.physical_section.cmp(&right.physical_section));
+    Ok(corridors)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn route_physical_section(
     from_room: &GeometryRoom,
+    from_port: &GeometryRoomPort,
     to_room: &GeometryRoom,
-) -> GeometryCorridor {
-    let start = corridor_anchor(&from_room.rect, &to_room.rect);
-    let end = corridor_anchor(&to_room.rect, &from_room.rect);
-    let mid_x = (start.x + end.x) / 2;
-    let points = dedupe_points(vec![
-        start.clone(),
-        GeometryPoint {
-            x: mid_x,
-            y: start.y,
-        },
-        GeometryPoint { x: mid_x, y: end.y },
-        end,
-    ]);
-    GeometryCorridor {
-        id: format!("corridor.{}", slugify_label(connector.id.as_str())),
-        source_connector: connector.id.clone(),
-        source_edge: connector.edge_id.clone(),
-        from_room: from_room.id.clone(),
-        to_room: to_room.id.clone(),
-        traversal_hint: connector.traversal_hint.clone(),
-        semantic_tags: corridor_semantic_tags(connector),
-        width: corridor_width(connector),
-        points,
+    to_port: &GeometryRoomPort,
+    width: i32,
+    rooms: &[GeometryRoom],
+    reserved: &BTreeSet<(i32, i32)>,
+    bounds: &GeometryBounds,
+) -> Option<Vec<GeometryPoint>> {
+    let start = (from_port.point.x, from_port.point.y);
+    let end = (to_port.point.x, to_port.point.y);
+    let mut queue = VecDeque::from([start]);
+    let mut seen = HashSet::from([start]);
+    let mut previous = HashMap::new();
+    while let Some(position) = queue.pop_front() {
+        if position == end {
+            break;
+        }
+        let mut neighbors = vec![
+            (position.0 + GEOMETRY_ROUTE_GRID, position.1),
+            (position.0, position.1 + GEOMETRY_ROUTE_GRID),
+            (position.0 - GEOMETRY_ROUTE_GRID, position.1),
+            (position.0, position.1 - GEOMETRY_ROUTE_GRID),
+        ];
+        neighbors.sort_by_key(|neighbor| neighbor.0.abs_diff(end.0) + neighbor.1.abs_diff(end.1));
+        for neighbor in neighbors {
+            if !seen.insert(neighbor)
+                || !geometry_route_available(
+                    neighbor,
+                    from_room,
+                    from_port,
+                    to_room,
+                    to_port,
+                    width,
+                    rooms,
+                    reserved,
+                    bounds,
+                )
+            {
+                continue;
+            }
+            previous.insert(neighbor, position);
+            queue.push_back(neighbor);
+        }
+    }
+    if !seen.contains(&end) {
+        return None;
+    }
+    let mut path = vec![GeometryPoint { x: end.0, y: end.1 }];
+    let mut cursor = end;
+    while cursor != start {
+        cursor = *previous.get(&cursor)?;
+        path.push(GeometryPoint { x: cursor.0, y: cursor.1 });
+    }
+    path.reverse();
+    Some(path)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn geometry_route_available(
+    position: (i32, i32),
+    from_room: &GeometryRoom,
+    from_port: &GeometryRoomPort,
+    to_room: &GeometryRoom,
+    to_port: &GeometryRoomPort,
+    width: i32,
+    rooms: &[GeometryRoom],
+    reserved: &BTreeSet<(i32, i32)>,
+    bounds: &GeometryBounds,
+) -> bool {
+    if position.0 < 0
+        || position.1 < 0
+        || position.0 > bounds.width
+        || position.1 > bounds.height
+        || reserved.contains(&position)
+    {
+        return false;
+    }
+    let clearance = width / 2 + GEOMETRY_CORRIDOR_SEPARATION;
+    rooms.iter().all(|room| {
+        let blocked = position.0 >= room.rect.x - clearance
+            && position.0 <= room.rect.x + room.rect.width + clearance
+            && position.1 >= room.rect.y - clearance
+            && position.1 <= room.rect.y + room.rect.height + clearance;
+        if !blocked {
+            return true;
+        }
+        (room.id == from_room.id && geometry_port_approach_contains(position, from_port, clearance))
+            || (room.id == to_room.id && geometry_port_approach_contains(position, to_port, clearance))
+    })
+}
+
+fn geometry_port_approach_contains(
+    position: (i32, i32),
+    port: &GeometryRoomPort,
+    clearance: i32,
+) -> bool {
+    let (dx, dy) = direction_vector(port.side.as_str());
+    let steps = align_geometry(clearance, GEOMETRY_ROUTE_GRID) / GEOMETRY_ROUTE_GRID + 1;
+    (0..=steps).any(|step| {
+        position
+            == (
+                port.point.x + dx * step * GEOMETRY_ROUTE_GRID,
+                port.point.y + dy * step * GEOMETRY_ROUTE_GRID,
+            )
+    })
+}
+
+fn reserve_geometry_route(
+    path: &[GeometryPoint],
+    width: i32,
+    reserved: &mut BTreeSet<(i32, i32)>,
+) {
+    let radius = align_geometry(width / 2 + GEOMETRY_CORRIDOR_SEPARATION + 10, GEOMETRY_ROUTE_GRID)
+        / GEOMETRY_ROUTE_GRID;
+    for point in path {
+        for dy in -radius..=radius {
+            for dx in -radius..=radius {
+                if dx.abs() + dy.abs() <= radius {
+                    reserved.insert((
+                        point.x + dx * GEOMETRY_ROUTE_GRID,
+                        point.y + dy * GEOMETRY_ROUTE_GRID,
+                    ));
+                }
+            }
+        }
     }
 }
 
-fn corridor_anchor(from: &GeometryRect, to: &GeometryRect) -> GeometryPoint {
-    let from_center = rect_center(from);
-    let to_center = rect_center(to);
-    let dx = to_center.x - from_center.x;
-    let dy = to_center.y - from_center.y;
-    if dx.abs() >= dy.abs() {
-        GeometryPoint {
-            x: if dx >= 0 { from.x + from.width } else { from.x },
-            y: from_center.y,
-        }
-    } else {
-        GeometryPoint {
-            x: from_center.x,
-            y: if dy >= 0 {
-                from.y + from.height
-            } else {
-                from.y
-            },
+fn compress_geometry_route(path: Vec<GeometryPoint>) -> Vec<GeometryPoint> {
+    if path.len() <= 2 {
+        return path;
+    }
+    let mut compressed = vec![path[0].clone()];
+    for index in 1..path.len() - 1 {
+        let previous = &path[index - 1];
+        let current = &path[index];
+        let next = &path[index + 1];
+        if (current.x - previous.x, current.y - previous.y)
+            != (next.x - current.x, next.y - current.y)
+        {
+            compressed.push(current.clone());
         }
     }
+    compressed.push(path[path.len() - 1].clone());
+    dedupe_points(compressed)
 }
 
 fn rect_center(rect: &GeometryRect) -> GeometryPoint {
@@ -982,13 +1755,13 @@ fn geometry_bounds(rooms: &[GeometryRoom], grid: i32) -> GeometryBounds {
         .map(|room| room.rect.x + room.rect.width)
         .max()
         .unwrap_or(0)
-        + 96;
+        + GEOMETRY_ROOM_MARGIN;
     let height = rooms
         .iter()
         .map(|room| room.rect.y + room.rect.height)
         .max()
         .unwrap_or(0)
-        + 96;
+        + GEOMETRY_ROOM_MARGIN;
     GeometryBounds {
         width: width.max(640),
         height: height.max(480),

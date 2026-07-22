@@ -107,6 +107,10 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         let sequence = batch_profile_sequence(&profile, index)?;
         let candidate_seed = args.seed + index as u64 * 100;
         let run_dir = args.out_dir.join(format!("candidate-{index:03}"));
+        if run_dir.exists() {
+            fs::remove_dir_all(&run_dir)
+                .map_err(|error| format!("failed to reset {}: {error}", run_dir.display()))?;
+        }
         fs::create_dir_all(&run_dir)
             .map_err(|error| format!("failed to create {}: {error}", run_dir.display()))?;
         let transcript = run_dir.join("transcript.jsonl");
@@ -163,6 +167,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
                 candidate_id: candidate.candidate_id,
                 profile_sequence: sequence.label.clone(),
                 candidate_ref: display_path(&current),
+                physical_connection_plan_ref: None,
                 diagnostics: validation.diagnostics,
             });
             continue;
@@ -187,6 +192,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
                 candidate_id: candidate.candidate_id,
                 profile_sequence: sequence.label.clone(),
                 candidate_ref: display_path(&current),
+                physical_connection_plan_ref: None,
                 diagnostics: intermediate_validation.diagnostics,
             });
             continue;
@@ -250,6 +256,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             spatial_intent_ref: intermediate_refs.spatial_intent_ref,
             intermediate_breakdown_ref: intermediate_refs.intermediate_breakdown_ref,
             intermediate_validation_ref: intermediate_refs.intermediate_validation_ref,
+            physical_connection_plan_ref: None,
             geometry_ref: None,
             geometry_validation_ref: None,
             html_preview_ref: None,
@@ -274,9 +281,25 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             .unwrap_or(std::cmp::Ordering::Equal)
             .then_with(|| left.candidate_id.cmp(&right.candidate_id))
     });
-    for (index, entry) in accepted.iter_mut().enumerate() {
-        write_selection_preview_artifacts(entry, args.seed + 9_100 + index as u64)?;
+    let mut enriched = Vec::new();
+    for (index, mut entry) in accepted.into_iter().enumerate() {
+        match write_selection_preview_artifacts(&mut entry, args.seed + 9_100 + index as u64) {
+            Ok(()) => enriched.push(entry),
+            Err(error) => rejected.push(SelectionRejection {
+                candidate_id: entry.candidate_id,
+                profile_sequence: entry.profile_sequence,
+                candidate_ref: entry.artifact_ref,
+                physical_connection_plan_ref: entry.physical_connection_plan_ref,
+                diagnostics: vec![fatal(
+                    "selection_physical_embedding_failed",
+                    None,
+                    None,
+                    format!("Physical connection planning or exclusive placement failed: {error}"),
+                )],
+            }),
+        }
     }
+    let accepted = enriched;
     let report = SelectionReport {
         kind: "asha_procgen.selection_report.v1".to_owned(),
         schema_version: 1,
@@ -314,6 +337,7 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
     let intermediate_path = PathBuf::from(&entry.intermediate_breakdown_ref);
     let intermediate: IntermediateBreakdown = read_json(&intermediate_path)?;
 
+    let connection_plan_path = run_dir.join("physical-connection-plan.json");
     let geometry_path = run_dir.join("geometry-2d.json");
     let geometry_validation_path = run_dir.join("geometry-2d.validation.json");
     let html_path = run_dir.join("geometry-2d.preview.html");
@@ -326,15 +350,30 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
     let placement_validation_path = run_dir.join("piece-placement.validation.json");
     let built_flow_validation_path = run_dir.join("built-flow.validation.json");
 
+    let connection_plan_args = PhysicalConnectionPlanArgs {
+        candidate: artifact_path.clone(),
+        intermediate: intermediate_path.clone(),
+        out: connection_plan_path.clone(),
+    };
+    let connection_plan = plan_physical_connections(
+        &accepted_artifact.candidate,
+        &intermediate,
+        &connection_plan_args,
+    )?;
+    write_json(&connection_plan_path, &connection_plan)?;
+    entry.physical_connection_plan_ref = Some(display_path(&connection_plan_path));
+
     let geometry_args = GeometryEmit2dArgs {
         candidate: artifact_path.clone(),
         intermediate: intermediate_path.clone(),
+        connection_plan: connection_plan_path.clone(),
         seed,
         out: geometry_path.clone(),
     };
     let geometry = emit_geometry_2d(
         &accepted_artifact.candidate,
         &intermediate,
+        &connection_plan,
         &geometry_args,
         seed,
     )?;

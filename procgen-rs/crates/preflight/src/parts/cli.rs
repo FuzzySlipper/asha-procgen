@@ -263,10 +263,22 @@ struct GeometryCommand {
 
 #[derive(Subcommand)]
 enum GeometrySubcommand {
+    #[command(name = "plan-connections")]
+    PlanConnections(PhysicalConnectionPlanArgs),
     #[command(name = "emit-2d")]
     Emit2d(GeometryEmit2dArgs),
     #[command(name = "validate-2d")]
     Validate2d(ReportOutArgs),
+}
+
+#[derive(Args)]
+struct PhysicalConnectionPlanArgs {
+    #[arg(long)]
+    candidate: PathBuf,
+    #[arg(long)]
+    intermediate: PathBuf,
+    #[arg(long)]
+    out: PathBuf,
 }
 
 #[derive(Args)]
@@ -275,6 +287,8 @@ struct GeometryEmit2dArgs {
     candidate: PathBuf,
     #[arg(long)]
     intermediate: PathBuf,
+    #[arg(long = "connection-plan")]
+    connection_plan: PathBuf,
     #[arg(long)]
     seed: u64,
     #[arg(long)]

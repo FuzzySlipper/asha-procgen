@@ -42,47 +42,11 @@
       "height": 64
     },
     {
-      "nodeId": "hub.central_1",
-      "kind": "junction",
-      "label": "Wayfinding Hub",
-      "x": 260,
-      "y": 300,
-      "width": 116,
-      "height": 64
-    },
-    {
-      "nodeId": "resource.clue_1",
-      "kind": "resource",
-      "label": "Route Clue",
-      "x": 440,
-      "y": 190,
-      "width": 116,
-      "height": 64
-    },
-    {
-      "nodeId": "hazard.watch_1",
-      "kind": "hazard",
-      "label": "Watched Passage",
-      "x": 440,
-      "y": 300,
-      "width": 116,
-      "height": 64
-    },
-    {
-      "nodeId": "treasure.cache_1",
-      "kind": "treasure",
-      "label": "Hub Cache",
-      "x": 440,
-      "y": 410,
-      "width": 116,
-      "height": 64
-    },
-    {
       "nodeId": "hazard.sluice_1",
       "kind": "hazard",
       "label": "Flooded Sluice",
       "x": 260,
-      "y": 410,
+      "y": 300,
       "width": 116,
       "height": 64
     },
@@ -91,24 +55,33 @@
       "kind": "resource",
       "label": "Safety Cache",
       "x": 260,
+      "y": 410,
+      "width": 116,
+      "height": 64
+    },
+    {
+      "nodeId": "key.treasure_1",
+      "kind": "key",
+      "label": "Treasure Key",
+      "x": 260,
       "y": 520,
       "width": 116,
       "height": 64
     },
     {
-      "nodeId": "gate.boss_1",
-      "kind": "gate",
-      "label": "Boss Threshold",
+      "nodeId": "treasure.gated_1",
+      "kind": "treasure",
+      "label": "Gated Treasure",
       "x": 440,
-      "y": 520,
+      "y": 190,
       "width": 116,
       "height": 64
     },
     {
-      "nodeId": "resource.boss_prep_1",
-      "kind": "resource",
-      "label": "Boss Preparation",
-      "x": 440,
+      "nodeId": "junction.merge_1",
+      "kind": "junction",
+      "label": "Branch Merge",
+      "x": 260,
       "y": 630,
       "width": 116,
       "height": 64
@@ -124,6 +97,14 @@
       "requiredItem": null
     },
     {
+      "edgeId": "edge.gate_1.goal",
+      "fromNode": "gate.locked_1",
+      "toNode": "goal",
+      "kind": "critical_path",
+      "traversal": "locked",
+      "requiredItem": "item.gate_key_1"
+    },
+    {
       "edgeId": "edge.start.key_1",
       "fromNode": "start",
       "toNode": "key.gate_1",
@@ -136,70 +117,6 @@
       "fromNode": "key.gate_1",
       "toNode": "gate.locked_1",
       "kind": "key_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.start.hub_1",
-      "fromNode": "start",
-      "toNode": "hub.central_1",
-      "kind": "critical_path",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.hub_1.goal",
-      "fromNode": "hub.central_1",
-      "toNode": "goal",
-      "kind": "critical_path",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.hub_1.clue_1",
-      "fromNode": "hub.central_1",
-      "toNode": "resource.clue_1",
-      "kind": "optional_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.clue_1.hub_1",
-      "fromNode": "resource.clue_1",
-      "toNode": "hub.central_1",
-      "kind": "optional_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.hub_1.watch_1",
-      "fromNode": "hub.central_1",
-      "toNode": "hazard.watch_1",
-      "kind": "optional_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.watch_1.goal",
-      "fromNode": "hazard.watch_1",
-      "toNode": "goal",
-      "kind": "optional_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.hub_1.cache_1",
-      "fromNode": "hub.central_1",
-      "toNode": "treasure.cache_1",
-      "kind": "optional_branch",
-      "traversal": "open",
-      "requiredItem": null
-    },
-    {
-      "edgeId": "edge.cache_1.hub_1",
-      "fromNode": "treasure.cache_1",
-      "toNode": "hub.central_1",
-      "kind": "optional_branch",
       "traversal": "open",
       "requiredItem": null
     },
@@ -236,34 +153,50 @@
       "requiredItem": null
     },
     {
-      "edgeId": "edge.approach.boss_1",
-      "fromNode": "gate.locked_1",
-      "toNode": "gate.boss_1",
-      "kind": "critical_path",
+      "edgeId": "edge.start.treasure_key_1",
+      "fromNode": "start",
+      "toNode": "key.treasure_1",
+      "kind": "key_branch",
       "traversal": "open",
       "requiredItem": null
     },
     {
-      "edgeId": "edge.boss_1.goal",
-      "fromNode": "gate.boss_1",
-      "toNode": "goal",
-      "kind": "critical_path",
+      "edgeId": "edge.treasure_key_1.treasure_1",
+      "fromNode": "key.treasure_1",
+      "toNode": "treasure.gated_1",
+      "kind": "optional_branch",
       "traversal": "locked",
-      "requiredItem": "item.boss_preparation_1"
+      "requiredItem": "item.treasure_key_1"
     },
     {
-      "edgeId": "edge.approach.boss_prep_1",
-      "fromNode": "gate.locked_1",
-      "toNode": "resource.boss_prep_1",
+      "edgeId": "edge.treasure_1.goal",
+      "fromNode": "treasure.gated_1",
+      "toNode": "goal",
       "kind": "optional_branch",
       "traversal": "open",
       "requiredItem": null
     },
     {
-      "edgeId": "edge.boss_prep_1.boss_1",
-      "fromNode": "resource.boss_prep_1",
-      "toNode": "gate.boss_1",
+      "edgeId": "edge.start.merge_1",
+      "fromNode": "start",
+      "toNode": "junction.merge_1",
       "kind": "optional_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.secondary.merge_1",
+      "fromNode": "treasure.gated_1",
+      "toNode": "junction.merge_1",
+      "kind": "optional_branch",
+      "traversal": "open",
+      "requiredItem": null
+    },
+    {
+      "edgeId": "edge.merge_1.goal.shortcut",
+      "fromNode": "junction.merge_1",
+      "toNode": "goal",
+      "kind": "shortcut",
       "traversal": "open",
       "requiredItem": null
     }

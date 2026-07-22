@@ -423,8 +423,11 @@ fn derive_glued_exits(
             },
             to_direction: to_exit.direction.clone(),
             to_width: to_exit.width,
+            source_section: link.source_section.clone(),
             source_corridor: link.source_corridor.clone(),
             source_edge: link.source_edge.clone(),
+            source_edges: link.source_edges.clone(),
+            traversal_refs: link.traversal_refs.clone(),
             source_ref: link.source_ref.clone(),
             traversal: link.traversal.clone(),
             required_item: link.required_item.clone(),
@@ -471,22 +474,25 @@ fn derive_gate_portals(
     plan: &PieceBuildPlan,
     glued_exits: &[GluedExit],
 ) -> Result<Vec<GatePortal>, String> {
-    let mut first_link_by_edge: BTreeMap<&str, &PieceLink> = BTreeMap::new();
+    let mut first_link_by_section: BTreeMap<&str, &PieceLink> = BTreeMap::new();
     for link in &plan.links {
-        first_link_by_edge.entry(link.source_edge.as_str()).or_insert(link);
+        first_link_by_section.entry(link.source_section.as_str()).or_insert(link);
     }
     let glued_by_link = glued_exits
         .iter()
         .map(|glued| (glued.link_id.as_str(), glued))
         .collect::<BTreeMap<_, _>>();
     let mut portals = Vec::new();
-    for (source_edge, link) in first_link_by_edge {
+    for (source_section, link) in first_link_by_section {
         let glued = glued_by_link.get(link.id.as_str()).copied().ok_or_else(|| {
-            format!("source edge {} has no glued portal link {}", source_edge, link.id)
+            format!("physical section {} has no glued portal link {}", source_section, link.id)
         })?;
         portals.push(GatePortal {
-            id: format!("gate_portal.{}", slugify_label(source_edge)),
-            source_edge: source_edge.to_owned(),
+            id: format!("gate_portal.{}", slugify_label(source_section)),
+            source_section: source_section.to_owned(),
+            source_edge: link.source_edge.clone(),
+            source_edges: link.source_edges.clone(),
+            traversal_refs: link.traversal_refs.clone(),
             source_corridor: link.source_corridor.clone(),
             link_id: link.id.clone(),
             from_piece: link.from_piece.clone(),
@@ -499,7 +505,8 @@ fn derive_gate_portals(
             traversal: link.traversal.clone(),
             required_item: link.required_item.clone(),
             provenance: vec![
-                format!("edge:{}", source_edge),
+                format!("physicalSection:{}", source_section),
+                format!("edges:{}", link.source_edges.join(",")),
                 format!("geometryCorridor:{}", link.source_corridor),
                 format!("pieceLink:{}", link.id),
                 format!("gluedExit:{}", glued.id),
@@ -535,12 +542,17 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
             continue;
         };
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
+        // Route each link independently: sections that terminate in the same room are
+        // allowed to meet. The complete section graph is checked immediately afterward,
+        // and unrelated section overlap/contact remains fatal.
         let bridge = route_instance_connection(
             glued,
             placement.grid_connectivity,
             &occupied_by_cell,
             &reserved,
             placement.placement_policy.wall_thickness_cells,
+            0,
+            &BTreeMap::new(),
             bounds,
         )
         .ok_or_else(|| {
@@ -566,6 +578,8 @@ fn route_instance_connection(
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
+    corridor_clearance: i32,
+    routed_sections: &BTreeMap<(i32, i32), String>,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     route_bridge_cells(
@@ -579,6 +593,9 @@ fn route_instance_connection(
         occupied_by_cell,
         reserved,
         wall_clearance,
+        corridor_clearance,
+        routed_sections,
+        glued.source_section.as_str(),
         bounds,
     )
 }
@@ -626,6 +643,9 @@ fn route_bridge_cells(
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
+    corridor_clearance: i32,
+    routed_sections: &BTreeMap<(i32, i32), String>,
+    source_section: &str,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     let start_position = (start.x, start.y);
@@ -655,7 +675,10 @@ fn route_bridge_cells(
                     occupied_by_cell,
                     reserved,
                     wall_clearance,
-                    )
+                    corridor_clearance,
+                    routed_sections,
+                    source_section,
+                )
             {
                 continue;
             }
@@ -697,6 +720,9 @@ fn bridge_position_available(
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
+    corridor_clearance: i32,
+    routed_sections: &BTreeMap<(i32, i32), String>,
+    source_section: &str,
 ) -> bool {
     if occupied_by_cell.contains_key(&position) || reserved.contains(&position) {
         return false;
@@ -715,6 +741,18 @@ fn bridge_position_available(
                     false
                 };
                 if !allowed {
+                    return false;
+                }
+            }
+        }
+    }
+    for dy in -corridor_clearance..=corridor_clearance {
+        for dx in -corridor_clearance..=corridor_clearance {
+            if dx.abs() + dy.abs() > corridor_clearance {
+                continue;
+            }
+            if let Some(other_section) = routed_sections.get(&(position.0 + dx, position.1 + dy)) {
+                if other_section != source_section {
                     return false;
                 }
             }
@@ -892,6 +930,34 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             )
         })
         .collect::<BTreeMap<_, _>>();
+    let room_instances = placement
+        .instances
+        .iter()
+        .filter(|instance| {
+            instance
+                .source_refs
+                .iter()
+                .any(|reference| reference.starts_with("geometryRoom:"))
+        })
+        .map(|instance| instance.instance_id.as_str())
+        .collect::<BTreeSet<_>>();
+    let mut section_room_endpoints =
+        BTreeMap::<&str, BTreeMap<&str, Vec<(i32, i32)>>>::new();
+    for glued in &placement.glued_exits {
+        for (instance, cell) in [
+            (glued.from_instance.as_str(), &glued.from_cell),
+            (glued.to_instance.as_str(), &glued.to_cell),
+        ] {
+            if room_instances.contains(instance) {
+                section_room_endpoints
+                    .entry(glued.source_section.as_str())
+                    .or_default()
+                    .entry(instance)
+                    .or_default()
+                    .push((cell.x, cell.y));
+            }
+        }
+    }
     let mut connection_by_owner: BTreeMap<&str, BTreeSet<(i32, i32)>> = BTreeMap::new();
     let mut used_connection_owners = BTreeSet::new();
     for cell in &placement.connection_cells {
@@ -1000,6 +1066,63 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             .or_default()
             .insert((cell.x, cell.y));
     }
+    let corridor_clearance = placement.placement_policy.minimum_clearance_cells.max(0);
+    let mut reported_section_conflicts = BTreeSet::new();
+    for (position, owners) in &connection_by_cell {
+        for owner in owners {
+            let Some(glued) = connection_specs.get(*owner).copied() else {
+                continue;
+            };
+            for dy in -corridor_clearance..=corridor_clearance {
+                for dx in -corridor_clearance..=corridor_clearance {
+                    if dx.abs() + dy.abs() > corridor_clearance {
+                        continue;
+                    }
+                    let nearby = (position.0 + dx, position.1 + dy);
+                    let Some(nearby_owners) = connection_by_cell.get(&nearby) else {
+                        continue;
+                    };
+                    for nearby_owner in nearby_owners {
+                        let Some(nearby_glued) = connection_specs.get(*nearby_owner).copied() else {
+                            continue;
+                        };
+                        if glued.source_section == nearby_glued.source_section {
+                            continue;
+                        }
+                        if connection_contact_at_shared_room(
+                            glued.source_section.as_str(),
+                            nearby_glued.source_section.as_str(),
+                            &section_room_endpoints,
+                        ) {
+                            continue;
+                        }
+                        let section_pair = sorted_pair(
+                            glued.source_section.as_str(),
+                            nearby_glued.source_section.as_str(),
+                        );
+                        if !reported_section_conflicts.insert(section_pair.clone()) {
+                            continue;
+                        }
+                        diagnostics.push(fatal(
+                            "piece_connection_section_clearance_violated",
+                            None,
+                            None,
+                            format!(
+                                "Physical connection sections {} and {} overlap or come within {} cell(s) at {},{} and {},{}.",
+                                section_pair.0,
+                                section_pair.1,
+                                corridor_clearance,
+                                position.0,
+                                position.1,
+                                nearby.0,
+                                nearby.1
+                            ),
+                        ));
+                    }
+                }
+            }
+        }
+    }
     for owner in declared_connection_owners {
         if !used_connection_owners.contains(owner.as_str()) {
             diagnostics.push(fatal(
@@ -1053,6 +1176,20 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             ));
         }
     }
+}
+
+fn connection_contact_at_shared_room(
+    left_section: &str,
+    right_section: &str,
+    section_room_endpoints: &BTreeMap<&str, BTreeMap<&str, Vec<(i32, i32)>>>,
+) -> bool {
+    let Some(left_rooms) = section_room_endpoints.get(left_section) else {
+        return false;
+    };
+    let Some(right_rooms) = section_room_endpoints.get(right_section) else {
+        return false;
+    };
+    left_rooms.keys().any(|room| right_rooms.contains_key(room))
 }
 
 fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Diagnostic>) {

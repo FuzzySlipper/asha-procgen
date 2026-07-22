@@ -273,6 +273,19 @@ intermediate structure. Current kinds include `start_marker`, `goal_marker`,
 
 See `docs/geometry-html-preview-contract.md`.
 
+## Physical Connection Plan
+
+Kind: `asha_procgen.physical_connection_plan.v1`
+
+This versioned artifact sits between `intermediate_breakdown` and
+`geometry_2d`. Each section declares an explicit physical topology, terminal
+regions, width, source connectors/edges, and directional traversal refs.
+Compatible reciprocal open edges normalize to one physical section; traversal
+semantics are retained through `edgeMappings` rather than duplicated geometry.
+Geometry, piece links, glued exits, gate portals, and built-flow validation all
+carry the section id so unrelated corridors cannot silently overlap or become
+an undeclared junction.
+
 ## HTML Preview Artifact
 
 Kind: `asha_procgen.html_preview.v1`

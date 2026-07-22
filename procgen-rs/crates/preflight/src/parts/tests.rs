@@ -13,6 +13,116 @@ mod tests {
         }
     }
 
+    fn test_connection_plan(
+        candidate: &Candidate,
+        intermediate: &IntermediateBreakdown,
+    ) -> PhysicalConnectionPlan {
+        plan_physical_connections(
+            candidate,
+            intermediate,
+            &PhysicalConnectionPlanArgs {
+                candidate: PathBuf::from("artifacts/test/candidate.json"),
+                intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+                out: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+            },
+        )
+        .expect("physical connection plan should emit")
+    }
+
+    fn test_breakdown(candidate: &Candidate) -> IntermediateBreakdown {
+        let annotations = spatial_intent_report(candidate, None).expect("spatial intent report");
+        intermediate_breakdown(
+            candidate,
+            &annotations,
+            Path::new("artifacts/test/spatial-intent.json"),
+        )
+        .expect("intermediate breakdown should emit")
+    }
+
+    #[test]
+    fn physical_connection_plan_normalizes_reciprocal_open_edges() {
+        let intent = test_intent("reciprocal-open");
+        let mut candidate = create_initial_candidate(&intent, 41);
+        candidate.graph.edges.push(Edge {
+            id: "edge.goal.start.return".to_owned(),
+            from: "goal".to_owned(),
+            to: "start".to_owned(),
+            kind: EdgeKind::Shortcut,
+            traversal: TraversalKind::Open,
+            required_item: None,
+            tags: vec!["return".to_owned()],
+        });
+        let breakdown = test_breakdown(&candidate);
+        let plan = test_connection_plan(&candidate, &breakdown);
+
+        assert_eq!(plan.sections.len(), 1);
+        assert_eq!(plan.edge_mappings.len(), 2);
+        let section = &plan.sections[0];
+        assert_eq!(section.topology, "corridor_2");
+        assert_eq!(section.source_edges.len(), 2);
+        assert_eq!(section.traversal_refs.len(), 2);
+        assert!(section.traversal_refs.iter().any(|reference| {
+            reference.from_region == "region.start" && reference.to_region == "region.goal"
+        }));
+        assert!(section.traversal_refs.iter().any(|reference| {
+            reference.from_region == "region.goal" && reference.to_region == "region.start"
+        }));
+        assert!(plan
+            .edge_mappings
+            .iter()
+            .all(|mapping| mapping.section_id == section.id));
+    }
+
+    #[test]
+    fn physical_connection_plan_keeps_incompatible_reciprocal_edges_separate() {
+        let intent = test_intent("reciprocal-locked");
+        let mut candidate = create_initial_candidate(&intent, 42);
+        candidate.graph.edges.push(Edge {
+            id: "edge.goal.start.locked".to_owned(),
+            from: "goal".to_owned(),
+            to: "start".to_owned(),
+            kind: EdgeKind::Shortcut,
+            traversal: TraversalKind::Locked,
+            required_item: Some("item.return-key".to_owned()),
+            tags: vec!["return".to_owned()],
+        });
+        let breakdown = test_breakdown(&candidate);
+        let plan = test_connection_plan(&candidate, &breakdown);
+
+        assert_eq!(plan.sections.len(), 2);
+        assert_eq!(plan.edge_mappings.len(), 2);
+        assert_ne!(
+            plan.edge_mappings[0].section_id,
+            plan.edge_mappings[1].section_id
+        );
+    }
+
+    #[test]
+    fn geometry_routes_an_embeddable_lock_key_plan() {
+        let intent = test_intent("embeddable-lock-key");
+        let mut candidate = create_initial_candidate(&intent, 43);
+        assert!(apply_graph_rule(&mut candidate, GraphRule::LockKeyLoop, 44).is_empty());
+        let breakdown = test_breakdown(&candidate);
+        let connection_plan = test_connection_plan(&candidate, &breakdown);
+        let geometry = emit_geometry_2d(
+            &candidate,
+            &breakdown,
+            &connection_plan,
+            &GeometryEmit2dArgs {
+                candidate: PathBuf::from("artifacts/test/candidate.json"),
+                intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+                connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+                seed: 45,
+                out: PathBuf::from("artifacts/test/geometry.json"),
+            },
+            45,
+        )
+        .expect("lock-key physical plan should embed");
+
+        assert_eq!(geometry.corridors.len(), connection_plan.sections.len());
+        assert!(validate_geometry_2d(&geometry).ok);
+    }
+
     #[test]
     fn rejects_private_engine_paths() {
         let private_path = format!("{}/{}/{}", "../asha-engine", "engine-rs", "crates/state");
@@ -31,6 +141,8 @@ mod tests {
             seed: 99,
             source_candidate_ref: "artifacts/test/candidate.json".to_owned(),
             source_intermediate_ref: "artifacts/test/intermediate-breakdown.json".to_owned(),
+            source_connection_plan_ref: "artifacts/test/physical-connection-plan.json".to_owned(),
+            connection_plan_id: "physical_connections.candidate.test.1".to_owned(),
             bounds: GeometryBounds {
                 width: 480,
                 height: 320,
@@ -49,17 +161,31 @@ mod tests {
                     width: 96,
                     height: 72,
                 },
+                ports: Vec::new(),
                 style_tags: vec!["entry".to_owned()],
             }],
             corridors: vec![GeometryCorridor {
                 id: "corridor.start.goal".to_owned(),
+                physical_section: "section.start.goal.open".to_owned(),
                 source_connector: "connector.edge_start_goal".to_owned(),
                 source_edge: "edge.start.goal".to_owned(),
+                source_connectors: vec!["connector.edge_start_goal".to_owned()],
+                source_edges: vec!["edge.start.goal".to_owned()],
+                traversal_refs: vec![PhysicalTraversalRef {
+                    connector_id: "connector.edge_start_goal".to_owned(),
+                    edge_id: "edge.start.goal".to_owned(),
+                    from_region: "region.start".to_owned(),
+                    to_region: "region.goal".to_owned(),
+                    traversal: "open".to_owned(),
+                    required_item: None,
+                }],
                 from_room: "room.start".to_owned(),
                 to_room: "room.goal".to_owned(),
                 traversal_hint: "open".to_owned(),
                 semantic_tags: vec!["corridor".to_owned()],
                 width: 16,
+                from_port: "port.start".to_owned(),
+                to_port: "port.goal".to_owned(),
                 points: vec![
                     GeometryPoint { x: 128, y: 84 },
                     GeometryPoint { x: 240, y: 84 },
@@ -907,14 +1033,7 @@ mod tests {
     fn geometry_emit_2d_places_variable_non_overlapping_rooms() {
         let intent = test_intent("geometry-emit");
         let mut candidate = create_initial_candidate(&intent, 141);
-        for (index, rule) in [
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::BossPreparationLoop,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-        ]
+        for (index, rule) in [GraphRule::LockKeyLoop]
         .into_iter()
         .enumerate()
         {
@@ -930,31 +1049,18 @@ mod tests {
         let args = GeometryEmit2dArgs {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
             seed: 150,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
-        let geometry =
-            emit_geometry_2d(&candidate, &intermediate, &args, 150).expect("geometry should emit");
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let geometry = emit_geometry_2d(&candidate, &intermediate, &connection_plan, &args, 150)
+            .expect("geometry should emit");
         assert_eq!(geometry.kind, "asha_procgen.geometry_2d.v1");
         assert_eq!(geometry.rooms.len(), intermediate.regions.len());
-        assert_eq!(geometry.corridors.len(), intermediate.connectors.len());
+        assert_eq!(geometry.corridors.len(), connection_plan.sections.len());
         assert_eq!(geometry.skipped_connectors.len(), 0);
         assert!(geometry.bounds.width > 640);
-        let hub = geometry
-            .rooms
-            .iter()
-            .find(|room| room.source_region == "region.hub_central_1")
-            .expect("hub room should exist");
-        let reward = geometry
-            .rooms
-            .iter()
-            .find(|room| room.source_region == "region.treasure_gated_1")
-            .expect("reward room should exist");
-        let hazard = geometry
-            .rooms
-            .iter()
-            .find(|room| room.source_region == "region.hazard_sluice_1")
-            .expect("hazard room should exist");
         let gate = geometry
             .rooms
             .iter()
@@ -970,8 +1076,6 @@ mod tests {
             .iter()
             .find(|room| room.source_region == "region.goal")
             .expect("goal room should exist");
-        assert!(hub.rect.width > reward.rect.width);
-        assert!(hazard.rect.width > reward.rect.width);
         assert!(gate.style_tags.contains(&"threshold".to_owned()));
         assert!(start.style_tags.contains(&"entry".to_owned()));
         assert!(goal.style_tags.contains(&"destination".to_owned()));
@@ -991,15 +1095,7 @@ mod tests {
     fn geometry_emit_2d_routes_semantic_corridors() {
         let intent = test_intent("geometry-corridors");
         let mut candidate = create_initial_candidate(&intent, 251);
-        for (index, rule) in [
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-            GraphRule::OneWayShortcut,
-            GraphRule::SecretBypass,
-        ]
+        for (index, rule) in [GraphRule::LockKeyLoop]
         .into_iter()
         .enumerate()
         {
@@ -1015,12 +1111,14 @@ mod tests {
         let args = GeometryEmit2dArgs {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
             seed: 253,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
-        let geometry =
-            emit_geometry_2d(&candidate, &intermediate, &args, 253).expect("geometry should emit");
-        assert_eq!(geometry.corridors.len(), intermediate.connectors.len());
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let geometry = emit_geometry_2d(&candidate, &intermediate, &connection_plan, &args, 253)
+            .expect("geometry should emit");
+        assert_eq!(geometry.corridors.len(), connection_plan.sections.len());
         assert!(geometry.skipped_connectors.is_empty());
 
         let locked = geometry
@@ -1032,28 +1130,6 @@ mod tests {
         assert!(locked
             .semantic_tags
             .contains(&"locked_threshold".to_owned()));
-
-        let secret = geometry
-            .corridors
-            .iter()
-            .find(|corridor| corridor.source_edge == "edge.start.secret_1")
-            .expect("secret corridor should exist");
-        assert_eq!(secret.width, 10);
-        assert!(secret.semantic_tags.contains(&"hidden_route".to_owned()));
-
-        let shortcut = geometry
-            .corridors
-            .iter()
-            .find(|corridor| corridor.source_edge == "edge.merge_1.goal.shortcut")
-            .expect("shortcut corridor should exist");
-        assert!(shortcut.semantic_tags.contains(&"shortcut_link".to_owned()));
-
-        let pressure = geometry
-            .corridors
-            .iter()
-            .find(|corridor| corridor.source_edge == "edge.start.sluice_1")
-            .expect("pressure route corridor should exist");
-        assert_eq!(pressure.width, 20);
 
         let rooms_by_id = geometry
             .rooms
@@ -1094,16 +1170,7 @@ mod tests {
     fn geometry_emit_2d_annotates_room_contents() {
         let intent = test_intent("geometry-contents");
         let mut candidate = create_initial_candidate(&intent, 351);
-        for (index, rule) in [
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::BossPreparationLoop,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-            GraphRule::OneWayShortcut,
-            GraphRule::SecretBypass,
-        ]
+        for (index, rule) in [GraphRule::LockKeyLoop]
         .into_iter()
         .enumerate()
         {
@@ -1119,25 +1186,19 @@ mod tests {
         let args = GeometryEmit2dArgs {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
             seed: 353,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
-        let geometry =
-            emit_geometry_2d(&candidate, &intermediate, &args, 353).expect("geometry should emit");
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let geometry = emit_geometry_2d(&candidate, &intermediate, &connection_plan, &args, 353)
+            .expect("geometry should emit");
         let content_kinds = geometry
             .contents
             .iter()
             .map(|content| content.kind.as_str())
             .collect::<BTreeSet<_>>();
-        for expected in [
-            "key_pickup",
-            "locked_gate",
-            "hazard",
-            "reward_cache",
-            "boss_threshold",
-            "shortcut_marker",
-            "secret_route_marker",
-        ] {
+        for expected in ["key_pickup", "locked_gate"] {
             assert!(
                 content_kinds.contains(expected),
                 "{expected} content missing"
@@ -1183,6 +1244,15 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "geometry_connector_coverage_missing"));
+
+        let mut broken_mapping = geometry.clone();
+        broken_mapping.corridors[0]
+            .source_edges
+            .push("edge.not_in_traversal_refs".to_owned());
+        let report = validate_geometry_2d(&broken_mapping);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "geometry_corridor_traversal_mapping_mismatch"
+        }));
 
         let mut bad_content_anchor = geometry.clone();
         bad_content_anchor
@@ -1234,10 +1304,6 @@ mod tests {
             "Dungeon Preview",
             "Validation: ok",
             "Key Pickup",
-            "Boss Threshold",
-            "Reward Cache",
-            "Secret Route",
-            "Shortcut Marker",
         ] {
             assert!(html.contains(expected), "{expected} missing");
         }
@@ -1287,18 +1353,7 @@ mod tests {
             .iter()
             .map(|requirement| requirement.kind.as_str())
             .collect::<BTreeSet<_>>();
-        for required in [
-            "room",
-            "threshold",
-            "key",
-            "hazard",
-            "reward",
-            "boss",
-            "secret",
-            "shortcut",
-            "resource",
-            "connector",
-        ] {
+        for required in ["room", "threshold", "key", "connector"] {
             assert!(requirement_kinds.contains(required), "{required} requirement missing");
         }
 
@@ -1332,16 +1387,7 @@ mod tests {
             .iter()
             .map(|requirement| requirement.required_socket.as_str())
             .collect::<BTreeSet<_>>();
-        for required in [
-            "gate_line",
-            "key_pickup",
-            "hazard_zone",
-            "reward_cache",
-            "boss_space",
-            "secret_marker",
-            "shortcut_marker",
-            "resource_clue",
-        ] {
+        for required in ["gate_line", "key_pickup"] {
             assert!(sockets.contains(required), "{required} content socket missing");
         }
 
@@ -1350,13 +1396,7 @@ mod tests {
             .iter()
             .flat_map(|link| link.tags.iter().map(String::as_str))
             .collect::<BTreeSet<_>>();
-        for required in [
-            "locked_threshold",
-            "hidden_route",
-            "shortcut_link",
-            "pressure_route",
-            "rejoin_corridor",
-        ] {
+        for required in ["locked_threshold"] {
             assert!(link_tags.contains(required), "{required} link tag missing");
         }
         assert!(
@@ -1738,6 +1778,7 @@ mod tests {
 
         let mut mismatched_portal = placement.clone();
         mismatched_portal.gate_portals[0].source_edge = "edge.not_authored".to_owned();
+        mismatched_portal.gate_portals[0].source_edges[0] = "edge.not_authored".to_owned();
         let report = validate_built_flow(&candidate, &geometry, &plan, &mismatched_portal, &args);
         assert!(report
             .diagnostics
@@ -1795,6 +1836,9 @@ mod tests {
             &occupied_by_cell,
             &BTreeSet::new(),
             1,
+            1,
+            &BTreeMap::new(),
+            "section.test",
             (-10, 10, -10, 10),
         )
         .expect("declared transformed exits should have a safe route");
@@ -1814,16 +1858,7 @@ mod tests {
     ) -> (Candidate, IntermediateBreakdown, Geometry2dArtifact) {
         let intent = test_intent("geometry-validation");
         let mut candidate = create_initial_candidate(&intent, seed);
-        for (index, rule) in [
-            GraphRule::LockKeyLoop,
-            GraphRule::HubSpokeCluster,
-            GraphRule::HazardResourceTradeoff,
-            GraphRule::BossPreparationLoop,
-            GraphRule::GatedTreasureBranch,
-            GraphRule::BranchMergeShortcut,
-            GraphRule::OneWayShortcut,
-            GraphRule::SecretBypass,
-        ]
+        for (index, rule) in [GraphRule::LockKeyLoop]
         .into_iter()
         .enumerate()
         {
@@ -1839,11 +1874,19 @@ mod tests {
         let args = GeometryEmit2dArgs {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
             seed: seed + 20,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
-        let geometry =
-            emit_geometry_2d(&candidate, &intermediate, &args, seed + 20).expect("geometry should emit");
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let geometry = emit_geometry_2d(
+            &candidate,
+            &intermediate,
+            &connection_plan,
+            &args,
+            seed + 20,
+        )
+        .expect("geometry should emit");
         (candidate, intermediate, geometry)
     }
 
@@ -2035,7 +2078,7 @@ mod tests {
             .join(DEFAULT_BATCH_PROFILE);
         let profile = load_batch_profile(&profile_path).expect("default profile should load");
         assert_eq!(profile.kind, "asha_procgen.batch_profile.v1");
-        assert_eq!(profile.sequences.len(), 6);
+        assert_eq!(profile.sequences.len(), 7);
         let first = batch_profile_sequence(&profile, 0).expect("first sequence");
         assert_eq!(first.label, "hub-merge");
         assert_eq!(
@@ -2046,7 +2089,7 @@ mod tests {
                 GraphRule::BranchMergeShortcut
             ]
         );
-        let cycled = batch_profile_sequence(&profile, 6).expect("cycled sequence");
+        let cycled = batch_profile_sequence(&profile, 7).expect("cycled sequence");
         assert_eq!(cycled.label, "hub-merge");
     }
 

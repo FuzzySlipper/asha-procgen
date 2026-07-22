@@ -2,7 +2,7 @@
   "kind": "asha_procgen.rule_compatibility.v1",
   "schemaVersion": 1,
   "candidateId": "candidate.first_slice.5801",
-  "stateHash": "fnv1a64:884774a00e0cade0",
+  "stateHash": "fnv1a64:2d405a624cfeb833",
   "rules": [
     {
       "rule": "lock_key_loop",
@@ -38,13 +38,9 @@
     },
     {
       "rule": "hub_spoke_cluster",
-      "status": "duplicate",
-      "reasons": [
-        "Fixed marker for this rule already exists."
-      ],
-      "recommendedActions": [
-        "Fork from an earlier candidate or choose another rule."
-      ]
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
     },
     {
       "rule": "nested_lock_key_chain",
@@ -72,13 +68,9 @@
     },
     {
       "rule": "branch_merge_shortcut",
-      "status": "duplicate",
-      "reasons": [
-        "Fixed marker for this rule already exists."
-      ],
-      "recommendedActions": [
-        "Fork from an earlier candidate or choose another rule."
-      ]
+      "status": "applicable",
+      "reasons": [],
+      "recommendedActions": []
     }
   ]
 }

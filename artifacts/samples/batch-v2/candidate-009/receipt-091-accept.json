@@ -4,8 +4,8 @@
   "command": "accept",
   "status": "ok",
   "seed": null,
-  "inputHash": "fnv1a64:22440bd53093e409",
-  "outputHash": "fnv1a64:cac7ce8ef016bb60",
+  "inputHash": "fnv1a64:106e83112c8ec41e",
+  "outputHash": "fnv1a64:c6172d46e8ce5c5a",
   "outputRef": "artifacts/samples/batch-v2/candidate-009/accepted.json",
   "diagnostics": []
 }

@@ -499,11 +499,14 @@ fn link_piece_chain(
             from_exit: pair[0].1.clone(),
             to_piece: pair[1].0.clone(),
             to_exit: pair[1].2.clone().unwrap_or_default(),
+            source_section: corridor.physical_section.clone(),
             source_corridor: corridor.id.clone(),
             source_edge: corridor.source_edge.clone(),
+            source_edges: corridor.source_edges.clone(),
+            traversal_refs: corridor.traversal_refs.clone(),
             source_ref: format!(
-                "geometryCorridor:{};connector:{};edge:{}",
-                corridor.id, corridor.source_connector, corridor.source_edge
+                "physicalSection:{};geometryCorridor:{};connector:{};edge:{}",
+                corridor.physical_section, corridor.id, corridor.source_connector, corridor.source_edge
             ),
             traversal: edge
                 .map(|source_edge| source_edge.traversal.as_str().to_owned())
@@ -526,12 +529,13 @@ fn corridor_source_refs(
     edge: Option<&Edge>,
 ) -> Vec<String> {
     let mut refs = vec![
+        format!("physicalSection:{}", corridor.physical_section),
         format!("geometryCorridor:{}", corridor.id),
-        format!("connector:{}", corridor.source_connector),
-        format!("edge:{}", corridor.source_edge),
         format!("room:{}", corridor.from_room),
         format!("room:{}", corridor.to_room),
     ];
+    refs.extend(corridor.source_connectors.iter().map(|value| format!("connector:{value}")));
+    refs.extend(corridor.source_edges.iter().map(|value| format!("edge:{value}")));
     if let Some(connector) = connector {
         refs.extend(
             connector

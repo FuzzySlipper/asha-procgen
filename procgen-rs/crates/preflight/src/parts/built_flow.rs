@@ -126,32 +126,30 @@ fn validate_source_edge_chains(
         .collect::<BTreeMap<_, _>>();
     let mut corridors_by_edge: BTreeMap<&str, Vec<&GeometryCorridor>> = BTreeMap::new();
     for corridor in &geometry.corridors {
-        corridors_by_edge
-            .entry(corridor.source_edge.as_str())
-            .or_default()
-            .push(corridor);
-        if !source_edges.contains_key(corridor.source_edge.as_str()) {
-            diagnostics.push(fatal(
-                "built_flow_extra_geometry_corridor",
-                None,
-                Some(corridor.source_edge.as_str()),
-                format!("Geometry corridor {} has no source graph edge.", corridor.id),
-            ));
+        for source_edge in &corridor.source_edges {
+            corridors_by_edge.entry(source_edge.as_str()).or_default().push(corridor);
+            if !source_edges.contains_key(source_edge.as_str()) {
+                diagnostics.push(fatal(
+                    "built_flow_extra_geometry_corridor",
+                    None,
+                    Some(source_edge.as_str()),
+                    format!("Geometry corridor {} has no source graph edge {}.", corridor.id, source_edge),
+                ));
+            }
         }
     }
     let mut links_by_edge: BTreeMap<&str, Vec<&PieceLink>> = BTreeMap::new();
     for link in &plan.links {
-        links_by_edge
-            .entry(link.source_edge.as_str())
-            .or_default()
-            .push(link);
-        if !source_edges.contains_key(link.source_edge.as_str()) {
-            diagnostics.push(fatal(
-                "built_flow_extra_piece_link",
-                None,
-                Some(link.source_edge.as_str()),
-                format!("Piece link {} has no source graph edge.", link.id),
-            ));
+        for source_edge in &link.source_edges {
+            links_by_edge.entry(source_edge.as_str()).or_default().push(link);
+            if !source_edges.contains_key(source_edge.as_str()) {
+                diagnostics.push(fatal(
+                    "built_flow_extra_piece_link",
+                    None,
+                    Some(source_edge.as_str()),
+                    format!("Piece link {} has no source graph edge {}.", link.id, source_edge),
+                ));
+            }
         }
     }
     let glued_by_link = placement
@@ -194,9 +192,17 @@ fn validate_source_edge_chains(
             continue;
         }
         for (index, link) in links.iter().enumerate() {
+            let traversal_ref = link
+                .traversal_refs
+                .iter()
+                .find(|reference| reference.edge_id == edge.id);
             if link.source_corridor != corridor.id
-                || link.traversal != edge.traversal.as_str()
-                || link.required_item != edge.required_item
+                || link.source_section != corridor.physical_section
+                || !link.source_edges.contains(&edge.id)
+                || traversal_ref.is_none_or(|reference| {
+                    reference.traversal != edge.traversal.as_str()
+                        || reference.required_item != edge.required_item
+                })
             {
                 diagnostics.push(fatal(
                     "built_flow_link_provenance_mismatch",
@@ -228,7 +234,8 @@ fn validate_source_edge_chains(
                 ));
                 continue;
             };
-            if glued.source_edge != edge.id
+            if !glued.source_edges.contains(&edge.id)
+                || glued.source_section != corridor.physical_section
                 || glued.source_corridor != corridor.id
                 || glued.from_exit != link.from_exit
                 || glued.to_exit != link.to_exit
@@ -240,20 +247,22 @@ fn validate_source_edge_chains(
                     format!("Glued join {} does not match piece link {}.", glued.id, link.id),
                 ));
             }
-            for endpoint in [
-                (glued.from_instance.as_str(), glued.from_exit.as_str()),
-                (glued.to_instance.as_str(), glued.to_exit.as_str()),
-            ] {
-                if let Some(first_link) = used_exits.insert(endpoint, link.id.as_str()) {
-                    diagnostics.push(fatal(
-                        "built_flow_instance_exit_reused",
-                        None,
-                        Some(edge.id.as_str()),
-                        format!(
-                            "Instance exit {}:{} is reused by {} and {} without shared-junction semantics.",
-                            endpoint.0, endpoint.1, first_link, link.id
-                        ),
-                    ));
+            if edge.id == link.source_edge {
+                for endpoint in [
+                    (glued.from_instance.as_str(), glued.from_exit.as_str()),
+                    (glued.to_instance.as_str(), glued.to_exit.as_str()),
+                ] {
+                    if let Some(first_link) = used_exits.insert(endpoint, link.id.as_str()) {
+                        diagnostics.push(fatal(
+                            "built_flow_instance_exit_reused",
+                            None,
+                            Some(edge.id.as_str()),
+                            format!(
+                                "Instance exit {}:{} is reused by {} and {} without shared-junction semantics.",
+                                endpoint.0, endpoint.1, first_link, link.id
+                            ),
+                        ));
+                    }
                 }
             }
         }
@@ -286,28 +295,38 @@ fn validate_gate_portals(
     let mut portals_by_edge: BTreeMap<&str, Vec<&GatePortal>> = BTreeMap::new();
     let walkable = placement_walkable_cells(placement);
     for portal in &placement.gate_portals {
-        portals_by_edge
-            .entry(portal.source_edge.as_str())
-            .or_default()
-            .push(portal);
-        let Some(edge) = edges.get(portal.source_edge.as_str()).copied() else {
-            diagnostics.push(fatal(
-                "built_flow_extra_gate_portal",
-                None,
-                Some(portal.source_edge.as_str()),
-                format!("Portal {} has no source edge.", portal.id),
-            ));
-            continue;
-        };
-        if portal.traversal != edge.traversal.as_str()
-            || portal.required_item != edge.required_item
-            || portal.cells.is_empty()
-            || portal.width <= 0
-        {
+        for source_edge in &portal.source_edges {
+            portals_by_edge.entry(source_edge.as_str()).or_default().push(portal);
+            let Some(edge) = edges.get(source_edge.as_str()).copied() else {
+                diagnostics.push(fatal(
+                    "built_flow_extra_gate_portal",
+                    None,
+                    Some(source_edge.as_str()),
+                    format!("Portal {} has no source edge {}.", portal.id, source_edge),
+                ));
+                continue;
+            };
+            let traversal_ref = portal
+                .traversal_refs
+                .iter()
+                .find(|reference| reference.edge_id == edge.id);
+            if traversal_ref.is_none_or(|reference| {
+                reference.traversal != edge.traversal.as_str()
+                    || reference.required_item != edge.required_item
+            }) {
+                diagnostics.push(fatal(
+                    "built_flow_gate_portal_mismatch",
+                    None,
+                    Some(edge.id.as_str()),
+                    format!("Portal {} does not preserve source edge traversal fields.", portal.id),
+                ));
+            }
+        }
+        if portal.cells.is_empty() || portal.width <= 0 {
             diagnostics.push(fatal(
                 "built_flow_gate_portal_mismatch",
                 None,
-                Some(edge.id.as_str()),
+                Some(portal.source_edge.as_str()),
                 format!("Portal {} does not preserve source gate fields.", portal.id),
             ));
         }
@@ -316,7 +335,7 @@ fn validate_gate_portals(
                 diagnostics.push(fatal(
                     "built_flow_gate_portal_not_walkable",
                     None,
-                    Some(edge.id.as_str()),
+                    Some(portal.source_edge.as_str()),
                     format!(
                         "Portal {} cell {},{} is not in the presentation walkable projection.",
                         portal.id, cell.x, cell.y
@@ -508,13 +527,13 @@ fn physical_reachable_nodes(
             })
         })
         .collect::<BTreeMap<_, _>>();
-    let connection_edge_by_owner = placement
+    let connection_edges_by_owner = placement
         .glued_exits
         .iter()
         .map(|glued| {
             (
                 format!("connection.{}", slugify_label(glued.id.as_str())),
-                glued.source_edge.as_str(),
+                glued.source_edges.iter().map(String::as_str).collect::<Vec<_>>(),
             )
         })
         .collect::<BTreeMap<_, _>>();
@@ -554,9 +573,9 @@ fn physical_reachable_nodes(
                 .connection_cells
                 .iter()
                 .filter(|cell| {
-                    connection_edge_by_owner
+                    connection_edges_by_owner
                         .get(cell.instance_id.as_str())
-                        .map(|edge| active_edges.contains(edge))
+                        .map(|edges| edges.iter().any(|edge| active_edges.contains(edge)))
                         .unwrap_or(false)
                 })
                 .map(|cell| (cell.x, cell.y)),

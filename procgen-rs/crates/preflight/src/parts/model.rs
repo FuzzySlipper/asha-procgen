@@ -407,6 +407,53 @@ struct IntermediateConstraint {
     detail: String,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PhysicalConnectionPlan {
+    kind: String,
+    schema_version: u32,
+    plan_id: String,
+    candidate_id: String,
+    source_candidate_ref: String,
+    source_intermediate_ref: String,
+    sections: Vec<PhysicalConnectionSection>,
+    edge_mappings: Vec<PhysicalEdgeMapping>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PhysicalConnectionSection {
+    id: String,
+    topology: String,
+    terminal_regions: Vec<String>,
+    source_connectors: Vec<String>,
+    source_edges: Vec<String>,
+    traversal_refs: Vec<PhysicalTraversalRef>,
+    width: i32,
+    semantic_tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PhysicalTraversalRef {
+    connector_id: String,
+    edge_id: String,
+    from_region: String,
+    to_region: String,
+    traversal: String,
+    required_item: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PhysicalEdgeMapping {
+    edge_id: String,
+    connector_id: String,
+    section_id: String,
+    from_region: String,
+    to_region: String,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct NodeSummary {
@@ -473,6 +520,8 @@ struct Geometry2dArtifact {
     seed: u64,
     source_candidate_ref: String,
     source_intermediate_ref: String,
+    source_connection_plan_ref: String,
+    connection_plan_id: String,
     bounds: GeometryBounds,
     rooms: Vec<GeometryRoom>,
     corridors: Vec<GeometryCorridor>,
@@ -498,7 +547,18 @@ struct GeometryRoom {
     geometry_role: String,
     footprint_class: String,
     rect: GeometryRect,
+    ports: Vec<GeometryRoomPort>,
     style_tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GeometryRoomPort {
+    id: String,
+    section_id: String,
+    side: String,
+    point: GeometryPoint,
+    width: i32,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -514,13 +574,19 @@ struct GeometryRect {
 #[serde(rename_all = "camelCase")]
 struct GeometryCorridor {
     id: String,
+    physical_section: String,
     source_connector: String,
     source_edge: String,
+    source_connectors: Vec<String>,
+    source_edges: Vec<String>,
+    traversal_refs: Vec<PhysicalTraversalRef>,
     from_room: String,
     to_room: String,
     traversal_hint: String,
     semantic_tags: Vec<String>,
     width: i32,
+    from_port: String,
+    to_port: String,
     points: Vec<GeometryPoint>,
 }
 
@@ -588,8 +654,11 @@ struct PieceLink {
     from_exit: String,
     to_piece: String,
     to_exit: String,
+    source_section: String,
     source_corridor: String,
     source_edge: String,
+    source_edges: Vec<String>,
+    traversal_refs: Vec<PhysicalTraversalRef>,
     source_ref: String,
     traversal: String,
     required_item: Option<String>,
@@ -725,8 +794,11 @@ struct GluedExit {
     to_cell: GridCell,
     to_direction: String,
     to_width: i32,
+    source_section: String,
     source_corridor: String,
     source_edge: String,
+    source_edges: Vec<String>,
+    traversal_refs: Vec<PhysicalTraversalRef>,
     source_ref: String,
     traversal: String,
     required_item: Option<String>,
@@ -737,7 +809,10 @@ struct GluedExit {
 #[serde(rename_all = "camelCase")]
 struct GatePortal {
     id: String,
+    source_section: String,
     source_edge: String,
+    source_edges: Vec<String>,
+    traversal_refs: Vec<PhysicalTraversalRef>,
     source_corridor: String,
     link_id: String,
     from_piece: String,
@@ -1000,6 +1075,8 @@ struct SelectionEntry {
     intermediate_breakdown_ref: String,
     intermediate_validation_ref: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    physical_connection_plan_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     geometry_ref: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     geometry_validation_ref: Option<String>,
@@ -1032,6 +1109,8 @@ struct SelectionRejection {
     candidate_id: String,
     profile_sequence: String,
     candidate_ref: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    physical_connection_plan_ref: Option<String>,
     diagnostics: Vec<Diagnostic>,
 }
 

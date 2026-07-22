@@ -2,56 +2,14 @@
   "kind": "asha_procgen.graph_analysis.v1",
   "schemaVersion": 1,
   "candidateId": "candidate.first_slice.6101",
-  "stateHash": "fnv1a64:22440bd53093e409",
+  "stateHash": "fnv1a64:106e83112c8ec41e",
   "criticalPath": [
     "start",
-    "hub.central_1",
+    "gate.locked_1",
     "goal"
   ],
   "dominators": [],
   "optionalBranches": [
-    {
-      "edgeId": "edge.hub_1.clue_1",
-      "from": "hub.central_1",
-      "to": "resource.clue_1",
-      "classification": "optional",
-      "rejoinsGoalRoute": true
-    },
-    {
-      "edgeId": "edge.clue_1.hub_1",
-      "from": "resource.clue_1",
-      "to": "hub.central_1",
-      "classification": "rejoin",
-      "rejoinsGoalRoute": true
-    },
-    {
-      "edgeId": "edge.hub_1.watch_1",
-      "from": "hub.central_1",
-      "to": "hazard.watch_1",
-      "classification": "pressure",
-      "rejoinsGoalRoute": true
-    },
-    {
-      "edgeId": "edge.watch_1.goal",
-      "from": "hazard.watch_1",
-      "to": "goal",
-      "classification": "rejoin",
-      "rejoinsGoalRoute": true
-    },
-    {
-      "edgeId": "edge.hub_1.cache_1",
-      "from": "hub.central_1",
-      "to": "treasure.cache_1",
-      "classification": "optional",
-      "rejoinsGoalRoute": true
-    },
-    {
-      "edgeId": "edge.cache_1.hub_1",
-      "from": "treasure.cache_1",
-      "to": "hub.central_1",
-      "classification": "rejoin",
-      "rejoinsGoalRoute": true
-    },
     {
       "edgeId": "edge.start.safety_1",
       "from": "start",
@@ -81,25 +39,45 @@
       "rejoinsGoalRoute": true
     },
     {
-      "edgeId": "edge.approach.boss_prep_1",
-      "from": "gate.locked_1",
-      "to": "resource.boss_prep_1",
+      "edgeId": "edge.treasure_key_1.treasure_1",
+      "from": "key.treasure_1",
+      "to": "treasure.gated_1",
       "classification": "optional",
       "rejoinsGoalRoute": true
     },
     {
-      "edgeId": "edge.boss_prep_1.boss_1",
-      "from": "resource.boss_prep_1",
-      "to": "gate.boss_1",
+      "edgeId": "edge.treasure_1.goal",
+      "from": "treasure.gated_1",
+      "to": "goal",
+      "classification": "rejoin",
+      "rejoinsGoalRoute": true
+    },
+    {
+      "edgeId": "edge.start.merge_1",
+      "from": "start",
+      "to": "junction.merge_1",
+      "classification": "optional",
+      "rejoinsGoalRoute": true
+    },
+    {
+      "edgeId": "edge.secondary.merge_1",
+      "from": "treasure.gated_1",
+      "to": "junction.merge_1",
       "classification": "rejoin",
       "rejoinsGoalRoute": true
     }
   ],
   "lockKeyOrder": [
     {
-      "edgeId": "edge.boss_1.goal",
-      "requiredItem": "item.boss_preparation_1",
-      "providerNode": "resource.boss_prep_1",
+      "edgeId": "edge.gate_1.goal",
+      "requiredItem": "item.gate_key_1",
+      "providerNode": "key.gate_1",
+      "providerReachableBeforeLock": true
+    },
+    {
+      "edgeId": "edge.treasure_key_1.treasure_1",
+      "requiredItem": "item.treasure_key_1",
+      "providerNode": "key.treasure_1",
       "providerReachableBeforeLock": true
     }
   ],
@@ -110,35 +88,31 @@
       "detail": "edge.key_1.gate_1 reconnects key.gate_1 to gate.locked_1"
     },
     {
-      "edgeId": "edge.hub_1.goal",
-      "signal": "rejoin_loop",
-      "detail": "edge.hub_1.goal reconnects hub.central_1 to goal"
-    },
-    {
-      "edgeId": "edge.clue_1.hub_1",
-      "signal": "rejoin_loop",
-      "detail": "edge.clue_1.hub_1 reconnects resource.clue_1 to hub.central_1"
-    },
-    {
-      "edgeId": "edge.watch_1.goal",
-      "signal": "rejoin_loop",
-      "detail": "edge.watch_1.goal reconnects hazard.watch_1 to goal"
-    },
-    {
-      "edgeId": "edge.cache_1.hub_1",
-      "signal": "rejoin_loop",
-      "detail": "edge.cache_1.hub_1 reconnects treasure.cache_1 to hub.central_1"
-    },
-    {
       "edgeId": "edge.sluice_1.goal",
       "signal": "rejoin_loop",
       "detail": "edge.sluice_1.goal reconnects hazard.sluice_1 to goal"
     },
     {
-      "edgeId": "edge.boss_prep_1.boss_1",
+      "edgeId": "edge.treasure_1.goal",
       "signal": "rejoin_loop",
-      "detail": "edge.boss_prep_1.boss_1 reconnects resource.boss_prep_1 to gate.boss_1"
+      "detail": "edge.treasure_1.goal reconnects treasure.gated_1 to goal"
+    },
+    {
+      "edgeId": "edge.secondary.merge_1",
+      "signal": "rejoin_loop",
+      "detail": "edge.secondary.merge_1 reconnects treasure.gated_1 to junction.merge_1"
+    },
+    {
+      "edgeId": "edge.merge_1.goal.shortcut",
+      "signal": "shortcut_loop",
+      "detail": "edge.merge_1.goal.shortcut reconnects junction.merge_1 to goal"
     }
   ],
-  "shortcutBypassRisks": []
+  "shortcutBypassRisks": [
+    {
+      "edgeId": "edge.merge_1.goal.shortcut",
+      "risk": "may_bypass_lock",
+      "detail": "edge.merge_1.goal.shortcut can compress route from junction.merge_1 to goal"
+    }
+  ]
 }

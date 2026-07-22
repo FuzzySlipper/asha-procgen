@@ -12,7 +12,7 @@ import { compilePlacementExtrusion } from '../dist/ts/src/voxel-extrusion.js';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const placementPath = path.join(
   repoRoot,
-  process.argv[2] ?? 'artifacts/samples/batch-v2/candidate-000/piece-placement.json',
+  process.argv[2] ?? 'artifacts/samples/batch-v2/candidate-006/piece-placement.json',
 );
 const placement = JSON.parse(await readFile(placementPath, 'utf8'));
 const plan = compilePlacementExtrusion(placement);

@@ -90,6 +90,7 @@ interface SelectionEntry {
   readonly spatialIntentRef?: string;
   readonly intermediateBreakdownRef?: string;
   readonly intermediateValidationRef?: string;
+  readonly physicalConnectionPlanRef?: string;
   readonly geometryRef?: string;
   readonly geometryValidationRef?: string;
   readonly htmlPreviewRef?: string;
@@ -110,6 +111,7 @@ interface SelectionRejection {
   readonly candidateId: string;
   readonly profileSequence?: string;
   readonly candidateRef: string;
+  readonly physicalConnectionPlanRef?: string;
   readonly diagnostics: readonly Diagnostic[];
 }
 
@@ -196,6 +198,8 @@ interface IntermediateContext {
 interface Geometry2dArtifact {
   readonly geometryId: string;
   readonly candidateId: string;
+  readonly sourceConnectionPlanRef: string;
+  readonly connectionPlanId: string;
   readonly bounds: GeometryBounds;
   readonly rooms: readonly GeometryRoom[];
   readonly corridors: readonly GeometryCorridor[];
@@ -216,7 +220,16 @@ interface GeometryRoom {
   readonly geometryRole: string;
   readonly footprintClass: string;
   readonly rect: GeometryRect;
+  readonly ports: readonly GeometryRoomPort[];
   readonly styleTags: readonly string[];
+}
+
+interface GeometryRoomPort {
+  readonly id: string;
+  readonly sectionId: string;
+  readonly side: 'north' | 'east' | 'south' | 'west';
+  readonly point: GeometryPoint;
+  readonly width: number;
 }
 
 interface GeometryRect {
@@ -228,14 +241,29 @@ interface GeometryRect {
 
 interface GeometryCorridor {
   readonly id: string;
+  readonly physicalSection: string;
   readonly sourceConnector: string;
   readonly sourceEdge: string;
+  readonly sourceConnectors: readonly string[];
+  readonly sourceEdges: readonly string[];
+  readonly traversalRefs: readonly PhysicalTraversalRef[];
   readonly fromRoom: string;
   readonly toRoom: string;
   readonly traversalHint: string;
   readonly semanticTags: readonly string[];
   readonly width: number;
+  readonly fromPort: string;
+  readonly toPort: string;
   readonly points: readonly GeometryPoint[];
+}
+
+interface PhysicalTraversalRef {
+  readonly connectorId: string;
+  readonly edgeId: string;
+  readonly fromRegion: string;
+  readonly toRegion: string;
+  readonly traversal: string;
+  readonly requiredItem: string | null;
 }
 
 interface GeometryPoint {
@@ -350,7 +378,10 @@ interface GluedExit {
   readonly toDirection: 'north' | 'east' | 'south' | 'west';
   readonly toWidth: number;
   readonly sourceCorridor: string;
+  readonly sourceSection: string;
   readonly sourceEdge: string;
+  readonly sourceEdges: readonly string[];
+  readonly traversalRefs: readonly PhysicalTraversalRef[];
   readonly sourceRef: string;
   readonly traversal: string;
   readonly requiredItem: string | null;
@@ -359,7 +390,10 @@ interface GluedExit {
 
 interface GatePortal {
   readonly id: string;
+  readonly sourceSection: string;
   readonly sourceEdge: string;
+  readonly sourceEdges: readonly string[];
+  readonly traversalRefs: readonly PhysicalTraversalRef[];
   readonly sourceCorridor: string;
   readonly linkId: string;
   readonly fromPiece: string;
@@ -1154,6 +1188,7 @@ function buildRefLines(selection: SelectionEntry | null): readonly HTMLElement[]
     return [empty];
   }
   return [
+    refLine('connections', selection.physicalConnectionPlanRef ?? 'missing'),
     refLine('geometry', selection.geometryRef),
     refLine('gvalid', selection.geometryValidationRef ?? 'missing'),
     refLine('preview', selection.htmlPreviewRef ?? 'missing'),
@@ -1456,13 +1491,12 @@ async function renderVoxelInspection(): Promise<void> {
     voxelInspectionPanel.dataset.rendererAuthority = surface.authority;
     voxelInspectionPanel.dataset.rendererStatus = readout.status;
     voxelInspectionPanel.dataset.frameHash = readout.retainedFrameHash;
-    const pickPoints: readonly (readonly [number, number])[] = [
-      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.5],
-      [voxelInspectionCanvas.clientWidth * 0.25, voxelInspectionCanvas.clientHeight * 0.5],
-      [voxelInspectionCanvas.clientWidth * 0.75, voxelInspectionCanvas.clientHeight * 0.5],
-      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.35],
-      [voxelInspectionCanvas.clientWidth * 0.5, voxelInspectionCanvas.clientHeight * 0.65],
-    ];
+    const pickPoints = Array.from({ length: 9 }, (_, row) =>
+      Array.from({ length: 9 }, (_, column) => [
+        voxelInspectionCanvas.clientWidth * (column + 1) / 10,
+        voxelInspectionCanvas.clientHeight * (row + 1) / 10,
+      ] as const),
+    ).flat();
     const pickHits = pickPoints
       .map((point) => surface.pick({ point }).hint)
       .filter((hint) => hint !== null);

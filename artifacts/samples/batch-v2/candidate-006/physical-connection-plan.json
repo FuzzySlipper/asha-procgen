@@ -1,0 +1,160 @@
+{
+  "kind": "asha_procgen.physical_connection_plan.v1",
+  "schemaVersion": 1,
+  "planId": "physical_connections.candidate.first_slice.5801",
+  "candidateId": "candidate.first_slice.5801",
+  "sourceCandidateRef": "artifacts/samples/batch-v2/candidate-006/accepted.json",
+  "sourceIntermediateRef": "artifacts/samples/batch-v2/candidate-006/intermediate-breakdown.json",
+  "sections": [
+    {
+      "id": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
+      "topology": "corridor_2",
+      "terminalRegions": [
+        "region.gate_locked_1",
+        "region.goal"
+      ],
+      "sourceConnectors": [
+        "connector.edge_gate_1_goal"
+      ],
+      "sourceEdges": [
+        "edge.gate_1.goal"
+      ],
+      "traversalRefs": [
+        {
+          "connectorId": "connector.edge_gate_1_goal",
+          "edgeId": "edge.gate_1.goal",
+          "fromRegion": "region.gate_locked_1",
+          "toRegion": "region.goal",
+          "traversal": "locked",
+          "requiredItem": "item.gate_key_1"
+        }
+      ],
+      "width": 18,
+      "semanticTags": [
+        "gated_connector",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "id": "section.region_gate_locked_1.region_key_gate_1.open",
+      "topology": "corridor_2",
+      "terminalRegions": [
+        "region.gate_locked_1",
+        "region.key_gate_1"
+      ],
+      "sourceConnectors": [
+        "connector.edge_key_1_gate_1"
+      ],
+      "sourceEdges": [
+        "edge.key_1.gate_1"
+      ],
+      "traversalRefs": [
+        {
+          "connectorId": "connector.edge_key_1_gate_1",
+          "edgeId": "edge.key_1.gate_1",
+          "fromRegion": "region.key_gate_1",
+          "toRegion": "region.gate_locked_1",
+          "traversal": "open",
+          "requiredItem": null
+        }
+      ],
+      "width": 12,
+      "semanticTags": [
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor"
+      ]
+    },
+    {
+      "id": "section.region_gate_locked_1.region_start.open",
+      "topology": "corridor_2",
+      "terminalRegions": [
+        "region.gate_locked_1",
+        "region.start"
+      ],
+      "sourceConnectors": [
+        "connector.edge_start_gate_1"
+      ],
+      "sourceEdges": [
+        "edge.start.gate_1"
+      ],
+      "traversalRefs": [
+        {
+          "connectorId": "connector.edge_start_gate_1",
+          "edgeId": "edge.start.gate_1",
+          "fromRegion": "region.start",
+          "toRegion": "region.gate_locked_1",
+          "traversal": "open",
+          "requiredItem": null
+        }
+      ],
+      "width": 12,
+      "semanticTags": [
+        "corridor",
+        "open"
+      ]
+    },
+    {
+      "id": "section.region_key_gate_1.region_start.open",
+      "topology": "corridor_2",
+      "terminalRegions": [
+        "region.key_gate_1",
+        "region.start"
+      ],
+      "sourceConnectors": [
+        "connector.edge_start_key_1"
+      ],
+      "sourceEdges": [
+        "edge.start.key_1"
+      ],
+      "traversalRefs": [
+        {
+          "connectorId": "connector.edge_start_key_1",
+          "edgeId": "edge.start.key_1",
+          "fromRegion": "region.start",
+          "toRegion": "region.key_gate_1",
+          "traversal": "open",
+          "requiredItem": null
+        }
+      ],
+      "width": 12,
+      "semanticTags": [
+        "corridor",
+        "open"
+      ]
+    }
+  ],
+  "edgeMappings": [
+    {
+      "edgeId": "edge.gate_1.goal",
+      "connectorId": "connector.edge_gate_1_goal",
+      "sectionId": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
+      "fromRegion": "region.gate_locked_1",
+      "toRegion": "region.goal"
+    },
+    {
+      "edgeId": "edge.key_1.gate_1",
+      "connectorId": "connector.edge_key_1_gate_1",
+      "sectionId": "section.region_gate_locked_1.region_key_gate_1.open",
+      "fromRegion": "region.key_gate_1",
+      "toRegion": "region.gate_locked_1"
+    },
+    {
+      "edgeId": "edge.start.gate_1",
+      "connectorId": "connector.edge_start_gate_1",
+      "sectionId": "section.region_gate_locked_1.region_start.open",
+      "fromRegion": "region.start",
+      "toRegion": "region.gate_locked_1"
+    },
+    {
+      "edgeId": "edge.start.key_1",
+      "connectorId": "connector.edge_start_key_1",
+      "sectionId": "section.region_key_gate_1.region_start.open",
+      "fromRegion": "region.start",
+      "toRegion": "region.key_gate_1"
+    }
+  ]
+}

@@ -4,8 +4,8 @@
   "command": "embed 2d",
   "status": "ok",
   "seed": 6091,
-  "inputHash": "fnv1a64:9af7cfb8deaca344",
-  "outputHash": "fnv1a64:b2e37338fb14e68d",
+  "inputHash": "fnv1a64:ed392572720e246a",
+  "outputHash": "fnv1a64:195f4aa1767b5002",
   "outputRef": "artifacts/samples/batch-v2/candidate-008/layout-2d.json",
   "diagnostics": []
 }

@@ -10,7 +10,8 @@ meshes, voxels, or renderer integration.
 
 ```text
 candidate + intermediate breakdown
-  -> geometry_2d layout
+  -> physical_connection_plan
+  -> connection-aware room ports + exclusive geometry_2d corridors
   -> geometry validation
   -> html_preview metadata + standalone HTML/SVG file
   -> optional smoke screenshot evidence
@@ -20,15 +21,26 @@ candidate + intermediate breakdown
 
 Kind: `asha_procgen.geometry_2d.v1`
 
-Initial command:
+Commands:
 
 ```bash
+npm run procgen -- geometry plan-connections \
+  --candidate <candidate.json> \
+  --intermediate <intermediate-breakdown.json> \
+  --out <physical-connection-plan.json>
+
 npm run procgen -- geometry emit-2d \
   --candidate <candidate.json> \
   --intermediate <intermediate-breakdown.json> \
+  --connection-plan <physical-connection-plan.json> \
   --seed <u64> \
   --out <geometry.json>
 ```
+
+The versioned physical plan is authoritative for physical corridor identity.
+Compatible reciprocal open edges between the same regions normalize into one
+`corridor_2` section while retaining both directed traversal refs. Incompatible
+locked, hidden, one-way, or item-bearing edges remain separate sections.
 
 Important fields:
 
@@ -37,11 +49,13 @@ Important fields:
 - `seed`: deterministic layout seed.
 - `sourceCandidateRef`: source candidate path.
 - `sourceIntermediateRef`: source intermediate breakdown path.
+- `sourceConnectionPlanRef` and `connectionPlanId`: exact physical plan input.
 - `bounds`: total drawing bounds and grid size.
 - `rooms`: variable room rectangles with role, footprint class, geometry role,
-  source region, and source node refs.
+  source region, source node refs, and one boundary port per physical section.
 - `corridors`: routed corridor polylines with width, traversal hint, source
-  connector, source edge, and semantic tags.
+  connectors/edges, exact traversal refs, physical section id, terminal port
+  ids, and semantic tags.
 - `contents`: lightweight room annotations for preview labels. Each annotation
   has an `id`, `roomId`, `sourceRef`, `kind`, `label`, and style/function tags.
   Current kinds include `start_marker`, `goal_marker`, `key_pickup`,
@@ -54,9 +68,11 @@ The geometry artifact is allowed to use coordinates and rectangles. It is not a
 tile map and does not imply collision, runtime navigation, mesh, voxel, or ASHA
 renderer authority.
 
-The first `emit-2d` implementation places variable room footprints from
-intermediate regions, routes simple semantic corridor polylines, and derives
-preview content annotations from graph/intermediate semantics.
+The emitter sizes and distributes rooms from their planned connection demands,
+then routes each physical section through its declared ports. Routes reserve
+separation space and may retry deterministic room orders. If no exclusive
+single-floor embedding is found, emission fails instead of accepting corridor
+overlap, corridor contact, room intrusion, or an expanded doorway.
 
 ## Geometry Validation
 
@@ -71,9 +87,10 @@ npm run procgen -- geometry validate-2d \
 ```
 
 The validator checks valid room bounds, non-overlapping room rectangles,
-corridor room refs, corridor endpoint attachment, connector represented/skipped
-bookkeeping inside the artifact, directed start-to-goal reachability, semantic
-refs for locked/hidden/shortcut corridors, and content room anchors.
+corridor room/port refs, exact physical-section ownership, connector/edge
+coverage, unrelated corridor separation, room intrusion, directed
+start-to-goal reachability, semantic refs for locked/hidden/shortcut corridors,
+and content room anchors.
 
 ## HTML Preview Artifact
 

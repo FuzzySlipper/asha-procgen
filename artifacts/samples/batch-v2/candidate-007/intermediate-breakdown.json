@@ -2,7 +2,7 @@
   "kind": "asha_procgen.intermediate_breakdown.v1",
   "schemaVersion": 2,
   "candidateId": "candidate.first_slice.5901",
-  "stateHash": "fnv1a64:bd0dbe9c9eb637b6",
+  "stateHash": "fnv1a64:ff7099bbf506277f",
   "annotationRef": "artifacts/samples/batch-v2/candidate-007/spatial-intent.json",
   "regions": [
     {
@@ -33,7 +33,8 @@
       "scaleBand": "medium",
       "anchorQuality": "explicit",
       "entranceExpectations": [
-        "destination_arrival"
+        "destination_arrival",
+        "merge_readability"
       ]
     },
     {
@@ -48,7 +49,6 @@
       "scaleBand": "medium",
       "anchorQuality": "derived",
       "entranceExpectations": [
-        "choice_readability",
         "locked_threshold_preview",
         "merge_readability",
         "reveal_line"
@@ -70,59 +70,26 @@
       ]
     },
     {
-      "id": "region.gate_locked_2",
+      "id": "region.hub_central_1",
       "nodeIds": [
-        "gate.locked_2"
+        "hub.central_1"
       ],
-      "role": "gate",
-      "anchorNode": null,
-      "geometryRole": "threshold",
-      "footprintClass": "threshold",
-      "scaleBand": "medium",
-      "anchorQuality": "derived",
-      "entranceExpectations": [
-        "choice_readability",
-        "locked_threshold_preview",
-        "merge_readability",
-        "reveal_line"
-      ]
-    },
-    {
-      "id": "region.key_deep_2",
-      "nodeIds": [
-        "key.deep_2"
-      ],
-      "role": "standard",
-      "anchorNode": null,
-      "geometryRole": "key_pocket",
-      "footprintClass": "small_pocket",
-      "scaleBand": "small",
-      "anchorQuality": "derived",
-      "entranceExpectations": [
-        "pickup_pocket"
-      ]
-    },
-    {
-      "id": "region.gate_boss_1",
-      "nodeIds": [
-        "gate.boss_1"
-      ],
-      "role": "boss_gate",
-      "anchorNode": "gate.boss_1",
-      "geometryRole": "boss_threshold",
-      "footprintClass": "threshold_large",
+      "role": "landmark_hub",
+      "anchorNode": "hub.central_1",
+      "geometryRole": "landmark_junction",
+      "footprintClass": "hub",
       "scaleBand": "large",
       "anchorQuality": "explicit",
       "entranceExpectations": [
-        "approach_then_reveal",
+        "choice_readability",
         "merge_readability",
-        "reveal_line"
+        "multi_spoke_orientation"
       ]
     },
     {
-      "id": "region.resource_boss_prep_1",
+      "id": "region.resource_clue_1",
       "nodeIds": [
-        "resource.boss_prep_1"
+        "resource.clue_1"
       ],
       "role": "standard",
       "anchorNode": null,
@@ -132,6 +99,52 @@
       "anchorQuality": "derived",
       "entranceExpectations": [
         "pickup_pocket"
+      ]
+    },
+    {
+      "id": "region.hazard_watch_1",
+      "nodeIds": [
+        "hazard.watch_1"
+      ],
+      "role": "pressure",
+      "anchorNode": null,
+      "geometryRole": "hazard_route",
+      "footprintClass": "pressure_lane",
+      "scaleBand": "medium",
+      "anchorQuality": "derived",
+      "entranceExpectations": [
+        "readable_hazard_approach"
+      ]
+    },
+    {
+      "id": "region.treasure_cache_1",
+      "nodeIds": [
+        "treasure.cache_1"
+      ],
+      "role": "reward",
+      "anchorNode": null,
+      "geometryRole": "reward_pocket",
+      "footprintClass": "pocket",
+      "scaleBand": "small",
+      "anchorQuality": "derived",
+      "entranceExpectations": [
+        "optional_reward_access"
+      ]
+    },
+    {
+      "id": "region.junction_merge_1",
+      "nodeIds": [
+        "junction.merge_1"
+      ],
+      "role": "landmark_hub",
+      "anchorNode": "junction.merge_1",
+      "geometryRole": "landmark_junction",
+      "footprintClass": "hub",
+      "scaleBand": "large",
+      "anchorQuality": "explicit",
+      "entranceExpectations": [
+        "merge_readability",
+        "multi_spoke_orientation"
       ]
     }
   ],
@@ -147,6 +160,25 @@
       ],
       "traversalHint": "open",
       "constraintRefs": []
+    },
+    {
+      "id": "connector.edge_gate_1_goal",
+      "edgeId": "edge.gate_1.goal",
+      "fromRegion": "region.gate_locked_1",
+      "toRegion": "region.goal",
+      "intents": [
+        "gated_connector",
+        "visible_before_reachable"
+      ],
+      "affordances": [
+        "locked_threshold",
+        "preview_line"
+      ],
+      "traversalHint": "locked",
+      "constraintRefs": [
+        "preserve_gated_connector:edge.gate_1.goal",
+        "preserve_lock_preview:edge.gate_1.goal"
+      ]
     },
     {
       "id": "connector.edge_start_key_1",
@@ -177,10 +209,10 @@
       ]
     },
     {
-      "id": "connector.edge_gate_1_gate_2",
-      "edgeId": "edge.gate_1.gate_2",
-      "fromRegion": "region.gate_locked_1",
-      "toRegion": "region.gate_locked_2",
+      "id": "connector.edge_start_hub_1",
+      "edgeId": "edge.start.hub_1",
+      "fromRegion": "region.start",
+      "toRegion": "region.hub_central_1",
       "intents": [],
       "affordances": [
         "corridor"
@@ -189,69 +221,26 @@
       "constraintRefs": []
     },
     {
-      "id": "connector.edge_gate_1_key_2",
-      "edgeId": "edge.gate_1.key_2",
-      "fromRegion": "region.gate_locked_1",
-      "toRegion": "region.key_deep_2",
-      "intents": [],
-      "affordances": [
-        "corridor"
-      ],
-      "traversalHint": "open",
-      "constraintRefs": []
-    },
-    {
-      "id": "connector.edge_key_2_gate_2",
-      "edgeId": "edge.key_2.gate_2",
-      "fromRegion": "region.key_deep_2",
-      "toRegion": "region.gate_locked_2",
-      "intents": [
-        "merge_rejoin_clarity"
-      ],
-      "affordances": [
-        "rejoin_corridor"
-      ],
-      "traversalHint": "open",
-      "constraintRefs": [
-        "preserve_rejoin_clarity:edge.key_2.gate_2"
-      ]
-    },
-    {
-      "id": "connector.edge_approach_boss_1",
-      "edgeId": "edge.approach.boss_1",
-      "fromRegion": "region.gate_locked_2",
-      "toRegion": "region.gate_boss_1",
-      "intents": [],
-      "affordances": [
-        "corridor"
-      ],
-      "traversalHint": "open",
-      "constraintRefs": []
-    },
-    {
-      "id": "connector.edge_boss_1_goal",
-      "edgeId": "edge.boss_1.goal",
-      "fromRegion": "region.gate_boss_1",
+      "id": "connector.edge_hub_1_goal",
+      "edgeId": "edge.hub_1.goal",
+      "fromRegion": "region.hub_central_1",
       "toRegion": "region.goal",
       "intents": [
-        "gated_connector",
-        "visible_before_reachable"
+        "merge_rejoin_clarity"
       ],
       "affordances": [
-        "locked_threshold",
-        "preview_line"
+        "rejoin_corridor"
       ],
-      "traversalHint": "locked",
+      "traversalHint": "open",
       "constraintRefs": [
-        "preserve_gated_connector:edge.boss_1.goal",
-        "preserve_lock_preview:edge.boss_1.goal"
+        "preserve_rejoin_clarity:edge.hub_1.goal"
       ]
     },
     {
-      "id": "connector.edge_approach_boss_prep_1",
-      "edgeId": "edge.approach.boss_prep_1",
-      "fromRegion": "region.gate_locked_2",
-      "toRegion": "region.resource_boss_prep_1",
+      "id": "connector.edge_hub_1_clue_1",
+      "edgeId": "edge.hub_1.clue_1",
+      "fromRegion": "region.hub_central_1",
+      "toRegion": "region.resource_clue_1",
       "intents": [],
       "affordances": [
         "corridor"
@@ -260,10 +249,10 @@
       "constraintRefs": []
     },
     {
-      "id": "connector.edge_boss_prep_1_boss_1",
-      "edgeId": "edge.boss_prep_1.boss_1",
-      "fromRegion": "region.resource_boss_prep_1",
-      "toRegion": "region.gate_boss_1",
+      "id": "connector.edge_clue_1_hub_1",
+      "edgeId": "edge.clue_1.hub_1",
+      "fromRegion": "region.resource_clue_1",
+      "toRegion": "region.hub_central_1",
       "intents": [
         "merge_rejoin_clarity"
       ],
@@ -272,7 +261,114 @@
       ],
       "traversalHint": "open",
       "constraintRefs": [
-        "preserve_rejoin_clarity:edge.boss_prep_1.boss_1"
+        "preserve_rejoin_clarity:edge.clue_1.hub_1"
+      ]
+    },
+    {
+      "id": "connector.edge_hub_1_watch_1",
+      "edgeId": "edge.hub_1.watch_1",
+      "fromRegion": "region.hub_central_1",
+      "toRegion": "region.hazard_watch_1",
+      "intents": [
+        "pressure_path"
+      ],
+      "affordances": [
+        "pressure_route"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": [
+        "preserve_pressure_read:edge.hub_1.watch_1"
+      ]
+    },
+    {
+      "id": "connector.edge_watch_1_goal",
+      "edgeId": "edge.watch_1.goal",
+      "fromRegion": "region.hazard_watch_1",
+      "toRegion": "region.goal",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "affordances": [
+        "rejoin_corridor"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": [
+        "preserve_rejoin_clarity:edge.watch_1.goal"
+      ]
+    },
+    {
+      "id": "connector.edge_hub_1_cache_1",
+      "edgeId": "edge.hub_1.cache_1",
+      "fromRegion": "region.hub_central_1",
+      "toRegion": "region.treasure_cache_1",
+      "intents": [],
+      "affordances": [
+        "corridor"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": []
+    },
+    {
+      "id": "connector.edge_cache_1_hub_1",
+      "edgeId": "edge.cache_1.hub_1",
+      "fromRegion": "region.treasure_cache_1",
+      "toRegion": "region.hub_central_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "affordances": [
+        "rejoin_corridor"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": [
+        "preserve_rejoin_clarity:edge.cache_1.hub_1"
+      ]
+    },
+    {
+      "id": "connector.edge_start_merge_1",
+      "edgeId": "edge.start.merge_1",
+      "fromRegion": "region.start",
+      "toRegion": "region.junction_merge_1",
+      "intents": [],
+      "affordances": [
+        "corridor"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": []
+    },
+    {
+      "id": "connector.edge_secondary_merge_1",
+      "edgeId": "edge.secondary.merge_1",
+      "fromRegion": "region.hub_central_1",
+      "toRegion": "region.junction_merge_1",
+      "intents": [
+        "merge_rejoin_clarity"
+      ],
+      "affordances": [
+        "rejoin_corridor"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": [
+        "preserve_rejoin_clarity:edge.secondary.merge_1"
+      ]
+    },
+    {
+      "id": "connector.edge_merge_1_goal_shortcut",
+      "edgeId": "edge.merge_1.goal.shortcut",
+      "fromRegion": "region.junction_merge_1",
+      "toRegion": "region.goal",
+      "intents": [
+        "merge_rejoin_clarity",
+        "shortcut_connector"
+      ],
+      "affordances": [
+        "rejoin_corridor",
+        "shortcut_link"
+      ],
+      "traversalHint": "open",
+      "constraintRefs": [
+        "preserve_rejoin_clarity:edge.merge_1.goal.shortcut",
+        "preserve_shortcut_connector:edge.merge_1.goal.shortcut"
       ]
     }
   ],
@@ -314,28 +410,76 @@
       "detail": "Preserve gated_reveal for gate.locked_1."
     },
     {
-      "code": "preserve_reveal_sequence",
-      "target": "gate.locked_2",
+      "code": "preserve_wayfinding_anchor",
+      "target": "hub.central_1",
       "targetType": "node",
       "sourceIntents": [
-        "gated_reveal"
+        "landmark_hub"
       ],
       "graphRefs": [
-        "gate.locked_2"
+        "hub.central_1"
       ],
-      "detail": "Preserve gated_reveal for gate.locked_2."
+      "detail": "Preserve landmark_hub for hub.central_1."
     },
     {
-      "code": "preserve_reveal_sequence",
-      "target": "gate.boss_1",
+      "code": "preserve_pressure_read",
+      "target": "hazard.watch_1",
       "targetType": "node",
       "sourceIntents": [
-        "gated_reveal"
+        "pressure_path"
       ],
       "graphRefs": [
-        "gate.boss_1"
+        "hazard.watch_1"
       ],
-      "detail": "Preserve gated_reveal for gate.boss_1."
+      "detail": "Preserve pressure_path for hazard.watch_1."
+    },
+    {
+      "code": "preserve_reward_pocket",
+      "target": "treasure.cache_1",
+      "targetType": "node",
+      "sourceIntents": [
+        "reward_pocket"
+      ],
+      "graphRefs": [
+        "treasure.cache_1"
+      ],
+      "detail": "Preserve reward_pocket for treasure.cache_1."
+    },
+    {
+      "code": "preserve_wayfinding_anchor",
+      "target": "junction.merge_1",
+      "targetType": "node",
+      "sourceIntents": [
+        "landmark_hub"
+      ],
+      "graphRefs": [
+        "junction.merge_1"
+      ],
+      "detail": "Preserve landmark_hub for junction.merge_1."
+    },
+    {
+      "code": "preserve_gated_connector",
+      "target": "edge.gate_1.goal",
+      "targetType": "edge",
+      "sourceIntents": [
+        "gated_connector"
+      ],
+      "graphRefs": [
+        "edge.gate_1.goal"
+      ],
+      "detail": "Preserve gated_connector for edge.gate_1.goal."
+    },
+    {
+      "code": "preserve_lock_preview",
+      "target": "edge.gate_1.goal",
+      "targetType": "edge",
+      "sourceIntents": [
+        "visible_before_reachable"
+      ],
+      "graphRefs": [
+        "edge.gate_1.goal"
+      ],
+      "detail": "Preserve visible_before_reachable for edge.gate_1.goal."
     },
     {
       "code": "preserve_rejoin_clarity",
@@ -351,51 +495,99 @@
     },
     {
       "code": "preserve_rejoin_clarity",
-      "target": "edge.key_2.gate_2",
+      "target": "edge.hub_1.goal",
       "targetType": "edge",
       "sourceIntents": [
         "merge_rejoin_clarity"
       ],
       "graphRefs": [
-        "edge.key_2.gate_2"
+        "edge.hub_1.goal"
       ],
-      "detail": "Preserve merge_rejoin_clarity for edge.key_2.gate_2."
-    },
-    {
-      "code": "preserve_gated_connector",
-      "target": "edge.boss_1.goal",
-      "targetType": "edge",
-      "sourceIntents": [
-        "gated_connector"
-      ],
-      "graphRefs": [
-        "edge.boss_1.goal"
-      ],
-      "detail": "Preserve gated_connector for edge.boss_1.goal."
-    },
-    {
-      "code": "preserve_lock_preview",
-      "target": "edge.boss_1.goal",
-      "targetType": "edge",
-      "sourceIntents": [
-        "visible_before_reachable"
-      ],
-      "graphRefs": [
-        "edge.boss_1.goal"
-      ],
-      "detail": "Preserve visible_before_reachable for edge.boss_1.goal."
+      "detail": "Preserve merge_rejoin_clarity for edge.hub_1.goal."
     },
     {
       "code": "preserve_rejoin_clarity",
-      "target": "edge.boss_prep_1.boss_1",
+      "target": "edge.clue_1.hub_1",
       "targetType": "edge",
       "sourceIntents": [
         "merge_rejoin_clarity"
       ],
       "graphRefs": [
-        "edge.boss_prep_1.boss_1"
+        "edge.clue_1.hub_1"
       ],
-      "detail": "Preserve merge_rejoin_clarity for edge.boss_prep_1.boss_1."
+      "detail": "Preserve merge_rejoin_clarity for edge.clue_1.hub_1."
+    },
+    {
+      "code": "preserve_pressure_read",
+      "target": "edge.hub_1.watch_1",
+      "targetType": "edge",
+      "sourceIntents": [
+        "pressure_path"
+      ],
+      "graphRefs": [
+        "edge.hub_1.watch_1"
+      ],
+      "detail": "Preserve pressure_path for edge.hub_1.watch_1."
+    },
+    {
+      "code": "preserve_rejoin_clarity",
+      "target": "edge.watch_1.goal",
+      "targetType": "edge",
+      "sourceIntents": [
+        "merge_rejoin_clarity"
+      ],
+      "graphRefs": [
+        "edge.watch_1.goal"
+      ],
+      "detail": "Preserve merge_rejoin_clarity for edge.watch_1.goal."
+    },
+    {
+      "code": "preserve_rejoin_clarity",
+      "target": "edge.cache_1.hub_1",
+      "targetType": "edge",
+      "sourceIntents": [
+        "merge_rejoin_clarity"
+      ],
+      "graphRefs": [
+        "edge.cache_1.hub_1"
+      ],
+      "detail": "Preserve merge_rejoin_clarity for edge.cache_1.hub_1."
+    },
+    {
+      "code": "preserve_rejoin_clarity",
+      "target": "edge.secondary.merge_1",
+      "targetType": "edge",
+      "sourceIntents": [
+        "merge_rejoin_clarity"
+      ],
+      "graphRefs": [
+        "edge.secondary.merge_1"
+      ],
+      "detail": "Preserve merge_rejoin_clarity for edge.secondary.merge_1."
+    },
+    {
+      "code": "preserve_rejoin_clarity",
+      "target": "edge.merge_1.goal.shortcut",
+      "targetType": "edge",
+      "sourceIntents": [
+        "merge_rejoin_clarity"
+      ],
+      "graphRefs": [
+        "edge.merge_1.goal.shortcut"
+      ],
+      "detail": "Preserve merge_rejoin_clarity for edge.merge_1.goal.shortcut."
+    },
+    {
+      "code": "preserve_shortcut_connector",
+      "target": "edge.merge_1.goal.shortcut",
+      "targetType": "edge",
+      "sourceIntents": [
+        "shortcut_connector"
+      ],
+      "graphRefs": [
+        "edge.merge_1.goal.shortcut"
+      ],
+      "detail": "Preserve shortcut_connector for edge.merge_1.goal.shortcut."
     }
   ]
 }

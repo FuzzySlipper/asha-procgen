@@ -18,8 +18,8 @@ import {
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = async (relativePath) => JSON.parse(await readFile(path.join(repoRoot, relativePath), 'utf8'));
 const catalog = await readJson('fixtures/shape-catalogs/2d-basic.json');
-const shapeMatch = await readJson('artifacts/samples/batch-v2/candidate-000/piece-shape-match.json');
-const placement = await readJson('artifacts/samples/batch-v2/candidate-000/piece-placement.json');
+const shapeMatch = await readJson('artifacts/samples/batch-v2/candidate-006/piece-shape-match.json');
+const placement = await readJson('artifacts/samples/batch-v2/candidate-006/piece-placement.json');
 const configuration = await readJson('fixtures/prefab-mappings/first-slice.json');
 const sourceAssetBodies = new Map(configuration.sourceAssets.map((source) => [
   source.artifact,
@@ -62,8 +62,8 @@ assert.equal(
   publication.manifest.artifacts.filter((artifact) => artifact.role === 'resource:procgen-prefab-source').length,
   2,
 );
-assert.equal(publication.provenance.instances[0].shapeId, 'shape.room.hub.4_exit');
-assert.equal(publication.provenance.instances[0].matchScore, 1063);
+assert.equal(publication.provenance.instances[0].shapeId, 'shape.room.flow_junction.36_exit');
+assert.equal(publication.provenance.instances[0].matchScore, 895);
 assert.match(serializeAshaPrefabRegistrySource(publication.prefabRegistry), /"schemaVersion": 1/);
 
 const runtimeSession = createRuntimeSessionFacade({

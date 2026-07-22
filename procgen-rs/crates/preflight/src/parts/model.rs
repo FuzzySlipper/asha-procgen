@@ -585,9 +585,14 @@ struct PieceExitRequirement {
 struct PieceLink {
     id: String,
     from_piece: String,
+    from_exit: String,
     to_piece: String,
+    to_exit: String,
+    source_corridor: String,
+    source_edge: String,
     source_ref: String,
-    traversal_hint: String,
+    traversal: String,
+    required_item: Option<String>,
     tags: Vec<String>,
 }
 
@@ -679,6 +684,7 @@ struct PiecePlacement {
     placement_policy: PiecePlacementPolicy,
     instances: Vec<PieceInstance>,
     glued_exits: Vec<GluedExit>,
+    gate_portals: Vec<GatePortal>,
     occupied_cells: Vec<PlacementCellRef>,
     connection_cells: Vec<PlacementCellRef>,
     reserved_cells: Vec<PlacementCellRef>,
@@ -719,8 +725,71 @@ struct GluedExit {
     to_cell: GridCell,
     to_direction: String,
     to_width: i32,
+    source_corridor: String,
+    source_edge: String,
     source_ref: String,
+    traversal: String,
+    required_item: Option<String>,
     tags: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GatePortal {
+    id: String,
+    source_edge: String,
+    source_corridor: String,
+    link_id: String,
+    from_piece: String,
+    from_instance: String,
+    to_piece: String,
+    to_instance: String,
+    cells: Vec<GridCell>,
+    orientation: String,
+    width: i32,
+    traversal: String,
+    required_item: Option<String>,
+    provenance: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BuiltFlowValidationReport {
+    kind: String,
+    schema_version: u32,
+    validation_id: String,
+    candidate_id: String,
+    geometry_id: String,
+    plan_id: String,
+    placement_id: String,
+    candidate_ref: String,
+    geometry_ref: String,
+    piece_plan_ref: String,
+    piece_placement_ref: String,
+    walkable_projection: BuiltWalkableProjection,
+    progression: Vec<BuiltFlowProgressionStep>,
+    portal_count: usize,
+    ok: bool,
+    fatal_count: usize,
+    diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BuiltWalkableProjection {
+    source: String,
+    cell_count: usize,
+    projection_hash: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct BuiltFlowProgressionStep {
+    step: usize,
+    items: Vec<String>,
+    reachable_nodes: Vec<String>,
+    reachable_edges: Vec<String>,
+    open_portals: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -950,6 +1019,8 @@ struct SelectionEntry {
     piece_placement_ref: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     piece_placement_validation_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    built_flow_validation_ref: Option<String>,
     overall: f64,
     metrics: BTreeMap<String, f64>,
     tags: Vec<String>,

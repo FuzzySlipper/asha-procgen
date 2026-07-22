@@ -169,7 +169,7 @@ fn static_shape_rejection_reasons(
     if !missing_sockets.is_empty() {
         reasons.push(format!("missing_sockets: {}", missing_sockets.join(",")));
     }
-    let required_exits = effective_required_exits(requirement);
+    let required_exits = &requirement.required_exits;
     if shape.exits.len() < required_exits.len() {
         reasons.push(format!(
             "exit_count_mismatch: need at least {} got {}",
@@ -253,8 +253,7 @@ fn match_exits(
 ) -> Option<Vec<MatchedExit>> {
     let mut mapped = Vec::new();
     let mut used = BTreeSet::new();
-    let effective_exits = effective_required_exits(requirement);
-    let mut required_exits = effective_exits.iter().collect::<Vec<_>>();
+    let mut required_exits = requirement.required_exits.iter().collect::<Vec<_>>();
     required_exits.sort_by(|left, right| left.id.cmp(&right.id));
     for required_exit in required_exits {
         let candidate = transformed_exits
@@ -336,7 +335,7 @@ fn shape_match_score(
     score += 1000;
     score += (exit_map.len() as i32) * 20;
     score += (socket_map.len() as i32) * 25;
-    score -= ((shape.exits.len() as i32) - (effective_required_exits(requirement).len() as i32))
+    score -= ((shape.exits.len() as i32) - (requirement.required_exits.len() as i32))
         .abs()
         * 5;
     score += shape
@@ -346,26 +345,6 @@ fn shape_match_score(
         .count() as i32
         * 4;
     score
-}
-
-fn effective_required_exits(requirement: &PieceRequirement) -> Vec<PieceExitRequirement> {
-    let mut by_direction: BTreeMap<&str, PieceExitRequirement> = BTreeMap::new();
-    for exit in &requirement.required_exits {
-        by_direction
-            .entry(exit.direction.as_str())
-            .and_modify(|existing| {
-                existing.width = existing.width.max(exit.width);
-                existing.tags.extend(exit.tags.clone());
-                existing.tags = dedupe_strings(std::mem::take(&mut existing.tags));
-            })
-            .or_insert_with(|| PieceExitRequirement {
-                id: exit.id.clone(),
-                direction: exit.direction.clone(),
-                width: exit.width,
-                tags: dedupe_strings(exit.tags.clone()),
-            });
-    }
-    by_direction.into_values().collect()
 }
 
 fn stable_match_tie_key(

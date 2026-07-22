@@ -68,6 +68,34 @@ connection routes anchored to exact transformed glued exits become openings.
 The compiler rejects unsafe policy combinations, wider unsupported openings,
 and routes that would open a non-exit boundary or unrelated piece.
 
+## Built Flow Validation
+
+Piece plans retain link-specific exit ids, source edge/corridor ids, traversal,
+and `requiredItem` as structured fields. Shape matching consumes every required
+exit exactly once; it no longer merges same-direction exits. Assembly emits one
+stable gate portal per source edge, including the exact cell, orientation,
+width, item requirement, controlling pieces, and provenance chain.
+
+Every accepted batch entry includes `built-flow.validation.json`. The report
+checks the candidate → geometry → ordered piece links → glued exits → routed
+cell chain, then runs an item-aware directional flood over the presentation
+walkable projection. A route is activated only after its authored source node
+is physically reached and its required item is available, so a reverse-facing
+edge or crossing cannot silently bypass a gate. The report is reproducible with:
+
+```bash
+npm run procgen -- build validate-flow \
+  --candidate artifacts/samples/batch-v2/candidate-000/accepted.json \
+  --geometry artifacts/samples/batch-v2/candidate-000/geometry-2d.json \
+  --piece-plan artifacts/samples/batch-v2/candidate-000/piece-plan.json \
+  --piece-placement artifacts/samples/batch-v2/candidate-000/piece-placement.json \
+  --out /tmp/built-flow.validation.json
+```
+
+Procgen owns this generation and validation evidence. Portals are not gameplay
+doors: this work does not claim inventory, collision, navigation, persistence,
+animation, or RuntimeSession door authority.
+
 ```bash
 npm run voxel:asha-smoke
 ```

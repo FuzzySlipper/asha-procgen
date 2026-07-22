@@ -31,6 +31,7 @@ fn run(cli: Cli) -> Result<(), String> {
             BuildSubcommand::MatchShapes(args) => build_match_shapes_command(args),
             BuildSubcommand::Assemble(args) => build_assemble_command(args),
             BuildSubcommand::ValidatePlacement(args) => build_validate_placement_command(args),
+            BuildSubcommand::ValidateFlow(args) => build_validate_flow_command(args),
         },
         Command::Preview(command) => match command.command {
             PreviewSubcommand::Html(args) => preview_html_command(args),

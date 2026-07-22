@@ -46,6 +46,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-005/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-005/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-005/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-005/built-flow.validation.json",
       "overall": 0.8,
       "metrics": {
         "bossCount": 1.0,
@@ -124,6 +125,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-003/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-003/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-003/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-003/built-flow.validation.json",
       "overall": 0.67,
       "metrics": {
         "bossCount": 1.0,
@@ -201,6 +203,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-009/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-009/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-009/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-009/built-flow.validation.json",
       "overall": 0.67,
       "metrics": {
         "bossCount": 1.0,
@@ -278,6 +281,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-000/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-000/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-000/built-flow.validation.json",
       "overall": 0.6,
       "metrics": {
         "bossCount": 0.0,
@@ -354,6 +358,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-006/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-006/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-006/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-006/built-flow.validation.json",
       "overall": 0.6,
       "metrics": {
         "bossCount": 0.0,
@@ -430,6 +435,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-002/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-002/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-002/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-002/built-flow.validation.json",
       "overall": 0.54,
       "metrics": {
         "bossCount": 0.0,
@@ -506,6 +512,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-008/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-008/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-008/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-008/built-flow.validation.json",
       "overall": 0.54,
       "metrics": {
         "bossCount": 0.0,
@@ -582,6 +589,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-004/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-004/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-004/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-004/built-flow.validation.json",
       "overall": 0.45,
       "metrics": {
         "bossCount": 0.0,
@@ -656,6 +664,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-001/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-001/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-001/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-001/built-flow.validation.json",
       "overall": 0.37,
       "metrics": {
         "bossCount": 1.0,
@@ -726,6 +735,7 @@
       "shapeMatchRef": "artifacts/samples/batch-v2/candidate-007/piece-shape-match.json",
       "piecePlacementRef": "artifacts/samples/batch-v2/candidate-007/piece-placement.json",
       "piecePlacementValidationRef": "artifacts/samples/batch-v2/candidate-007/piece-placement.validation.json",
+      "builtFlowValidationRef": "artifacts/samples/batch-v2/candidate-007/built-flow.validation.json",
       "overall": 0.37,
       "metrics": {
         "bossCount": 1.0,

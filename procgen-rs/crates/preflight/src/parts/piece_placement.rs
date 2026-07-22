@@ -186,12 +186,14 @@ fn assemble_piece_placement(
         placement_policy: catalog.placement_policy.clone(),
         instances,
         glued_exits: Vec::new(),
+        gate_portals: Vec::new(),
         occupied_cells,
         connection_cells: Vec::new(),
         reserved_cells,
         dangling_exits: Vec::new(),
     };
-    placement.glued_exits = derive_glued_exits(plan, &placement.instances);
+    placement.glued_exits = derive_glued_exits(plan, &placement.instances)?;
+    placement.gate_portals = derive_gate_portals(plan, &placement.glued_exits)?;
     placement.connection_cells = derive_connection_cells(&placement)?;
     Ok(placement)
 }
@@ -373,22 +375,35 @@ fn clearance_available(
     true
 }
 
-fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec<GluedExit> {
+fn derive_glued_exits(
+    plan: &PieceBuildPlan,
+    instances: &[PieceInstance],
+) -> Result<Vec<GluedExit>, String> {
     let instances_by_piece = instances
         .iter()
         .map(|instance| (instance.piece_id.as_str(), instance))
         .collect::<BTreeMap<_, _>>();
     let mut glued = Vec::new();
+    let mut consumed: BTreeMap<(String, String), String> = BTreeMap::new();
     for link in &plan.links {
-        let Some(from) = instances_by_piece.get(link.from_piece.as_str()).copied() else {
-            continue;
-        };
-        let Some(to) = instances_by_piece.get(link.to_piece.as_str()).copied() else {
-            continue;
-        };
-        let Some((from_exit, to_exit)) = compatible_exit_pair(from, to) else {
-            continue;
-        };
+        let from = instances_by_piece
+            .get(link.from_piece.as_str())
+            .copied()
+            .ok_or_else(|| format!("link {} references missing from piece {}", link.id, link.from_piece))?;
+        let to = instances_by_piece
+            .get(link.to_piece.as_str())
+            .copied()
+            .ok_or_else(|| format!("link {} references missing to piece {}", link.id, link.to_piece))?;
+        let from_exit = required_instance_exit(from, link.from_exit.as_str(), link.id.as_str())?;
+        let to_exit = required_instance_exit(to, link.to_exit.as_str(), link.id.as_str())?;
+        if opposite_direction(from_exit.direction.as_str()) != to_exit.direction {
+            return Err(format!(
+                "link {} exit directions do not oppose: {} {} vs {} {}",
+                link.id, link.from_exit, from_exit.direction, link.to_exit, to_exit.direction
+            ));
+        }
+        consume_instance_exit(&mut consumed, from, from_exit, link)?;
+        consume_instance_exit(&mut consumed, to, to_exit, link)?;
         glued.push(GluedExit {
             id: format!("glue.{}", slugify_label(link.id.as_str())),
             link_id: link.id.clone(),
@@ -408,25 +423,90 @@ fn derive_glued_exits(plan: &PieceBuildPlan, instances: &[PieceInstance]) -> Vec
             },
             to_direction: to_exit.direction.clone(),
             to_width: to_exit.width,
+            source_corridor: link.source_corridor.clone(),
+            source_edge: link.source_edge.clone(),
             source_ref: link.source_ref.clone(),
+            traversal: link.traversal.clone(),
+            required_item: link.required_item.clone(),
             tags: link.tags.clone(),
         });
     }
-    glued
+    Ok(glued)
 }
 
-fn compatible_exit_pair<'a>(
-    from: &'a PieceInstance,
-    to: &'a PieceInstance,
-) -> Option<(&'a MatchedExit, &'a MatchedExit)> {
-    for from_exit in &from.exit_map {
-        for to_exit in &to.exit_map {
-            if opposite_direction(from_exit.direction.as_str()) == to_exit.direction {
-                return Some((from_exit, to_exit));
-            }
-        }
+fn required_instance_exit<'a>(
+    instance: &'a PieceInstance,
+    requirement_exit_id: &str,
+    link_id: &str,
+) -> Result<&'a MatchedExit, String> {
+    instance
+        .exit_map
+        .iter()
+        .find(|exit| exit.requirement_exit_id == requirement_exit_id)
+        .ok_or_else(|| {
+            format!(
+                "link {} requires missing exit {} on instance {}",
+                link_id, requirement_exit_id, instance.instance_id
+            )
+        })
+}
+
+fn consume_instance_exit(
+    consumed: &mut BTreeMap<(String, String), String>,
+    instance: &PieceInstance,
+    exit: &MatchedExit,
+    link: &PieceLink,
+) -> Result<(), String> {
+    let key = (instance.instance_id.clone(), exit.requirement_exit_id.clone());
+    if let Some(first_link) = consumed.insert(key, link.id.clone()) {
+        return Err(format!(
+            "instance exit {}:{} is reused by links {} and {}; shared portals require explicit junction semantics",
+            instance.instance_id, exit.requirement_exit_id, first_link, link.id
+        ));
     }
-    None
+    Ok(())
+}
+
+fn derive_gate_portals(
+    plan: &PieceBuildPlan,
+    glued_exits: &[GluedExit],
+) -> Result<Vec<GatePortal>, String> {
+    let mut first_link_by_edge: BTreeMap<&str, &PieceLink> = BTreeMap::new();
+    for link in &plan.links {
+        first_link_by_edge.entry(link.source_edge.as_str()).or_insert(link);
+    }
+    let glued_by_link = glued_exits
+        .iter()
+        .map(|glued| (glued.link_id.as_str(), glued))
+        .collect::<BTreeMap<_, _>>();
+    let mut portals = Vec::new();
+    for (source_edge, link) in first_link_by_edge {
+        let glued = glued_by_link.get(link.id.as_str()).copied().ok_or_else(|| {
+            format!("source edge {} has no glued portal link {}", source_edge, link.id)
+        })?;
+        portals.push(GatePortal {
+            id: format!("gate_portal.{}", slugify_label(source_edge)),
+            source_edge: source_edge.to_owned(),
+            source_corridor: link.source_corridor.clone(),
+            link_id: link.id.clone(),
+            from_piece: link.from_piece.clone(),
+            from_instance: glued.from_instance.clone(),
+            to_piece: link.to_piece.clone(),
+            to_instance: glued.to_instance.clone(),
+            cells: vec![glued.from_cell.clone()],
+            orientation: glued.from_direction.clone(),
+            width: glued.from_width,
+            traversal: link.traversal.clone(),
+            required_item: link.required_item.clone(),
+            provenance: vec![
+                format!("edge:{}", source_edge),
+                format!("geometryCorridor:{}", link.source_corridor),
+                format!("pieceLink:{}", link.id),
+                format!("gluedExit:{}", glued.id),
+            ],
+        });
+    }
+    Ok(portals)
 }
 
 fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCellRef>, String> {
@@ -465,16 +545,8 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
         )
         .ok_or_else(|| {
             format!(
-                "no clearance-safe connection route exists for glued exit {} between {} at {},{} {} and {} at {},{} {}",
-                glued.id,
-                from.instance_id,
-                glued.from_cell.x,
-                glued.from_cell.y,
-                glued.from_direction,
-                to.instance_id,
-                glued.to_cell.x,
-                glued.to_cell.y,
-                glued.to_direction
+                "no clearance-safe connection route exists for glued exit {} between {} and {}",
+                glued.id, from.instance_id, to.instance_id
             )
         })?;
         for cell in bridge {
@@ -583,7 +655,7 @@ fn route_bridge_cells(
                     occupied_by_cell,
                     reserved,
                     wall_clearance,
-                )
+                    )
             {
                 continue;
             }
@@ -990,6 +1062,7 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
         .map(|instance| (instance.instance_id.as_str(), instance))
         .collect::<BTreeMap<_, _>>();
     let mut glued_ids = BTreeSet::new();
+    let mut consumed_exits: BTreeMap<(&str, &str), &str> = BTreeMap::new();
     for glued in &placement.glued_exits {
         if !glued_ids.insert(glued.id.as_str()) {
             diagnostics.push(fatal(
@@ -998,6 +1071,22 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 None,
                 format!("Duplicate glued exit id {}.", glued.id),
             ));
+        }
+        for endpoint in [
+            (glued.from_instance.as_str(), glued.from_exit.as_str()),
+            (glued.to_instance.as_str(), glued.to_exit.as_str()),
+        ] {
+            if let Some(first) = consumed_exits.insert(endpoint, glued.id.as_str()) {
+                diagnostics.push(fatal(
+                    "piece_instance_exit_reused",
+                    None,
+                    Some(glued.source_edge.as_str()),
+                    format!(
+                        "Instance exit {}:{} is consumed by glued exits {} and {}.",
+                        endpoint.0, endpoint.1, first, glued.id
+                    ),
+                ));
+            }
         }
         let Some(from) = instances.get(glued.from_instance.as_str()) else {
             diagnostics.push(fatal(
@@ -1074,6 +1163,64 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                     glued.id, from_exit.direction, to_exit.direction
                 ),
             ));
+        }
+    }
+    let glued_by_link = placement
+        .glued_exits
+        .iter()
+        .map(|glued| (glued.link_id.as_str(), glued))
+        .collect::<BTreeMap<_, _>>();
+    let connection_cells = placement
+        .connection_cells
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    let mut portal_ids = BTreeSet::new();
+    let mut portal_edges = BTreeSet::new();
+    for portal in &placement.gate_portals {
+        if !portal_ids.insert(portal.id.as_str()) || !portal_edges.insert(portal.source_edge.as_str()) {
+            diagnostics.push(fatal(
+                "piece_gate_portal_duplicate",
+                None,
+                Some(portal.source_edge.as_str()),
+                format!("Gate portal {} duplicates a portal id or source edge.", portal.id),
+            ));
+        }
+        let Some(glued) = glued_by_link.get(portal.link_id.as_str()).copied() else {
+            diagnostics.push(fatal(
+                "piece_gate_portal_link_missing",
+                None,
+                Some(portal.source_edge.as_str()),
+                format!("Gate portal {} references missing link {}.", portal.id, portal.link_id),
+            ));
+            continue;
+        };
+        if portal.source_edge != glued.source_edge
+            || portal.source_corridor != glued.source_corridor
+            || portal.from_instance != glued.from_instance
+            || portal.to_instance != glued.to_instance
+            || portal.orientation != glued.from_direction
+            || portal.width != glued.from_width
+            || portal.traversal != glued.traversal
+            || portal.required_item != glued.required_item
+            || portal.cells.is_empty()
+        {
+            diagnostics.push(fatal(
+                "piece_gate_portal_metadata_mismatch",
+                None,
+                Some(portal.source_edge.as_str()),
+                format!("Gate portal {} does not match its controlling glued exit.", portal.id),
+            ));
+        }
+        for cell in &portal.cells {
+            if !connection_cells.contains(&(cell.x, cell.y)) {
+                diagnostics.push(fatal(
+                    "piece_gate_portal_cell_missing",
+                    None,
+                    Some(portal.source_edge.as_str()),
+                    format!("Gate portal {} cell {},{} is not routed.", portal.id, cell.x, cell.y),
+                ));
+            }
         }
     }
     for dangling in &placement.dangling_exits {

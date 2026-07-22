@@ -297,6 +297,8 @@ enum BuildSubcommand {
     Assemble(BuildAssembleArgs),
     #[command(name = "validate-placement")]
     ValidatePlacement(ReportOutArgs),
+    #[command(name = "validate-flow")]
+    ValidateFlow(BuildValidateFlowArgs),
 }
 
 #[derive(Args)]
@@ -352,6 +354,20 @@ struct BuildAssembleArgs {
     shape_match: PathBuf,
     #[arg(long, value_enum, default_value_t = GridConnectivity::FourWay)]
     connectivity: GridConnectivity,
+    #[arg(long)]
+    out: PathBuf,
+}
+
+#[derive(Args)]
+struct BuildValidateFlowArgs {
+    #[arg(long)]
+    candidate: PathBuf,
+    #[arg(long)]
+    geometry: PathBuf,
+    #[arg(long = "piece-plan")]
+    piece_plan: PathBuf,
+    #[arg(long = "piece-placement")]
+    piece_placement: PathBuf,
     #[arg(long)]
     out: PathBuf,
 }

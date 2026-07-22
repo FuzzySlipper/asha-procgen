@@ -1,0 +1,101 @@
+{
+  "kind": "asha_procgen.validation.built_flow.v1",
+  "schemaVersion": 1,
+  "validationId": "built_flow_validation.piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5901.14310.14341",
+  "candidateId": "candidate.first_slice.5901",
+  "geometryId": "geometry.candidate.first_slice.5901.14310",
+  "planId": "piece_plan.geometry.candidate.first_slice.5901.14310",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5901.14310.14341",
+  "candidateRef": "artifacts/samples/batch-v2/candidate-007/accepted.json",
+  "geometryRef": "artifacts/samples/batch-v2/candidate-007/geometry-2d.json",
+  "piecePlanRef": "artifacts/samples/batch-v2/candidate-007/piece-plan.json",
+  "piecePlacementRef": "artifacts/samples/batch-v2/candidate-007/piece-placement.json",
+  "walkableProjection": {
+    "source": "piecePlacement.occupiedCells+connectionCells minus closed gatePortal.cells",
+    "cellCount": 1039,
+    "projectionHash": "fnv1a64:6da3b1dd870ff94c"
+  },
+  "progression": [
+    {
+      "step": 0,
+      "items": [],
+      "reachableNodes": [
+        "gate.boss_1",
+        "gate.locked_1",
+        "gate.locked_2",
+        "key.deep_2",
+        "key.gate_1",
+        "resource.boss_prep_1",
+        "start"
+      ],
+      "reachableEdges": [
+        "edge.start.gate_1",
+        "edge.start.key_1",
+        "edge.key_1.gate_1",
+        "edge.gate_1.gate_2",
+        "edge.gate_1.key_2",
+        "edge.key_2.gate_2",
+        "edge.approach.boss_1",
+        "edge.approach.boss_prep_1",
+        "edge.boss_prep_1.boss_1"
+      ],
+      "openPortals": [
+        "gate_portal.edge_approach_boss_1",
+        "gate_portal.edge_approach_boss_prep_1",
+        "gate_portal.edge_boss_prep_1_boss_1",
+        "gate_portal.edge_gate_1_gate_2",
+        "gate_portal.edge_gate_1_key_2",
+        "gate_portal.edge_key_1_gate_1",
+        "gate_portal.edge_key_2_gate_2",
+        "gate_portal.edge_start_gate_1",
+        "gate_portal.edge_start_key_1"
+      ]
+    },
+    {
+      "step": 1,
+      "items": [
+        "item.boss_preparation_1",
+        "item.deep_key_2",
+        "item.gate_key_1"
+      ],
+      "reachableNodes": [
+        "gate.boss_1",
+        "gate.locked_1",
+        "gate.locked_2",
+        "goal",
+        "key.deep_2",
+        "key.gate_1",
+        "resource.boss_prep_1",
+        "start"
+      ],
+      "reachableEdges": [
+        "edge.start.gate_1",
+        "edge.start.key_1",
+        "edge.key_1.gate_1",
+        "edge.gate_1.gate_2",
+        "edge.gate_1.key_2",
+        "edge.key_2.gate_2",
+        "edge.approach.boss_1",
+        "edge.boss_1.goal",
+        "edge.approach.boss_prep_1",
+        "edge.boss_prep_1.boss_1"
+      ],
+      "openPortals": [
+        "gate_portal.edge_approach_boss_1",
+        "gate_portal.edge_approach_boss_prep_1",
+        "gate_portal.edge_boss_1_goal",
+        "gate_portal.edge_boss_prep_1_boss_1",
+        "gate_portal.edge_gate_1_gate_2",
+        "gate_portal.edge_gate_1_key_2",
+        "gate_portal.edge_key_1_gate_1",
+        "gate_portal.edge_key_2_gate_2",
+        "gate_portal.edge_start_gate_1",
+        "gate_portal.edge_start_key_1"
+      ]
+    }
+  ],
+  "portalCount": 10,
+  "ok": true,
+  "fatalCount": 0,
+  "diagnostics": []
+}

@@ -1298,8 +1298,6 @@ mod tests {
             "shortcut",
             "resource",
             "connector",
-            "corridor",
-            "bend",
         ] {
             assert!(requirement_kinds.contains(required), "{required} requirement missing");
         }
@@ -1321,8 +1319,10 @@ mod tests {
             assert!(
                 corridor_requirements
                     .iter()
-                    .any(|requirement| requirement.kind == "corridor"),
-                "{} missing corridor segment piece requirements",
+                    .any(|requirement| {
+                        requirement.kind == "corridor" || requirement.kind == "bend"
+                    }),
+                "{} missing compact corridor bridge piece requirements",
                 corridor.id
             );
         }
@@ -1362,7 +1362,7 @@ mod tests {
         assert!(
             plan.links
                 .iter()
-                .any(|link| link.traversal_hint == "open"),
+                .any(|link| link.traversal == "open"),
             "normal open corridor link missing"
         );
 
@@ -1689,6 +1689,74 @@ mod tests {
     }
 
     #[test]
+    fn built_flow_validation_preserves_unique_exits_portals_and_item_progression() {
+        let (candidate, geometry, plan, placement) = full_stack_built_flow_fixture(1151);
+        let args = BuildValidateFlowArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
+            piece_placement: PathBuf::from("artifacts/test/piece-placement.json"),
+            out: PathBuf::from("artifacts/test/built-flow.validation.json"),
+        };
+        let report = validate_built_flow(&candidate, &geometry, &plan, &placement, &args);
+        assert!(report.ok, "{:?}", report.diagnostics);
+        assert_eq!(placement.gate_portals.len(), candidate.graph.edges.len());
+        assert!(report.progression.len() >= 2);
+
+        let endpoint_count = placement.glued_exits.len() * 2;
+        let unique_endpoints = placement
+            .glued_exits
+            .iter()
+            .flat_map(|glued| {
+                [
+                    (glued.from_instance.as_str(), glued.from_exit.as_str()),
+                    (glued.to_instance.as_str(), glued.to_exit.as_str()),
+                ]
+            })
+            .collect::<BTreeSet<_>>();
+        assert_eq!(unique_endpoints.len(), endpoint_count);
+    }
+
+    #[test]
+    fn built_flow_validation_fails_closed_on_chain_portal_and_route_tampering() {
+        let (candidate, geometry, plan, placement) = full_stack_built_flow_fixture(1251);
+        let args = BuildValidateFlowArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
+            piece_placement: PathBuf::from("artifacts/test/piece-placement.json"),
+            out: PathBuf::from("artifacts/test/built-flow.validation.json"),
+        };
+
+        let mut missing_join = placement.clone();
+        missing_join.glued_exits.pop();
+        let report = validate_built_flow(&candidate, &geometry, &plan, &missing_join, &args);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "built_flow_glued_join_missing"
+                || diagnostic.code == "built_flow_glued_join_count"
+        }));
+
+        let mut mismatched_portal = placement.clone();
+        mismatched_portal.gate_portals[0].source_edge = "edge.not_authored".to_owned();
+        let report = validate_built_flow(&candidate, &geometry, &plan, &mismatched_portal, &args);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "built_flow_extra_gate_portal"));
+
+        let mut broken_route = placement.clone();
+        let owner = broken_route.connection_cells[0].instance_id.clone();
+        broken_route
+            .connection_cells
+            .retain(|cell| cell.instance_id != owner);
+        let report = validate_built_flow(&candidate, &geometry, &plan, &broken_route, &args);
+        assert!(report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "built_flow_physical_route_disconnected"));
+    }
+
+    #[test]
     fn grid_connectivity_distinguishes_cardinal_and_diagonal_neighbors() {
         let cardinal = (1, 0);
         let diagonal = (1, 1);
@@ -1780,6 +1848,12 @@ mod tests {
     }
 
     fn full_stack_piece_placement_fixture(seed: u64) -> PiecePlacement {
+        full_stack_built_flow_fixture(seed).3
+    }
+
+    fn full_stack_built_flow_fixture(
+        seed: u64,
+    ) -> (Candidate, Geometry2dArtifact, PieceBuildPlan, PiecePlacement) {
         let (candidate, intermediate, geometry) = full_stack_geometry_inputs(seed);
         let piece_plan_args = BuildEmitPiecePlanArgs {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
@@ -1800,7 +1874,12 @@ mod tests {
         let catalog: ShapeCatalog = read_json(&catalog_path).expect("shape catalog should load");
         let match_args = test_match_args(seed + 30);
         let shape_match = match_shapes(&catalog, &piece_plan, &match_args);
-        assert!(shape_match.ok, "{:?}", shape_match.diagnostics);
+        assert!(
+            shape_match.ok,
+            "diagnostics={:?} rejections={:?}",
+            shape_match.diagnostics,
+            shape_match.rejections
+        );
         let assemble_args = BuildAssembleArgs {
             catalog: PathBuf::from("fixtures/shape-catalogs/2d-basic.json"),
             piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
@@ -1808,8 +1887,9 @@ mod tests {
             connectivity: GridConnectivity::FourWay,
             out: PathBuf::from("artifacts/test/piece-placement.json"),
         };
-        assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)
-            .expect("piece placement should assemble")
+        let placement = assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)
+            .expect("piece placement should assemble");
+        (candidate, geometry, piece_plan, placement)
     }
 
     fn rectangles_overlap(left: &GeometryRect, right: &GeometryRect) -> bool {

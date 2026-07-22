@@ -102,13 +102,14 @@ fn emit_piece_build_plan(
             .get(corridor.source_connector.as_str())
             .copied();
         let edge = edges_by_id.get(corridor.source_edge.as_str()).copied();
-        let corridor_piece_ids =
+        let corridor_pieces =
             emit_corridor_piece_requirements(corridor, connector, edge, &mut requirements);
         link_piece_chain(
             corridor,
+            edge,
             &from_piece,
             &to_piece,
-            &corridor_piece_ids,
+            &corridor_pieces,
             &mut links,
         );
     }
@@ -265,12 +266,19 @@ fn room_exit_requirements(
     exits
 }
 
+#[derive(Clone, Debug)]
+struct CorridorChainPiece {
+    piece_id: String,
+    inbound_exit: String,
+    outbound_exit: String,
+}
+
 fn emit_corridor_piece_requirements(
     corridor: &GeometryCorridor,
     connector: Option<&IntermediateConnector>,
     edge: Option<&Edge>,
     requirements: &mut Vec<PieceRequirement>,
-) -> Vec<String> {
+) -> Vec<CorridorChainPiece> {
     let source_refs = corridor_source_refs(corridor, connector, edge);
     let base_tags = corridor_tags(corridor, connector, edge);
     let mut piece_ids = Vec::new();
@@ -289,83 +297,69 @@ fn emit_corridor_piece_requirements(
             format!("point:{}:{}", corridor.points[0].x, corridor.points[0].y),
         ],
     });
-    piece_ids.push(start_id);
+    piece_ids.push(CorridorChainPiece {
+        piece_id: start_id,
+        inbound_exit: "exit.room".to_owned(),
+        outbound_exit: "exit.corridor".to_owned(),
+    });
 
-    for (index, pair) in corridor.points.windows(2).enumerate() {
-        let Some(direction) = direction_between_points(&pair[0], &pair[1]) else {
-            continue;
-        };
-        let segment_id = format!(
-            "piece.corridor.{}.segment_{}",
-            slugify_label(corridor.id.as_str()),
-            index + 1
-        );
-        requirements.push(PieceRequirement {
-            piece_id: segment_id.clone(),
-            kind: "corridor".to_owned(),
-            role: "corridor_segment".to_owned(),
-            source_refs: source_refs.clone(),
-            required_exits: vec![
-                PieceExitRequirement {
-                    id: format!("exit.segment_{}.in", index + 1),
-                    direction: opposite_direction(direction.as_str()).to_owned(),
-                    width: corridor.width,
-                    tags: base_tags.clone(),
-                },
-                PieceExitRequirement {
-                    id: format!("exit.segment_{}.out", index + 1),
-                    direction: direction.clone(),
-                    width: corridor.width,
-                    tags: base_tags.clone(),
-                },
-            ],
-            required_sockets: Vec::new(),
-            tags: base_tags.clone(),
-            placement_hints: vec![format!(
-                "segment:{}:{}:{}:{}",
-                pair[0].x, pair[0].y, pair[1].x, pair[1].y
-            )],
-        });
-        piece_ids.push(segment_id);
-
-        let Some(next_point) = corridor.points.get(index + 2) else {
-            continue;
-        };
-        let Some(out_direction) = direction_between_points(&pair[1], next_point) else {
-            continue;
-        };
-        if direction == out_direction {
-            continue;
-        };
-        let bend_id = format!(
-            "piece.bend.{}.bend_{}",
-            slugify_label(corridor.id.as_str()),
-            index + 1
-        );
-        requirements.push(PieceRequirement {
-            piece_id: bend_id.clone(),
-            kind: "bend".to_owned(),
-            role: "corridor_bend".to_owned(),
-            source_refs: source_refs.clone(),
-            required_exits: vec![
-                PieceExitRequirement {
-                    id: format!("exit.bend_{}.in", index + 1),
-                    direction: opposite_direction(direction.as_str()).to_owned(),
-                    width: corridor.width,
-                    tags: base_tags.clone(),
-                },
-                PieceExitRequirement {
-                    id: format!("exit.bend_{}.out", index + 1),
-                    direction: out_direction,
-                    width: corridor.width,
-                    tags: base_tags.clone(),
-                },
-            ],
-            required_sockets: Vec::new(),
-            tags: base_tags.clone(),
-            placement_hints: vec![format!("bend:{}:{}", pair[1].x, pair[1].y)],
-        });
-        piece_ids.push(bend_id);
+    let start_direction = corridor_endpoint_direction(corridor, true);
+    let end_direction = corridor_endpoint_direction(corridor, false);
+    if let (Some(start_direction), Some(end_direction)) = (start_direction, end_direction) {
+        let inbound = opposite_direction(start_direction.as_str()).to_owned();
+        let outbound = opposite_direction(end_direction.as_str()).to_owned();
+        if opposite_direction(start_direction.as_str()) == end_direction {
+            push_corridor_bridge_piece(
+                corridor,
+                "corridor",
+                1,
+                inbound,
+                outbound,
+                &source_refs,
+                &base_tags,
+                requirements,
+                &mut piece_ids,
+            );
+        } else if start_direction != end_direction {
+            push_corridor_bridge_piece(
+                corridor,
+                "bend",
+                1,
+                inbound,
+                outbound,
+                &source_refs,
+                &base_tags,
+                requirements,
+                &mut piece_ids,
+            );
+        } else {
+            let turn = match start_direction.as_str() {
+                "north" | "south" => "east",
+                _ => "north",
+            };
+            push_corridor_bridge_piece(
+                corridor,
+                "bend",
+                1,
+                inbound,
+                turn.to_owned(),
+                &source_refs,
+                &base_tags,
+                requirements,
+                &mut piece_ids,
+            );
+            push_corridor_bridge_piece(
+                corridor,
+                "bend",
+                2,
+                opposite_direction(turn).to_owned(),
+                outbound,
+                &source_refs,
+                &base_tags,
+                requirements,
+                &mut piece_ids,
+            );
+        }
     }
 
     let end_id = format!("piece.connector.{}.end", slugify_label(corridor.id.as_str()));
@@ -383,9 +377,72 @@ fn emit_corridor_piece_requirements(
             format!("point:{}:{}", end_point.x, end_point.y),
         ],
     });
-    piece_ids.push(end_id);
+    piece_ids.push(CorridorChainPiece {
+        piece_id: end_id,
+        inbound_exit: "exit.corridor".to_owned(),
+        outbound_exit: "exit.room".to_owned(),
+    });
 
     piece_ids
+}
+
+#[allow(clippy::too_many_arguments)]
+fn push_corridor_bridge_piece(
+    corridor: &GeometryCorridor,
+    kind: &str,
+    index: usize,
+    inbound_direction: String,
+    outbound_direction: String,
+    source_refs: &[String],
+    base_tags: &[String],
+    requirements: &mut Vec<PieceRequirement>,
+    piece_ids: &mut Vec<CorridorChainPiece>,
+) {
+    let piece_id = format!(
+        "piece.{}.{}.bridge_{}",
+        kind,
+        slugify_label(corridor.id.as_str()),
+        index
+    );
+    let inbound_exit = format!("exit.bridge_{}.in", index);
+    let outbound_exit = format!("exit.bridge_{}.out", index);
+    let first = &corridor.points[0];
+    let last = corridor.points.last().unwrap_or(first);
+    requirements.push(PieceRequirement {
+        piece_id: piece_id.clone(),
+        kind: kind.to_owned(),
+        role: if kind == "bend" {
+            "corridor_bend".to_owned()
+        } else {
+            "corridor_segment".to_owned()
+        },
+        source_refs: source_refs.to_vec(),
+        required_exits: vec![
+            PieceExitRequirement {
+                id: inbound_exit.clone(),
+                direction: inbound_direction,
+                width: corridor.width,
+                tags: base_tags.to_vec(),
+            },
+            PieceExitRequirement {
+                id: outbound_exit.clone(),
+                direction: outbound_direction,
+                width: corridor.width,
+                tags: base_tags.to_vec(),
+            },
+        ],
+        required_sockets: Vec::new(),
+        tags: base_tags.to_vec(),
+        placement_hints: vec![format!(
+            "segment:{}:{}:{}:{}",
+            first.x, first.y, last.x, last.y
+        )],
+    });
+    piece_ids.push(CorridorChainPiece {
+        piece_id,
+        inbound_exit,
+        outbound_exit,
+    });
 }
 
 fn connector_exits(corridor: &GeometryCorridor, start: bool) -> Vec<PieceExitRequirement> {
@@ -410,18 +467,27 @@ fn connector_exits(corridor: &GeometryCorridor, start: bool) -> Vec<PieceExitReq
 
 fn link_piece_chain(
     corridor: &GeometryCorridor,
+    edge: Option<&Edge>,
     from_piece: &str,
     to_piece: &str,
-    corridor_piece_ids: &[String],
+    corridor_pieces: &[CorridorChainPiece],
     links: &mut Vec<PieceLink>,
 ) {
-    if corridor_piece_ids.is_empty() {
+    if corridor_pieces.is_empty() {
         return;
     }
-    let mut chain = Vec::with_capacity(corridor_piece_ids.len() + 2);
-    chain.push(from_piece.to_owned());
-    chain.extend(corridor_piece_ids.iter().cloned());
-    chain.push(to_piece.to_owned());
+    let from_room_exit = room_corridor_exit_id(corridor, true);
+    let to_room_exit = room_corridor_exit_id(corridor, false);
+    let mut chain = Vec::with_capacity(corridor_pieces.len() + 2);
+    chain.push((from_piece.to_owned(), from_room_exit, None));
+    chain.extend(corridor_pieces.iter().map(|piece| {
+        (
+            piece.piece_id.clone(),
+            piece.outbound_exit.clone(),
+            Some(piece.inbound_exit.clone()),
+        )
+    }));
+    chain.push((to_piece.to_owned(), String::new(), Some(to_room_exit)));
     for (index, pair) in chain.windows(2).enumerate() {
         links.push(PieceLink {
             id: format!(
@@ -429,16 +495,29 @@ fn link_piece_chain(
                 slugify_label(corridor.id.as_str()),
                 index + 1
             ),
-            from_piece: pair[0].clone(),
-            to_piece: pair[1].clone(),
+            from_piece: pair[0].0.clone(),
+            from_exit: pair[0].1.clone(),
+            to_piece: pair[1].0.clone(),
+            to_exit: pair[1].2.clone().unwrap_or_default(),
+            source_corridor: corridor.id.clone(),
+            source_edge: corridor.source_edge.clone(),
             source_ref: format!(
                 "geometryCorridor:{};connector:{};edge:{}",
                 corridor.id, corridor.source_connector, corridor.source_edge
             ),
-            traversal_hint: corridor.traversal_hint.clone(),
+            traversal: edge
+                .map(|source_edge| source_edge.traversal.as_str().to_owned())
+                .unwrap_or_else(|| corridor.traversal_hint.clone()),
+            required_item: edge.and_then(|source_edge| source_edge.required_item.clone()),
             tags: dedupe_strings(corridor.semantic_tags.clone()),
         });
     }
+}
+
+fn room_corridor_exit_id(corridor: &GeometryCorridor, start: bool) -> String {
+    let direction = corridor_endpoint_direction(corridor, start)
+        .unwrap_or_else(|| "unknown".to_owned());
+    format!("exit.{}.{}", slugify_label(corridor.id.as_str()), direction)
 }
 
 fn corridor_source_refs(

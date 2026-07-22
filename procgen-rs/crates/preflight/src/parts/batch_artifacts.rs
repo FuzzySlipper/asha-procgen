@@ -260,6 +260,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
             shape_match_ref: None,
             piece_placement_ref: None,
             piece_placement_validation_ref: None,
+            built_flow_validation_ref: None,
             overall: score.overall,
             metrics: score.metrics,
             tags: collect_tags(&candidate),
@@ -323,6 +324,7 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
     let shape_match_path = run_dir.join("piece-shape-match.json");
     let placement_path = run_dir.join("piece-placement.json");
     let placement_validation_path = run_dir.join("piece-placement.validation.json");
+    let built_flow_validation_path = run_dir.join("built-flow.validation.json");
 
     let geometry_args = GeometryEmit2dArgs {
         candidate: artifact_path.clone(),
@@ -433,12 +435,35 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
         ));
     }
 
+    let flow_args = BuildValidateFlowArgs {
+        candidate: artifact_path.clone(),
+        geometry: geometry_path.clone(),
+        piece_plan: piece_plan_path.clone(),
+        piece_placement: placement_path.clone(),
+        out: built_flow_validation_path.clone(),
+    };
+    let built_flow_validation = validate_built_flow(
+        &accepted_artifact.candidate,
+        &geometry,
+        &piece_plan,
+        &placement,
+        &flow_args,
+    );
+    write_json(&built_flow_validation_path, &built_flow_validation)?;
+    if !built_flow_validation.ok {
+        return Err(format!(
+            "selection {} built flow validation failed with {} fatal diagnostic(s)",
+            entry.candidate_id, built_flow_validation.fatal_count
+        ));
+    }
+
     entry.shape_catalog_ref = Some(display_path(&shape_catalog_path));
     entry.catalog_inspection_ref = Some(display_path(&catalog_inspection_path));
     entry.piece_plan_ref = Some(display_path(&piece_plan_path));
     entry.shape_match_ref = Some(display_path(&shape_match_path));
     entry.piece_placement_ref = Some(display_path(&placement_path));
     entry.piece_placement_validation_ref = Some(display_path(&placement_validation_path));
+    entry.built_flow_validation_ref = Some(display_path(&built_flow_validation_path));
 
     let transcript = run_dir.join("transcript.jsonl");
     append_transcript(
@@ -455,6 +480,7 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
             "catalogInspection": display_path(&catalog_inspection_path),
             "shapeMatch": display_path(&shape_match_path),
             "placement": display_path(&placement_path)
+            ,"builtFlowValidation": display_path(&built_flow_validation_path)
         }),
     )?;
     Ok(())

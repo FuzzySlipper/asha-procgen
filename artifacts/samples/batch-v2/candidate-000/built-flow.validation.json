@@ -1,0 +1,122 @@
+{
+  "kind": "asha_procgen.validation.built_flow.v1",
+  "schemaVersion": 1,
+  "validationId": "built_flow_validation.piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
+  "candidateId": "candidate.first_slice.5201",
+  "geometryId": "geometry.candidate.first_slice.5201.14304",
+  "planId": "piece_plan.geometry.candidate.first_slice.5201.14304",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
+  "candidateRef": "artifacts/samples/batch-v2/candidate-000/accepted.json",
+  "geometryRef": "artifacts/samples/batch-v2/candidate-000/geometry-2d.json",
+  "piecePlanRef": "artifacts/samples/batch-v2/candidate-000/piece-plan.json",
+  "piecePlacementRef": "artifacts/samples/batch-v2/candidate-000/piece-placement.json",
+  "walkableProjection": {
+    "source": "piecePlacement.occupiedCells+connectionCells minus closed gatePortal.cells",
+    "cellCount": 1922,
+    "projectionHash": "fnv1a64:5c2b3fea88172eaf"
+  },
+  "progression": [
+    {
+      "step": 0,
+      "items": [],
+      "reachableNodes": [
+        "gate.locked_1",
+        "goal",
+        "hazard.watch_1",
+        "hub.central_1",
+        "junction.merge_1",
+        "key.gate_1",
+        "resource.clue_1",
+        "start",
+        "treasure.cache_1"
+      ],
+      "reachableEdges": [
+        "edge.start.gate_1",
+        "edge.start.key_1",
+        "edge.key_1.gate_1",
+        "edge.start.hub_1",
+        "edge.hub_1.goal",
+        "edge.hub_1.clue_1",
+        "edge.clue_1.hub_1",
+        "edge.hub_1.watch_1",
+        "edge.watch_1.goal",
+        "edge.hub_1.cache_1",
+        "edge.cache_1.hub_1",
+        "edge.start.merge_1",
+        "edge.secondary.merge_1",
+        "edge.merge_1.goal.shortcut"
+      ],
+      "openPortals": [
+        "gate_portal.edge_cache_1_hub_1",
+        "gate_portal.edge_clue_1_hub_1",
+        "gate_portal.edge_hub_1_cache_1",
+        "gate_portal.edge_hub_1_clue_1",
+        "gate_portal.edge_hub_1_goal",
+        "gate_portal.edge_hub_1_watch_1",
+        "gate_portal.edge_key_1_gate_1",
+        "gate_portal.edge_merge_1_goal_shortcut",
+        "gate_portal.edge_secondary_merge_1",
+        "gate_portal.edge_start_gate_1",
+        "gate_portal.edge_start_hub_1",
+        "gate_portal.edge_start_key_1",
+        "gate_portal.edge_start_merge_1",
+        "gate_portal.edge_watch_1_goal"
+      ]
+    },
+    {
+      "step": 1,
+      "items": [
+        "item.gate_key_1"
+      ],
+      "reachableNodes": [
+        "gate.locked_1",
+        "goal",
+        "hazard.watch_1",
+        "hub.central_1",
+        "junction.merge_1",
+        "key.gate_1",
+        "resource.clue_1",
+        "start",
+        "treasure.cache_1"
+      ],
+      "reachableEdges": [
+        "edge.start.gate_1",
+        "edge.gate_1.goal",
+        "edge.start.key_1",
+        "edge.key_1.gate_1",
+        "edge.start.hub_1",
+        "edge.hub_1.goal",
+        "edge.hub_1.clue_1",
+        "edge.clue_1.hub_1",
+        "edge.hub_1.watch_1",
+        "edge.watch_1.goal",
+        "edge.hub_1.cache_1",
+        "edge.cache_1.hub_1",
+        "edge.start.merge_1",
+        "edge.secondary.merge_1",
+        "edge.merge_1.goal.shortcut"
+      ],
+      "openPortals": [
+        "gate_portal.edge_cache_1_hub_1",
+        "gate_portal.edge_clue_1_hub_1",
+        "gate_portal.edge_gate_1_goal",
+        "gate_portal.edge_hub_1_cache_1",
+        "gate_portal.edge_hub_1_clue_1",
+        "gate_portal.edge_hub_1_goal",
+        "gate_portal.edge_hub_1_watch_1",
+        "gate_portal.edge_key_1_gate_1",
+        "gate_portal.edge_merge_1_goal_shortcut",
+        "gate_portal.edge_secondary_merge_1",
+        "gate_portal.edge_start_gate_1",
+        "gate_portal.edge_start_hub_1",
+        "gate_portal.edge_start_key_1",
+        "gate_portal.edge_start_merge_1",
+        "gate_portal.edge_watch_1_goal"
+      ]
+    }
+  ],
+  "portalCount": 15,
+  "ok": true,
+  "fatalCount": 0,
+  "diagnostics": []
+}

@@ -62,8 +62,8 @@ assert.equal(
   publication.manifest.artifacts.filter((artifact) => artifact.role === 'resource:procgen-prefab-source').length,
   2,
 );
-assert.equal(publication.provenance.instances[0].shapeId, 'shape.room.standard.1_exit');
-assert.equal(publication.provenance.instances[0].matchScore, 1049);
+assert.equal(publication.provenance.instances[0].shapeId, 'shape.room.hub.4_exit');
+assert.equal(publication.provenance.instances[0].matchScore, 1063);
 assert.match(serializeAshaPrefabRegistrySource(publication.prefabRegistry), /"schemaVersion": 1/);
 
 const runtimeSession = createRuntimeSessionFacade({
@@ -104,18 +104,18 @@ assert.deepEqual(
 const repeatedShapeConfiguration = {
   ...configuration,
   selectedInstanceIds: [
-    'instance.piece_room_room_region_hub_central_1',
-    'instance.piece_room_room_region_junction_merge_1',
+    'instance.piece_room_room_region_start',
+    'instance.piece_room_room_region_gate_locked_1',
   ],
   mappings: [{
     ...configuration.mappings[0],
-    shapeId: 'shape.room.hub.4_exit',
+    shapeId: 'shape.room.flow_junction.36_exit',
     prefabId: 1003,
     source: { kind: 'voxelObject', asset: 'voxel-object/procgen-standard-room' },
   }],
   instanceIdentities: [
-    { procgenInstanceId: 'instance.piece_room_room_region_hub_central_1', prefabInstanceId: 2010 },
-    { procgenInstanceId: 'instance.piece_room_room_region_junction_merge_1', prefabInstanceId: 2009 },
+    { procgenInstanceId: 'instance.piece_room_room_region_start', prefabInstanceId: 2010 },
+    { procgenInstanceId: 'instance.piece_room_room_region_gate_locked_1', prefabInstanceId: 2009 },
   ],
 };
 const repeatedShapePublication = compile({ configuration: repeatedShapeConfiguration });
@@ -164,8 +164,10 @@ expectFailure('duplicateInstanceIdentity', () => compile({
 expectFailure('invalidTransform', () => compile({
   placement: {
     ...placement,
-    instances: placement.instances.map((instance, index) =>
-      index === 0 ? { ...instance, origin: { ...instance.origin, x: Number.NaN } } : instance),
+    instances: placement.instances.map((instance) =>
+      instance.instanceId === configuration.selectedInstanceIds[0]
+        ? { ...instance, origin: { ...instance.origin, x: Number.NaN } }
+        : instance),
   },
 }));
 

@@ -2,12 +2,12 @@
   "kind": "asha_procgen.prefab_publish_mapping.v1",
   "candidateRef": "artifacts/samples/batch-v2/candidate-000/candidate-003-branch_merge_shortcut.json",
   "selectedInstanceIds": [
-    "instance.piece_room_room_region_start",
-    "instance.piece_room_room_region_gate_locked_1"
+    "instance.piece_room_room_region_junction_merge_1",
+    "instance.piece_room_room_region_key_gate_1"
   ],
   "mappings": [
     {
-      "shapeId": "shape.room.standard.1_exit",
+      "shapeId": "shape.room.hub.4_exit",
       "prefabId": 1001,
       "partId": 1,
       "partNamespace": "procgen/geometry",
@@ -18,7 +18,7 @@
       }
     },
     {
-      "shapeId": "shape.threshold.locked_gate",
+      "shapeId": "shape.pocket.key_pickup",
       "prefabId": 1002,
       "partId": 1,
       "partNamespace": "procgen/geometry",
@@ -31,11 +31,11 @@
   ],
   "instanceIdentities": [
     {
-      "procgenInstanceId": "instance.piece_room_room_region_start",
+      "procgenInstanceId": "instance.piece_room_room_region_junction_merge_1",
       "prefabInstanceId": 2001
     },
     {
-      "procgenInstanceId": "instance.piece_room_room_region_gate_locked_1",
+      "procgenInstanceId": "instance.piece_room_room_region_key_gate_1",
       "prefabInstanceId": 2002
     }
   ],

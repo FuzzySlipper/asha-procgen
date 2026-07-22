@@ -36,19 +36,19 @@
         "path": "prefabs/registry.json",
         "class": "durable",
         "role": "prefabRegistry",
-        "contentHash": "3f783f06c9af5bc5"
+        "contentHash": "9d2d0dd92d2db121"
       },
       {
         "path": "prefabs/instances.json",
         "class": "durable",
         "role": "resource:prefab-instances",
-        "contentHash": "bff8179f62429b64"
+        "contentHash": "126940e8de96f424"
       },
       {
         "path": "scene/procgen-layout.scene.json",
         "class": "durable",
         "role": "sceneDocument",
-        "contentHash": "fd3703a0b59a3b55"
+        "contentHash": "a3d51b4da117b19d"
       },
       {
         "path": "voxel/prefabs/procgen-standard-room.voxel.json",
@@ -70,12 +70,12 @@
       {
         "id": 1001,
         "schemaVersion": 1,
-        "displayName": "Standard chamber, one exit",
+        "displayName": "Landmark hub chamber, four exits",
         "parts": [
           {
             "id": 1,
             "namespace": "procgen/geometry",
-            "displayName": "Standard chamber, one exit source",
+            "displayName": "Landmark hub chamber, four exits source",
             "parent": null,
             "transform": {
               "translation": [
@@ -112,12 +112,12 @@
       {
         "id": 1002,
         "schemaVersion": 1,
-        "displayName": "Locked threshold with interior gate line",
+        "displayName": "Key pickup pocket",
         "parts": [
           {
             "id": 1,
             "namespace": "procgen/geometry",
-            "displayName": "Locked threshold with interior gate line source",
+            "displayName": "Key pickup pocket source",
             "parent": null,
             "transform": {
               "translation": [
@@ -181,7 +181,7 @@
         "id": 2001,
         "parent": null,
         "childOrder": 0,
-        "label": "Standard chamber, one exit",
+        "label": "Landmark hub chamber, four exits",
         "tags": [
           "asha-procgen",
           "prefab-1001",
@@ -189,15 +189,15 @@
         ],
         "transform": {
           "translation": [
-            8,
+            52,
             0,
-            8
+            60
           ],
           "rotation": [
             0,
+            0.7071067811865476,
             0,
-            0,
-            1
+            0.7071067811865476
           ],
           "scale": [
             1,
@@ -220,7 +220,7 @@
         "id": 2002,
         "parent": null,
         "childOrder": 1,
-        "label": "Locked threshold with interior gate line",
+        "label": "Key pickup pocket",
         "tags": [
           "asha-procgen",
           "prefab-1002",
@@ -230,7 +230,7 @@
           "translation": [
             52,
             0,
-            8
+            88
           ],
           "rotation": [
             0,
@@ -268,15 +268,15 @@
         "seed": 14335,
         "transform": {
           "translation": [
-            8,
+            52,
             0,
-            8
+            60
           ],
           "rotation": [
             0,
+            0.7071067811865476,
             0,
-            0,
-            1
+            0.7071067811865476
           ],
           "scale": [
             1,
@@ -294,7 +294,7 @@
           "translation": [
             52,
             0,
-            8
+            88
           ],
           "rotation": [
             0,
@@ -351,22 +351,22 @@
     "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5201.14304.14335",
     "instances": [
       {
-        "procgenInstanceId": "instance.piece_room_room_region_start",
+        "procgenInstanceId": "instance.piece_room_room_region_junction_merge_1",
         "prefabInstanceId": 2001,
-        "pieceId": "piece.room.room_region_start",
-        "shapeId": "shape.room.standard.1_exit",
+        "pieceId": "piece.room.room_region_junction_merge_1",
+        "shapeId": "shape.room.hub.4_exit",
         "prefabId": 1001,
-        "matchScore": 1049,
-        "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5201.14304;requirement:piece.room.room_region_start"
+        "matchScore": 1063,
+        "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5201.14304;requirement:piece.room.room_region_junction_merge_1"
       },
       {
-        "procgenInstanceId": "instance.piece_room_room_region_gate_locked_1",
+        "procgenInstanceId": "instance.piece_room_room_region_key_gate_1",
         "prefabInstanceId": 2002,
-        "pieceId": "piece.room.room_region_gate_locked_1",
-        "shapeId": "shape.threshold.locked_gate",
+        "pieceId": "piece.room.room_region_key_gate_1",
+        "shapeId": "shape.pocket.key_pickup",
         "prefabId": 1002,
-        "matchScore": 1073,
-        "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5201.14304;requirement:piece.room.room_region_gate_locked_1"
+        "matchScore": 1069,
+        "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5201.14304;requirement:piece.room.room_region_key_gate_1"
       }
     ]
   },

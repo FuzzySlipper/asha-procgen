@@ -35,6 +35,7 @@ const placement = {
     toDirection: 'west',
     toWidth: 1,
   }],
+  gatePortals: [],
 };
 
 const plan = compilePlacementExtrusion(placement);
@@ -68,6 +69,7 @@ const offsetPlacement = {
     ...placement.gluedExits[0],
     toCell: { x: 4, y: 4 },
   }],
+  gatePortals: [],
 };
 const offsetPlan = compilePlacementExtrusion(offsetPlacement);
 assert.equal(offsetPlan.openingCellCount, 7);

@@ -129,6 +129,15 @@ corpus against the renderer host's public per-frame operation limit. This
 compaction changes only renderer node count; it does not alter placement,
 extrusion, or authoritative voxel commands.
 
+When the selected placement has a matching successful built-flow report, the
+3D tab adds one public renderer-host cuboid per verified portal cell. Locked
+doors are translucent red and unlocked doors are translucent blue. The Door
+state selector can show the initial state, each verified item-collection step,
+or an all-unlocked presentation. Door nodes participate in the same frame-op
+budget and include source-edge, portal, and required-item identity in their
+pick label. Temporary placement-policy experiments intentionally hide doors
+until a matching built-flow report exists; Reset restores the committed proof.
+
 The Build, Voxel, and Voxel 3D tabs also expose a temporary placement-policy
 experiment panel. `minimumClearanceCells` and `wallThicknessCells` are editable;
 applying them reruns the selected candidate's Rust assembly and placement

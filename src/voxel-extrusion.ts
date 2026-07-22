@@ -30,6 +30,23 @@ export interface PlacementGluedExit {
   readonly toWidth: number;
 }
 
+export interface PlacementGatePortal {
+  readonly id: string;
+  readonly sourceEdge: string;
+  readonly sourceCorridor: string;
+  readonly linkId: string;
+  readonly fromPiece: string;
+  readonly fromInstance: string;
+  readonly toPiece: string;
+  readonly toInstance: string;
+  readonly cells: readonly PlacementCell[];
+  readonly orientation: 'north' | 'east' | 'south' | 'west';
+  readonly width: number;
+  readonly traversal: string;
+  readonly requiredItem: string | null;
+  readonly provenance: readonly string[];
+}
+
 export interface PiecePlacementForExtrusion {
   readonly kind: string;
   readonly placementId: string;
@@ -39,6 +56,7 @@ export interface PiecePlacementForExtrusion {
   readonly connectionCells: readonly PlacementOwnedCell[];
   readonly reservedCells: readonly PlacementOwnedCell[];
   readonly gluedExits: readonly PlacementGluedExit[];
+  readonly gatePortals: readonly PlacementGatePortal[];
 }
 
 export interface VoxelExtrusionOptions {
@@ -68,6 +86,16 @@ export interface VoxelExtrusionPlan {
   readonly boundaryCellCount: number;
   readonly solidVoxelCount: number;
   readonly residentChunkCount: number;
+  readonly doorPortals: readonly {
+    readonly id: string;
+    readonly sourceEdge: string;
+    readonly requiredItem: string | null;
+    readonly traversal: string;
+    readonly orientation: 'north' | 'east' | 'south' | 'west';
+    readonly cells: readonly PlacementCell[];
+    readonly minY: number;
+    readonly maxExclusiveY: number;
+  }[];
   readonly buildBounds: {
     readonly min: VoxelCoord;
     readonly maxExclusive: VoxelCoord;
@@ -186,6 +214,16 @@ export function compilePlacementExtrusion(
     boundaryCellCount: boundary.size,
     solidVoxelCount: sortedSolids.length,
     residentChunkCount: chunks.length,
+    doorPortals: placement.gatePortals.map((portal) => ({
+      id: portal.id,
+      sourceEdge: portal.sourceEdge,
+      requiredItem: portal.requiredItem,
+      traversal: portal.traversal,
+      orientation: portal.orientation,
+      cells: portal.cells,
+      minY: options.wallMinY,
+      maxExclusiveY: options.wallMaxY + 1,
+    })),
     buildBounds: boundsFor(sortedSolids),
   };
 }
@@ -200,6 +238,24 @@ function validatePlacement(placement: PiecePlacementForExtrusion): void {
   validatePlacementPolicy(placement.placementPolicy);
   if (!Array.isArray(placement.gluedExits)) {
     throw new Error('piece placement gluedExits must be an array');
+  }
+  if (!Array.isArray(placement.gatePortals)) {
+    throw new Error('piece placement gatePortals must be an array');
+  }
+  const portalIds = new Set<string>();
+  const sourceEdges = new Set<string>();
+  for (const portal of placement.gatePortals) {
+    if (portalIds.has(portal.id) || sourceEdges.has(portal.sourceEdge)) {
+      throw new Error(`duplicate verified gate portal ${portal.id} or source edge ${portal.sourceEdge}`);
+    }
+    portalIds.add(portal.id);
+    sourceEdges.add(portal.sourceEdge);
+    if (!Number.isInteger(portal.width) || portal.width <= 0 || portal.cells.length !== portal.width) {
+      throw new Error(`gate portal ${portal.id} must provide exactly one cell per width unit`);
+    }
+    if (!portal.cells.every((cell: PlacementCell) => Number.isInteger(cell.x) && Number.isInteger(cell.y))) {
+      throw new Error(`gate portal ${portal.id} contains a non-integral placement cell`);
+    }
   }
 }
 

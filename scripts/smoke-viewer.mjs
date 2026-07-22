@@ -45,6 +45,9 @@ try {
   if (typeof top.piecePlacementValidationRef !== 'string') {
     throw new Error('top selection is missing piecePlacementValidationRef');
   }
+  if (typeof top.builtFlowValidationRef !== 'string') {
+    throw new Error('top selection is missing builtFlowValidationRef');
+  }
   if (typeof top.shapeCatalogRef !== 'string') {
     throw new Error('top selection is missing shapeCatalogRef');
   }
@@ -77,6 +80,15 @@ try {
   const placementValidation = await fetchArtifact(top.piecePlacementValidationRef);
   if (placementValidation.kind !== 'asha_procgen.validation.piece_placement.v1' || !placementValidation.ok) {
     throw new Error('piece placement validation is not ok');
+  }
+  const builtFlowValidation = await fetchArtifact(top.builtFlowValidationRef);
+  if (
+    builtFlowValidation.kind !== 'asha_procgen.validation.built_flow.v1'
+    || !builtFlowValidation.ok
+    || builtFlowValidation.placementId !== placement.placementId
+    || builtFlowValidation.portalCount !== placement.gatePortals.length
+  ) {
+    throw new Error('built flow validation does not verify the selected placement portals');
   }
   const catalog = await fetchArtifact(top.shapeCatalogRef);
   if (catalog.kind !== 'asha_procgen.shape_catalog.v1') {
@@ -198,6 +210,9 @@ try {
   const voxel3dPickHitCount = Number(attributeValue(voxel3dDom, 'data-pick-hit-count'));
   const voxel3dGridLineCount = Number(attributeValue(voxel3dDom, 'data-grid-line-count'));
   const voxel3dGridRevision = Number(attributeValue(voxel3dDom, 'data-grid-revision'));
+  const voxel3dDoorNodeCount = Number(attributeValue(voxel3dDom, 'data-door-node-count'));
+  const voxel3dLockedDoorCount = Number(attributeValue(voxel3dDom, 'data-locked-door-count'));
+  const voxel3dUnlockedDoorCount = Number(attributeValue(voxel3dDom, 'data-unlocked-door-count'));
   if (
     projectedVoxelCount < 500
     || omittedCeilingVoxelCount <= 0
@@ -205,6 +220,9 @@ try {
     || voxel3dPickHitCount <= 0
     || voxel3dGridLineCount <= 0
     || voxel3dGridRevision < 1
+    || voxel3dDoorNodeCount <= 0
+    || voxel3dLockedDoorCount <= 0
+    || voxel3dUnlockedDoorCount <= 0
   ) {
     throw new Error(
       `Voxel 3D projection evidence is incomplete: projected=${projectedVoxelCount}, omitted=${omittedCeilingVoxelCount}, picks=${voxel3dPickHitCount}, grid=${voxel3dGridLineCount}`,
@@ -336,6 +354,11 @@ try {
       pickHits: voxel3dPickHitCount,
       gridLines: voxel3dGridLineCount,
       gridRevision: voxel3dGridRevision,
+      doors: {
+        nodes: voxel3dDoorNodeCount,
+        locked: voxel3dLockedDoorCount,
+        unlocked: voxel3dUnlockedDoorCount,
+      },
       alternatePlacementId,
       alternateFrameHash,
       rendererAuthority: 'projection_only_inspection',
@@ -441,6 +464,27 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     if (initial.gridLineCount <= 0 || initial.gridRevision < 1) {
       throw new Error(`engine grid was not realized: lines=${initial.gridLineCount}, revision=${initial.gridRevision}`);
     }
+    if (initial.doorNodeCount <= 0 || initial.lockedDoorCount <= 0 || initial.unlockedDoorCount <= 0) {
+      throw new Error(`verified initial doors were not rendered: ${JSON.stringify(initial)}`);
+    }
+    await evaluateCdp(cdp, `(() => {
+      const select = document.querySelector('#voxel-3d-door-state');
+      if (!(select instanceof HTMLSelectElement)) return false;
+      select.value = 'all';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForCdpValue(cdp, `Number(document.querySelector('#voxel-3d-panel')?.dataset.lockedDoorCount)`, 0);
+    const allUnlocked = await inspectionDataset(cdp);
+    if (allUnlocked.unlockedDoorCount !== initial.doorNodeCount || allUnlocked.frameHash === initial.frameHash) {
+      throw new Error(`all-unlocked door state did not rebuild the engine frame: ${JSON.stringify(allUnlocked)}`);
+    }
+    await evaluateCdp(cdp, `(() => {
+      const select = document.querySelector('#voxel-3d-door-state');
+      select.value = 'initial';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash`, initial.frameHash);
     await evaluateCdp(cdp, `document.querySelector('#voxel-3d-canvas')?.scrollIntoView({ block: 'center' })`);
     await delay(100);
     const rect = await evaluateCdp(cdp, `(() => {
@@ -633,6 +677,9 @@ async function inspectionDataset(cdp) {
       frameHash: data.frameHash,
       policyMode: data.policyMode,
       policyExperimentId: data.policyExperimentId,
+      doorNodeCount: Number(data.doorNodeCount),
+      lockedDoorCount: Number(data.lockedDoorCount),
+      unlockedDoorCount: Number(data.unlockedDoorCount),
     };
   })()`);
 }

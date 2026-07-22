@@ -70,6 +70,14 @@
             <div>
               <h2>Engine Voxel Inspection</h2>
               <p>Projection-only preview. It is not runtime, collision, navigation, or native-render proof.</p>
+              <label class="voxel-3d-door-control" for="voxel-3d-door-state">
+                Door state
+                <select id="voxel-3d-door-state" aria-label="Door progression state">
+                  <option value="initial">Initial verified state</option>
+                  <option value="all">All unlocked</option>
+                </select>
+              </label>
+              <p id="voxel-3d-door-legend" class="voxel-3d-door-legend">Red locked · Blue unlocked</p>
             </div>
             <p class="voxel-3d-controls">Drag or Arrow keys to orbit · W/A/S/D to move · +/− or wheel to zoom · click the view to focus</p>
           </div>

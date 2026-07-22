@@ -474,7 +474,6 @@ body {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 24px;
-  pointer-events: none;
 }
 
 .voxel-3d-header > * {
@@ -488,6 +487,27 @@ body {
 .voxel-3d-diagnostic {
   margin: 0;
   text-shadow: 0 1px 3px #000;
+}
+
+.voxel-3d-door-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.voxel-3d-door-control select {
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #10161e;
+  padding: 3px 5px;
+}
+
+.voxel-3d-door-legend {
+  margin-top: 5px !important;
 }
 
 .voxel-3d-header h2 {

@@ -35,10 +35,55 @@ for (const entry of entries) {
     throw new Error(`inspection voxel accounting does not match ${plan.placementId}`);
   }
   const creates = projection.frame.ops.filter((op) => op.op === 'create');
-  if (creates.length !== projection.projectedNodeCount) {
+  if (creates.length !== projection.projectedNodeCount + projection.doorNodeCount) {
     throw new Error(`inspection frame for ${plan.placementId} has unexpected create count`);
   }
-  for (const op of creates) {
+  const voxelCreates = creates.filter((op) => op.node.metadata.label?.startsWith('procgen-voxel-box:'));
+  const doorCreates = creates.filter((op) => op.node.metadata.label?.startsWith('procgen-door:'));
+  if (doorCreates.length !== plan.doorPortals.reduce((count, portal) => count + portal.cells.length, 0)) {
+    throw new Error(`inspection frame for ${plan.placementId} did not project every verified door cell`);
+  }
+  if (doorCreates.some((op) => op.node.material.color[3] >= 1)) {
+    throw new Error(`inspection frame for ${plan.placementId} contains an opaque door`);
+  }
+  for (const portal of plan.doorPortals) {
+    const portalCreates = doorCreates.filter((op) => op.node.metadata.label?.includes(`:${portal.id}:`));
+    if (portalCreates.length !== portal.cells.length) {
+      throw new Error(`portal ${portal.id} did not create one door cuboid per width cell`);
+    }
+    const expectedColor = portal.requiredItem === null
+      ? [0.16, 0.48, 0.98, 0.48]
+      : [0.93, 0.16, 0.2, 0.56];
+    const expectedScale = portal.orientation === 'east' || portal.orientation === 'west'
+      ? [0.18, portal.maxExclusiveY - portal.minY, 1]
+      : [1, portal.maxExclusiveY - portal.minY, 0.18];
+    if (portalCreates.some((op) => (
+      JSON.stringify(op.node.material.color) !== JSON.stringify(expectedColor)
+      || JSON.stringify(op.node.transform.scale) !== JSON.stringify(expectedScale)
+    ))) {
+      throw new Error(`portal ${portal.id} has incorrect RGBA, orientation, width, or height`);
+    }
+  }
+  const portalIds = new Set(plan.doorPortals.map((portal) => portal.id));
+  const allUnlocked = buildVoxelInspectionProjection(plan, {
+    includedPortalIds: portalIds,
+    openPortalIds: portalIds,
+  });
+  if (
+    allUnlocked.lockedDoorCount !== 0
+    || allUnlocked.unlockedDoorCount !== plan.doorPortals.length
+    || JSON.stringify(allUnlocked.frame) === JSON.stringify(projection.frame)
+  ) {
+    throw new Error(`inspection frame for ${plan.placementId} did not transition every door to blue`);
+  }
+  const hidden = buildVoxelInspectionProjection(plan, {
+    includedPortalIds: new Set(),
+    openPortalIds: new Set(),
+  });
+  if (hidden.doorNodeCount !== 0 || hidden.frame.ops.some((op) => op.op === 'create' && op.node.metadata.label?.startsWith('procgen-door:'))) {
+    throw new Error(`inspection frame for ${plan.placementId} retained stale door overlays`);
+  }
+  for (const op of voxelCreates) {
     const maxY = op.node.transform.translation[1] + op.node.transform.scale[1] / 2;
     if (maxY > projection.ceilingY) {
       throw new Error(`inspection frame for ${plan.placementId} contains a ceiling voxel`);
@@ -101,6 +146,9 @@ function assertProjectionExactlyRepresentsPlan(plan, projection) {
   const represented = new Map();
   for (const op of projection.frame.ops) {
     if (op.op !== 'create') {
+      continue;
+    }
+    if (!op.node.metadata.label?.startsWith('procgen-voxel-box:')) {
       continue;
     }
     const match = /:material-(\d+):voxels-(\d+)$/.exec(op.node.metadata.label ?? '');
@@ -186,6 +234,7 @@ function fragmentedMultiMaterialPlan() {
     boundaryCellCount: 0,
     solidVoxelCount: solids.length,
     residentChunkCount: 0,
+    doorPortals: [],
     buildBounds: {
       min: { x: 0, y: 0, z: 0 },
       maxExclusive: { x: 6, y: 4, z: 2 },

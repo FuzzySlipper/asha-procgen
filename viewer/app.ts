@@ -100,6 +100,7 @@ interface SelectionEntry {
   readonly shapeMatchRef?: string;
   readonly piecePlacementRef?: string;
   readonly piecePlacementValidationRef?: string;
+  readonly builtFlowValidationRef?: string;
   readonly overall: number;
   readonly metrics: Record<string, number>;
   readonly tags: readonly string[];
@@ -116,6 +117,21 @@ interface ValidationReport {
   readonly ok: boolean;
   readonly fatalCount: number;
   readonly diagnostics: readonly Diagnostic[];
+}
+
+interface BuiltFlowValidationReport extends ValidationReport {
+  readonly kind: 'asha_procgen.validation.built_flow.v1';
+  readonly placementId: string;
+  readonly portalCount: number;
+  readonly progression: readonly BuiltFlowProgressionStep[];
+}
+
+interface BuiltFlowProgressionStep {
+  readonly step: number;
+  readonly items: readonly string[];
+  readonly reachableNodes: readonly string[];
+  readonly reachableEdges: readonly string[];
+  readonly openPortals: readonly string[];
 }
 
 interface Diagnostic {
@@ -285,6 +301,7 @@ interface PiecePlacement {
   readonly placementPolicy: PiecePlacementPolicy;
   readonly instances: readonly PieceInstance[];
   readonly gluedExits: readonly GluedExit[];
+  readonly gatePortals: readonly GatePortal[];
   readonly occupiedCells: readonly PlacementCellRef[];
   readonly connectionCells: readonly PlacementCellRef[];
   readonly reservedCells: readonly PlacementCellRef[];
@@ -332,8 +349,29 @@ interface GluedExit {
   readonly toCell: GridCell;
   readonly toDirection: 'north' | 'east' | 'south' | 'west';
   readonly toWidth: number;
+  readonly sourceCorridor: string;
+  readonly sourceEdge: string;
   readonly sourceRef: string;
+  readonly traversal: string;
+  readonly requiredItem: string | null;
   readonly tags: readonly string[];
+}
+
+interface GatePortal {
+  readonly id: string;
+  readonly sourceEdge: string;
+  readonly sourceCorridor: string;
+  readonly linkId: string;
+  readonly fromPiece: string;
+  readonly fromInstance: string;
+  readonly toPiece: string;
+  readonly toInstance: string;
+  readonly cells: readonly GridCell[];
+  readonly orientation: 'north' | 'east' | 'south' | 'west';
+  readonly width: number;
+  readonly traversal: string;
+  readonly requiredItem: string | null;
+  readonly provenance: readonly string[];
 }
 
 interface DanglingExit {
@@ -392,6 +430,8 @@ const viewTabs = document.querySelectorAll<HTMLButtonElement>('[data-view]');
 const voxel3dPanel = document.querySelector<HTMLElement>('#voxel-3d-panel');
 const voxel3dCanvas = document.querySelector<HTMLCanvasElement>('#voxel-3d-canvas');
 const voxel3dDiagnostic = document.querySelector<HTMLElement>('#voxel-3d-diagnostic');
+const voxel3dDoorState = document.querySelector<HTMLSelectElement>('#voxel-3d-door-state');
+const voxel3dDoorLegend = document.querySelector<HTMLElement>('#voxel-3d-door-legend');
 const policyPanel = document.querySelector<HTMLElement>('#placement-policy-panel');
 const policyForm = document.querySelector<HTMLFormElement>('#placement-policy-form');
 const policyClearance = document.querySelector<HTMLInputElement>('#placement-policy-clearance');
@@ -412,6 +452,8 @@ if (
   || voxel3dPanel === null
   || voxel3dCanvas === null
   || voxel3dDiagnostic === null
+  || voxel3dDoorState === null
+  || voxel3dDoorLegend === null
   || policyPanel === null
   || policyForm === null
   || policyClearance === null
@@ -435,6 +477,8 @@ const diagnosticsPanel = diagnostics;
 const voxelInspectionPanel = voxel3dPanel;
 const voxelInspectionCanvas = voxel3dCanvas;
 const voxelInspectionDiagnostic = voxel3dDiagnostic;
+const voxelDoorStateControl = voxel3dDoorState;
+const voxelDoorLegend = voxel3dDoorLegend;
 const placementPolicyPanel = policyPanel;
 const placementPolicyForm = policyForm;
 const placementPolicyClearance = policyClearance;
@@ -466,6 +510,8 @@ let currentPlacement: PiecePlacement | null = null;
 let currentPlacementValidation: ValidationReport | null = null;
 let committedPlacement: PiecePlacement | null = null;
 let committedPlacementValidation: ValidationReport | null = null;
+let currentBuiltFlowValidation: BuiltFlowValidationReport | null = null;
+let committedBuiltFlowValidation: BuiltFlowValidationReport | null = null;
 let currentPolicyExperimentId: string | null = null;
 let policyExperimentRevision = 0;
 let policyExperimentBusy = false;
@@ -475,6 +521,11 @@ let voxelInspectionRevision = 0;
 let voxelInspectionReadoutFrame: number | null = null;
 
 voxelInspectionCanvas.addEventListener('pointerdown', () => voxelInspectionCanvas.focus());
+voxelDoorStateControl.addEventListener('change', () => {
+  if (activeView === 'voxel3d') {
+    void renderVoxelInspection();
+  }
+});
 placementPolicyForm.addEventListener('submit', (event) => {
   event.preventDefault();
   void applyPlacementPolicyExperiment();
@@ -523,8 +574,11 @@ if (initialSelection === null) {
   currentPlacementValidation = null;
   committedPlacement = null;
   committedPlacementValidation = null;
+  currentBuiltFlowValidation = null;
+  committedBuiltFlowValidation = null;
   currentPolicyExperimentId = null;
   syncPlacementPolicyControls();
+  syncVoxelDoorStateControls();
   renderBatchList(batchPanel, batch, null, selectEntry);
   renderSummary(summaryPanel, artifact, null, batch);
   renderContext(
@@ -547,10 +601,11 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
-  const [geometry, placement, placementValidation] = await Promise.all([
+  const [geometry, placement, placementValidation, builtFlowValidation] = await Promise.all([
     fetchOptionalArtifact<Geometry2dArtifact>(entry.geometryRef),
     fetchOptionalArtifact<PiecePlacement>(entry.piecePlacementRef),
     fetchOptionalArtifact<ValidationReport>(entry.piecePlacementValidationRef),
+    fetchOptionalArtifact<BuiltFlowValidationReport>(entry.builtFlowValidationRef),
   ]);
   if (selectionRevision !== policyExperimentRevision) {
     return;
@@ -570,7 +625,10 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   currentPlacementValidation = placementValidation;
   committedPlacement = placement;
   committedPlacementValidation = placementValidation;
+  currentBuiltFlowValidation = builtFlowValidation;
+  committedBuiltFlowValidation = builtFlowValidation;
   currentPolicyExperimentId = null;
+  syncVoxelDoorStateControls();
   syncPlacementPolicyControls();
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
@@ -619,7 +677,9 @@ async function applyPlacementPolicyExperiment(): Promise<void> {
     }
     currentPlacement = result.placement;
     currentPlacementValidation = result.validation;
+    currentBuiltFlowValidation = null;
     currentPolicyExperimentId = result.experimentId;
+    syncVoxelDoorStateControls();
     syncPlacementPolicyControls();
     setPlacementPolicyStatus(
       'ready',
@@ -641,10 +701,76 @@ function resetPlacementPolicyExperiment(): void {
   policyExperimentRevision += 1;
   currentPlacement = committedPlacement;
   currentPlacementValidation = committedPlacementValidation;
+  currentBuiltFlowValidation = committedBuiltFlowValidation;
   currentPolicyExperimentId = null;
+  syncVoxelDoorStateControls();
   setPlacementPolicyBusy(false);
   syncPlacementPolicyControls();
   renderActiveView();
+}
+
+function syncVoxelDoorStateControls(): void {
+  const previous = voxelDoorStateControl.value;
+  const verified = currentPlacement !== null
+    && currentBuiltFlowValidation?.ok === true
+    && currentBuiltFlowValidation.placementId === currentPlacement.placementId
+    && currentBuiltFlowValidation.portalCount === currentPlacement.gatePortals.length;
+  const options: HTMLOptionElement[] = [];
+  const initial = document.createElement('option');
+  initial.value = 'initial';
+  initial.textContent = 'Initial verified state';
+  options.push(initial);
+  if (verified && currentBuiltFlowValidation !== null) {
+    for (const step of currentBuiltFlowValidation.progression.slice(1)) {
+      const option = document.createElement('option');
+      option.value = `step:${step.step}`;
+      option.textContent = step.items.length === 0
+        ? `Progression ${step.step}`
+        : `After collecting ${step.items.join(', ')}`;
+      options.push(option);
+    }
+  }
+  const all = document.createElement('option');
+  all.value = 'all';
+  all.textContent = 'All unlocked';
+  options.push(all);
+  voxelDoorStateControl.replaceChildren(...options);
+  voxelDoorStateControl.disabled = !verified;
+  voxelDoorStateControl.value = options.some((option) => option.value === previous) ? previous : 'initial';
+  voxelDoorLegend.textContent = verified
+    ? 'Red locked · Blue unlocked · verified Procgen portals'
+    : 'Doors hidden: this placement has no matching successful built-flow report.';
+}
+
+function voxelDoorProjectionState(placement: PiecePlacement): {
+  readonly includedPortalIds: ReadonlySet<string>;
+  readonly openPortalIds: ReadonlySet<string>;
+  readonly label: string;
+} {
+  const validation = currentBuiltFlowValidation;
+  const verified = validation?.ok === true
+    && validation.placementId === placement.placementId
+    && validation.portalCount === placement.gatePortals.length;
+  if (!verified || validation === null) {
+    return { includedPortalIds: new Set(), openPortalIds: new Set(), label: 'unverified doors hidden' };
+  }
+  const includedPortalIds = new Set(placement.gatePortals.map((portal) => portal.id));
+  if (voxelDoorStateControl.value === 'all') {
+    return { includedPortalIds, openPortalIds: includedPortalIds, label: 'all unlocked' };
+  }
+  const requestedStep = voxelDoorStateControl.value.startsWith('step:')
+    ? Number.parseInt(voxelDoorStateControl.value.slice('step:'.length), 10)
+    : 0;
+  const step = validation.progression.find((candidate) => candidate.step === requestedStep)
+    ?? validation.progression[0];
+  if (step === undefined) {
+    return { includedPortalIds, openPortalIds: new Set(), label: 'initial' };
+  }
+  return {
+    includedPortalIds,
+    openPortalIds: new Set(step.openPortals),
+    label: step.items.length === 0 ? 'initial' : `items ${step.items.join(', ')}`,
+  };
 }
 
 function syncPlacementPolicyControls(): void {
@@ -1268,11 +1394,17 @@ function renderActiveView(): void {
 async function renderVoxelInspection(): Promise<void> {
   const revision = ++voxelInspectionRevision;
   let projection: VoxelInspectionProjection;
+  let doorPreviewLabel = 'unverified doors hidden';
   try {
     if (currentPlacement === null) {
       throw new Error('no piece placement is available for voxel extrusion');
     }
-    projection = buildVoxelInspectionProjection(compilePlacementExtrusion(currentPlacement));
+    const doorState = voxelDoorProjectionState(currentPlacement);
+    doorPreviewLabel = doorState.label;
+    projection = buildVoxelInspectionProjection(
+      compilePlacementExtrusion(currentPlacement),
+      doorState,
+    );
     if (projection.frame.ops.length > ASHA_RENDERER_EDITOR_VIEWPORT_MAX_FRAME_OPS) {
       throw new Error(
         `projection has ${projection.frame.ops.length} ops; engine host limit is ${ASHA_RENDERER_EDITOR_VIEWPORT_MAX_FRAME_OPS}`,
@@ -1288,6 +1420,10 @@ async function renderVoxelInspection(): Promise<void> {
   voxelInspectionPanel.dataset.projectedVoxelCount = String(projection.projectedVoxelCount);
   voxelInspectionPanel.dataset.projectedNodeCount = String(projection.projectedNodeCount);
   voxelInspectionPanel.dataset.omittedCeilingVoxelCount = String(projection.omittedCeilingVoxelCount);
+  voxelInspectionPanel.dataset.doorNodeCount = String(projection.doorNodeCount);
+  voxelInspectionPanel.dataset.lockedDoorCount = String(projection.lockedDoorCount);
+  voxelInspectionPanel.dataset.unlockedDoorCount = String(projection.unlockedDoorCount);
+  voxelInspectionPanel.dataset.doorPreviewState = doorPreviewLabel;
   voxelInspectionPanel.dataset.ceilingY = String(projection.ceilingY);
   voxelInspectionPanel.dataset.policyMode = currentPolicyExperimentId === null ? 'committed' : 'experiment';
   voxelInspectionPanel.dataset.policyExperimentId = currentPolicyExperimentId ?? '';
@@ -1330,10 +1466,17 @@ async function renderVoxelInspection(): Promise<void> {
     const pickHits = pickPoints
       .map((point) => surface.pick({ point }).hint)
       .filter((hint) => hint !== null);
+    const focusedDoor = pickHits
+      .map((hint) => String(hint))
+      .find((hint) => hint.includes('procgen-door:')) ?? '';
     voxelInspectionPanel.dataset.pickHitCount = String(pickHits.length);
+    voxelInspectionPanel.dataset.focusedDoor = focusedDoor;
+    voxelDoorLegend.textContent = focusedDoor.length > 0
+      ? `Red locked · Blue unlocked · ${doorPreviewLabel} · ${focusedDoor}`
+      : `Red locked · Blue unlocked · ${doorPreviewLabel} · pick a door for source edge/item details`;
     setVoxelInspectionDiagnostic(
       'ready',
-      `${projection.projectedVoxelCount} floor/wall voxels in ${projection.projectedNodeCount} engine nodes · ${projection.omittedCeilingVoxelCount} ceiling voxels omitted · engine frame ${readout.retainedFrameHash}`,
+      `${projection.projectedVoxelCount} floor/wall voxels in ${projection.projectedNodeCount} compacted nodes · ${projection.lockedDoorCount} locked red / ${projection.unlockedDoorCount} unlocked blue doors · ${projection.omittedCeilingVoxelCount} ceiling voxels omitted · engine frame ${readout.retainedFrameHash}`,
     );
   } catch (error) {
     if (revision === voxelInspectionRevision) {

@@ -14,12 +14,20 @@ export interface VoxelInspectionProjection {
   readonly projectedVoxelCount: number;
   readonly projectedNodeCount: number;
   readonly omittedCeilingVoxelCount: number;
+  readonly doorNodeCount: number;
+  readonly lockedDoorCount: number;
+  readonly unlockedDoorCount: number;
   readonly grid: EditorGridDescriptor;
   readonly camera: {
     readonly position: readonly [number, number, number];
     readonly target: readonly [number, number, number];
     readonly moveSpeed: number;
   };
+}
+
+export interface VoxelInspectionDoorState {
+  readonly openPortalIds: ReadonlySet<string>;
+  readonly includedPortalIds?: ReadonlySet<string>;
 }
 
 const MATERIAL_COLORS: Readonly<Record<number, readonly [number, number, number, number]>> = {
@@ -40,7 +48,10 @@ interface VoxelInspectionBox {
  * The top enclosure layer is intentionally excluded from this presentation frame;
  * the source plan and its native evidence remain fully enclosed.
  */
-export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelInspectionProjection {
+export function buildVoxelInspectionProjection(
+  plan: VoxelExtrusionPlan,
+  doorState: VoxelInspectionDoorState = { openPortalIds: new Set() },
+): VoxelInspectionProjection {
   const ceilingY = plan.buildBounds.maxExclusive.y - 1;
   const projectedVoxels = plan.solidVoxels.filter((voxel) => voxel.coord.y !== ceilingY);
   const omittedCeilingVoxelCount = plan.solidVoxels.length - projectedVoxels.length;
@@ -81,7 +92,54 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
       },
     },
   }));
-  const firstLightHandle = voxelOps.length + 1;
+  const doorOps: RenderDiff[] = [];
+  let lockedDoorCount = 0;
+  let unlockedDoorCount = 0;
+  for (const portal of plan.doorPortals) {
+    if (doorState.includedPortalIds !== undefined && !doorState.includedPortalIds.has(portal.id)) {
+      continue;
+    }
+    const unlocked = portal.requiredItem === null || doorState.openPortalIds.has(portal.id);
+    if (unlocked) {
+      unlockedDoorCount += 1;
+    } else {
+      lockedDoorCount += 1;
+    }
+    for (const [cellIndex, cell] of portal.cells.entries()) {
+      const eastWest = portal.orientation === 'east' || portal.orientation === 'west';
+      doorOps.push({
+        op: 'create',
+        handle: renderHandle(voxelOps.length + doorOps.length + 1),
+        parent: null,
+        node: {
+          geometry: { shape: 'cube' },
+          material: {
+            color: unlocked ? [0.16, 0.48, 0.98, 0.48] : [0.93, 0.16, 0.2, 0.56],
+            wireframe: false,
+          },
+          transform: {
+            translation: [
+              cell.x + 0.5,
+              (portal.minY + portal.maxExclusiveY) / 2,
+              cell.y + 0.5,
+            ],
+            rotation: [0, 0, 0, 1],
+            scale: eastWest
+              ? [0.18, portal.maxExclusiveY - portal.minY, 1]
+              : [1, portal.maxExclusiveY - portal.minY, 0.18],
+          },
+          visible: true,
+          layer: 'scene',
+          metadata: {
+            source: null,
+            tags: [],
+            label: `procgen-door:${portal.sourceEdge}:${portal.requiredItem ?? 'unlocked'}:${portal.id}:cell-${cellIndex + 1}`,
+          },
+        },
+      });
+    }
+  }
+  const firstLightHandle = voxelOps.length + doorOps.length + 1;
   const lightOps: readonly RenderDiff[] = [
     {
       op: 'createLight',
@@ -120,12 +178,15 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
   const gridFadeEnd = Math.max(radius * 3, 48);
 
   return {
-    frame: { ops: [...voxelOps, ...lightOps] },
+    frame: { ops: [...voxelOps, ...doorOps, ...lightOps] },
     placementId: plan.placementId,
     ceilingY,
     projectedVoxelCount: projectedVoxels.length,
     projectedNodeCount: boxes.length,
     omittedCeilingVoxelCount,
+    doorNodeCount: doorOps.length,
+    lockedDoorCount,
+    unlockedDoorCount,
     grid: {
       visible: true,
       grid: {

@@ -429,6 +429,18 @@ every accepted sample before checking the public renderer frame-op limit. This
 tab is projection-only inspection and does not claim runtime, collision,
 navigation, native-render, or performance authority.
 
+Build, Voxel, and Voxel 3D show the placement-policy experiment panel. The
+editable values are `minimumClearanceCells` and `wallThicknessCells`; schema v1
+keeps `contactPolicy=glued_exits_only`, `doorwayWidthCells=1`, and
+`preservePieceBoundaries=true` locked. Apply posts only the selected candidate
+ID and typed policy to the local viewer server. The server derives piece-plan,
+shape-match, and catalog refs from the committed batch report, reruns Rust
+assembly plus placement validation without a shell, returns an explicitly
+temporary/non-native result, and removes its temporary files. Reset or candidate
+switching restores the committed placement. The endpoint accepts no browser
+filesystem paths and does not mutate fixtures, samples, RuntimeSession, or
+native voxel evidence.
+
 ## Verification
 
 ```bash
@@ -443,6 +455,12 @@ For optional preview-site evidence:
 
 ```bash
 npm run viewer:smoke
+```
+
+The focused placement-policy endpoint contract can be checked separately:
+
+```bash
+npm run policy:smoke
 ```
 
 The standalone HTML preview smoke alias is:

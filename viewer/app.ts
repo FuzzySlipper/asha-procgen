@@ -368,6 +368,22 @@ interface NativeVoxelEvidence {
   };
 }
 
+interface PlacementPolicyExperimentResponse {
+  readonly kind: 'asha_procgen.placement_policy_experiment.v1';
+  readonly experimentId: string;
+  readonly candidateId: string;
+  readonly placementPolicy: PiecePlacementPolicy;
+  readonly placement: PiecePlacement;
+  readonly validation: ValidationReport;
+  readonly persisted: false;
+  readonly nativeAuthority: false;
+}
+
+interface PlacementPolicyExperimentError {
+  readonly error: string;
+  readonly detail: string;
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -376,6 +392,14 @@ const viewTabs = document.querySelectorAll<HTMLButtonElement>('[data-view]');
 const voxel3dPanel = document.querySelector<HTMLElement>('#voxel-3d-panel');
 const voxel3dCanvas = document.querySelector<HTMLCanvasElement>('#voxel-3d-canvas');
 const voxel3dDiagnostic = document.querySelector<HTMLElement>('#voxel-3d-diagnostic');
+const policyPanel = document.querySelector<HTMLElement>('#placement-policy-panel');
+const policyForm = document.querySelector<HTMLFormElement>('#placement-policy-form');
+const policyClearance = document.querySelector<HTMLInputElement>('#placement-policy-clearance');
+const policyWallThickness = document.querySelector<HTMLInputElement>('#placement-policy-wall-thickness');
+const policyApply = document.querySelector<HTMLButtonElement>('#placement-policy-apply');
+const policyReset = document.querySelector<HTMLButtonElement>('#placement-policy-reset');
+const policyMode = document.querySelector<HTMLElement>('#placement-policy-mode');
+const policyStatus = document.querySelector<HTMLElement>('#placement-policy-status');
 
 if (
   svg === null
@@ -385,6 +409,14 @@ if (
   || voxel3dPanel === null
   || voxel3dCanvas === null
   || voxel3dDiagnostic === null
+  || policyPanel === null
+  || policyForm === null
+  || policyClearance === null
+  || policyWallThickness === null
+  || policyApply === null
+  || policyReset === null
+  || policyMode === null
+  || policyStatus === null
 ) {
   throw new Error('viewer mount elements are missing');
 }
@@ -398,6 +430,14 @@ const diagnosticsPanel = diagnostics;
 const voxelInspectionPanel = voxel3dPanel;
 const voxelInspectionCanvas = voxel3dCanvas;
 const voxelInspectionDiagnostic = voxel3dDiagnostic;
+const placementPolicyPanel = policyPanel;
+const placementPolicyForm = policyForm;
+const placementPolicyClearance = policyClearance;
+const placementPolicyWallThickness = policyWallThickness;
+const placementPolicyApply = policyApply;
+const placementPolicyReset = policyReset;
+const placementPolicyMode = policyMode;
+const placementPolicyStatus = policyStatus;
 const batch = await fetchBatch();
 const voxelEvidence = await fetchVoxelEvidence();
 const viewerSearch = new URLSearchParams(location.search);
@@ -413,15 +453,29 @@ let currentGeometry: Geometry2dArtifact | null = null;
 let currentCatalog: ShapeCatalog | null = null;
 let currentCatalogRef: string | null = null;
 let currentCatalogError: string | null = null;
+let currentSelection: SelectionEntry | null = null;
 let currentPlacement: PiecePlacement | null = null;
 let currentPlacementValidation: ValidationReport | null = null;
+let committedPlacement: PiecePlacement | null = null;
+let committedPlacementValidation: ValidationReport | null = null;
+let currentPolicyExperimentId: string | null = null;
+let policyExperimentRevision = 0;
+let policyExperimentBusy = false;
 let voxelInspectionSurface: AshaRendererInspectionSurface | null = null;
 let voxelInspectionMount: Promise<AshaRendererInspectionSurface> | null = null;
 let voxelInspectionRevision = 0;
 let voxelInspectionReadoutFrame: number | null = null;
 
 voxelInspectionCanvas.addEventListener('pointerdown', () => voxelInspectionCanvas.focus());
+placementPolicyForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  void applyPlacementPolicyExperiment();
+});
+placementPolicyReset.addEventListener('click', resetPlacementPolicyExperiment);
+placementPolicyClearance.addEventListener('input', validatePlacementPolicyControls);
+placementPolicyWallThickness.addEventListener('input', validatePlacementPolicyControls);
 window.addEventListener('pagehide', () => {
+  policyExperimentRevision += 1;
   voxelInspectionRevision += 1;
   stopVoxelInspectionReadoutSync();
   voxelInspectionSurface?.dispose();
@@ -449,8 +503,13 @@ if (initialSelection === null) {
   currentCatalog = await fetchDefaultCatalog();
   currentCatalogRef = currentCatalog === null ? null : 'fixtures/shape-catalogs/2d-basic.json';
   currentCatalogError = currentCatalog === null ? 'failed to load default fixture catalog' : null;
+  currentSelection = null;
   currentPlacement = null;
   currentPlacementValidation = null;
+  committedPlacement = null;
+  committedPlacementValidation = null;
+  currentPolicyExperimentId = null;
+  syncPlacementPolicyControls();
   renderBatchList(batchPanel, batch, null, selectEntry);
   renderSummary(summaryPanel, artifact, null, batch);
   renderContext(
@@ -468,6 +527,8 @@ if (initialSelection === null) {
 }
 
 async function selectEntry(entry: SelectionEntry): Promise<void> {
+  const selectionRevision = ++policyExperimentRevision;
+  policyExperimentBusy = false;
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
@@ -476,19 +537,181 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
     fetchOptionalArtifact<PiecePlacement>(entry.piecePlacementRef),
     fetchOptionalArtifact<ValidationReport>(entry.piecePlacementValidationRef),
   ]);
+  if (selectionRevision !== policyExperimentRevision) {
+    return;
+  }
   const catalogResult = await fetchCatalogForEntry(entry, placement);
+  if (selectionRevision !== policyExperimentRevision) {
+    return;
+  }
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
   currentGeometry = geometry;
   currentCatalog = catalogResult.catalog;
   currentCatalogRef = catalogResult.ref;
   currentCatalogError = catalogResult.error;
+  currentSelection = entry;
   currentPlacement = placement;
   currentPlacementValidation = placementValidation;
+  committedPlacement = placement;
+  committedPlacementValidation = placementValidation;
+  currentPolicyExperimentId = null;
+  syncPlacementPolicyControls();
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
   renderContext(diagnosticsPanel, artifact, entry, batch, validation, intermediate, placementValidation);
   renderActiveView();
+}
+
+async function applyPlacementPolicyExperiment(): Promise<void> {
+  const selection = currentSelection;
+  if (selection === null || committedPlacement === null) {
+    setPlacementPolicyStatus('error', 'Select a generated candidate with a piece placement first.');
+    return;
+  }
+  const policy = policyFromControls();
+  if (policy === null) {
+    setPlacementPolicyStatus('error', placementPolicyClearance.validationMessage || placementPolicyWallThickness.validationMessage);
+    return;
+  }
+
+  const revision = ++policyExperimentRevision;
+  setPlacementPolicyBusy(true);
+  setPlacementPolicyStatus(
+    'loading',
+    `Reassembling ${selection.candidateId} in Rust with clearance ${policy.minimumClearanceCells} and wall thickness ${policy.wallThicknessCells}…`,
+  );
+  try {
+    const response = await fetch('/api/experiments/placement-policy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ candidateId: selection.candidateId, placementPolicy: policy }),
+    });
+    const result = (await response.json()) as PlacementPolicyExperimentResponse | PlacementPolicyExperimentError;
+    if (revision !== policyExperimentRevision) {
+      return;
+    }
+    if (!response.ok || 'error' in result) {
+      throw new Error('detail' in result ? result.detail : `experiment request failed with ${response.status}`);
+    }
+    if (
+      result.kind !== 'asha_procgen.placement_policy_experiment.v1'
+      || result.candidateId !== selection.candidateId
+      || result.persisted !== false
+      || result.nativeAuthority !== false
+    ) {
+      throw new Error('placement-policy experiment returned an invalid response envelope');
+    }
+    currentPlacement = result.placement;
+    currentPlacementValidation = result.validation;
+    currentPolicyExperimentId = result.experimentId;
+    syncPlacementPolicyControls();
+    setPlacementPolicyStatus(
+      'ready',
+      `Temporary Rust placement applied: ${result.placement.instances.length} pieces, ${result.placement.occupiedCells.length} occupied cells. Not persisted; no native authority claim.`,
+    );
+    renderActiveView();
+  } catch (error) {
+    if (revision === policyExperimentRevision) {
+      setPlacementPolicyStatus('error', `Placement experiment failed: ${describeError(error)}`);
+    }
+  } finally {
+    if (revision === policyExperimentRevision) {
+      setPlacementPolicyBusy(false);
+    }
+  }
+}
+
+function resetPlacementPolicyExperiment(): void {
+  policyExperimentRevision += 1;
+  currentPlacement = committedPlacement;
+  currentPlacementValidation = committedPlacementValidation;
+  currentPolicyExperimentId = null;
+  setPlacementPolicyBusy(false);
+  syncPlacementPolicyControls();
+  renderActiveView();
+}
+
+function syncPlacementPolicyControls(): void {
+  const placement = currentPlacement;
+  const enabled = placement !== null && currentSelection !== null;
+  if (placement !== null) {
+    placementPolicyClearance.value = String(placement.placementPolicy.minimumClearanceCells);
+    placementPolicyWallThickness.value = String(placement.placementPolicy.wallThicknessCells);
+    placementPolicyPanel.dataset.minimumClearanceCells = String(placement.placementPolicy.minimumClearanceCells);
+    placementPolicyPanel.dataset.wallThicknessCells = String(placement.placementPolicy.wallThicknessCells);
+  } else {
+    placementPolicyClearance.value = '';
+    placementPolicyWallThickness.value = '';
+    delete placementPolicyPanel.dataset.minimumClearanceCells;
+    delete placementPolicyPanel.dataset.wallThicknessCells;
+  }
+  const experimentActive = currentPolicyExperimentId !== null;
+  placementPolicyPanel.dataset.mode = experimentActive ? 'experiment' : 'committed';
+  placementPolicyPanel.dataset.experimentId = currentPolicyExperimentId ?? '';
+  placementPolicyMode.dataset.mode = experimentActive ? 'experiment' : 'committed';
+  placementPolicyMode.textContent = experimentActive ? 'Temporary experiment' : 'Committed policy';
+  placementPolicyClearance.disabled = !enabled || policyExperimentBusy;
+  placementPolicyWallThickness.disabled = !enabled || policyExperimentBusy;
+  placementPolicyReset.disabled = !experimentActive || policyExperimentBusy;
+  if (!enabled) {
+    setPlacementPolicyStatus('idle', 'Select a generated candidate to experiment.');
+  } else if (experimentActive) {
+    setPlacementPolicyStatus('ready', 'Temporary Rust placement active. Not persisted; no native authority claim.');
+  } else {
+    setPlacementPolicyStatus('idle', 'Committed placement active. Change a value and apply to rerun Rust assembly.');
+  }
+  validatePlacementPolicyControls();
+}
+
+function policyFromControls(): PiecePlacementPolicy | null {
+  if (!validatePlacementPolicyControls()) {
+    return null;
+  }
+  return {
+    schemaVersion: 1,
+    minimumClearanceCells: Number(placementPolicyClearance.value),
+    contactPolicy: 'glued_exits_only',
+    wallThicknessCells: Number(placementPolicyWallThickness.value),
+    doorwayWidthCells: 1,
+    preservePieceBoundaries: true,
+  };
+}
+
+function validatePlacementPolicyControls(): boolean {
+  const clearance = Number(placementPolicyClearance.value);
+  const wallThickness = Number(placementPolicyWallThickness.value);
+  let clearanceIssue = '';
+  let wallIssue = '';
+  if (!Number.isInteger(wallThickness) || wallThickness < 1 || wallThickness > 8) {
+    wallIssue = 'Wall thickness must be an integer from 1 through 8.';
+  }
+  if (!Number.isInteger(clearance) || clearance < 3 || clearance > 64) {
+    clearanceIssue = 'Minimum clearance must be an integer from 3 through 64.';
+  } else if (wallIssue === '') {
+    const required = wallThickness * 2 + 1;
+    if (clearance < required) {
+      clearanceIssue = `Minimum clearance must be at least ${required} for wall thickness ${wallThickness}.`;
+    }
+  }
+  placementPolicyClearance.setCustomValidity(clearanceIssue);
+  placementPolicyWallThickness.setCustomValidity(wallIssue);
+  const valid = clearanceIssue === '' && wallIssue === '';
+  placementPolicyApply.disabled = !valid || currentSelection === null || committedPlacement === null || policyExperimentBusy;
+  return valid;
+}
+
+function setPlacementPolicyBusy(busy: boolean): void {
+  policyExperimentBusy = busy;
+  placementPolicyClearance.disabled = busy || currentSelection === null;
+  placementPolicyWallThickness.disabled = busy || currentSelection === null;
+  placementPolicyReset.disabled = busy || currentPolicyExperimentId === null;
+  validatePlacementPolicyControls();
+}
+
+function setPlacementPolicyStatus(state: 'idle' | 'loading' | 'ready' | 'error', message: string): void {
+  placementPolicyStatus.dataset.state = state;
+  placementPolicyStatus.textContent = message;
 }
 
 async function fetchBatch(): Promise<SelectionReport> {
@@ -943,6 +1166,7 @@ function renderActiveView(): void {
   }
   layoutSvg.style.height = '';
   layoutSvg.style.minWidth = '';
+  placementPolicyPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
   const inspectionActive = activeView === 'voxel3d';
   layoutSvg.style.display = inspectionActive ? 'none' : '';
   voxelInspectionPanel.hidden = !inspectionActive;
@@ -960,7 +1184,7 @@ function renderActiveView(): void {
     return;
   }
   if (activeView === 'voxel') {
-    renderVoxelBuild(layoutSvg, currentPlacement, voxelEvidence);
+    renderVoxelBuild(layoutSvg, currentPlacement, voxelEvidence, currentPolicyExperimentId !== null);
     return;
   }
   if (activeView === 'catalog') {
@@ -1002,6 +1226,8 @@ async function renderVoxelInspection(): Promise<void> {
   voxelInspectionPanel.dataset.projectedNodeCount = String(projection.projectedNodeCount);
   voxelInspectionPanel.dataset.omittedCeilingVoxelCount = String(projection.omittedCeilingVoxelCount);
   voxelInspectionPanel.dataset.ceilingY = String(projection.ceilingY);
+  voxelInspectionPanel.dataset.policyMode = currentPolicyExperimentId === null ? 'committed' : 'experiment';
+  voxelInspectionPanel.dataset.policyExperimentId = currentPolicyExperimentId ?? '';
   setVoxelInspectionDiagnostic('loading', `Mounting engine projection for ${projection.placementId}…`);
 
   try {
@@ -1135,6 +1361,7 @@ function renderVoxelBuild(
   target: SVGSVGElement,
   placement: PiecePlacement | null,
   evidence: NativeVoxelEvidence | null,
+  experimental: boolean,
 ): void {
   target.replaceChildren();
   if (placement === null) {
@@ -1171,14 +1398,16 @@ function renderVoxelBuild(
   title.textContent = 'Native Voxel Extrusion Cutaway';
   target.append(title);
 
-  const verified = evidence?.placementId === placement.placementId;
+  const verified = !experimental && evidence?.placementId === placement.placementId;
   const detail = createSvg('text');
   detail.setAttribute('class', `voxel-detail ${verified ? 'verified' : 'unverified'}`);
   detail.setAttribute('x', String(margin));
   detail.setAttribute('y', '53');
   detail.textContent = verified && evidence !== null
     ? `${plan.solidVoxelCount} voxels / ${evidence.authority.acceptedCommands} native commands / ${evidence.authority.voxelStateHash}`
-    : `${plan.solidVoxelCount} voxel proposal / selected placement has no matching native authority receipt`;
+    : experimental
+      ? `${plan.solidVoxelCount} voxel experiment / temporary Rust placement / no native authority receipt`
+      : `${plan.solidVoxelCount} voxel proposal / selected placement has no matching native authority receipt`;
   target.append(detail);
 
   const source = createSvg('text');
@@ -1187,7 +1416,7 @@ function renderVoxelBuild(
   source.setAttribute('y', '75');
   source.textContent = verified && evidence !== null
     ? `ASHA ${evidence.ashaEngineCommit.slice(0, 12)} / deterministic ${evidence.authority.deterministic ? 'yes' : 'no'} / XZ floor plan with ghosted ceiling`
-    : `${placement.placementId} / XZ floor plan with ghosted ceiling`;
+    : `${experimental ? 'temporary policy experiment / ' : ''}${placement.placementId} / XZ floor plan with ghosted ceiling`;
   target.append(source);
 
   appendVoxelLegend(target, margin, 91);

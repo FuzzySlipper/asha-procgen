@@ -1,10 +1,16 @@
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { dirname, extname, join, resolve, sep } from 'node:path';
+import { tmpdir } from 'node:os';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const execFileAsync = promisify(execFile);
+const selectionReportPath = join(repoRoot, 'artifacts/samples/batch-v2/selection-report.json');
 const args = parseArgs(process.argv.slice(2));
 const host = args.host ?? process.env.HOST ?? process.env.npm_config_host ?? '0.0.0.0';
 const port = Number(args.port ?? process.env.PORT ?? process.env.npm_config_port ?? 5183);
@@ -25,6 +31,26 @@ const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
   if (url.pathname === '/health') {
     sendJson(response, 200, { ok: true, project: 'asha-procgen' });
+    return;
+  }
+
+  if (url.pathname === '/api/experiments/placement-policy') {
+    if (request.method !== 'POST') {
+      response.setHeader('Allow', 'POST');
+      sendJson(response, 405, { error: 'method_not_allowed', detail: 'Use POST.' });
+      return;
+    }
+    try {
+      const payload = await readJsonRequest(request, 16_384);
+      const result = await runPlacementPolicyExperiment(payload);
+      sendJson(response, 200, result);
+    } catch (error) {
+      const statusCode = error instanceof ExperimentError ? error.statusCode : 500;
+      sendJson(response, statusCode, {
+        error: error instanceof ExperimentError ? error.code : 'experiment_failed',
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    }
     return;
   }
 
@@ -99,6 +125,194 @@ function isInside(filePath, rootPath) {
 function sendJson(response, statusCode, value) {
   response.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
   response.end(`${JSON.stringify(value, null, 2)}\n`);
+}
+
+class ExperimentError extends Error {
+  constructor(statusCode, code, message) {
+    super(message);
+    this.statusCode = statusCode;
+    this.code = code;
+  }
+}
+
+async function readJsonRequest(request, maxBytes) {
+  let size = 0;
+  const chunks = [];
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > maxBytes) {
+      throw new ExperimentError(413, 'request_too_large', `Request body exceeds ${maxBytes} bytes.`);
+    }
+    chunks.push(chunk);
+  }
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  } catch {
+    throw new ExperimentError(400, 'invalid_json', 'Request body must be valid JSON.');
+  }
+}
+
+async function runPlacementPolicyExperiment(payload) {
+  assertExactKeys(payload, ['candidateId', 'placementPolicy'], 'request');
+  if (typeof payload.candidateId !== 'string' || payload.candidateId.length === 0) {
+    throw new ExperimentError(400, 'invalid_candidate', 'candidateId must be a non-empty string.');
+  }
+  const policy = validatePlacementPolicy(payload.placementPolicy);
+  const selection = JSON.parse(await readFile(selectionReportPath, 'utf8'));
+  const entry = selection.accepted?.find((candidate) => candidate.candidateId === payload.candidateId);
+  if (entry === undefined) {
+    throw new ExperimentError(404, 'candidate_not_found', `Unknown accepted candidate ${payload.candidateId}.`);
+  }
+  if (
+    typeof entry.piecePlanRef !== 'string'
+    || typeof entry.shapeMatchRef !== 'string'
+    || typeof entry.shapeCatalogRef !== 'string'
+  ) {
+    throw new ExperimentError(422, 'candidate_missing_build_refs', 'Selected candidate has no complete piece-build references.');
+  }
+
+  const piecePlanPath = safeExperimentSourcePath(entry.piecePlanRef, 'artifacts/samples');
+  const shapeMatchPath = safeExperimentSourcePath(entry.shapeMatchRef, 'artifacts/samples');
+  const catalogPath = safeExperimentSourcePath(entry.shapeCatalogRef, 'fixtures');
+  const catalog = JSON.parse(await readFile(catalogPath, 'utf8'));
+  catalog.placementPolicy = policy;
+
+  const experimentDir = await mkdtemp(join(tmpdir(), 'asha-procgen-policy-'));
+  const experimentCatalogPath = join(experimentDir, 'shape-catalog.json');
+  const placementPath = join(experimentDir, 'piece-placement.json');
+  const validationPath = join(experimentDir, 'piece-placement.validation.json');
+  try {
+    await writeFile(experimentCatalogPath, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
+    await runProcgen([
+      'build', 'assemble',
+      '--catalog', experimentCatalogPath,
+      '--piece-plan', piecePlanPath,
+      '--shape-match', shapeMatchPath,
+      '--connectivity', 'four-way',
+      '--out', placementPath,
+    ]);
+    await runProcgen([
+      'build', 'validate-placement',
+      '--state', placementPath,
+      '--out', validationPath,
+    ]);
+    const placement = JSON.parse(await readFile(placementPath, 'utf8'));
+    const validation = JSON.parse(await readFile(validationPath, 'utf8'));
+    if (validation.ok !== true) {
+      const diagnosticSummary = Array.isArray(validation.diagnostics)
+        ? validation.diagnostics.slice(0, 4).map((diagnostic) =>
+          `${diagnostic.code ?? 'unknown'}: ${diagnostic.detail ?? 'no detail'}`).join('; ')
+        : 'no structured diagnostics';
+      throw new ExperimentError(
+        422,
+        'placement_validation_failed',
+        `Experimental placement has ${validation.fatalCount ?? 'unknown'} fatal diagnostic(s): ${diagnosticSummary}`,
+      );
+    }
+    placement.sourcePlanRef = entry.piecePlanRef;
+    placement.sourceCatalogRef = `experiment:${entry.shapeCatalogRef}`;
+    placement.sourceMatchRef = entry.shapeMatchRef;
+    const experimentId = createHash('sha256')
+      .update(JSON.stringify({ candidateId: payload.candidateId, policy, placement }))
+      .digest('hex');
+    return {
+      kind: 'asha_procgen.placement_policy_experiment.v1',
+      experimentId,
+      candidateId: payload.candidateId,
+      placementPolicy: policy,
+      placement,
+      validation,
+      persisted: false,
+      nativeAuthority: false,
+    };
+  } catch (error) {
+    if (error instanceof ExperimentError) {
+      throw error;
+    }
+    const detail = error?.stderr?.trim() || error?.stdout?.trim() || (error instanceof Error ? error.message : String(error));
+    throw new ExperimentError(422, 'placement_assembly_failed', detail);
+  } finally {
+    await rm(experimentDir, { recursive: true, force: true });
+  }
+}
+
+function validatePlacementPolicy(value) {
+  assertExactKeys(
+    value,
+    ['schemaVersion', 'minimumClearanceCells', 'contactPolicy', 'wallThicknessCells', 'doorwayWidthCells', 'preservePieceBoundaries'],
+    'placementPolicy',
+  );
+  if (value.schemaVersion !== 1) {
+    throw new ExperimentError(400, 'unsupported_policy_schema', 'Only placement-policy schemaVersion 1 is supported.');
+  }
+  if (value.contactPolicy !== 'glued_exits_only') {
+    throw new ExperimentError(400, 'unsupported_contact_policy', 'contactPolicy must be glued_exits_only.');
+  }
+  if (value.doorwayWidthCells !== 1) {
+    throw new ExperimentError(400, 'unsupported_doorway_width', 'doorwayWidthCells must remain 1 in schema v1.');
+  }
+  if (value.preservePieceBoundaries !== true) {
+    throw new ExperimentError(400, 'unsupported_boundary_policy', 'preservePieceBoundaries must remain true in schema v1.');
+  }
+  assertBoundedInteger(value.wallThicknessCells, 1, 8, 'wallThicknessCells');
+  assertBoundedInteger(value.minimumClearanceCells, 3, 64, 'minimumClearanceCells');
+  const requiredClearance = value.wallThicknessCells * 2 + 1;
+  if (value.minimumClearanceCells < requiredClearance) {
+    throw new ExperimentError(
+      400,
+      'clearance_too_small_for_walls',
+      `minimumClearanceCells must be at least ${requiredClearance} for wallThicknessCells=${value.wallThicknessCells}.`,
+    );
+  }
+  return {
+    schemaVersion: 1,
+    minimumClearanceCells: value.minimumClearanceCells,
+    contactPolicy: 'glued_exits_only',
+    wallThicknessCells: value.wallThicknessCells,
+    doorwayWidthCells: 1,
+    preservePieceBoundaries: true,
+  };
+}
+
+function assertExactKeys(value, expected, label) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ExperimentError(400, `invalid_${label}`, `${label} must be an object.`);
+  }
+  const actual = Object.keys(value).sort();
+  const wanted = [...expected].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(wanted)) {
+    throw new ExperimentError(400, `invalid_${label}_fields`, `${label} must contain exactly: ${wanted.join(', ')}.`);
+  }
+}
+
+function assertBoundedInteger(value, min, max, label) {
+  if (!Number.isInteger(value) || value < min || value > max) {
+    throw new ExperimentError(400, `invalid_${label}`, `${label} must be an integer from ${min} through ${max}.`);
+  }
+}
+
+function safeExperimentSourcePath(relativePath, allowedRelativeRoot) {
+  const filePath = resolve(repoRoot, relativePath);
+  const allowedRoot = resolve(repoRoot, allowedRelativeRoot);
+  if (!isInside(filePath, allowedRoot)) {
+    throw new ExperimentError(422, 'unsafe_artifact_reference', `Candidate contains an out-of-scope ${allowedRelativeRoot} reference.`);
+  }
+  return filePath;
+}
+
+async function runProcgen(args) {
+  await execFileAsync('cargo', [
+    'run', '--quiet',
+    '--manifest-path', join(repoRoot, 'procgen-rs/Cargo.toml'),
+    '--bin', 'asha-procgen',
+    '--',
+    ...args,
+  ], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    maxBuffer: 1024 * 1024,
+    timeout: 30_000,
+  });
 }
 
 function contentType(filePath) {

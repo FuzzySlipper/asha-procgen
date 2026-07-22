@@ -477,6 +477,60 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'wheel_zoom');
     const wheelZoom = await inspectionDataset(cdp);
 
+    const submittedPolicy = await evaluateCdp(cdp, `(() => {
+      const clearance = document.querySelector('#placement-policy-clearance');
+      const wall = document.querySelector('#placement-policy-wall-thickness');
+      const form = document.querySelector('#placement-policy-form');
+      if (!(clearance instanceof HTMLInputElement) || !(wall instanceof HTMLInputElement) || !(form instanceof HTMLFormElement)) {
+        return false;
+      }
+      clearance.value = '5';
+      clearance.dispatchEvent(new Event('input', { bubbles: true }));
+      wall.value = '2';
+      wall.dispatchEvent(new Event('input', { bubbles: true }));
+      form.requestSubmit();
+      return true;
+    })()`);
+    if (!submittedPolicy) {
+      throw new Error('placement policy controls were not available in Voxel 3D');
+    }
+    await waitForCdpValue(cdp, `document.querySelector('#placement-policy-status')?.dataset.state`, 'ready');
+    await waitForCdpValue(cdp, `document.querySelector('#placement-policy-panel')?.dataset.mode`, 'experiment');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'experiment');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash !== ${JSON.stringify(initial.frameHash)}`, true);
+    const policyExperiment = await inspectionDataset(cdp);
+    const experimentReadout = await evaluateCdp(cdp, `(() => {
+      const panel = document.querySelector('#placement-policy-panel');
+      const status = document.querySelector('#placement-policy-status');
+      return {
+        mode: panel?.dataset.mode,
+        clearance: Number(panel?.dataset.minimumClearanceCells),
+        wallThickness: Number(panel?.dataset.wallThicknessCells),
+        experimentId: panel?.dataset.experimentId,
+        status: status?.textContent,
+      };
+    })()`);
+    if (
+      experimentReadout.clearance !== 5
+      || experimentReadout.wallThickness !== 2
+      || typeof experimentReadout.experimentId !== 'string'
+      || experimentReadout.experimentId.length === 0
+      || typeof experimentReadout.status !== 'string'
+      || !experimentReadout.status.includes('no native authority claim')
+    ) {
+      throw new Error(`placement policy experiment readout was incomplete: ${JSON.stringify(experimentReadout)}`);
+    }
+    await evaluateCdp(cdp, `document.querySelector('[data-view="voxel"]')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#layout')?.textContent.includes('no native authority receipt')`, true);
+    await evaluateCdp(cdp, `document.querySelector('[data-view="voxel3d"]')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
+
+    await evaluateCdp(cdp, `document.querySelector('#placement-policy-reset')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#placement-policy-panel')?.dataset.mode`, 'committed');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'committed');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash`, initial.frameHash);
+    const policyReset = await inspectionDataset(cdp);
+
     const screenshot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
     await writeFile(join(outDir, 'voxel-3d-desktop.png'), screenshot.data, 'base64');
 
@@ -513,6 +567,15 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
       initialDistance: initial.cameraDistance,
       finalDistance: wheelZoom.cameraDistance,
       controlPaths: ['keyboard_orbit', 'keyboard_movement', 'keyboard_zoom', 'pointer_orbit', 'wheel_zoom'],
+      policyExperiment: {
+        experimentId: experimentReadout.experimentId,
+        clearance: experimentReadout.clearance,
+        wallThickness: experimentReadout.wallThickness,
+        frameHash: policyExperiment.frameHash,
+        resetFrameHash: policyReset.frameHash,
+        temporary: true,
+        nativeAuthority: false,
+      },
       gridLines: replacement.gridLineCount,
       initialGridRevision: initial.gridRevision,
       replacementGridRevision: replacement.gridRevision,
@@ -538,6 +601,9 @@ async function inspectionDataset(cdp) {
       gridLineCount: Number(data.gridLineCount),
       lastCameraChange: data.lastCameraChange,
       placementId: data.placementId,
+      frameHash: data.frameHash,
+      policyMode: data.policyMode,
+      policyExperimentId: data.policyExperimentId,
     };
   })()`);
 }

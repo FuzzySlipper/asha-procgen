@@ -101,6 +101,14 @@ corpus against the renderer host's public per-frame operation limit. This
 compaction changes only renderer node count; it does not alter placement,
 extrusion, or authoritative voxel commands.
 
+The Build, Voxel, and Voxel 3D tabs also expose a temporary placement-policy
+experiment panel. `minimumClearanceCells` and `wallThicknessCells` are editable;
+applying them reruns the selected candidate's Rust assembly and placement
+validation stages in a bounded temporary workspace before refreshing all three
+views. Schema-v1-only values remain visibly locked. Experiments never rewrite
+fixtures or sample artifacts and never inherit a matching native-authority
+claim; Reset restores the committed placement.
+
 ## ASHA Boundary
 
 Use public ASHA package roots and documented subpaths only. If a prototype needs

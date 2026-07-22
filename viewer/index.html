@@ -23,6 +23,36 @@
           <button class="view-tab" type="button" data-view="voxel3d" data-selected="false">Voxel 3D</button>
           <button class="view-tab" type="button" data-view="catalog" data-selected="false">Catalog</button>
         </div>
+        <section id="placement-policy-panel" class="placement-policy-panel" aria-label="Placement policy experiment" hidden>
+          <div class="placement-policy-heading">
+            <div>
+              <h2>Placement policy experiment</h2>
+              <p>Reassemble the selected candidate in Rust. Temporary preview only; no fixture or native authority mutation.</p>
+            </div>
+            <p class="placement-policy-mode" id="placement-policy-mode">Committed policy</p>
+          </div>
+          <form id="placement-policy-form" class="placement-policy-form">
+            <label>
+              <span>Minimum clearance</span>
+              <input id="placement-policy-clearance" name="minimumClearanceCells" type="number" min="3" max="64" step="1" required>
+            </label>
+            <label>
+              <span>Wall thickness</span>
+              <input id="placement-policy-wall-thickness" name="wallThicknessCells" type="number" min="1" max="8" step="1" required>
+            </label>
+            <div class="placement-policy-locked" aria-label="Locked schema version 1 values">
+              <span>Locked in schema v1</span>
+              <code>contact glued_exits_only</code>
+              <code>doorway 1</code>
+              <code>boundaries preserved</code>
+            </div>
+            <div class="placement-policy-actions">
+              <button id="placement-policy-apply" type="submit">Apply and rebuild</button>
+              <button id="placement-policy-reset" type="button">Reset committed</button>
+            </div>
+          </form>
+          <p id="placement-policy-status" class="placement-policy-status" role="status">Select a generated candidate to experiment.</p>
+        </section>
         <svg id="layout" role="img" aria-label="Generated dungeon preview"></svg>
         <section id="voxel-3d-panel" class="voxel-3d-panel" aria-label="Engine-rendered voxel inspection" hidden>
           <div class="voxel-3d-header">

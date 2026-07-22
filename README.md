@@ -107,7 +107,11 @@ applying them reruns the selected candidate's Rust assembly and placement
 validation stages in a bounded temporary workspace before refreshing all three
 views. Schema-v1-only values remain visibly locked. Experiments never rewrite
 fixtures or sample artifacts and never inherit a matching native-authority
-claim; Reset restores the committed placement.
+claim; Reset restores the committed placement. Clearance changes room-footprint
+separation, while wall thickness is a corridor-routing safety buffer rather
+than rendered wall width. The viewer auto-fits each result, so the panel reports
+before/after grid bounds and routed-cell counts and provides presets with
+meaningfully different scales.
 
 ## ASHA Boundary
 

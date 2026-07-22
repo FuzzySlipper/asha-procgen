@@ -45,6 +45,7 @@ try {
   }
 
   await postExperiment({ candidateId, placementPolicy: placementPolicy(3, 2) }, 400, 'clearance_too_small_for_walls');
+  await postExperiment({ candidateId, placementPolicy: placementPolicy(1, 1) }, 400, 'invalid_minimumClearanceCells');
   await postExperiment({ candidateId: 'candidate.unknown', placementPolicy: policy }, 404, 'candidate_not_found');
   await postExperiment({
     candidateId,

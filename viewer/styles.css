@@ -261,6 +261,8 @@ body {
 
 .placement-policy-heading h2,
 .placement-policy-heading p,
+.placement-policy-validation,
+.placement-policy-impact,
 .placement-policy-status {
   margin: 0;
 }
@@ -270,6 +272,9 @@ body {
 }
 
 .placement-policy-heading p,
+.placement-policy-form small,
+.placement-policy-validation,
+.placement-policy-impact,
 .placement-policy-status,
 .placement-policy-locked {
   color: var(--text-muted);
@@ -304,6 +309,11 @@ body {
   font-weight: 700;
 }
 
+.placement-policy-form small {
+  font-weight: 500;
+  line-height: 1.35;
+}
+
 .placement-policy-form input {
   min-height: 34px;
   width: 100%;
@@ -318,6 +328,10 @@ body {
 .placement-policy-form input:focus {
   border-color: var(--border-strong);
   outline: none;
+}
+
+.placement-policy-form input:invalid {
+  border-color: var(--danger);
 }
 
 .placement-policy-locked {
@@ -353,15 +367,65 @@ body {
   padding: 6px 9px;
 }
 
+.placement-policy-presets {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+
+.placement-policy-presets legend {
+  padding: 0 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.placement-policy-presets button {
+  min-height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--text-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+}
+
+.placement-policy-presets button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: #eff8ff;
+}
+
 .placement-policy-actions button:hover:not(:disabled) {
   border-color: var(--border-strong);
   color: #eff8ff;
 }
 
 .placement-policy-actions button:disabled,
-.placement-policy-form input:disabled {
+.placement-policy-form input:disabled,
+.placement-policy-presets button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.placement-policy-validation[data-state="invalid"] {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.placement-policy-impact {
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
 }
 
 .placement-policy-status[data-state="ready"] {

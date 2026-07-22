@@ -441,6 +441,8 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     if (initial.gridLineCount <= 0 || initial.gridRevision < 1) {
       throw new Error(`engine grid was not realized: lines=${initial.gridLineCount}, revision=${initial.gridRevision}`);
     }
+    await evaluateCdp(cdp, `document.querySelector('#voxel-3d-canvas')?.scrollIntoView({ block: 'center' })`);
+    await delay(100);
     const rect = await evaluateCdp(cdp, `(() => {
       const rect = document.querySelector('#voxel-3d-canvas').getBoundingClientRect();
       return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
@@ -477,17 +479,39 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'wheel_zoom');
     const wheelZoom = await inspectionDataset(cdp);
 
-    const submittedPolicy = await evaluateCdp(cdp, `(() => {
+    const invalidPolicyReadout = await evaluateCdp(cdp, `(() => {
       const clearance = document.querySelector('#placement-policy-clearance');
+      const validation = document.querySelector('#placement-policy-validation');
+      const apply = document.querySelector('#placement-policy-apply');
+      if (!(clearance instanceof HTMLInputElement) || !(apply instanceof HTMLButtonElement)) {
+        return null;
+      }
+      clearance.value = '1';
+      clearance.dispatchEvent(new Event('input', { bubbles: true }));
+      return {
+        valid: clearance.validity.valid,
+        state: validation?.dataset.state,
+        message: validation?.textContent,
+        applyDisabled: apply.disabled,
+      };
+    })()`);
+    if (
+      invalidPolicyReadout?.valid !== false
+      || invalidPolicyReadout?.state !== 'invalid'
+      || !String(invalidPolicyReadout?.message).includes('requires at least 3')
+      || invalidPolicyReadout?.applyDisabled !== false
+    ) {
+      throw new Error(`invalid placement policy was not explained inline: ${JSON.stringify(invalidPolicyReadout)}`);
+    }
+
+    const submittedPolicy = await evaluateCdp(cdp, `(() => {
       const wall = document.querySelector('#placement-policy-wall-thickness');
       const form = document.querySelector('#placement-policy-form');
-      if (!(clearance instanceof HTMLInputElement) || !(wall instanceof HTMLInputElement) || !(form instanceof HTMLFormElement)) {
+      const preset = document.querySelector('[data-policy-preset][data-clearance="8"][data-wall-thickness="1"]');
+      if (!(wall instanceof HTMLInputElement) || !(form instanceof HTMLFormElement) || !(preset instanceof HTMLButtonElement)) {
         return false;
       }
-      clearance.value = '5';
-      clearance.dispatchEvent(new Event('input', { bubbles: true }));
-      wall.value = '2';
-      wall.dispatchEvent(new Event('input', { bubbles: true }));
+      preset.click();
       form.requestSubmit();
       return true;
     })()`);
@@ -502,21 +526,26 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     const experimentReadout = await evaluateCdp(cdp, `(() => {
       const panel = document.querySelector('#placement-policy-panel');
       const status = document.querySelector('#placement-policy-status');
+      const impact = document.querySelector('#placement-policy-impact');
       return {
         mode: panel?.dataset.mode,
         clearance: Number(panel?.dataset.minimumClearanceCells),
         wallThickness: Number(panel?.dataset.wallThicknessCells),
         experimentId: panel?.dataset.experimentId,
         status: status?.textContent,
+        impact: impact?.textContent,
       };
     })()`);
     if (
-      experimentReadout.clearance !== 5
-      || experimentReadout.wallThickness !== 2
+      experimentReadout.clearance !== 8
+      || experimentReadout.wallThickness !== 1
       || typeof experimentReadout.experimentId !== 'string'
       || experimentReadout.experimentId.length === 0
       || typeof experimentReadout.status !== 'string'
       || !experimentReadout.status.includes('no native authority claim')
+      || typeof experimentReadout.impact !== 'string'
+      || !experimentReadout.impact.includes('Generation impact: footprint')
+      || !experimentReadout.impact.includes('Camera auto-fit')
     ) {
       throw new Error(`placement policy experiment readout was incomplete: ${JSON.stringify(experimentReadout)}`);
     }

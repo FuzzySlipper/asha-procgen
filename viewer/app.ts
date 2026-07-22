@@ -399,7 +399,10 @@ const policyWallThickness = document.querySelector<HTMLInputElement>('#placement
 const policyApply = document.querySelector<HTMLButtonElement>('#placement-policy-apply');
 const policyReset = document.querySelector<HTMLButtonElement>('#placement-policy-reset');
 const policyMode = document.querySelector<HTMLElement>('#placement-policy-mode');
+const policyValidation = document.querySelector<HTMLElement>('#placement-policy-validation');
+const policyImpact = document.querySelector<HTMLElement>('#placement-policy-impact');
 const policyStatus = document.querySelector<HTMLElement>('#placement-policy-status');
+const policyPresets = document.querySelectorAll<HTMLButtonElement>('[data-policy-preset]');
 
 if (
   svg === null
@@ -416,6 +419,8 @@ if (
   || policyApply === null
   || policyReset === null
   || policyMode === null
+  || policyValidation === null
+  || policyImpact === null
   || policyStatus === null
 ) {
   throw new Error('viewer mount elements are missing');
@@ -437,7 +442,10 @@ const placementPolicyWallThickness = policyWallThickness;
 const placementPolicyApply = policyApply;
 const placementPolicyReset = policyReset;
 const placementPolicyMode = policyMode;
+const placementPolicyValidation = policyValidation;
+const placementPolicyImpact = policyImpact;
 const placementPolicyStatus = policyStatus;
+const placementPolicyPresets = policyPresets;
 const batch = await fetchBatch();
 const voxelEvidence = await fetchVoxelEvidence();
 const viewerSearch = new URLSearchParams(location.search);
@@ -474,6 +482,13 @@ placementPolicyForm.addEventListener('submit', (event) => {
 placementPolicyReset.addEventListener('click', resetPlacementPolicyExperiment);
 placementPolicyClearance.addEventListener('input', validatePlacementPolicyControls);
 placementPolicyWallThickness.addEventListener('input', validatePlacementPolicyControls);
+for (const preset of placementPolicyPresets) {
+  preset.addEventListener('click', () => {
+    placementPolicyClearance.value = preset.dataset.clearance ?? '';
+    placementPolicyWallThickness.value = preset.dataset.wallThickness ?? '';
+    validatePlacementPolicyControls();
+  });
+}
 window.addEventListener('pagehide', () => {
   policyExperimentRevision += 1;
   voxelInspectionRevision += 1;
@@ -654,6 +669,9 @@ function syncPlacementPolicyControls(): void {
   placementPolicyClearance.disabled = !enabled || policyExperimentBusy;
   placementPolicyWallThickness.disabled = !enabled || policyExperimentBusy;
   placementPolicyReset.disabled = !experimentActive || policyExperimentBusy;
+  for (const preset of placementPolicyPresets) {
+    preset.disabled = !enabled || policyExperimentBusy;
+  }
   if (!enabled) {
     setPlacementPolicyStatus('idle', 'Select a generated candidate to experiment.');
   } else if (experimentActive) {
@@ -662,6 +680,7 @@ function syncPlacementPolicyControls(): void {
     setPlacementPolicyStatus('idle', 'Committed placement active. Change a value and apply to rerun Rust assembly.');
   }
   validatePlacementPolicyControls();
+  updatePlacementPolicyImpact();
 }
 
 function policyFromControls(): PiecePlacementPolicy | null {
@@ -686,18 +705,23 @@ function validatePlacementPolicyControls(): boolean {
   if (!Number.isInteger(wallThickness) || wallThickness < 1 || wallThickness > 8) {
     wallIssue = 'Wall thickness must be an integer from 1 through 8.';
   }
-  if (!Number.isInteger(clearance) || clearance < 3 || clearance > 64) {
-    clearanceIssue = 'Minimum clearance must be an integer from 3 through 64.';
-  } else if (wallIssue === '') {
-    const required = wallThickness * 2 + 1;
-    if (clearance < required) {
-      clearanceIssue = `Minimum clearance must be at least ${required} for wall thickness ${wallThickness}.`;
-    }
+  const requiredClearance = wallIssue === '' ? Math.max(3, wallThickness * 2 + 1) : 3;
+  placementPolicyClearance.min = String(requiredClearance);
+  if (!Number.isInteger(clearance)) {
+    clearanceIssue = 'Room clearance must be a whole number.';
+  } else if (clearance < requiredClearance) {
+    clearanceIssue = `Room clearance ${clearance} is invalid: route wall buffer ${wallThickness} requires at least ${requiredClearance} (2 × ${wallThickness} + 1).`;
+  } else if (clearance > 64) {
+    clearanceIssue = 'Room clearance must be 64 or less.';
   }
   placementPolicyClearance.setCustomValidity(clearanceIssue);
   placementPolicyWallThickness.setCustomValidity(wallIssue);
   const valid = clearanceIssue === '' && wallIssue === '';
-  placementPolicyApply.disabled = !valid || currentSelection === null || committedPlacement === null || policyExperimentBusy;
+  placementPolicyValidation.dataset.state = valid ? 'valid' : 'invalid';
+  placementPolicyValidation.textContent = valid
+    ? `Valid policy. Target room-origin scale: ${clearance + wallThickness} cells. The view will auto-fit; compare the footprint below after applying.`
+    : clearanceIssue || wallIssue;
+  placementPolicyApply.disabled = currentSelection === null || committedPlacement === null || policyExperimentBusy;
   return valid;
 }
 
@@ -706,7 +730,46 @@ function setPlacementPolicyBusy(busy: boolean): void {
   placementPolicyClearance.disabled = busy || currentSelection === null;
   placementPolicyWallThickness.disabled = busy || currentSelection === null;
   placementPolicyReset.disabled = busy || currentPolicyExperimentId === null;
+  for (const preset of placementPolicyPresets) {
+    preset.disabled = busy || currentSelection === null;
+  }
   validatePlacementPolicyControls();
+}
+
+interface PlacementPolicyMetrics {
+  readonly width: number;
+  readonly height: number;
+  readonly routedCells: number;
+}
+
+function placementPolicyMetrics(placement: PiecePlacement): PlacementPolicyMetrics {
+  const cells = [...placement.occupiedCells, ...placement.connectionCells];
+  if (cells.length === 0) {
+    return { width: 0, height: 0, routedCells: placement.connectionCells.length };
+  }
+  const xs = cells.map((cell) => cell.x);
+  const ys = cells.map((cell) => cell.y);
+  return {
+    width: Math.max(...xs) - Math.min(...xs) + 1,
+    height: Math.max(...ys) - Math.min(...ys) + 1,
+    routedCells: placement.connectionCells.length,
+  };
+}
+
+function updatePlacementPolicyImpact(): void {
+  if (committedPlacement === null) {
+    placementPolicyImpact.textContent = 'Waiting for a committed placement.';
+    return;
+  }
+  const committed = placementPolicyMetrics(committedPlacement);
+  if (currentPolicyExperimentId === null || currentPlacement === null) {
+    placementPolicyImpact.textContent = `Committed footprint: ${committed.width} × ${committed.height} cells; ${committed.routedCells.toLocaleString()} routed corridor cells.`;
+    return;
+  }
+  const experiment = placementPolicyMetrics(currentPlacement);
+  const routedDelta = experiment.routedCells - committed.routedCells;
+  const routedDeltaLabel = `${routedDelta >= 0 ? '+' : ''}${routedDelta.toLocaleString()}`;
+  placementPolicyImpact.textContent = `Generation impact: footprint ${committed.width} × ${committed.height} → ${experiment.width} × ${experiment.height}; routed corridor cells ${committed.routedCells.toLocaleString()} → ${experiment.routedCells.toLocaleString()} (${routedDeltaLabel}). Camera auto-fit can make the visual scale look similar.`;
 }
 
 function setPlacementPolicyStatus(state: 'idle' | 'loading' | 'ready' | 'error', message: string): void {

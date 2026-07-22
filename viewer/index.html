@@ -27,18 +27,20 @@
           <div class="placement-policy-heading">
             <div>
               <h2>Placement policy experiment</h2>
-              <p>Reassemble the selected candidate in Rust. Temporary preview only; no fixture or native authority mutation.</p>
+              <p>Reassemble the same room plan in Rust with different separation and routing safety margins. The views auto-fit, so use the footprint readout to compare results.</p>
             </div>
             <p class="placement-policy-mode" id="placement-policy-mode">Committed policy</p>
           </div>
           <form id="placement-policy-form" class="placement-policy-form">
             <label>
-              <span>Minimum clearance</span>
-              <input id="placement-policy-clearance" name="minimumClearanceCells" type="number" min="3" max="64" step="1" required>
+              <span>Room clearance</span>
+              <input id="placement-policy-clearance" name="minimumClearanceCells" type="number" min="3" max="64" step="1" required aria-describedby="placement-policy-clearance-help placement-policy-validation">
+              <small id="placement-policy-clearance-help">Moves room footprints apart. Values 3–12 are the useful interactive range.</small>
             </label>
             <label>
-              <span>Wall thickness</span>
-              <input id="placement-policy-wall-thickness" name="wallThicknessCells" type="number" min="1" max="8" step="1" required>
+              <span>Route wall buffer</span>
+              <input id="placement-policy-wall-thickness" name="wallThicknessCells" type="number" min="1" max="8" step="1" required aria-describedby="placement-policy-wall-help placement-policy-validation">
+              <small id="placement-policy-wall-help">Keeps corridors away from rooms; it does not draw thicker walls. One is recommended.</small>
             </label>
             <div class="placement-policy-locked" aria-label="Locked schema version 1 values">
               <span>Locked in schema v1</span>
@@ -50,7 +52,16 @@
               <button id="placement-policy-apply" type="submit">Apply and rebuild</button>
               <button id="placement-policy-reset" type="button">Reset committed</button>
             </div>
+            <fieldset class="placement-policy-presets">
+              <legend>Useful presets</legend>
+              <button type="button" data-policy-preset data-clearance="3" data-wall-thickness="1">Compact · 3/1</button>
+              <button type="button" data-policy-preset data-clearance="5" data-wall-thickness="1">Roomy · 5/1</button>
+              <button type="button" data-policy-preset data-clearance="8" data-wall-thickness="1">Spacious · 8/1</button>
+              <button type="button" data-policy-preset data-clearance="5" data-wall-thickness="2">Wide route buffer · 5/2</button>
+            </fieldset>
           </form>
+          <p id="placement-policy-validation" class="placement-policy-validation" role="alert" data-state="valid">Choose a preset or enter whole numbers. Clearance must be at least 2 × route wall buffer + 1.</p>
+          <p id="placement-policy-impact" class="placement-policy-impact">Waiting for a committed placement.</p>
           <p id="placement-policy-status" class="placement-policy-status" role="status">Select a generated candidate to experiment.</p>
         </section>
         <svg id="layout" role="img" aria-label="Generated dungeon preview"></svg>

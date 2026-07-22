@@ -94,6 +94,13 @@ or arrow-key orbit, focused W/A/S/D movement, and keyboard/wheel zoom. It is
 projection-only visual evidence, not RuntimeSession,
 collision, navigation, native-render, or performance authority.
 
+Before submission, the presentation projection deterministically partitions
+same-material voxels into lossless maximal cuboids. The projection smoke
+reconstructs every cuboid cell-by-cell and checks the complete accepted sample
+corpus against the renderer host's public per-frame operation limit. This
+compaction changes only renderer node count; it does not alter placement,
+extrusion, or authoritative voxel commands.
+
 ## ASHA Boundary
 
 Use public ASHA package roots and documented subpaths only. If a prototype needs

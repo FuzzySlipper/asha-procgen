@@ -48,7 +48,7 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
     throw new Error(`extrusion ${plan.placementId} has no ceiling layer at y=${ceilingY}`);
   }
 
-  const boxes = compactInspectionVoxels(projectedVoxels, plan.buildBounds.min.y);
+  const boxes = compactInspectionVoxels(projectedVoxels);
   const voxelOps: RenderDiff[] = boxes.map((box, index) => ({
     op: 'create',
     handle: renderHandle(index + 1),
@@ -162,60 +162,145 @@ export function buildVoxelInspectionProjection(plan: VoxelExtrusionPlan): VoxelI
 
 function compactInspectionVoxels(
   voxels: VoxelExtrusionPlan['solidVoxels'],
-  floorY: number,
 ): readonly VoxelInspectionBox[] {
-  const groups = new Map<string, typeof voxels[number][]>();
+  const materialByCell = new Map<string, number>();
   for (const voxel of voxels) {
-    const groupKey = voxel.coord.y === floorY
-      ? `floor:${voxel.coord.y}:${voxel.coord.z}:${voxel.material}`
-      : `wall:${voxel.coord.x}:${voxel.coord.z}:${voxel.material}`;
-    const group = groups.get(groupKey) ?? [];
-    group.push(voxel);
-    groups.set(groupKey, group);
+    materialByCell.set(inspectionCellKey(voxel.coord.x, voxel.coord.y, voxel.coord.z), voxel.material);
   }
 
-  const boxes: VoxelInspectionBox[] = [];
-  for (const group of groups.values()) {
-    const floorRun = group[0]?.coord.y === floorY;
-    const sorted = [...group].sort((left, right) => floorRun
-      ? left.coord.x - right.coord.x
-      : left.coord.y - right.coord.y);
-    let runStart = sorted[0];
-    let previous = sorted[0];
-    for (const voxel of sorted.slice(1)) {
-      const contiguous = floorRun
-        ? voxel.coord.x === (previous?.coord.x ?? 0) + 1
-        : voxel.coord.y === (previous?.coord.y ?? 0) + 1;
-      if (!contiguous && runStart !== undefined && previous !== undefined) {
-        boxes.push(boxForRun(runStart, previous));
-        runStart = voxel;
-      }
-      previous = voxel;
-    }
-    if (runStart !== undefined && previous !== undefined) {
-      boxes.push(boxForRun(runStart, previous));
-    }
-  }
-  return boxes.sort((left, right) =>
-    left.min[0] - right.min[0]
-    || left.min[1] - right.min[1]
-    || left.min[2] - right.min[2]
+  const remaining = new Set(materialByCell.keys());
+  const seeds = [...voxels].sort((left, right) =>
+    left.coord.x - right.coord.x
+    || left.coord.y - right.coord.y
+    || left.coord.z - right.coord.z
     || left.material - right.material);
+  const boxes: VoxelInspectionBox[] = [];
+  for (const seed of seeds) {
+    const seedKey = inspectionCellKey(seed.coord.x, seed.coord.y, seed.coord.z);
+    if (!remaining.has(seedKey)) {
+      continue;
+    }
+
+    const candidates = INSPECTION_GROWTH_ORDERS.map((order) => {
+      let candidate = inspectionUnitBox(seed);
+      for (const axis of order) {
+        while (canGrowInspectionBox(candidate, axis, seed.material, materialByCell, remaining)) {
+          candidate = growInspectionBox(candidate, axis);
+        }
+      }
+      return candidate;
+    });
+    const selected = candidates.reduce((best, candidate) =>
+      candidate.voxelCount > best.voxelCount ? candidate : best);
+    forEachInspectionCell(selected, (x, y, z) => {
+      remaining.delete(inspectionCellKey(x, y, z));
+    });
+    boxes.push(selected);
+  }
+  if (remaining.size !== 0) {
+    throw new Error(`inspection compaction left ${remaining.size} voxels unrepresented`);
+  }
+  return boxes.sort(compareInspectionBoxes);
 }
 
-function boxForRun(
-  first: VoxelExtrusionPlan['solidVoxels'][number],
-  last: VoxelExtrusionPlan['solidVoxels'][number],
+type InspectionAxis = 0 | 1 | 2;
+
+const INSPECTION_GROWTH_ORDERS: readonly (readonly InspectionAxis[])[] = [
+  [0, 2, 1],
+  [2, 0, 1],
+  [1, 0, 2],
+  [0, 1, 2],
+  [2, 1, 0],
+  [1, 2, 0],
+];
+
+function inspectionUnitBox(
+  voxel: VoxelExtrusionPlan['solidVoxels'][number],
 ): VoxelInspectionBox {
-  const min = [first.coord.x, first.coord.y, first.coord.z] as const;
-  const maxExclusive = [last.coord.x + 1, last.coord.y + 1, last.coord.z + 1] as const;
+  return inspectionBox(
+    [voxel.coord.x, voxel.coord.y, voxel.coord.z],
+    [voxel.coord.x + 1, voxel.coord.y + 1, voxel.coord.z + 1],
+    voxel.material,
+  );
+}
+
+function canGrowInspectionBox(
+  box: VoxelInspectionBox,
+  axis: InspectionAxis,
+  material: number,
+  materialByCell: ReadonlyMap<string, number>,
+  remaining: ReadonlySet<string>,
+): boolean {
+  const layerMin = [...box.min] as [number, number, number];
+  const layerMax = [...box.maxExclusive] as [number, number, number];
+  layerMin[axis] = box.maxExclusive[axis];
+  layerMax[axis] = box.maxExclusive[axis] + 1;
+  let valid = true;
+  forEachInspectionBounds(layerMin, layerMax, (x, y, z) => {
+    const key = inspectionCellKey(x, y, z);
+    if (!remaining.has(key) || materialByCell.get(key) !== material) {
+      valid = false;
+    }
+  });
+  return valid;
+}
+
+function growInspectionBox(
+  box: VoxelInspectionBox,
+  axis: InspectionAxis,
+): VoxelInspectionBox {
+  const maxExclusive = [...box.maxExclusive] as [number, number, number];
+  maxExclusive[axis] += 1;
+  return inspectionBox(box.min, maxExclusive, box.material);
+}
+
+function inspectionBox(
+  min: readonly [number, number, number],
+  maxExclusive: readonly [number, number, number],
+  material: number,
+): VoxelInspectionBox {
   return {
     min,
     maxExclusive,
-    material: first.material,
+    material,
     voxelCount:
       (maxExclusive[0] - min[0])
       * (maxExclusive[1] - min[1])
       * (maxExclusive[2] - min[2]),
   };
+}
+
+function forEachInspectionCell(
+  box: VoxelInspectionBox,
+  visit: (x: number, y: number, z: number) => void,
+): void {
+  forEachInspectionBounds(box.min, box.maxExclusive, visit);
+}
+
+function forEachInspectionBounds(
+  min: readonly [number, number, number],
+  maxExclusive: readonly [number, number, number],
+  visit: (x: number, y: number, z: number) => void,
+): void {
+  for (let x = min[0]; x < maxExclusive[0]; x += 1) {
+    for (let y = min[1]; y < maxExclusive[1]; y += 1) {
+      for (let z = min[2]; z < maxExclusive[2]; z += 1) {
+        visit(x, y, z);
+      }
+    }
+  }
+}
+
+function inspectionCellKey(x: number, y: number, z: number): string {
+  return `${x}:${y}:${z}`;
+}
+
+function compareInspectionBoxes(left: VoxelInspectionBox, right: VoxelInspectionBox): number {
+  return left.min[0] - right.min[0]
+    || left.min[1] - right.min[1]
+    || left.min[2] - right.min[2]
+    || left.maxExclusive[0] - right.maxExclusive[0]
+    || left.maxExclusive[1] - right.maxExclusive[1]
+    || left.maxExclusive[2] - right.maxExclusive[2]
+    || left.material - right.material;
 }

@@ -422,8 +422,12 @@ Its separate Voxel 3D tab sends a ceiling-free floor/wall projection through
 the public engine-owned inspection renderer and procedural grid. Drag with the
 primary mouse button or use Arrow keys to orbit; focus the canvas and use
 W/A/S/D to move, and use +/− or the wheel to zoom. Candidate changes atomically
-replace the retained frame and grid. This tab is projection-only inspection and does not
-claim runtime, collision, navigation, native-render, or performance authority.
+replace the retained frame and grid. The downstream projection compacts
+same-material cells into deterministic maximal cuboids, and its smoke expands
+those cuboids cell-by-cell to prove exact, non-overlapping material coverage for
+every accepted sample before checking the public renderer frame-op limit. This
+tab is projection-only inspection and does not claim runtime, collision,
+navigation, native-render, or performance authority.
 
 ## Verification
 

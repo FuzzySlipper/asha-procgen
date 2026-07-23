@@ -473,6 +473,11 @@ For optional preview-site evidence:
 npm run viewer:smoke
 ```
 
+`npm run viewer:serve` builds the browser bundle and serves the already
+verified committed artifacts so managed health checks are not blocked by the
+bounded-but-expensive batch search. Use `npm run viewer:serve:regenerate` only
+when intentionally rebuilding baseline and batch evidence before serving.
+
 The focused placement- and geometry-policy endpoint contracts can be checked
 separately:
 

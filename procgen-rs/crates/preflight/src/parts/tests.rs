@@ -1922,6 +1922,88 @@ mod tests {
     }
 
     #[test]
+    fn built_flow_validation_detects_a_post_gate_physical_bypass() {
+        let (candidate, geometry, plan, mut placement) = full_stack_built_flow_fixture(1351);
+        let args = BuildValidateFlowArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            piece_plan: PathBuf::from("artifacts/test/piece-plan.json"),
+            piece_placement: PathBuf::from("artifacts/test/piece-placement.json"),
+            out: PathBuf::from("artifacts/test/built-flow.validation.json"),
+        };
+        let no_items = BTreeSet::new();
+        let source_nodes = source_reachable_nodes(&candidate, &no_items);
+        let locked_edge = candidate
+            .graph
+            .edges
+            .iter()
+            .find(|edge| {
+                edge.required_item.is_some()
+                    && source_nodes.contains(&edge.from)
+                    && !source_nodes.contains(&edge.to)
+            })
+            .expect("fixture should contain a reachable locked threshold");
+        let portal = placement
+            .gate_portals
+            .iter()
+            .find(|portal| portal.source_edges.contains(&locked_edge.id))
+            .expect("locked source edge should have a controlled portal");
+        let portal_glue = placement
+            .glued_exits
+            .iter()
+            .find(|glued| glued.link_id == portal.link_id)
+            .expect("controlled portal should identify its glued route");
+        let connection_owner = format!("connection.{}", slugify_label(portal_glue.id.as_str()));
+        let closed_portal_cells = placement
+            .gate_portals
+            .iter()
+            .filter(|portal| !portal_open_for_items(portal, &no_items))
+            .flat_map(|portal| portal.cells.iter().map(|cell| (cell.x, cell.y)))
+            .collect::<BTreeSet<_>>();
+        let post_gate_cell = placement
+            .connection_cells
+            .iter()
+            .find(|cell| {
+                cell.instance_id == connection_owner
+                    && !closed_portal_cells.contains(&(cell.x, cell.y))
+            })
+            .map(|cell| (cell.x, cell.y))
+            .expect("locked route should continue beyond its portal");
+        let reachable_cell = placement
+            .instances
+            .iter()
+            .find(|instance| {
+                instance.source_refs.iter().any(|source_ref| {
+                    source_ref
+                        .strip_prefix("node:")
+                        .is_some_and(|node| source_nodes.contains(node))
+                })
+            })
+            .and_then(|instance| instance.occupied_cells.first())
+            .map(|cell| (cell.x, cell.y))
+            .expect("fixture should have a physically realized reachable node");
+        let bypass_path = test_cardinal_path_avoiding(
+            post_gate_cell,
+            reachable_cell,
+            &closed_portal_cells,
+            &placement_walkable_cells(&placement),
+        );
+        placement
+            .connection_cells
+            .extend(bypass_path.into_iter().map(|(x, y)| PlacementCellRef {
+                instance_id: connection_owner.clone(),
+                x,
+                y,
+            }));
+
+        let report = validate_built_flow(&candidate, &geometry, &plan, &placement, &args);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "built_flow_reachability_mismatch"
+                && diagnostic.detail.contains(locked_edge.to.as_str())
+        }));
+    }
+
+    #[test]
     fn grid_connectivity_distinguishes_cardinal_and_diagonal_neighbors() {
         let cardinal = (1, 0);
         let diagonal = (1, 1);
@@ -2058,6 +2140,71 @@ mod tests {
         let placement = assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args)
             .expect("piece placement should assemble");
         (candidate, geometry, piece_plan, placement)
+    }
+
+    fn test_cardinal_path_avoiding(
+        start: (i32, i32),
+        goal: (i32, i32),
+        blocked: &BTreeSet<(i32, i32)>,
+        existing: &BTreeSet<(i32, i32)>,
+    ) -> Vec<(i32, i32)> {
+        let min_x = existing
+            .iter()
+            .map(|cell| cell.0)
+            .chain([start.0, goal.0])
+            .min()
+            .unwrap_or(0)
+            - 2;
+        let max_x = existing
+            .iter()
+            .map(|cell| cell.0)
+            .chain([start.0, goal.0])
+            .max()
+            .unwrap_or(0)
+            + 2;
+        let min_y = existing
+            .iter()
+            .map(|cell| cell.1)
+            .chain([start.1, goal.1])
+            .min()
+            .unwrap_or(0)
+            - 2;
+        let max_y = existing
+            .iter()
+            .map(|cell| cell.1)
+            .chain([start.1, goal.1])
+            .max()
+            .unwrap_or(0)
+            + 2;
+        let mut queue = VecDeque::from([start]);
+        let mut previous = BTreeMap::new();
+        let mut seen = BTreeSet::from([start]);
+        while let Some(cell) = queue.pop_front() {
+            if cell == goal {
+                let mut path = vec![goal];
+                let mut current = goal;
+                while current != start {
+                    current = previous[&current];
+                    path.push(current);
+                }
+                path.reverse();
+                return path;
+            }
+            for neighbor in grid_neighbors(cell, GridConnectivity::FourWay) {
+                if neighbor.0 < min_x
+                    || neighbor.0 > max_x
+                    || neighbor.1 < min_y
+                    || neighbor.1 > max_y
+                    || blocked.contains(&neighbor)
+                    || !seen.insert(neighbor)
+                {
+                    continue;
+                }
+                previous.insert(neighbor, cell);
+                queue.push_back(neighbor);
+            }
+        }
+        panic!("expanded fixture bounds should permit a portal-avoiding bypass path");
     }
 
     fn rectangles_overlap(left: &GeometryRect, right: &GeometryRect) -> bool {

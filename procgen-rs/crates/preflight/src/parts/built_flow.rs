@@ -527,97 +527,49 @@ fn physical_reachable_nodes(
             })
         })
         .collect::<BTreeMap<_, _>>();
-    let connection_edges_by_owner = placement
-        .glued_exits
+    let mut walkable = placement_walkable_cells(placement);
+    for portal in placement
+        .gate_portals
         .iter()
-        .map(|glued| {
-            (
-                format!("connection.{}", slugify_label(glued.id.as_str())),
-                glued.source_edges.iter().map(String::as_str).collect::<Vec<_>>(),
-            )
-        })
-        .collect::<BTreeMap<_, _>>();
-    let mut reached_nodes = candidate
+        .filter(|portal| !portal_open_for_items(portal, items))
+    {
+        for cell in &portal.cells {
+            walkable.remove(&(cell.x, cell.y));
+        }
+    }
+    let mut queue = VecDeque::new();
+    let mut seen = BTreeSet::new();
+    for node in candidate
         .graph
         .nodes
         .iter()
         .filter(|node| node.kind == NodeKind::Start)
-        .map(|node| node.id.clone())
-        .collect::<BTreeSet<_>>();
-    loop {
-        let active_edges = candidate
-            .graph
-            .edges
-            .iter()
-            .filter(|edge| {
-                reached_nodes.contains(&edge.from) && edge_open_for_items(edge, items)
-            })
-            .map(|edge| edge.id.as_str())
-            .collect::<BTreeSet<_>>();
-        let mut walkable = placement
-            .instances
-            .iter()
-            .filter(|instance| {
-                let source_edges = instance
-                    .source_refs
-                    .iter()
-                    .filter_map(|source_ref| source_ref.strip_prefix("edge:"))
-                    .collect::<Vec<_>>();
-                source_edges.is_empty()
-                    || source_edges.iter().any(|edge| active_edges.contains(edge))
-            })
-            .flat_map(|instance| instance.occupied_cells.iter().map(|cell| (cell.x, cell.y)))
-            .collect::<BTreeSet<_>>();
-        walkable.extend(
-            placement
-                .connection_cells
-                .iter()
-                .filter(|cell| {
-                    connection_edges_by_owner
-                        .get(cell.instance_id.as_str())
-                        .map(|edges| edges.iter().any(|edge| active_edges.contains(edge)))
-                        .unwrap_or(false)
-                })
-                .map(|cell| (cell.x, cell.y)),
-        );
-        let mut queue = VecDeque::new();
-        let mut seen = BTreeSet::new();
-        for node in candidate
-            .graph
-            .nodes
-            .iter()
-            .filter(|node| node.kind == NodeKind::Start)
-        {
-            if let Some(instance) = node_instances.get(node.id.as_str()) {
-                for cell in &instance.occupied_cells {
-                    if walkable.contains(&(cell.x, cell.y)) && seen.insert((cell.x, cell.y)) {
-                        queue.push_back((cell.x, cell.y));
-                    }
+    {
+        if let Some(instance) = node_instances.get(node.id.as_str()) {
+            for cell in &instance.occupied_cells {
+                if walkable.contains(&(cell.x, cell.y)) && seen.insert((cell.x, cell.y)) {
+                    queue.push_back((cell.x, cell.y));
                 }
             }
         }
-        while let Some(cell) = queue.pop_front() {
-            for neighbor in grid_neighbors(cell, placement.grid_connectivity) {
-                if walkable.contains(&neighbor) && seen.insert(neighbor) {
-                    queue.push_back(neighbor);
-                }
-            }
-        }
-        let next_reached = node_instances
-            .iter()
-            .filter(|(_, instance)| {
-                instance
-                    .occupied_cells
-                    .iter()
-                    .any(|cell| seen.contains(&(cell.x, cell.y)))
-            })
-            .map(|(node, _)| node.clone())
-            .collect::<BTreeSet<_>>();
-        if next_reached == reached_nodes {
-            return reached_nodes;
-        }
-        reached_nodes = next_reached;
     }
+    while let Some(cell) = queue.pop_front() {
+        for neighbor in grid_neighbors(cell, placement.grid_connectivity) {
+            if walkable.contains(&neighbor) && seen.insert(neighbor) {
+                queue.push_back(neighbor);
+            }
+        }
+    }
+    node_instances
+        .iter()
+        .filter(|(_, instance)| {
+            instance
+                .occupied_cells
+                .iter()
+                .any(|cell| seen.contains(&(cell.x, cell.y)))
+        })
+        .map(|(node, _)| node.clone())
+        .collect()
 }
 
 fn placement_walkable_cells(placement: &PiecePlacement) -> BTreeSet<(i32, i32)> {

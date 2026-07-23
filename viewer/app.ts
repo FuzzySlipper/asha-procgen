@@ -200,10 +200,38 @@ interface Geometry2dArtifact {
   readonly candidateId: string;
   readonly sourceConnectionPlanRef: string;
   readonly connectionPlanId: string;
+  readonly layoutPolicy: GeometryLayoutPolicy;
+  readonly layoutSearch: GeometryLayoutSearchEvidence;
   readonly bounds: GeometryBounds;
   readonly rooms: readonly GeometryRoom[];
   readonly corridors: readonly GeometryCorridor[];
   readonly contents: readonly GeometryContent[];
+}
+
+interface GeometryLayoutPolicy {
+  readonly kind: 'asha_procgen.geometry_layout_policy.v1';
+  readonly schemaVersion: 1;
+  readonly initialRoomMargin: number;
+  readonly initialColumnGap: number;
+  readonly initialRowGap: number;
+  readonly roomMarginGrowth: number;
+  readonly columnGapGrowth: number;
+  readonly rowGapGrowth: number;
+  readonly maxSpacingTiers: number;
+  readonly roomOrderAttemptsPerTier: number;
+  readonly maxSearchAttempts: number;
+}
+
+interface GeometryLayoutSearchEvidence {
+  readonly spacingTier: number;
+  readonly roomOrderAttempt: number;
+  readonly routeOrderAttempt: number;
+  readonly searchAttempts: number;
+  readonly effectiveSpacing: {
+    readonly roomMargin: number;
+    readonly columnGap: number;
+    readonly rowGap: number;
+  };
 }
 
 interface GeometryBounds {
@@ -456,6 +484,20 @@ interface PlacementPolicyExperimentError {
   readonly detail: string;
 }
 
+interface GeometryLayoutPolicyExperimentResponse {
+  readonly kind: 'asha_procgen.geometry_layout_policy_experiment.v1';
+  readonly experimentId: string;
+  readonly candidateId: string;
+  readonly geometryLayoutPolicy: GeometryLayoutPolicy;
+  readonly geometry: Geometry2dArtifact;
+  readonly geometryValidation: ValidationReport;
+  readonly placement: PiecePlacement;
+  readonly placementValidation: ValidationReport;
+  readonly builtFlowValidation: BuiltFlowValidationReport;
+  readonly persisted: false;
+  readonly nativeAuthority: false;
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -466,6 +508,25 @@ const voxel3dCanvas = document.querySelector<HTMLCanvasElement>('#voxel-3d-canva
 const voxel3dDiagnostic = document.querySelector<HTMLElement>('#voxel-3d-diagnostic');
 const voxel3dDoorState = document.querySelector<HTMLSelectElement>('#voxel-3d-door-state');
 const voxel3dDoorLegend = document.querySelector<HTMLElement>('#voxel-3d-door-legend');
+const geometryPolicyPanelElement = document.querySelector<HTMLElement>('#geometry-policy-panel');
+const geometryPolicyFormElement = document.querySelector<HTMLFormElement>('#geometry-policy-form');
+const geometryPolicyInitialMarginElement = document.querySelector<HTMLInputElement>('#geometry-policy-initial-margin');
+const geometryPolicyInitialColumnGapElement = document.querySelector<HTMLInputElement>('#geometry-policy-initial-column-gap');
+const geometryPolicyInitialRowGapElement = document.querySelector<HTMLInputElement>('#geometry-policy-initial-row-gap');
+const geometryPolicyMarginGrowthElement = document.querySelector<HTMLInputElement>('#geometry-policy-margin-growth');
+const geometryPolicyColumnGrowthElement = document.querySelector<HTMLInputElement>('#geometry-policy-column-growth');
+const geometryPolicyRowGrowthElement = document.querySelector<HTMLInputElement>('#geometry-policy-row-growth');
+const geometryPolicyMaxTiersElement = document.querySelector<HTMLInputElement>('#geometry-policy-max-tiers');
+const geometryPolicyRoomAttemptsElement = document.querySelector<HTMLInputElement>('#geometry-policy-room-attempts');
+const geometryPolicyMaxAttemptsElement = document.querySelector<HTMLInputElement>('#geometry-policy-max-attempts');
+const geometryPolicyApplyElement = document.querySelector<HTMLButtonElement>('#geometry-policy-apply');
+const geometryPolicyResetElement = document.querySelector<HTMLButtonElement>('#geometry-policy-reset');
+const geometryPolicyModeElement = document.querySelector<HTMLElement>('#geometry-policy-mode');
+const geometryPolicyBudgetElement = document.querySelector<HTMLElement>('#geometry-policy-budget');
+const geometryPolicyValidationElement = document.querySelector<HTMLElement>('#geometry-policy-validation');
+const geometryPolicyImpactElement = document.querySelector<HTMLElement>('#geometry-policy-impact');
+const geometryPolicyStatusElement = document.querySelector<HTMLElement>('#geometry-policy-status');
+const geometryPolicyPresetsElements = document.querySelectorAll<HTMLButtonElement>('[data-geometry-policy-preset]');
 const policyPanel = document.querySelector<HTMLElement>('#placement-policy-panel');
 const policyForm = document.querySelector<HTMLFormElement>('#placement-policy-form');
 const policyClearance = document.querySelector<HTMLInputElement>('#placement-policy-clearance');
@@ -488,6 +549,24 @@ if (
   || voxel3dDiagnostic === null
   || voxel3dDoorState === null
   || voxel3dDoorLegend === null
+  || geometryPolicyPanelElement === null
+  || geometryPolicyFormElement === null
+  || geometryPolicyInitialMarginElement === null
+  || geometryPolicyInitialColumnGapElement === null
+  || geometryPolicyInitialRowGapElement === null
+  || geometryPolicyMarginGrowthElement === null
+  || geometryPolicyColumnGrowthElement === null
+  || geometryPolicyRowGrowthElement === null
+  || geometryPolicyMaxTiersElement === null
+  || geometryPolicyRoomAttemptsElement === null
+  || geometryPolicyMaxAttemptsElement === null
+  || geometryPolicyApplyElement === null
+  || geometryPolicyResetElement === null
+  || geometryPolicyModeElement === null
+  || geometryPolicyBudgetElement === null
+  || geometryPolicyValidationElement === null
+  || geometryPolicyImpactElement === null
+  || geometryPolicyStatusElement === null
   || policyPanel === null
   || policyForm === null
   || policyClearance === null
@@ -513,6 +592,25 @@ const voxelInspectionCanvas = voxel3dCanvas;
 const voxelInspectionDiagnostic = voxel3dDiagnostic;
 const voxelDoorStateControl = voxel3dDoorState;
 const voxelDoorLegend = voxel3dDoorLegend;
+const geometryPolicyPanel = geometryPolicyPanelElement;
+const geometryPolicyForm = geometryPolicyFormElement;
+const geometryPolicyInitialMargin = geometryPolicyInitialMarginElement;
+const geometryPolicyInitialColumnGap = geometryPolicyInitialColumnGapElement;
+const geometryPolicyInitialRowGap = geometryPolicyInitialRowGapElement;
+const geometryPolicyMarginGrowth = geometryPolicyMarginGrowthElement;
+const geometryPolicyColumnGrowth = geometryPolicyColumnGrowthElement;
+const geometryPolicyRowGrowth = geometryPolicyRowGrowthElement;
+const geometryPolicyMaxTiers = geometryPolicyMaxTiersElement;
+const geometryPolicyRoomAttempts = geometryPolicyRoomAttemptsElement;
+const geometryPolicyMaxAttempts = geometryPolicyMaxAttemptsElement;
+const geometryPolicyApply = geometryPolicyApplyElement;
+const geometryPolicyReset = geometryPolicyResetElement;
+const geometryPolicyMode = geometryPolicyModeElement;
+const geometryPolicyBudget = geometryPolicyBudgetElement;
+const geometryPolicyValidation = geometryPolicyValidationElement;
+const geometryPolicyImpact = geometryPolicyImpactElement;
+const geometryPolicyStatus = geometryPolicyStatusElement;
+const geometryPolicyPresets = geometryPolicyPresetsElements;
 const placementPolicyPanel = policyPanel;
 const placementPolicyForm = policyForm;
 const placementPolicyClearance = policyClearance;
@@ -536,6 +634,7 @@ let activeView: ViewMode = initialViewMode();
 let currentLayout: LayoutArtifact | null = null;
 let currentIntermediate: IntermediateContext = emptyIntermediateContext();
 let currentGeometry: Geometry2dArtifact | null = null;
+let committedGeometry: Geometry2dArtifact | null = null;
 let currentCatalog: ShapeCatalog | null = null;
 let currentCatalogRef: string | null = null;
 let currentCatalogError: string | null = null;
@@ -549,6 +648,9 @@ let committedBuiltFlowValidation: BuiltFlowValidationReport | null = null;
 let currentPolicyExperimentId: string | null = null;
 let policyExperimentRevision = 0;
 let policyExperimentBusy = false;
+let currentGeometryExperimentId: string | null = null;
+let geometryExperimentRevision = 0;
+let geometryExperimentBusy = false;
 let voxelInspectionSurface: AshaRendererInspectionSurface | null = null;
 let voxelInspectionMount: Promise<AshaRendererInspectionSurface> | null = null;
 let voxelInspectionRevision = 0;
@@ -564,6 +666,19 @@ placementPolicyForm.addEventListener('submit', (event) => {
   event.preventDefault();
   void applyPlacementPolicyExperiment();
 });
+geometryPolicyForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  void applyGeometryPolicyExperiment();
+});
+geometryPolicyReset.addEventListener('click', resetGeometryPolicyExperiment);
+for (const input of geometryPolicyInputs()) {
+  input.addEventListener('input', validateGeometryPolicyControls);
+}
+for (const preset of geometryPolicyPresets) {
+  preset.addEventListener('click', () => {
+    applyGeometryPolicyPreset(preset.dataset.geometryPolicyPreset ?? '');
+  });
+}
 placementPolicyReset.addEventListener('click', resetPlacementPolicyExperiment);
 placementPolicyClearance.addEventListener('input', validatePlacementPolicyControls);
 placementPolicyWallThickness.addEventListener('input', validatePlacementPolicyControls);
@@ -576,6 +691,7 @@ for (const preset of placementPolicyPresets) {
 }
 window.addEventListener('pagehide', () => {
   policyExperimentRevision += 1;
+  geometryExperimentRevision += 1;
   voxelInspectionRevision += 1;
   stopVoxelInspectionReadoutSync();
   voxelInspectionSurface?.dispose();
@@ -600,6 +716,7 @@ if (initialSelection === null) {
   currentLayout = artifact.layout;
   currentIntermediate = emptyIntermediateContext();
   currentGeometry = null;
+  committedGeometry = null;
   currentCatalog = await fetchDefaultCatalog();
   currentCatalogRef = currentCatalog === null ? null : 'fixtures/shape-catalogs/2d-basic.json';
   currentCatalogError = currentCatalog === null ? 'failed to load default fixture catalog' : null;
@@ -611,6 +728,8 @@ if (initialSelection === null) {
   currentBuiltFlowValidation = null;
   committedBuiltFlowValidation = null;
   currentPolicyExperimentId = null;
+  currentGeometryExperimentId = null;
+  syncGeometryPolicyControls();
   syncPlacementPolicyControls();
   syncVoxelDoorStateControls();
   renderBatchList(batchPanel, batch, null, selectEntry);
@@ -631,7 +750,9 @@ if (initialSelection === null) {
 
 async function selectEntry(entry: SelectionEntry): Promise<void> {
   const selectionRevision = ++policyExperimentRevision;
+  geometryExperimentRevision += 1;
   policyExperimentBusy = false;
+  geometryExperimentBusy = false;
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
@@ -651,6 +772,7 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   currentLayout = artifact.layout;
   currentIntermediate = intermediate;
   currentGeometry = geometry;
+  committedGeometry = geometry;
   currentCatalog = catalogResult.catalog;
   currentCatalogRef = catalogResult.ref;
   currentCatalogError = catalogResult.error;
@@ -662,7 +784,9 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   currentBuiltFlowValidation = builtFlowValidation;
   committedBuiltFlowValidation = builtFlowValidation;
   currentPolicyExperimentId = null;
+  currentGeometryExperimentId = null;
   syncVoxelDoorStateControls();
+  syncGeometryPolicyControls();
   syncPlacementPolicyControls();
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
@@ -670,8 +794,301 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   renderActiveView();
 }
 
+function geometryPolicyInputs(): readonly HTMLInputElement[] {
+  return [
+    geometryPolicyInitialMargin,
+    geometryPolicyInitialColumnGap,
+    geometryPolicyInitialRowGap,
+    geometryPolicyMarginGrowth,
+    geometryPolicyColumnGrowth,
+    geometryPolicyRowGrowth,
+    geometryPolicyMaxTiers,
+    geometryPolicyRoomAttempts,
+    geometryPolicyMaxAttempts,
+  ];
+}
+
+async function applyGeometryPolicyExperiment(): Promise<void> {
+  const selection = currentSelection;
+  if (selection === null || committedGeometry === null || committedPlacement === null) {
+    setGeometryPolicyStatus('error', 'Select a generated candidate with committed geometry first.');
+    return;
+  }
+  const policy = geometryPolicyFromControls();
+  if (policy === null) {
+    setGeometryPolicyStatus('error', 'Correct the geometry policy values before applying.');
+    return;
+  }
+  const revision = ++geometryExperimentRevision;
+  policyExperimentRevision += 1;
+  setGeometryPolicyBusy(true);
+  setGeometryPolicyStatus(
+    'loading',
+    `Regenerating ${selection.candidateId} through at most ${policy.maxSpacingTiers} spacing tiers and ${policy.maxSearchAttempts} route attempts…`,
+  );
+  try {
+    const response = await fetch('/api/experiments/geometry-layout-policy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        candidateId: selection.candidateId,
+        geometryLayoutPolicy: policy,
+      }),
+    });
+    const result = (await response.json()) as
+      | GeometryLayoutPolicyExperimentResponse
+      | PlacementPolicyExperimentError;
+    if (revision !== geometryExperimentRevision) {
+      return;
+    }
+    if (!response.ok || 'error' in result) {
+      throw new Error('detail' in result ? result.detail : `experiment request failed with ${response.status}`);
+    }
+    if (
+      result.kind !== 'asha_procgen.geometry_layout_policy_experiment.v1'
+      || result.candidateId !== selection.candidateId
+      || result.persisted !== false
+      || result.nativeAuthority !== false
+    ) {
+      throw new Error('geometry-policy experiment returned an invalid response envelope');
+    }
+    currentGeometry = result.geometry;
+    currentPlacement = result.placement;
+    currentPlacementValidation = result.placementValidation;
+    currentBuiltFlowValidation = result.builtFlowValidation;
+    currentGeometryExperimentId = result.experimentId;
+    currentPolicyExperimentId = null;
+    syncVoxelDoorStateControls();
+    syncGeometryPolicyControls();
+    syncPlacementPolicyControls();
+    const search = result.geometry.layoutSearch;
+    setGeometryPolicyStatus(
+      'ready',
+      `Temporary Rust geometry applied at tier ${search.spacingTier + 1}/${policy.maxSpacingTiers} after ${search.searchAttempts} route attempt(s). Not persisted; no native authority claim.`,
+    );
+    renderActiveView();
+  } catch (error) {
+    if (revision === geometryExperimentRevision) {
+      setGeometryPolicyStatus('error', `Geometry experiment failed: ${describeError(error)}`);
+    }
+  } finally {
+    if (revision === geometryExperimentRevision) {
+      setGeometryPolicyBusy(false);
+    }
+  }
+}
+
+function resetGeometryPolicyExperiment(): void {
+  geometryExperimentRevision += 1;
+  policyExperimentRevision += 1;
+  currentGeometry = committedGeometry;
+  currentPlacement = committedPlacement;
+  currentPlacementValidation = committedPlacementValidation;
+  currentBuiltFlowValidation = committedBuiltFlowValidation;
+  currentGeometryExperimentId = null;
+  currentPolicyExperimentId = null;
+  syncVoxelDoorStateControls();
+  setGeometryPolicyBusy(false);
+  syncGeometryPolicyControls();
+  syncPlacementPolicyControls();
+  renderActiveView();
+}
+
+function syncGeometryPolicyControls(): void {
+  const geometry = currentGeometry;
+  const enabled = geometry !== null && currentSelection !== null;
+  if (geometry !== null) {
+    const policy = geometry.layoutPolicy;
+    geometryPolicyInitialMargin.value = String(policy.initialRoomMargin);
+    geometryPolicyInitialColumnGap.value = String(policy.initialColumnGap);
+    geometryPolicyInitialRowGap.value = String(policy.initialRowGap);
+    geometryPolicyMarginGrowth.value = String(policy.roomMarginGrowth);
+    geometryPolicyColumnGrowth.value = String(policy.columnGapGrowth);
+    geometryPolicyRowGrowth.value = String(policy.rowGapGrowth);
+    geometryPolicyMaxTiers.value = String(policy.maxSpacingTiers);
+    geometryPolicyRoomAttempts.value = String(policy.roomOrderAttemptsPerTier);
+    geometryPolicyMaxAttempts.value = String(policy.maxSearchAttempts);
+    geometryPolicyPanel.dataset.spacingTier = String(geometry.layoutSearch.spacingTier);
+    geometryPolicyPanel.dataset.searchAttempts = String(geometry.layoutSearch.searchAttempts);
+  } else {
+    for (const input of geometryPolicyInputs()) {
+      input.value = '';
+    }
+    delete geometryPolicyPanel.dataset.spacingTier;
+    delete geometryPolicyPanel.dataset.searchAttempts;
+  }
+  const experimentActive = currentGeometryExperimentId !== null;
+  geometryPolicyPanel.dataset.mode = experimentActive ? 'experiment' : 'committed';
+  geometryPolicyPanel.dataset.experimentId = currentGeometryExperimentId ?? '';
+  geometryPolicyMode.dataset.mode = experimentActive ? 'experiment' : 'committed';
+  geometryPolicyMode.textContent = experimentActive ? 'Temporary experiment' : 'Committed policy';
+  for (const input of geometryPolicyInputs()) {
+    input.disabled = !enabled || geometryExperimentBusy;
+  }
+  geometryPolicyReset.disabled = !experimentActive || geometryExperimentBusy;
+  for (const preset of geometryPolicyPresets) {
+    preset.disabled = !enabled || geometryExperimentBusy;
+  }
+  if (!enabled) {
+    setGeometryPolicyStatus('idle', 'Select a generated candidate to experiment.');
+  } else if (experimentActive) {
+    setGeometryPolicyStatus('ready', 'Temporary Rust geometry active. Not persisted; no native authority claim.');
+  } else {
+    setGeometryPolicyStatus('idle', 'Committed geometry active. Change values and regenerate.');
+  }
+  validateGeometryPolicyControls();
+  updateGeometryPolicyImpact();
+}
+
+function geometryPolicyFromControls(): GeometryLayoutPolicy | null {
+  if (!validateGeometryPolicyControls()) {
+    return null;
+  }
+  const maxSpacingTiers = Number(geometryPolicyMaxTiers.value);
+  const roomOrderAttemptsPerTier = Number(geometryPolicyRoomAttempts.value);
+  return {
+    kind: 'asha_procgen.geometry_layout_policy.v1',
+    schemaVersion: 1,
+    initialRoomMargin: Number(geometryPolicyInitialMargin.value),
+    initialColumnGap: Number(geometryPolicyInitialColumnGap.value),
+    initialRowGap: Number(geometryPolicyInitialRowGap.value),
+    roomMarginGrowth: Number(geometryPolicyMarginGrowth.value),
+    columnGapGrowth: Number(geometryPolicyColumnGrowth.value),
+    rowGapGrowth: Number(geometryPolicyRowGrowth.value),
+    maxSpacingTiers,
+    roomOrderAttemptsPerTier,
+    maxSearchAttempts: Number(geometryPolicyMaxAttempts.value),
+  };
+}
+
+function validateGeometryPolicyControls(): boolean {
+  const values = [
+    [geometryPolicyInitialMargin, 32, 1_024, 'Initial outer margin'],
+    [geometryPolicyInitialColumnGap, 32, 1_024, 'Initial column gap'],
+    [geometryPolicyInitialRowGap, 32, 1_024, 'Initial row gap'],
+    [geometryPolicyMarginGrowth, 0, 512, 'Margin growth'],
+    [geometryPolicyColumnGrowth, 0, 512, 'Column growth'],
+    [geometryPolicyRowGrowth, 0, 512, 'Row growth'],
+  ] as const;
+  let issue = '';
+  for (const [input, minimum, maximum, label] of values) {
+    const value = Number(input.value);
+    let inputIssue = '';
+    if (!Number.isInteger(value) || value < minimum || value > maximum) {
+      inputIssue = `${label} must be an integer from ${minimum} through ${maximum}.`;
+    } else if (value % 8 !== 0) {
+      inputIssue = `${label} must align to the 8-unit route grid.`;
+    }
+    input.setCustomValidity(inputIssue);
+    issue ||= inputIssue;
+  }
+  const tiers = Number(geometryPolicyMaxTiers.value);
+  const roomAttempts = Number(geometryPolicyRoomAttempts.value);
+  const maxAttempts = Number(geometryPolicyMaxAttempts.value);
+  const tiersIssue = Number.isInteger(tiers) && tiers >= 1 && tiers <= 8
+    ? ''
+    : 'Maximum tiers must be an integer from 1 through 8.';
+  const roomAttemptsIssue = Number.isInteger(roomAttempts) && roomAttempts >= 1 && roomAttempts <= 32
+    ? ''
+    : 'Room orders per tier must be an integer from 1 through 32.';
+  geometryPolicyMaxTiers.setCustomValidity(tiersIssue);
+  geometryPolicyRoomAttempts.setCustomValidity(roomAttemptsIssue);
+  issue ||= tiersIssue || roomAttemptsIssue;
+  const capacity = Number.isInteger(tiers) && Number.isInteger(roomAttempts)
+    ? tiers * roomAttempts * 4
+    : 0;
+  const maxAttemptsIssue = Number.isInteger(maxAttempts)
+    && maxAttempts >= 1
+    && maxAttempts <= capacity
+    ? ''
+    : `Maximum route attempts must be an integer from 1 through ${capacity}.`;
+  geometryPolicyMaxAttempts.max = String(Math.max(1, capacity));
+  geometryPolicyMaxAttempts.setCustomValidity(maxAttemptsIssue);
+  issue ||= maxAttemptsIssue;
+  if (issue === '' && tiers > 0) {
+    const finalTier = tiers - 1;
+    for (const [initial, growth, label] of [
+      [Number(geometryPolicyInitialMargin.value), Number(geometryPolicyMarginGrowth.value), 'Outer margin'],
+      [Number(geometryPolicyInitialColumnGap.value), Number(geometryPolicyColumnGrowth.value), 'Column gap'],
+      [Number(geometryPolicyInitialRowGap.value), Number(geometryPolicyRowGrowth.value), 'Row gap'],
+    ] as const) {
+      if (initial + growth * finalTier > 2_048) {
+        issue = `${label} exceeds 2048 units at the final tier.`;
+        break;
+      }
+    }
+  }
+  geometryPolicyBudget.textContent = `capacity ${capacity} route attempts`;
+  const valid = issue === '';
+  geometryPolicyValidation.dataset.state = valid ? 'valid' : 'invalid';
+  geometryPolicyValidation.textContent = valid
+    ? `Valid compact-first search: ${tiers} tier(s), ${roomAttempts} room order(s) per tier, capped at ${maxAttempts}/${capacity} route attempts.`
+    : issue;
+  geometryPolicyApply.disabled = currentSelection === null
+    || committedGeometry === null
+    || geometryExperimentBusy
+    || !valid;
+  return valid;
+}
+
+function setGeometryPolicyBusy(busy: boolean): void {
+  geometryExperimentBusy = busy;
+  for (const input of geometryPolicyInputs()) {
+    input.disabled = busy || currentSelection === null;
+  }
+  geometryPolicyReset.disabled = busy || currentGeometryExperimentId === null;
+  for (const preset of geometryPolicyPresets) {
+    preset.disabled = busy || currentSelection === null;
+  }
+  validateGeometryPolicyControls();
+}
+
+function applyGeometryPolicyPreset(name: string): void {
+  const preset = name === 'compact'
+    ? [64, 96, 48, 32, 48, 24, 4, 3, 48]
+    : name === 'roomy'
+      ? [160, 240, 96, 64, 96, 48, 4, 4, 64]
+      : [96, 144, 64, 48, 72, 40, 5, 4, 80];
+  [
+    geometryPolicyInitialMargin,
+    geometryPolicyInitialColumnGap,
+    geometryPolicyInitialRowGap,
+    geometryPolicyMarginGrowth,
+    geometryPolicyColumnGrowth,
+    geometryPolicyRowGrowth,
+    geometryPolicyMaxTiers,
+    geometryPolicyRoomAttempts,
+    geometryPolicyMaxAttempts,
+  ].forEach((input, index) => {
+    input.value = String(preset[index]);
+  });
+  validateGeometryPolicyControls();
+}
+
+function updateGeometryPolicyImpact(): void {
+  if (committedGeometry === null) {
+    geometryPolicyImpact.textContent = 'Waiting for committed geometry.';
+    return;
+  }
+  if (currentGeometryExperimentId === null || currentGeometry === null) {
+    const search = committedGeometry.layoutSearch;
+    geometryPolicyImpact.textContent = `Committed frame: ${committedGeometry.bounds.width} × ${committedGeometry.bounds.height}; successful tier ${search.spacingTier + 1}; ${search.searchAttempts} route attempt(s).`;
+    return;
+  }
+  geometryPolicyImpact.textContent = `Geometry impact: frame ${committedGeometry.bounds.width} × ${committedGeometry.bounds.height} → ${currentGeometry.bounds.width} × ${currentGeometry.bounds.height}; successful tier ${currentGeometry.layoutSearch.spacingTier + 1}; ${currentGeometry.layoutSearch.searchAttempts} route attempt(s).`;
+}
+
+function setGeometryPolicyStatus(state: 'idle' | 'loading' | 'ready' | 'error', message: string): void {
+  geometryPolicyStatus.dataset.state = state;
+  geometryPolicyStatus.textContent = message;
+}
+
 async function applyPlacementPolicyExperiment(): Promise<void> {
   const selection = currentSelection;
+  if (currentGeometryExperimentId !== null) {
+    setPlacementPolicyStatus('error', 'Reset the temporary geometry before changing downstream piece placement.');
+    return;
+  }
   if (selection === null || committedPlacement === null) {
     setPlacementPolicyStatus('error', 'Select a generated candidate with a piece placement first.');
     return;
@@ -809,7 +1226,9 @@ function voxelDoorProjectionState(placement: PiecePlacement): {
 
 function syncPlacementPolicyControls(): void {
   const placement = currentPlacement;
-  const enabled = placement !== null && currentSelection !== null;
+  const enabled = placement !== null
+    && currentSelection !== null
+    && currentGeometryExperimentId === null;
   if (placement !== null) {
     placementPolicyClearance.value = String(placement.placementPolicy.minimumClearanceCells);
     placementPolicyWallThickness.value = String(placement.placementPolicy.wallThicknessCells);
@@ -832,7 +1251,9 @@ function syncPlacementPolicyControls(): void {
   for (const preset of placementPolicyPresets) {
     preset.disabled = !enabled || policyExperimentBusy;
   }
-  if (!enabled) {
+  if (currentGeometryExperimentId !== null) {
+    setPlacementPolicyStatus('idle', 'Temporary geometry active. Reset it before changing downstream placement policy.');
+  } else if (!enabled) {
     setPlacementPolicyStatus('idle', 'Select a generated candidate to experiment.');
   } else if (experimentActive) {
     setPlacementPolicyStatus('ready', 'Temporary Rust placement active. Not persisted; no native authority claim.');
@@ -882,6 +1303,9 @@ function validatePlacementPolicyControls(): boolean {
     ? `Valid policy. Target room-origin scale: ${clearance + wallThickness} cells. The view will auto-fit; compare the footprint below after applying.`
     : clearanceIssue || wallIssue;
   placementPolicyApply.disabled = currentSelection === null || committedPlacement === null || policyExperimentBusy;
+  if (currentGeometryExperimentId !== null) {
+    placementPolicyApply.disabled = true;
+  }
   return valid;
 }
 
@@ -1390,6 +1814,7 @@ function renderActiveView(): void {
   }
   layoutSvg.style.height = '';
   layoutSvg.style.minWidth = '';
+  geometryPolicyPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
   placementPolicyPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
   const inspectionActive = activeView === 'voxel3d';
   layoutSvg.style.display = inspectionActive ? 'none' : '';
@@ -1408,7 +1833,12 @@ function renderActiveView(): void {
     return;
   }
   if (activeView === 'voxel') {
-    renderVoxelBuild(layoutSvg, currentPlacement, voxelEvidence, currentPolicyExperimentId !== null);
+    renderVoxelBuild(
+      layoutSvg,
+      currentPlacement,
+      voxelEvidence,
+      currentPolicyExperimentId !== null || currentGeometryExperimentId !== null,
+    );
     return;
   }
   if (activeView === 'catalog') {
@@ -1460,8 +1890,9 @@ async function renderVoxelInspection(): Promise<void> {
   voxelInspectionPanel.dataset.unlockedDoorCount = String(projection.unlockedDoorCount);
   voxelInspectionPanel.dataset.doorPreviewState = doorPreviewLabel;
   voxelInspectionPanel.dataset.ceilingY = String(projection.ceilingY);
-  voxelInspectionPanel.dataset.policyMode = currentPolicyExperimentId === null ? 'committed' : 'experiment';
-  voxelInspectionPanel.dataset.policyExperimentId = currentPolicyExperimentId ?? '';
+  const activeExperimentId = currentGeometryExperimentId ?? currentPolicyExperimentId;
+  voxelInspectionPanel.dataset.policyMode = activeExperimentId === null ? 'committed' : 'experiment';
+  voxelInspectionPanel.dataset.policyExperimentId = activeExperimentId ?? '';
   setVoxelInspectionDiagnostic('loading', `Mounting engine projection for ${projection.placementId}…`);
 
   try {

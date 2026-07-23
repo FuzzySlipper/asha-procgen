@@ -1,0 +1,13 @@
+{
+  "kind": "asha_procgen.geometry_layout_policy.v1",
+  "schemaVersion": 1,
+  "initialRoomMargin": 96,
+  "initialColumnGap": 144,
+  "initialRowGap": 64,
+  "roomMarginGrowth": 48,
+  "columnGapGrowth": 72,
+  "rowGapGrowth": 40,
+  "maxSpacingTiers": 5,
+  "roomOrderAttemptsPerTier": 4,
+  "maxSearchAttempts": 80
+}

@@ -8,9 +8,33 @@
   "sourceIntermediateRef": "artifacts/samples/batch-v2/candidate-006/intermediate-breakdown.json",
   "sourceConnectionPlanRef": "artifacts/samples/batch-v2/candidate-006/physical-connection-plan.json",
   "connectionPlanId": "physical_connections.candidate.first_slice.5801",
+  "layoutPolicy": {
+    "kind": "asha_procgen.geometry_layout_policy.v1",
+    "schemaVersion": 1,
+    "initialRoomMargin": 96,
+    "initialColumnGap": 144,
+    "initialRowGap": 64,
+    "roomMarginGrowth": 48,
+    "columnGapGrowth": 72,
+    "rowGapGrowth": 40,
+    "maxSpacingTiers": 5,
+    "roomOrderAttemptsPerTier": 4,
+    "maxSearchAttempts": 80
+  },
+  "layoutSearch": {
+    "spacingTier": 0,
+    "roomOrderAttempt": 0,
+    "routeOrderAttempt": 0,
+    "searchAttempts": 1,
+    "effectiveSpacing": {
+      "roomMargin": 96,
+      "columnGap": 144,
+      "rowGap": 64
+    }
+  },
   "bounds": {
-    "width": 1328,
-    "height": 688,
+    "width": 848,
+    "height": 480,
     "grid": 8
   },
   "rooms": [
@@ -24,8 +48,8 @@
       "geometryRole": "entry",
       "footprintClass": "marker_room",
       "rect": {
-        "x": 192,
-        "y": 192,
+        "x": 96,
+        "y": 96,
         "width": 128,
         "height": 112
       },
@@ -35,8 +59,8 @@
           "sectionId": "section.region_gate_locked_1.region_start.open",
           "side": "east",
           "point": {
-            "x": 320,
-            "y": 224
+            "x": 224,
+            "y": 128
           },
           "width": 12
         },
@@ -45,8 +69,8 @@
           "sectionId": "section.region_key_gate_1.region_start.open",
           "side": "east",
           "point": {
-            "x": 320,
-            "y": 272
+            "x": 224,
+            "y": 176
           },
           "width": 12
         }
@@ -69,8 +93,8 @@
       "geometryRole": "threshold",
       "footprintClass": "threshold",
       "rect": {
-        "x": 608,
-        "y": 192,
+        "x": 368,
+        "y": 96,
         "width": 112,
         "height": 80
       },
@@ -80,8 +104,8 @@
           "sectionId": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
           "side": "east",
           "point": {
-            "x": 720,
-            "y": 232
+            "x": 480,
+            "y": 136
           },
           "width": 18
         },
@@ -90,8 +114,8 @@
           "sectionId": "section.region_gate_locked_1.region_key_gate_1.open",
           "side": "south",
           "point": {
-            "x": 664,
-            "y": 272
+            "x": 424,
+            "y": 176
           },
           "width": 12
         },
@@ -100,8 +124,8 @@
           "sectionId": "section.region_gate_locked_1.region_start.open",
           "side": "west",
           "point": {
-            "x": 608,
-            "y": 232
+            "x": 368,
+            "y": 136
           },
           "width": 12
         }
@@ -125,8 +149,8 @@
       "geometryRole": "key_pocket",
       "footprintClass": "small_pocket",
       "rect": {
-        "x": 608,
-        "y": 416,
+        "x": 368,
+        "y": 240,
         "width": 96,
         "height": 80
       },
@@ -136,8 +160,8 @@
           "sectionId": "section.region_gate_locked_1.region_key_gate_1.open",
           "side": "north",
           "point": {
-            "x": 656,
-            "y": 416
+            "x": 416,
+            "y": 240
           },
           "width": 12
         },
@@ -146,8 +170,8 @@
           "sectionId": "section.region_key_gate_1.region_start.open",
           "side": "west",
           "point": {
-            "x": 608,
-            "y": 456
+            "x": 368,
+            "y": 280
           },
           "width": 12
         }
@@ -169,8 +193,8 @@
       "geometryRole": "destination",
       "footprintClass": "marker_room",
       "rect": {
-        "x": 1008,
-        "y": 192,
+        "x": 624,
+        "y": 96,
         "width": 128,
         "height": 96
       },
@@ -180,8 +204,8 @@
           "sectionId": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
           "side": "west",
           "point": {
-            "x": 1008,
-            "y": 240
+            "x": 624,
+            "y": 144
           },
           "width": 18
         }
@@ -231,20 +255,20 @@
       "toPort": "port.room_region_goal.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
       "points": [
         {
-          "x": 720,
-          "y": 232
+          "x": 480,
+          "y": 136
         },
         {
-          "x": 984,
-          "y": 232
+          "x": 600,
+          "y": 136
         },
         {
-          "x": 984,
-          "y": 240
+          "x": 600,
+          "y": 144
         },
         {
-          "x": 1008,
-          "y": 240
+          "x": 624,
+          "y": 144
         }
       ]
     },
@@ -282,20 +306,20 @@
       "toPort": "port.room_region_key_gate_1.section_region_gate_locked_1_region_key_gate_1_open",
       "points": [
         {
-          "x": 664,
-          "y": 272
+          "x": 424,
+          "y": 176
         },
         {
-          "x": 664,
-          "y": 400
+          "x": 424,
+          "y": 224
         },
         {
-          "x": 656,
-          "y": 400
+          "x": 416,
+          "y": 224
         },
         {
-          "x": 656,
-          "y": 416
+          "x": 416,
+          "y": 240
         }
       ]
     },
@@ -332,20 +356,20 @@
       "toPort": "port.room_region_start.section_region_gate_locked_1_region_start_open",
       "points": [
         {
-          "x": 608,
-          "y": 232
+          "x": 368,
+          "y": 136
         },
         {
-          "x": 336,
-          "y": 232
+          "x": 240,
+          "y": 136
         },
         {
-          "x": 336,
-          "y": 224
+          "x": 240,
+          "y": 128
         },
         {
-          "x": 320,
-          "y": 224
+          "x": 224,
+          "y": 128
         }
       ]
     },
@@ -382,20 +406,20 @@
       "toPort": "port.room_region_start.section_region_key_gate_1_region_start_open",
       "points": [
         {
-          "x": 608,
-          "y": 456
+          "x": 368,
+          "y": 280
         },
         {
-          "x": 336,
-          "y": 456
+          "x": 240,
+          "y": 280
         },
         {
-          "x": 336,
-          "y": 272
+          "x": 240,
+          "y": 176
         },
         {
-          "x": 320,
-          "y": 272
+          "x": 224,
+          "y": 176
         }
       ]
     }

@@ -537,6 +537,74 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.lastCameraChange`, 'wheel_zoom');
     const wheelZoom = await inspectionDataset(cdp);
 
+    const invalidGeometryPolicyReadout = await evaluateCdp(cdp, `(() => {
+      const gap = document.querySelector('#geometry-policy-initial-column-gap');
+      const validation = document.querySelector('#geometry-policy-validation');
+      const apply = document.querySelector('#geometry-policy-apply');
+      if (!(gap instanceof HTMLInputElement) || !(apply instanceof HTMLButtonElement)) {
+        return null;
+      }
+      gap.value = '145';
+      gap.dispatchEvent(new Event('input', { bubbles: true }));
+      return {
+        valid: gap.validity.valid,
+        state: validation?.dataset.state,
+        message: validation?.textContent,
+        applyDisabled: apply.disabled,
+      };
+    })()`);
+    if (
+      invalidGeometryPolicyReadout?.valid !== false
+      || invalidGeometryPolicyReadout?.state !== 'invalid'
+      || !String(invalidGeometryPolicyReadout?.message).includes('8-unit route grid')
+      || invalidGeometryPolicyReadout?.applyDisabled !== true
+    ) {
+      throw new Error(`invalid geometry policy was not explained inline: ${JSON.stringify(invalidGeometryPolicyReadout)}`);
+    }
+
+    const submittedGeometryPolicy = await evaluateCdp(cdp, `(() => {
+      const form = document.querySelector('#geometry-policy-form');
+      const preset = document.querySelector('[data-geometry-policy-preset="balanced"]');
+      if (!(form instanceof HTMLFormElement) || !(preset instanceof HTMLButtonElement)) {
+        return false;
+      }
+      preset.click();
+      form.requestSubmit();
+      return true;
+    })()`);
+    if (!submittedGeometryPolicy) {
+      throw new Error('geometry policy controls were not available in Voxel 3D');
+    }
+    await waitForCdpValue(cdp, `document.querySelector('#geometry-policy-status')?.dataset.state`, 'ready');
+    await waitForCdpValue(cdp, `document.querySelector('#geometry-policy-panel')?.dataset.mode`, 'experiment');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'experiment');
+    const geometryExperimentReadout = await evaluateCdp(cdp, `(() => {
+      const panel = document.querySelector('#geometry-policy-panel');
+      const status = document.querySelector('#geometry-policy-status');
+      const impact = document.querySelector('#geometry-policy-impact');
+      return {
+        mode: panel?.dataset.mode,
+        spacingTier: Number(panel?.dataset.spacingTier),
+        searchAttempts: Number(panel?.dataset.searchAttempts),
+        experimentId: panel?.dataset.experimentId,
+        status: status?.textContent,
+        impact: impact?.textContent,
+      };
+    })()`);
+    if (
+      !Number.isInteger(geometryExperimentReadout.spacingTier)
+      || geometryExperimentReadout.searchAttempts < 1
+      || typeof geometryExperimentReadout.experimentId !== 'string'
+      || geometryExperimentReadout.experimentId.length === 0
+      || !String(geometryExperimentReadout.status).includes('no native authority claim')
+      || !String(geometryExperimentReadout.impact).includes('Geometry impact: frame')
+    ) {
+      throw new Error(`geometry policy experiment readout was incomplete: ${JSON.stringify(geometryExperimentReadout)}`);
+    }
+    await evaluateCdp(cdp, `document.querySelector('#geometry-policy-reset')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#geometry-policy-panel')?.dataset.mode`, 'committed');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'committed');
+
     const invalidPolicyReadout = await evaluateCdp(cdp, `(() => {
       const clearance = document.querySelector('#placement-policy-clearance');
       const validation = document.querySelector('#placement-policy-validation');

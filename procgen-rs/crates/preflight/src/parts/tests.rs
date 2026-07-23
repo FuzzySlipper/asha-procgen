@@ -112,6 +112,7 @@ mod tests {
                 candidate: PathBuf::from("artifacts/test/candidate.json"),
                 intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
                 connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+                layout_policy: None,
                 seed: 45,
                 out: PathBuf::from("artifacts/test/geometry.json"),
             },
@@ -121,6 +122,106 @@ mod tests {
 
         assert_eq!(geometry.corridors.len(), connection_plan.sections.len());
         assert!(validate_geometry_2d(&geometry).ok);
+    }
+
+    #[test]
+    fn geometry_layout_policy_compacts_escalates_and_repeats_deterministically() {
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..");
+        let candidate_path =
+            repo_root.join("artifacts/samples/batch-v2/candidate-006/candidate-001-lock_key_loop.json");
+        let intermediate_path =
+            repo_root.join("artifacts/samples/batch-v2/candidate-006/intermediate-breakdown.json");
+        let candidate: Candidate = read_json(&candidate_path).expect("sample lock-key candidate");
+        let intermediate: IntermediateBreakdown =
+            read_json(&intermediate_path).expect("sample lock-key intermediate");
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let specs = ordered_geometry_region_specs(&candidate, &intermediate);
+        let policy = GeometryLayoutPolicy {
+            kind: "asha_procgen.geometry_layout_policy.v1".to_owned(),
+            schema_version: 1,
+            initial_room_margin: 32,
+            initial_column_gap: 32,
+            initial_row_gap: 32,
+            room_margin_growth: 64,
+            column_gap_growth: 128,
+            row_gap_growth: 64,
+            max_spacing_tiers: 3,
+            room_order_attempts_per_tier: 1,
+            max_search_attempts: 12,
+        };
+
+        let first =
+            place_and_route_physical_geometry(&specs, &connection_plan, 14_307, &policy)
+                .expect("compact-first search should escalate to a routable tier");
+        let repeated =
+            place_and_route_physical_geometry(&specs, &connection_plan, 14_307, &policy)
+                .expect("repeated search should succeed");
+
+        assert_eq!(first.search.spacing_tier, 1);
+        assert_eq!(
+            first.search.effective_spacing,
+            GeometrySpacing {
+                room_margin: 96,
+                column_gap: 160,
+                row_gap: 96,
+            }
+        );
+        assert_eq!(first.search, repeated.search);
+        assert_eq!(
+            serde_json::to_value(&first.rooms).expect("serialize first rooms"),
+            serde_json::to_value(&repeated.rooms).expect("serialize repeated rooms")
+        );
+        assert_eq!(
+            serde_json::to_value(&first.corridors).expect("serialize first corridors"),
+            serde_json::to_value(&repeated.corridors).expect("serialize repeated corridors")
+        );
+    }
+
+    #[test]
+    fn geometry_layout_policy_rejects_invalid_values_and_bounds_exhaustion() {
+        let mut invalid = default_geometry_layout_policy();
+        invalid.column_gap_growth = 7;
+        assert!(validate_geometry_layout_policy(&invalid)
+            .expect_err("unaligned growth should fail")
+            .contains("multiple of 8"));
+        let mut oversized = default_geometry_layout_policy();
+        oversized.initial_column_gap = 1_024;
+        oversized.column_gap_growth = 512;
+        oversized.max_spacing_tiers = 8;
+        oversized.max_search_attempts = 128;
+        assert!(validate_geometry_layout_policy(&oversized)
+            .expect_err("oversized final tier should fail")
+            .contains("exceeds 2048"));
+
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..");
+        let candidate_path = repo_root
+            .join("artifacts/samples/batch-v2/candidate-000/candidate-003-branch_merge_shortcut.json");
+        let intermediate_path =
+            repo_root.join("artifacts/samples/batch-v2/candidate-000/intermediate-breakdown.json");
+        let candidate: Candidate = read_json(&candidate_path).expect("sample hub-merge candidate");
+        let intermediate: IntermediateBreakdown =
+            read_json(&intermediate_path).expect("sample hub-merge intermediate");
+        let connection_plan = test_connection_plan(&candidate, &intermediate);
+        let specs = ordered_geometry_region_specs(&candidate, &intermediate);
+        let bounded = GeometryLayoutPolicy {
+            kind: "asha_procgen.geometry_layout_policy.v1".to_owned(),
+            schema_version: 1,
+            initial_room_margin: 32,
+            initial_column_gap: 32,
+            initial_row_gap: 32,
+            room_margin_growth: 0,
+            column_gap_growth: 0,
+            row_gap_growth: 0,
+            max_spacing_tiers: 1,
+            room_order_attempts_per_tier: 1,
+            max_search_attempts: 4,
+        };
+        let error =
+            place_and_route_physical_geometry(&specs, &connection_plan, 14_301, &bounded)
+                .expect_err("hub-merge should exhaust this deliberately tiny budget");
+        assert!(error.starts_with("geometry search exhausted after 4 route attempt(s)"));
+        assert!(error.contains("across 1 spacing tier(s)"));
+        assert!(error.contains("last route failure: single-floor route unavailable"));
     }
 
     #[test]
@@ -143,6 +244,18 @@ mod tests {
             source_intermediate_ref: "artifacts/test/intermediate-breakdown.json".to_owned(),
             source_connection_plan_ref: "artifacts/test/physical-connection-plan.json".to_owned(),
             connection_plan_id: "physical_connections.candidate.test.1".to_owned(),
+            layout_policy: default_geometry_layout_policy(),
+            layout_search: GeometryLayoutSearchEvidence {
+                spacing_tier: 0,
+                room_order_attempt: 0,
+                route_order_attempt: 0,
+                search_attempts: 1,
+                effective_spacing: geometry_spacing_for_tier(
+                    &default_geometry_layout_policy(),
+                    0,
+                )
+                .expect("default spacing"),
+            },
             bounds: GeometryBounds {
                 width: 480,
                 height: 320,
@@ -1050,6 +1163,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+            layout_policy: None,
             seed: 150,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
@@ -1112,6 +1226,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+            layout_policy: None,
             seed: 253,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
@@ -1187,6 +1302,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+            layout_policy: None,
             seed: 353,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };
@@ -1252,6 +1368,14 @@ mod tests {
         let report = validate_geometry_2d(&broken_mapping);
         assert!(report.diagnostics.iter().any(|diagnostic| {
             diagnostic.code == "geometry_corridor_traversal_mapping_mismatch"
+        }));
+
+        let mut bad_search_evidence = geometry.clone();
+        bad_search_evidence.layout_search.effective_spacing.column_gap +=
+            GEOMETRY_ROUTE_GRID;
+        let report = validate_geometry_2d(&bad_search_evidence);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "geometry_layout_search_spacing_mismatch"
         }));
 
         let mut bad_content_anchor = geometry.clone();
@@ -1875,6 +1999,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             connection_plan: PathBuf::from("artifacts/test/physical-connection-plan.json"),
+            layout_policy: None,
             seed: seed + 20,
             out: PathBuf::from("artifacts/test/geometry.json"),
         };

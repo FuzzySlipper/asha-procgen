@@ -442,6 +442,43 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
             "Geometry must identify the exact physical connection plan it projects.",
         ));
     }
+    match validate_geometry_layout_policy(&geometry.layout_policy) {
+        Err(error) => diagnostics.push(fatal(
+            "geometry_layout_policy_invalid",
+            None,
+            None,
+            error,
+        )),
+        Ok(()) => {
+            let search = &geometry.layout_search;
+            if search.spacing_tier >= geometry.layout_policy.max_spacing_tiers
+                || search.room_order_attempt
+                    >= geometry.layout_policy.room_order_attempts_per_tier
+                || search.route_order_attempt >= GEOMETRY_ROUTE_ORDER_COUNT
+                || search.search_attempts == 0
+                || search.search_attempts > geometry.layout_policy.max_search_attempts
+            {
+                diagnostics.push(fatal(
+                    "geometry_layout_search_evidence_invalid",
+                    None,
+                    None,
+                    "Geometry layout search evidence exceeds its policy tier, ordering, or attempt bounds.",
+                ));
+            } else if geometry_spacing_for_tier(
+                &geometry.layout_policy,
+                search.spacing_tier,
+            )
+            .is_ok_and(|expected| expected != search.effective_spacing)
+            {
+                diagnostics.push(fatal(
+                    "geometry_layout_search_spacing_mismatch",
+                    None,
+                    None,
+                    "Geometry effective spacing does not match its recorded policy tier.",
+                ));
+            }
+        }
+    }
 
     let mut rooms_by_id = BTreeMap::new();
     let mut rooms_by_region = BTreeMap::new();
@@ -1001,12 +1038,10 @@ fn rasterize_geometry_corridor(corridor: &GeometryCorridor) -> Vec<GeometryPoint
 }
 
 const GEOMETRY_ROUTE_GRID: i32 = 8;
-const GEOMETRY_ROOM_MARGIN: i32 = 192;
-const GEOMETRY_COLUMN_GAP: i32 = 288;
-const GEOMETRY_ROW_GAP: i32 = 144;
 const GEOMETRY_PORT_MARGIN: i32 = 32;
 const GEOMETRY_PORT_SPACING: i32 = 48;
 const GEOMETRY_CORRIDOR_SEPARATION: i32 = 8;
+const GEOMETRY_ROUTE_ORDER_COUNT: u32 = 4;
 
 #[derive(Clone, Debug)]
 struct PhysicalPortDemand {
@@ -1014,6 +1049,29 @@ struct PhysicalPortDemand {
     side: String,
     width: i32,
     opposite_order: usize,
+}
+
+#[derive(Debug)]
+struct GeometryPlacementResult {
+    rooms: Vec<GeometryRoom>,
+    corridors: Vec<GeometryCorridor>,
+    bounds: GeometryBounds,
+    search: GeometryLayoutSearchEvidence,
+}
+
+#[derive(Debug)]
+enum GeometryPlacementAttemptError {
+    Invalid(String),
+    RoutesUnavailable {
+        attempted_orders: u32,
+        last_error: String,
+    },
+}
+
+#[derive(Debug)]
+enum PhysicalRouteAttemptError {
+    Invalid(String),
+    Unavailable(String),
 }
 
 fn emit_geometry_2d(
@@ -1034,6 +1092,43 @@ fn emit_geometry_2d(
     {
         return Err("physical connection plan does not match the supplied candidate".to_owned());
     }
+    let layout_policy = match &args.layout_policy {
+        Some(path) => read_json(path)?,
+        None => default_geometry_layout_policy(),
+    };
+    validate_geometry_layout_policy(&layout_policy)?;
+    let region_specs = ordered_geometry_region_specs(candidate, intermediate);
+    let placement = place_and_route_physical_geometry(
+        &region_specs,
+        connection_plan,
+        seed,
+        &layout_policy,
+    )?;
+    let contents = geometry_contents(candidate, intermediate, &placement.rooms);
+    Ok(Geometry2dArtifact {
+        kind: "asha_procgen.geometry_2d.v1".to_owned(),
+        schema_version: 1,
+        geometry_id: format!("geometry.{}.{}", candidate.candidate_id, seed),
+        candidate_id: candidate.candidate_id.clone(),
+        seed,
+        source_candidate_ref: display_path(&args.candidate),
+        source_intermediate_ref: display_path(&args.intermediate),
+        source_connection_plan_ref: display_path(&args.connection_plan),
+        connection_plan_id: connection_plan.plan_id.clone(),
+        layout_policy,
+        layout_search: placement.search,
+        bounds: placement.bounds,
+        rooms: placement.rooms,
+        corridors: placement.corridors,
+        contents,
+        skipped_connectors: Vec::new(),
+    })
+}
+
+fn ordered_geometry_region_specs<'a>(
+    candidate: &Candidate,
+    intermediate: &'a IntermediateBreakdown,
+) -> Vec<(usize, String, String, &'a IntermediateRegion)> {
     let depths = graph_depths(candidate);
     let mut region_specs = intermediate
         .regions
@@ -1054,56 +1149,209 @@ fn emit_geometry_2d(
             .then_with(|| left.1.cmp(&right.1))
             .then_with(|| left.2.cmp(&right.2))
     });
+    region_specs
+}
 
-    let (rooms, corridors, bounds) = place_and_route_physical_geometry(
-        &region_specs,
-        connection_plan,
-        seed,
-    )?;
-    let contents = geometry_contents(candidate, intermediate, &rooms);
-    Ok(Geometry2dArtifact {
-        kind: "asha_procgen.geometry_2d.v1".to_owned(),
+fn default_geometry_layout_policy() -> GeometryLayoutPolicy {
+    GeometryLayoutPolicy {
+        kind: "asha_procgen.geometry_layout_policy.v1".to_owned(),
         schema_version: 1,
-        geometry_id: format!("geometry.{}.{}", candidate.candidate_id, seed),
-        candidate_id: candidate.candidate_id.clone(),
-        seed,
-        source_candidate_ref: display_path(&args.candidate),
-        source_intermediate_ref: display_path(&args.intermediate),
-        source_connection_plan_ref: display_path(&args.connection_plan),
-        connection_plan_id: connection_plan.plan_id.clone(),
-        bounds,
-        rooms,
-        corridors,
-        contents,
-        skipped_connectors: Vec::new(),
-    })
+        initial_room_margin: 96,
+        initial_column_gap: 144,
+        initial_row_gap: 64,
+        room_margin_growth: 48,
+        column_gap_growth: 72,
+        row_gap_growth: 40,
+        max_spacing_tiers: 5,
+        room_order_attempts_per_tier: 4,
+        max_search_attempts: 80,
+    }
+}
+
+fn validate_geometry_layout_policy(policy: &GeometryLayoutPolicy) -> Result<(), String> {
+    if policy.kind != "asha_procgen.geometry_layout_policy.v1" || policy.schema_version != 1 {
+        return Err("unsupported geometry layout policy; expected asha_procgen.geometry_layout_policy.v1".to_owned());
+    }
+    for (label, value, minimum, maximum) in [
+        ("initialRoomMargin", policy.initial_room_margin, 32, 1_024),
+        ("initialColumnGap", policy.initial_column_gap, 32, 1_024),
+        ("initialRowGap", policy.initial_row_gap, 32, 1_024),
+        ("roomMarginGrowth", policy.room_margin_growth, 0, 512),
+        ("columnGapGrowth", policy.column_gap_growth, 0, 512),
+        ("rowGapGrowth", policy.row_gap_growth, 0, 512),
+    ] {
+        if value < minimum || value > maximum || value % GEOMETRY_ROUTE_GRID != 0 {
+            return Err(format!(
+                "geometry layout policy {label} must be a multiple of {GEOMETRY_ROUTE_GRID} from {minimum} through {maximum}"
+            ));
+        }
+    }
+    if policy.max_spacing_tiers == 0 || policy.max_spacing_tiers > 8 {
+        return Err("geometry layout policy maxSpacingTiers must be from 1 through 8".to_owned());
+    }
+    if policy.room_order_attempts_per_tier == 0 || policy.room_order_attempts_per_tier > 32 {
+        return Err(
+            "geometry layout policy roomOrderAttemptsPerTier must be from 1 through 32".to_owned(),
+        );
+    }
+    let available_attempts = policy
+        .max_spacing_tiers
+        .saturating_mul(policy.room_order_attempts_per_tier)
+        .saturating_mul(GEOMETRY_ROUTE_ORDER_COUNT);
+    if policy.max_search_attempts == 0 || policy.max_search_attempts > available_attempts {
+        return Err(format!(
+            "geometry layout policy maxSearchAttempts must be from 1 through {available_attempts}"
+        ));
+    }
+    let final_tier = policy.max_spacing_tiers - 1;
+    for (label, initial, growth) in [
+        (
+            "roomMargin",
+            policy.initial_room_margin,
+            policy.room_margin_growth,
+        ),
+        (
+            "columnGap",
+            policy.initial_column_gap,
+            policy.column_gap_growth,
+        ),
+        (
+            "rowGap",
+            policy.initial_row_gap,
+            policy.row_gap_growth,
+        ),
+    ] {
+        let final_value = initial
+            .checked_add(
+                growth
+                    .checked_mul(i32::try_from(final_tier).unwrap_or(i32::MAX))
+                    .unwrap_or(i32::MAX),
+            )
+            .unwrap_or(i32::MAX);
+        if final_value > 2_048 {
+            return Err(format!(
+                "geometry layout policy {label} exceeds 2048 units at the final tier"
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn geometry_spacing_for_tier(
+    policy: &GeometryLayoutPolicy,
+    tier: u32,
+) -> Result<GeometrySpacing, String> {
+    let grow = |initial: i32, per_tier: i32| {
+        initial.checked_add(
+            per_tier
+                .checked_mul(i32::try_from(tier).unwrap_or(i32::MAX))
+                .unwrap_or(i32::MAX),
+        )
+    };
+    let spacing = GeometrySpacing {
+        room_margin: grow(policy.initial_room_margin, policy.room_margin_growth)
+            .ok_or_else(|| "geometry layout policy room margin overflowed".to_owned())?,
+        column_gap: grow(policy.initial_column_gap, policy.column_gap_growth)
+            .ok_or_else(|| "geometry layout policy column gap overflowed".to_owned())?,
+        row_gap: grow(policy.initial_row_gap, policy.row_gap_growth)
+            .ok_or_else(|| "geometry layout policy row gap overflowed".to_owned())?,
+    };
+    if spacing.room_margin > 2_048 || spacing.column_gap > 2_048 || spacing.row_gap > 2_048 {
+        return Err("geometry layout policy effective spacing exceeds 2048 units".to_owned());
+    }
+    Ok(spacing)
 }
 
 fn place_and_route_physical_geometry(
     base_specs: &[(usize, String, String, &IntermediateRegion)],
     connection_plan: &PhysicalConnectionPlan,
     seed: u64,
-) -> Result<(Vec<GeometryRoom>, Vec<GeometryCorridor>, GeometryBounds), String> {
-    let mut last_error = None;
-    for attempt in 0..12_u64 {
-        let mut specs = base_specs.to_vec();
-        specs.sort_by(|left, right| {
-            left.0.cmp(&right.0).then_with(|| {
-                if attempt == 0 {
-                    left.1.cmp(&right.1).then_with(|| left.2.cmp(&right.2))
-                } else {
-                    geometry_layout_order_key(left.3.id.as_str(), seed, attempt)
-                        .cmp(&geometry_layout_order_key(right.3.id.as_str(), seed, attempt))
+    policy: &GeometryLayoutPolicy,
+) -> Result<GeometryPlacementResult, String> {
+    let mut search_attempts = 0_u32;
+    let mut last_error = "no physical route order was attempted".to_owned();
+    let mut last_spacing = geometry_spacing_for_tier(policy, 0)?;
+    let mut spacing_tiers_attempted = 0_u32;
+    for spacing_tier in 0..policy.max_spacing_tiers {
+        if search_attempts >= policy.max_search_attempts {
+            break;
+        }
+        let spacing = geometry_spacing_for_tier(policy, spacing_tier)?;
+        last_spacing = spacing.clone();
+        spacing_tiers_attempted += 1;
+        for room_order_attempt in 0..policy.room_order_attempts_per_tier {
+            if search_attempts >= policy.max_search_attempts {
+                break;
+            }
+            let mut specs = base_specs.to_vec();
+            specs.sort_by(|left, right| {
+                left.0.cmp(&right.0).then_with(|| {
+                    if room_order_attempt == 0 {
+                        left.1.cmp(&right.1).then_with(|| left.2.cmp(&right.2))
+                    } else {
+                        geometry_layout_order_key(
+                            left.3.id.as_str(),
+                            seed,
+                            u64::from(spacing_tier)
+                                .saturating_mul(u64::from(policy.room_order_attempts_per_tier))
+                                .saturating_add(u64::from(room_order_attempt)),
+                        )
+                        .cmp(&geometry_layout_order_key(
+                            right.3.id.as_str(),
+                            seed,
+                            u64::from(spacing_tier)
+                                .saturating_mul(u64::from(policy.room_order_attempts_per_tier))
+                                .saturating_add(u64::from(room_order_attempt)),
+                        ))
                         .then_with(|| left.2.cmp(&right.2))
+                    }
+                })
+            });
+            let remaining_attempts = policy.max_search_attempts - search_attempts;
+            match place_and_route_physical_geometry_attempt(
+                &specs,
+                connection_plan,
+                &spacing,
+                remaining_attempts.min(GEOMETRY_ROUTE_ORDER_COUNT),
+            ) {
+                Ok((rooms, corridors, bounds, route_order_attempt, attempted_orders)) => {
+                    search_attempts += attempted_orders;
+                    return Ok(GeometryPlacementResult {
+                        rooms,
+                        corridors,
+                        bounds,
+                        search: GeometryLayoutSearchEvidence {
+                            spacing_tier,
+                            room_order_attempt,
+                            route_order_attempt,
+                            search_attempts,
+                            effective_spacing: spacing,
+                        },
+                    });
                 }
-            })
-        });
-        match place_and_route_physical_geometry_attempt(&specs, connection_plan) {
-            Ok(result) => return Ok(result),
-            Err(error) => last_error = Some(error),
+                Err(GeometryPlacementAttemptError::Invalid(error)) => {
+                    return Err(format!("invalid physical geometry plan: {error}"));
+                }
+                Err(GeometryPlacementAttemptError::RoutesUnavailable {
+                    attempted_orders,
+                    last_error: error,
+                }) => {
+                    search_attempts += attempted_orders;
+                    last_error = error;
+                }
+            }
         }
     }
-    Err(last_error.unwrap_or_else(|| "no connection-aware room distribution was attempted".to_owned()))
+    Err(format!(
+        "geometry search exhausted after {search_attempts} route attempt(s) across {} spacing tier(s); initial spacing margin/column/row={}/{}/{}, final spacing={}/{}/{}; last route failure: {last_error}",
+        spacing_tiers_attempted,
+        policy.initial_room_margin,
+        policy.initial_column_gap,
+        policy.initial_row_gap,
+        last_spacing.room_margin,
+        last_spacing.column_gap,
+        last_spacing.row_gap,
+    ))
 }
 
 fn geometry_layout_order_key(id: &str, seed: u64, attempt: u64) -> u64 {
@@ -1119,7 +1367,18 @@ fn geometry_layout_order_key(id: &str, seed: u64, attempt: u64) -> u64 {
 fn place_and_route_physical_geometry_attempt(
     region_specs: &[(usize, String, String, &IntermediateRegion)],
     connection_plan: &PhysicalConnectionPlan,
-) -> Result<(Vec<GeometryRoom>, Vec<GeometryCorridor>, GeometryBounds), String> {
+    spacing: &GeometrySpacing,
+    max_route_attempts: u32,
+) -> Result<
+    (
+        Vec<GeometryRoom>,
+        Vec<GeometryCorridor>,
+        GeometryBounds,
+        u32,
+        u32,
+    ),
+    GeometryPlacementAttemptError,
+> {
     let region_depths = region_specs
         .iter()
         .map(|(depth, _, _, region)| (region.id.as_str(), *depth))
@@ -1129,7 +1388,8 @@ fn place_and_route_physical_geometry_attempt(
         .enumerate()
         .map(|(index, (_, _, _, region))| (region.id.as_str(), index))
         .collect::<BTreeMap<_, _>>();
-    let port_demands = physical_port_demands(connection_plan, &region_depths, &region_orders)?;
+    let port_demands = physical_port_demands(connection_plan, &region_depths, &region_orders)
+        .map_err(GeometryPlacementAttemptError::Invalid)?;
     let mut column_widths = BTreeMap::<usize, i32>::new();
     for (depth, _, _, region) in region_specs {
         let (width, _) = connection_aware_room_size(
@@ -1145,10 +1405,10 @@ fn place_and_route_physical_geometry_attempt(
             .or_insert(width);
     }
     let mut column_origins = BTreeMap::new();
-    let mut next_x = GEOMETRY_ROOM_MARGIN;
+    let mut next_x = spacing.room_margin;
     for (depth, width) in &column_widths {
         column_origins.insert(*depth, next_x);
-        next_x += *width + GEOMETRY_COLUMN_GAP;
+        next_x += *width + spacing.column_gap;
     }
     let mut next_y_by_depth = BTreeMap::<usize, i32>::new();
     let mut rooms = Vec::new();
@@ -1160,9 +1420,13 @@ fn place_and_route_physical_geometry_attempt(
         let (width, height) = connection_aware_room_size(region, demands);
         let x = *column_origins
             .get(&depth)
-            .ok_or_else(|| format!("missing room column for graph depth {depth}"))?;
-        let y = *next_y_by_depth.entry(depth).or_insert(GEOMETRY_ROOM_MARGIN);
-        next_y_by_depth.insert(depth, y + height + GEOMETRY_ROW_GAP);
+            .ok_or_else(|| {
+                GeometryPlacementAttemptError::Invalid(format!(
+                    "missing room column for graph depth {depth}"
+                ))
+            })?;
+        let y = *next_y_by_depth.entry(depth).or_insert(spacing.room_margin);
+        next_y_by_depth.insert(depth, y + height + spacing.row_gap);
         rooms.push(GeometryRoom {
             id: room_id(region.id.as_str()),
             source_region: region.id.clone(),
@@ -1180,10 +1444,18 @@ fn place_and_route_physical_geometry_attempt(
             style_tags: geometry_room_style_tags(region),
         });
     }
-    assign_physical_room_ports(&mut rooms, &port_demands)?;
-    let bounds = geometry_bounds(&rooms, GEOMETRY_ROUTE_GRID);
-    let corridors = route_physical_sections(connection_plan, &rooms, &bounds)?;
-    Ok((rooms, corridors, bounds))
+    assign_physical_room_ports(&mut rooms, &port_demands)
+        .map_err(GeometryPlacementAttemptError::Invalid)?;
+    let bounds = geometry_bounds(&rooms, GEOMETRY_ROUTE_GRID, spacing.room_margin);
+    let (corridors, route_order_attempt, attempted_orders) =
+        route_physical_sections(connection_plan, &rooms, &bounds, max_route_attempts)?;
+    Ok((
+        rooms,
+        corridors,
+        bounds,
+        route_order_attempt,
+        attempted_orders,
+    ))
 }
 
 fn physical_port_demands(
@@ -1382,7 +1654,8 @@ fn route_physical_sections(
     plan: &PhysicalConnectionPlan,
     rooms: &[GeometryRoom],
     bounds: &GeometryBounds,
-) -> Result<Vec<GeometryCorridor>, String> {
+    max_attempts: u32,
+) -> Result<(Vec<GeometryCorridor>, u32, u32), GeometryPlacementAttemptError> {
     let rooms_by_region = rooms
         .iter()
         .map(|room| (room.source_region.as_str(), room))
@@ -1408,14 +1681,24 @@ fn route_physical_sections(
     orders.push(by_id.clone());
     by_id.reverse();
     orders.push(by_id);
-    let mut last_error = None;
-    for order in orders {
+    let mut attempted_orders = 0_u32;
+    let mut last_error = "no physical route order was attempted".to_owned();
+    for (index, order) in orders.into_iter().take(max_attempts as usize).enumerate() {
+        attempted_orders += 1;
         match try_route_physical_sections(&order, &rooms_by_region, rooms, bounds) {
-            Ok(corridors) => return Ok(corridors),
-            Err(error) => last_error = Some(error),
+            Ok(corridors) => {
+                return Ok((corridors, index as u32, attempted_orders));
+            }
+            Err(PhysicalRouteAttemptError::Invalid(error)) => {
+                return Err(GeometryPlacementAttemptError::Invalid(error));
+            }
+            Err(PhysicalRouteAttemptError::Unavailable(error)) => last_error = error,
         }
     }
-    Err(last_error.unwrap_or_else(|| "physical connection plan has no sections".to_owned()))
+    Err(GeometryPlacementAttemptError::RoutesUnavailable {
+        attempted_orders,
+        last_error,
+    })
 }
 
 fn section_rooms<'a>(
@@ -1442,22 +1725,37 @@ fn try_route_physical_sections(
     rooms_by_region: &BTreeMap<&str, &GeometryRoom>,
     rooms: &[GeometryRoom],
     bounds: &GeometryBounds,
-) -> Result<Vec<GeometryCorridor>, String> {
+) -> Result<Vec<GeometryCorridor>, PhysicalRouteAttemptError> {
     let mut reserved = BTreeSet::new();
     let mut corridors = Vec::new();
     for section in sections {
         let (from_room, to_room) = section_rooms(section, rooms_by_region)
-            .ok_or_else(|| format!("section {} references missing terminal room", section.id))?;
+            .ok_or_else(|| {
+                PhysicalRouteAttemptError::Invalid(format!(
+                    "section {} references missing terminal room",
+                    section.id
+                ))
+            })?;
         let from_port = from_room
             .ports
             .iter()
             .find(|port| port.section_id == section.id)
-            .ok_or_else(|| format!("room {} lacks port for {}", from_room.id, section.id))?;
+            .ok_or_else(|| {
+                PhysicalRouteAttemptError::Invalid(format!(
+                    "room {} lacks port for {}",
+                    from_room.id, section.id
+                ))
+            })?;
         let to_port = to_room
             .ports
             .iter()
             .find(|port| port.section_id == section.id)
-            .ok_or_else(|| format!("room {} lacks port for {}", to_room.id, section.id))?;
+            .ok_or_else(|| {
+                PhysicalRouteAttemptError::Invalid(format!(
+                    "room {} lacks port for {}",
+                    to_room.id, section.id
+                ))
+            })?;
         let path = route_physical_section(
             from_room,
             from_port,
@@ -1469,10 +1767,10 @@ fn try_route_physical_sections(
             bounds,
         )
         .ok_or_else(|| {
-            format!(
+            PhysicalRouteAttemptError::Unavailable(format!(
                 "single-floor route unavailable for physical section {}",
                 section.id
-            )
+            ))
         })?;
         reserve_geometry_route(&path, section.width, &mut reserved);
         let source_connector = section.source_connectors.first().cloned().unwrap_or_default();
@@ -1749,19 +2047,19 @@ fn geometry_room_style_tags(region: &IntermediateRegion) -> Vec<String> {
     dedupe_strings(tags)
 }
 
-fn geometry_bounds(rooms: &[GeometryRoom], grid: i32) -> GeometryBounds {
+fn geometry_bounds(rooms: &[GeometryRoom], grid: i32, room_margin: i32) -> GeometryBounds {
     let width = rooms
         .iter()
         .map(|room| room.rect.x + room.rect.width)
         .max()
         .unwrap_or(0)
-        + GEOMETRY_ROOM_MARGIN;
+        + room_margin;
     let height = rooms
         .iter()
         .map(|room| room.rect.y + room.rect.height)
         .max()
         .unwrap_or(0)
-        + GEOMETRY_ROOM_MARGIN;
+        + room_margin;
     GeometryBounds {
         width: width.max(640),
         height: height.max(480),

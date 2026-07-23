@@ -285,18 +285,27 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
     for (index, mut entry) in accepted.into_iter().enumerate() {
         match write_selection_preview_artifacts(&mut entry, args.seed + 9_100 + index as u64) {
             Ok(()) => enriched.push(entry),
-            Err(error) => rejected.push(SelectionRejection {
-                candidate_id: entry.candidate_id,
-                profile_sequence: entry.profile_sequence,
-                candidate_ref: entry.artifact_ref,
-                physical_connection_plan_ref: entry.physical_connection_plan_ref,
-                diagnostics: vec![fatal(
-                    "selection_physical_embedding_failed",
-                    None,
-                    None,
-                    format!("Physical connection planning or exclusive placement failed: {error}"),
-                )],
-            }),
+            Err(error) => {
+                let code = if error.starts_with("geometry search exhausted") {
+                    "selection_geometry_search_exhausted"
+                } else {
+                    "selection_physical_embedding_failed"
+                };
+                rejected.push(SelectionRejection {
+                    candidate_id: entry.candidate_id,
+                    profile_sequence: entry.profile_sequence,
+                    candidate_ref: entry.artifact_ref,
+                    physical_connection_plan_ref: entry.physical_connection_plan_ref,
+                    diagnostics: vec![fatal(
+                        code,
+                        None,
+                        None,
+                        format!(
+                            "Physical connection planning or exclusive placement failed: {error}"
+                        ),
+                    )],
+                });
+            }
         }
     }
     let accepted = enriched;
@@ -367,6 +376,9 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
         candidate: artifact_path.clone(),
         intermediate: intermediate_path.clone(),
         connection_plan: connection_plan_path.clone(),
+        layout_policy: Some(PathBuf::from(
+            "fixtures/geometry-layout-policies/compact-first-v1.json",
+        )),
         seed,
         out: geometry_path.clone(),
     };

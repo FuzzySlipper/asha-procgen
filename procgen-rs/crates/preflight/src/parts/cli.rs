@@ -289,6 +289,8 @@ struct GeometryEmit2dArgs {
     intermediate: PathBuf,
     #[arg(long = "connection-plan")]
     connection_plan: PathBuf,
+    #[arg(long = "layout-policy")]
+    layout_policy: Option<PathBuf>,
     #[arg(long)]
     seed: u64,
     #[arg(long)]

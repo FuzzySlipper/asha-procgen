@@ -42,13 +42,13 @@
         "path": "prefabs/instances.json",
         "class": "durable",
         "role": "resource:prefab-instances",
-        "contentHash": "53a5ee94fc0ebe6d"
+        "contentHash": "8ba6ddb1988b0f39"
       },
       {
         "path": "scene/procgen-layout.scene.json",
         "class": "durable",
         "role": "sceneDocument",
-        "contentHash": "9b9bcfa609219954"
+        "contentHash": "1a28b89b6068acd0"
       },
       {
         "path": "voxel/prefabs/procgen-standard-room.voxel.json",
@@ -189,9 +189,9 @@
         ],
         "transform": {
           "translation": [
-            32,
+            16,
             0,
-            32
+            16
           ],
           "rotation": [
             0,
@@ -228,9 +228,9 @@
         ],
         "transform": {
           "translation": [
-            168,
+            104,
             0,
-            32
+            16
           ],
           "rotation": [
             0,
@@ -268,9 +268,9 @@
         "seed": 14341,
         "transform": {
           "translation": [
-            32,
+            16,
             0,
-            32
+            16
           ],
           "rotation": [
             0,
@@ -292,9 +292,9 @@
         "seed": 14341,
         "transform": {
           "translation": [
-            168,
+            104,
             0,
-            32
+            16
           ],
           "rotation": [
             0,

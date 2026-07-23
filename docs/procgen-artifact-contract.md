@@ -266,6 +266,13 @@ semantic style tags, and lightweight contents annotations for generated dungeon
 previews. They do not replace `layout_2d`; the older artifact remains the simple
 graph embedding.
 
+`layoutPolicy` records the versioned compact-first spacing/search inputs.
+`layoutSearch` records the successful spacing tier, room-order and route-order
+attempts, cumulative bounded route attempts, and effective spacing. A failed
+search emits no geometry artifact and is reported as
+`selection_geometry_search_exhausted`; that outcome means this finite policy
+found no route, not that single-floor topology has been proven impossible.
+
 `contents` entries are room-scoped labels with source refs back to graph and
 intermediate structure. Current kinds include `start_marker`, `goal_marker`,
 `key_pickup`, `locked_gate`, `boss_threshold`, `reward_cache`, `hazard`,

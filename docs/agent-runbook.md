@@ -220,6 +220,7 @@ npm run procgen -- geometry emit-2d \
   --candidate artifacts/samples/batch-v2/candidate-005/candidate-007-branch_merge_shortcut.json \
   --intermediate artifacts/samples/batch-v2/candidate-005/intermediate-breakdown.json \
   --connection-plan artifacts/manual/physical-connection-plan.json \
+  --layout-policy fixtures/geometry-layout-policies/compact-first-v1.json \
   --seed 6101 \
   --out artifacts/manual/geometry-2d.json
 ```
@@ -447,6 +448,15 @@ switching restores the committed placement. The endpoint accepts no browser
 filesystem paths and does not mutate fixtures, samples, RuntimeSession, or
 native voxel evidence.
 
+Those tabs also show a separate geometry-layout experiment panel. It edits the
+versioned compact-first room margin, column/row gaps, per-tier growth, tier
+count, and room-order attempts. The route-attempt budget is shown explicitly
+and remains bounded at four route orders per room order. Apply reruns geometry,
+geometry validation, piece planning/matching/assembly, placement validation,
+and built-flow validation as one temporary result. Route grid and exclusive
+corridor separation are not editable. Reset or candidate switching restores
+the committed geometry and placement together.
+
 ## Verification
 
 ```bash
@@ -463,7 +473,8 @@ For optional preview-site evidence:
 npm run viewer:smoke
 ```
 
-The focused placement-policy endpoint contract can be checked separately:
+The focused placement- and geometry-policy endpoint contracts can be checked
+separately:
 
 ```bash
 npm run policy:smoke

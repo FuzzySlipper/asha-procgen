@@ -12,8 +12,8 @@
   "piecePlacementRef": "artifacts/samples/batch-v2/candidate-008/piece-placement.json",
   "walkableProjection": {
     "source": "piecePlacement.occupiedCells+connectionCells minus closed gatePortal.cells",
-    "cellCount": 1524,
-    "projectionHash": "fnv1a64:7f916f151dcd419d"
+    "cellCount": 1276,
+    "projectionHash": "fnv1a64:b6dbbc120a5e2836"
   },
   "progression": [
     {

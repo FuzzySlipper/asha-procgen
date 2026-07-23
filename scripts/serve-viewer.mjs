@@ -54,6 +54,26 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (url.pathname === '/api/experiments/geometry-layout-policy') {
+    if (request.method !== 'POST') {
+      response.setHeader('Allow', 'POST');
+      sendJson(response, 405, { error: 'method_not_allowed', detail: 'Use POST.' });
+      return;
+    }
+    try {
+      const payload = await readJsonRequest(request, 16_384);
+      const result = await runGeometryLayoutPolicyExperiment(payload);
+      sendJson(response, 200, result);
+    } catch (error) {
+      const statusCode = error instanceof ExperimentError ? error.statusCode : 500;
+      sendJson(response, statusCode, {
+        error: error instanceof ExperimentError ? error.code : 'experiment_failed',
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    }
+    return;
+  }
+
   if (url.pathname === '/api/artifacts/by-path') {
     const requestedPath = url.searchParams.get('path');
     const filePath = requestedPath === null ? null : resolve(repoRoot, requestedPath);
@@ -236,6 +256,153 @@ async function runPlacementPolicyExperiment(payload) {
   }
 }
 
+async function runGeometryLayoutPolicyExperiment(payload) {
+  assertExactKeys(payload, ['candidateId', 'geometryLayoutPolicy'], 'request');
+  if (typeof payload.candidateId !== 'string' || payload.candidateId.length === 0) {
+    throw new ExperimentError(400, 'invalid_candidate', 'candidateId must be a non-empty string.');
+  }
+  const policy = validateGeometryLayoutPolicy(payload.geometryLayoutPolicy);
+  const selection = JSON.parse(await readFile(selectionReportPath, 'utf8'));
+  const entry = selection.accepted?.find((candidate) => candidate.candidateId === payload.candidateId);
+  if (entry === undefined) {
+    throw new ExperimentError(404, 'candidate_not_found', `Unknown accepted candidate ${payload.candidateId}.`);
+  }
+  for (const ref of [
+    'artifactRef',
+    'intermediateBreakdownRef',
+    'physicalConnectionPlanRef',
+    'geometryRef',
+    'shapeCatalogRef',
+    'shapeMatchRef',
+  ]) {
+    if (typeof entry[ref] !== 'string') {
+      throw new ExperimentError(422, 'candidate_missing_geometry_refs', `Selected candidate has no ${ref}.`);
+    }
+  }
+
+  const acceptedPath = safeExperimentSourcePath(entry.artifactRef, 'artifacts/samples');
+  const intermediatePath = safeExperimentSourcePath(entry.intermediateBreakdownRef, 'artifacts/samples');
+  const connectionPlanPath = safeExperimentSourcePath(entry.physicalConnectionPlanRef, 'artifacts/samples');
+  const committedGeometryPath = safeExperimentSourcePath(entry.geometryRef, 'artifacts/samples');
+  const catalogPath = safeExperimentSourcePath(entry.shapeCatalogRef, 'fixtures');
+  const committedMatchPath = safeExperimentSourcePath(entry.shapeMatchRef, 'artifacts/samples');
+  const accepted = JSON.parse(await readFile(acceptedPath, 'utf8'));
+  const committedGeometry = JSON.parse(await readFile(committedGeometryPath, 'utf8'));
+  const committedMatch = JSON.parse(await readFile(committedMatchPath, 'utf8'));
+  if (accepted?.candidate?.candidateId !== payload.candidateId) {
+    throw new ExperimentError(422, 'candidate_artifact_mismatch', 'Accepted artifact does not contain the selected candidate.');
+  }
+  if (!Number.isInteger(committedGeometry.seed) || !Number.isInteger(committedMatch.seed)) {
+    throw new ExperimentError(422, 'candidate_missing_seeds', 'Committed geometry or shape match has no deterministic seed.');
+  }
+
+  const experimentDir = await mkdtemp(join(tmpdir(), 'asha-procgen-geometry-policy-'));
+  const candidatePath = join(experimentDir, 'candidate.json');
+  const policyPath = join(experimentDir, 'geometry-layout-policy.json');
+  const geometryPath = join(experimentDir, 'geometry-2d.json');
+  const geometryValidationPath = join(experimentDir, 'geometry-2d.validation.json');
+  const piecePlanPath = join(experimentDir, 'piece-plan.json');
+  const shapeMatchPath = join(experimentDir, 'piece-shape-match.json');
+  const placementPath = join(experimentDir, 'piece-placement.json');
+  const placementValidationPath = join(experimentDir, 'piece-placement.validation.json');
+  const builtFlowValidationPath = join(experimentDir, 'built-flow.validation.json');
+  try {
+    await writeFile(candidatePath, `${JSON.stringify(accepted.candidate, null, 2)}\n`, 'utf8');
+    await writeFile(policyPath, `${JSON.stringify(policy, null, 2)}\n`, 'utf8');
+    await runProcgen([
+      'geometry', 'emit-2d',
+      '--candidate', candidatePath,
+      '--intermediate', intermediatePath,
+      '--connection-plan', connectionPlanPath,
+      '--layout-policy', policyPath,
+      '--seed', String(committedGeometry.seed),
+      '--out', geometryPath,
+    ]);
+    await runProcgen([
+      'geometry', 'validate-2d',
+      '--state', geometryPath,
+      '--out', geometryValidationPath,
+    ]);
+    await runProcgen([
+      'build', 'emit-piece-plan',
+      '--candidate', candidatePath,
+      '--intermediate', intermediatePath,
+      '--geometry', geometryPath,
+      '--out', piecePlanPath,
+    ]);
+    await runProcgen([
+      'build', 'match-shapes',
+      '--catalog', catalogPath,
+      '--piece-plan', piecePlanPath,
+      '--seed', String(committedMatch.seed),
+      '--out', shapeMatchPath,
+    ]);
+    await runProcgen([
+      'build', 'assemble',
+      '--catalog', catalogPath,
+      '--piece-plan', piecePlanPath,
+      '--shape-match', shapeMatchPath,
+      '--connectivity', 'four-way',
+      '--out', placementPath,
+    ]);
+    await runProcgen([
+      'build', 'validate-placement',
+      '--state', placementPath,
+      '--out', placementValidationPath,
+    ]);
+    await runProcgen([
+      'build', 'validate-flow',
+      '--candidate', candidatePath,
+      '--geometry', geometryPath,
+      '--piece-plan', piecePlanPath,
+      '--piece-placement', placementPath,
+      '--out', builtFlowValidationPath,
+    ]);
+    const geometry = JSON.parse(await readFile(geometryPath, 'utf8'));
+    const geometryValidation = JSON.parse(await readFile(geometryValidationPath, 'utf8'));
+    const placement = JSON.parse(await readFile(placementPath, 'utf8'));
+    const placementValidation = JSON.parse(await readFile(placementValidationPath, 'utf8'));
+    const builtFlowValidation = JSON.parse(await readFile(builtFlowValidationPath, 'utf8'));
+    geometry.sourceCandidateRef = entry.artifactRef;
+    geometry.sourceIntermediateRef = entry.intermediateBreakdownRef;
+    geometry.sourceConnectionPlanRef = entry.physicalConnectionPlanRef;
+    placement.sourcePlanRef = `experiment:${entry.candidateId}`;
+    placement.sourceCatalogRef = entry.shapeCatalogRef;
+    placement.sourceMatchRef = `experiment:${entry.candidateId}`;
+    builtFlowValidation.candidateRef = entry.artifactRef;
+    builtFlowValidation.geometryRef = `experiment:${entry.candidateId}:geometry`;
+    builtFlowValidation.piecePlanRef = `experiment:${entry.candidateId}:piece-plan`;
+    builtFlowValidation.piecePlacementRef = `experiment:${entry.candidateId}:piece-placement`;
+    const experimentId = createHash('sha256')
+      .update(JSON.stringify({ candidateId: payload.candidateId, policy, geometry, placement }))
+      .digest('hex');
+    return {
+      kind: 'asha_procgen.geometry_layout_policy_experiment.v1',
+      experimentId,
+      candidateId: payload.candidateId,
+      geometryLayoutPolicy: policy,
+      geometry,
+      geometryValidation,
+      placement,
+      placementValidation,
+      builtFlowValidation,
+      persisted: false,
+      nativeAuthority: false,
+    };
+  } catch (error) {
+    if (error instanceof ExperimentError) {
+      throw error;
+    }
+    const detail = error?.stderr?.trim() || error?.stdout?.trim() || (error instanceof Error ? error.message : String(error));
+    const code = detail.includes('geometry search exhausted')
+      ? 'geometry_search_exhausted'
+      : 'geometry_generation_failed';
+    throw new ExperimentError(422, code, detail);
+  } finally {
+    await rm(experimentDir, { recursive: true, force: true });
+  }
+}
+
 function validatePlacementPolicy(value) {
   assertExactKeys(
     value,
@@ -272,6 +439,57 @@ function validatePlacementPolicy(value) {
     doorwayWidthCells: 1,
     preservePieceBoundaries: true,
   };
+}
+
+function validateGeometryLayoutPolicy(value) {
+  assertExactKeys(
+    value,
+    [
+      'kind',
+      'schemaVersion',
+      'initialRoomMargin',
+      'initialColumnGap',
+      'initialRowGap',
+      'roomMarginGrowth',
+      'columnGapGrowth',
+      'rowGapGrowth',
+      'maxSpacingTiers',
+      'roomOrderAttemptsPerTier',
+      'maxSearchAttempts',
+    ],
+    'geometryLayoutPolicy',
+  );
+  if (value.kind !== 'asha_procgen.geometry_layout_policy.v1' || value.schemaVersion !== 1) {
+    throw new ExperimentError(400, 'unsupported_geometry_policy_schema', 'Only geometry-layout-policy schemaVersion 1 is supported.');
+  }
+  for (const [label, minimum, maximum] of [
+    ['initialRoomMargin', 32, 1_024],
+    ['initialColumnGap', 32, 1_024],
+    ['initialRowGap', 32, 1_024],
+    ['roomMarginGrowth', 0, 512],
+    ['columnGapGrowth', 0, 512],
+    ['rowGapGrowth', 0, 512],
+  ]) {
+    assertBoundedInteger(value[label], minimum, maximum, label);
+    if (value[label] % 8 !== 0) {
+      throw new ExperimentError(400, `invalid_${label}`, `${label} must align to the 8-unit route grid.`);
+    }
+  }
+  assertBoundedInteger(value.maxSpacingTiers, 1, 8, 'maxSpacingTiers');
+  assertBoundedInteger(value.roomOrderAttemptsPerTier, 1, 32, 'roomOrderAttemptsPerTier');
+  const availableAttempts = value.maxSpacingTiers * value.roomOrderAttemptsPerTier * 4;
+  assertBoundedInteger(value.maxSearchAttempts, 1, availableAttempts, 'maxSearchAttempts');
+  const finalTier = value.maxSpacingTiers - 1;
+  for (const [initial, growth, label] of [
+    ['initialRoomMargin', 'roomMarginGrowth', 'roomMargin'],
+    ['initialColumnGap', 'columnGapGrowth', 'columnGap'],
+    ['initialRowGap', 'rowGapGrowth', 'rowGap'],
+  ]) {
+    if (value[initial] + value[growth] * finalTier > 2_048) {
+      throw new ExperimentError(400, `invalid_${label}`, `${label} exceeds 2048 units at the final tier.`);
+    }
+  }
+  return { ...value };
 }
 
 function assertExactKeys(value, expected, label) {

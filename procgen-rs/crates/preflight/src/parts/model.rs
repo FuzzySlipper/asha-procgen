@@ -522,11 +522,47 @@ struct Geometry2dArtifact {
     source_intermediate_ref: String,
     source_connection_plan_ref: String,
     connection_plan_id: String,
+    layout_policy: GeometryLayoutPolicy,
+    layout_search: GeometryLayoutSearchEvidence,
     bounds: GeometryBounds,
     rooms: Vec<GeometryRoom>,
     corridors: Vec<GeometryCorridor>,
     contents: Vec<GeometryContent>,
     skipped_connectors: Vec<SkippedConnector>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GeometryLayoutPolicy {
+    kind: String,
+    schema_version: u32,
+    initial_room_margin: i32,
+    initial_column_gap: i32,
+    initial_row_gap: i32,
+    room_margin_growth: i32,
+    column_gap_growth: i32,
+    row_gap_growth: i32,
+    max_spacing_tiers: u32,
+    room_order_attempts_per_tier: u32,
+    max_search_attempts: u32,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GeometrySpacing {
+    room_margin: i32,
+    column_gap: i32,
+    row_gap: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct GeometryLayoutSearchEvidence {
+    spacing_tier: u32,
+    room_order_attempt: u32,
+    route_order_attempt: u32,
+    search_attempts: u32,
+    effective_spacing: GeometrySpacing,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

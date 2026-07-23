@@ -102,9 +102,10 @@ Before geometry, batch generation now emits
 `physical-connection-plan.json`. The plan normalizes compatible reciprocal open
 edges into one physical corridor, assigns explicit room ports, and carries the
 section id through piece placement and built-flow validation. Dense candidates
-that cannot be routed on one floor without unrelated corridor contact are kept
-as `selection_physical_embedding_failed` rejections rather than being rendered
-with accidental junctions.
+that exhaust the bounded compact-first search are kept as
+`selection_geometry_search_exhausted` rejections rather than being rendered
+with accidental junctions. This diagnostic means the configured search did not
+find an embedding; it is not a proof that no single-floor embedding exists.
 
 ```bash
 npm run voxel:asha-smoke
@@ -159,6 +160,18 @@ separation, while wall thickness is a corridor-routing safety buffer rather
 than rendered wall width. The viewer auto-fits each result, so the panel reports
 before/after grid bounds and routed-cell counts and provides presets with
 meaningfully different scales.
+
+A separate geometry-layout panel controls the earlier room distribution pass:
+initial outer/column/row spacing, per-tier growth, spacing-tier count, and room
+ordering attempts. Apply reruns geometry, piece placement, and built-flow
+validation together in a temporary workspace. The default policy starts
+compact and escalates only after a tighter tier exhausts its route-order budget;
+the route grid and exclusive corridor separation remain fixed safety
+invariants. The current 10-layout corpus remains 3 accepted / 7 exhausted, but
+accepted frames shrink from 2160×720 to 1392×480 for the nested-boss layouts
+and from 1328×688 to 848×480 for the lock-key baseline. The unchanged rejection
+count shows that those seven cases need richer placement/port-side search, not
+merely larger fixed gaps.
 
 ## ASHA Boundary
 

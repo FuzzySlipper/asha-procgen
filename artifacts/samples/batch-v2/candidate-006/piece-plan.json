@@ -52,7 +52,7 @@
       "placementHints": [
         "anchorQuality:explicit",
         "footprintClass:marker_room",
-        "geometryRect:192:192:128:112",
+        "geometryRect:96:96:128:112",
         "scaleBand:medium"
       ]
     },
@@ -113,7 +113,7 @@
       "placementHints": [
         "anchorQuality:derived",
         "footprintClass:threshold",
-        "geometryRect:608:192:112:80",
+        "geometryRect:368:96:112:80",
         "scaleBand:medium"
       ]
     },
@@ -161,7 +161,7 @@
       "placementHints": [
         "anchorQuality:derived",
         "footprintClass:small_pocket",
-        "geometryRect:608:416:96:80",
+        "geometryRect:368:240:96:80",
         "scaleBand:small"
       ]
     },
@@ -202,7 +202,7 @@
       "placementHints": [
         "anchorQuality:explicit",
         "footprintClass:marker_room",
-        "geometryRect:1008:192:128:96",
+        "geometryRect:624:96:128:96",
         "scaleBand:medium"
       ]
     },
@@ -261,7 +261,7 @@
       ],
       "placementHints": [
         "glue:from_room",
-        "point:720:232"
+        "point:480:136"
       ]
     },
     {
@@ -326,7 +326,7 @@
         "visible_before_reachable"
       ],
       "placementHints": [
-        "segment:720:232:1008:240"
+        "segment:480:136:624:144"
       ]
     },
     {
@@ -384,7 +384,7 @@
       ],
       "placementHints": [
         "glue:to_room",
-        "point:1008:240"
+        "point:624:144"
       ]
     },
     {
@@ -434,7 +434,7 @@
       ],
       "placementHints": [
         "glue:from_room",
-        "point:664:272"
+        "point:424:176"
       ]
     },
     {
@@ -489,7 +489,7 @@
         "return"
       ],
       "placementHints": [
-        "segment:664:272:656:416"
+        "segment:424:176:416:240"
       ]
     },
     {
@@ -539,7 +539,7 @@
       ],
       "placementHints": [
         "glue:to_room",
-        "point:656:416"
+        "point:416:240"
       ]
     },
     {
@@ -585,7 +585,7 @@
       ],
       "placementHints": [
         "glue:from_room",
-        "point:608:232"
+        "point:368:136"
       ]
     },
     {
@@ -636,7 +636,7 @@
         "open"
       ],
       "placementHints": [
-        "segment:608:232:320:224"
+        "segment:368:136:224:128"
       ]
     },
     {
@@ -682,7 +682,7 @@
       ],
       "placementHints": [
         "glue:to_room",
-        "point:320:224"
+        "point:224:128"
       ]
     },
     {
@@ -728,7 +728,7 @@
       ],
       "placementHints": [
         "glue:from_room",
-        "point:608:456"
+        "point:368:280"
       ]
     },
     {
@@ -779,7 +779,7 @@
         "open"
       ],
       "placementHints": [
-        "segment:608:456:320:272"
+        "segment:368:280:224:176"
       ]
     },
     {
@@ -825,7 +825,7 @@
       ],
       "placementHints": [
         "glue:to_room",
-        "point:320:272"
+        "point:224:176"
       ]
     }
   ],

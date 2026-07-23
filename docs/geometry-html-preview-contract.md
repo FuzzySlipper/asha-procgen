@@ -33,6 +33,7 @@ npm run procgen -- geometry emit-2d \
   --candidate <candidate.json> \
   --intermediate <intermediate-breakdown.json> \
   --connection-plan <physical-connection-plan.json> \
+  --layout-policy fixtures/geometry-layout-policies/compact-first-v1.json \
   --seed <u64> \
   --out <geometry.json>
 ```
@@ -50,6 +51,9 @@ Important fields:
 - `sourceCandidateRef`: source candidate path.
 - `sourceIntermediateRef`: source intermediate breakdown path.
 - `sourceConnectionPlanRef` and `connectionPlanId`: exact physical plan input.
+- `layoutPolicy`: versioned compact-first spacing and bounded-search policy.
+- `layoutSearch`: successful spacing tier, room/route order attempts, cumulative
+  route attempts, and effective outer/column/row spacing.
 - `bounds`: total drawing bounds and grid size.
 - `rooms`: variable room rectangles with role, footprint class, geometry role,
   source region, source node refs, and one boundary port per physical section.
@@ -70,9 +74,13 @@ renderer authority.
 
 The emitter sizes and distributes rooms from their planned connection demands,
 then routes each physical section through its declared ports. Routes reserve
-separation space and may retry deterministic room orders. If no exclusive
-single-floor embedding is found, emission fails instead of accepting corridor
-overlap, corridor contact, room intrusion, or an expanded doorway.
+separation space and retry deterministic room and route orders at the smallest
+spacing tier first. It increases only outer margin and room gaps between tiers;
+route grid, corridor separation, and port safety stay invariant. Exhaustion
+reports the complete configured spacing range, route-attempt count, and last
+blocked section instead of claiming proven non-embeddability. Emission still
+fails closed rather than accepting corridor overlap, corridor contact, room
+intrusion, or an expanded doorway.
 
 ## Geometry Validation
 

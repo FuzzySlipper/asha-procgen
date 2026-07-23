@@ -23,6 +23,72 @@
           <button class="view-tab" type="button" data-view="voxel3d" data-selected="false">Voxel 3D</button>
           <button class="view-tab" type="button" data-view="catalog" data-selected="false">Catalog</button>
         </div>
+        <section id="geometry-policy-panel" class="placement-policy-panel geometry-policy-panel" aria-label="Geometry layout policy experiment" hidden>
+          <div class="placement-policy-heading">
+            <div>
+              <h2>Geometry layout experiment</h2>
+              <p>Regenerate the selected physical connection plan compact-first. Each failed tier adds routing space without weakening corridor separation.</p>
+            </div>
+            <p class="placement-policy-mode" id="geometry-policy-mode">Committed policy</p>
+          </div>
+          <form id="geometry-policy-form" class="placement-policy-form">
+            <label>
+              <span>Initial outer margin</span>
+              <input id="geometry-policy-initial-margin" type="number" min="32" max="1024" step="8" required>
+            </label>
+            <label>
+              <span>Initial column gap</span>
+              <input id="geometry-policy-initial-column-gap" type="number" min="32" max="1024" step="8" required>
+            </label>
+            <label>
+              <span>Initial row gap</span>
+              <input id="geometry-policy-initial-row-gap" type="number" min="32" max="1024" step="8" required>
+            </label>
+            <label>
+              <span>Margin growth/tier</span>
+              <input id="geometry-policy-margin-growth" type="number" min="0" max="512" step="8" required>
+            </label>
+            <label>
+              <span>Column growth/tier</span>
+              <input id="geometry-policy-column-growth" type="number" min="0" max="512" step="8" required>
+            </label>
+            <label>
+              <span>Row growth/tier</span>
+              <input id="geometry-policy-row-growth" type="number" min="0" max="512" step="8" required>
+            </label>
+            <label>
+              <span>Maximum tiers</span>
+              <input id="geometry-policy-max-tiers" type="number" min="1" max="8" step="1" required>
+            </label>
+            <label>
+              <span>Room orders/tier</span>
+              <input id="geometry-policy-room-attempts" type="number" min="1" max="32" step="1" required>
+            </label>
+            <label>
+              <span>Maximum route attempts</span>
+              <input id="geometry-policy-max-attempts" type="number" min="1" max="1024" step="1" required>
+            </label>
+            <div class="placement-policy-locked" aria-label="Geometry routing safety invariants">
+              <span>Safety invariants</span>
+              <code>route grid 8</code>
+              <code>corridor separation 8</code>
+              <code id="geometry-policy-budget">capacity 0 route attempts</code>
+            </div>
+            <div class="placement-policy-actions">
+              <button id="geometry-policy-apply" type="submit">Apply and regenerate</button>
+              <button id="geometry-policy-reset" type="button">Reset committed</button>
+            </div>
+            <fieldset class="placement-policy-presets">
+              <legend>Search presets</legend>
+              <button type="button" data-geometry-policy-preset="compact">Compact</button>
+              <button type="button" data-geometry-policy-preset="balanced">Balanced</button>
+              <button type="button" data-geometry-policy-preset="roomy">Roomy</button>
+            </fieldset>
+          </form>
+          <p id="geometry-policy-validation" class="placement-policy-validation" role="alert" data-state="valid">All distances must align to the 8-unit route grid.</p>
+          <p id="geometry-policy-impact" class="placement-policy-impact">Waiting for committed geometry.</p>
+          <p id="geometry-policy-status" class="placement-policy-status" role="status">Select a generated candidate to experiment.</p>
+        </section>
         <section id="placement-policy-panel" class="placement-policy-panel" aria-label="Placement policy experiment" hidden>
           <div class="placement-policy-heading">
             <div>

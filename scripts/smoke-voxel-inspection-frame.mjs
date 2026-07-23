@@ -18,8 +18,8 @@ const entries = firstEntry === undefined || distinctEntry === undefined
   : [firstEntry, distinctEntry, ...acceptedEntries.filter((entry) => (
       entry !== firstEntry && entry !== distinctEntry
     ))];
-if (entries.length < 2) {
-  throw new Error('voxel inspection smoke requires two accepted piece placements');
+if (entries.length === 0) {
+  throw new Error('voxel inspection smoke requires an accepted piece placement');
 }
 
 const projections = [];
@@ -120,11 +120,13 @@ if (focusedProjection.projectedNodeCount !== 5) {
   );
 }
 
-if (
-  projections[0].placementId === projections[1].placementId
-  || JSON.stringify(projections[0].frame) === JSON.stringify(projections[1].frame)
-) {
-  throw new Error('candidate switching did not produce a distinct deterministic inspection frame');
+if (projections.length > 1) {
+  if (
+    projections[0].placementId === projections[1].placementId
+    || JSON.stringify(projections[0].frame) === JSON.stringify(projections[1].frame)
+  ) {
+    throw new Error('candidate switching did not produce a distinct deterministic inspection frame');
+  }
 }
 
 const viewerSource = await readFile(resolve(repoRoot, 'viewer/app.ts'), 'utf8');

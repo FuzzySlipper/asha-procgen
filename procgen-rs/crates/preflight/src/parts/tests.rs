@@ -1853,6 +1853,89 @@ mod tests {
     }
 
     #[test]
+    fn piece_placement_rejects_shared_room_contact_beyond_endpoint_approaches() {
+        let mut placement = full_stack_piece_placement_fixture(1053);
+        let baseline = validate_piece_placement(&placement);
+        assert!(baseline.ok, "{:?}", baseline.diagnostics);
+
+        let section_room_endpoints = collect_section_room_endpoints(&placement);
+        let approach_length = shared_room_approach_length(
+            placement.placement_policy.minimum_clearance_cells,
+            placement.placement_policy.wall_thickness_cells,
+        );
+        let mut contact = None;
+        for (left_section, left_rooms) in &section_room_endpoints {
+            for (right_section, right_rooms) in &section_room_endpoints {
+                if left_section >= right_section
+                    || !left_rooms
+                        .keys()
+                        .any(|room| right_rooms.contains_key(room))
+                {
+                    continue;
+                }
+                let left_owner = placement
+                    .glued_exits
+                    .iter()
+                    .find(|glued| glued.source_section == *left_section)
+                    .map(|glued| {
+                        format!("connection.{}", slugify_label(glued.id.as_str()))
+                    })
+                    .expect("section should have a routed glued exit");
+                let right_owners = placement
+                    .glued_exits
+                    .iter()
+                    .filter(|glued| glued.source_section == *right_section)
+                    .map(|glued| {
+                        format!("connection.{}", slugify_label(glued.id.as_str()))
+                    })
+                    .collect::<BTreeSet<_>>();
+                let left_cells = placement
+                    .connection_cells
+                    .iter()
+                    .filter(|cell| cell.instance_id == left_owner)
+                    .map(|cell| (cell.x, cell.y))
+                    .collect::<BTreeSet<_>>();
+                let Some(position) = placement
+                    .connection_cells
+                    .iter()
+                    .filter(|cell| right_owners.contains(&cell.instance_id))
+                    .map(|cell| (cell.x, cell.y))
+                    .find(|position| {
+                        !left_cells.contains(position)
+                            && !connection_contact_at_shared_room(
+                                left_section,
+                                right_section,
+                                *position,
+                                *position,
+                                &section_room_endpoints,
+                                approach_length,
+                            )
+                    })
+                else {
+                    continue;
+                };
+                contact = Some((left_owner, position));
+                break;
+            }
+            if contact.is_some() {
+                break;
+            }
+        }
+        let (left_owner, position) =
+            contact.expect("fixture should have two sections sharing a room with downstream cells");
+        placement.connection_cells.push(PlacementCellRef {
+            instance_id: left_owner,
+            x: position.0,
+            y: position.1,
+        });
+
+        let report = validate_piece_placement(&placement);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "piece_connection_section_clearance_violated"
+        }));
+    }
+
+    #[test]
     fn built_flow_validation_preserves_unique_exits_portals_and_item_progression() {
         let (candidate, geometry, plan, placement) = full_stack_built_flow_fixture(1151);
         let args = BuildValidateFlowArgs {
@@ -2043,6 +2126,7 @@ mod tests {
             &BTreeSet::new(),
             1,
             1,
+            &BTreeMap::new(),
             &BTreeMap::new(),
             "section.test",
             (-10, 10, -10, 10),

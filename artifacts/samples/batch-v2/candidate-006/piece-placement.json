@@ -5392,53 +5392,213 @@
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 25,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 24,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 23,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 22,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 21,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 20,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 19,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 18,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 17,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 16,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 15,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 14,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 14,
       "y": 27
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 26
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 25
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 24
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 23
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 22
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 21
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 20
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 19
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
+      "x": 14,
       "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 14,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 14,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 14,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 15,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 15,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 16,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 17,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 18,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 19,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 20,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 21,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 22,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 23,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 23,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 24,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 25,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 26,
+      "y": 13
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 26,
+      "y": 14
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 26,
+      "y": 15
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
+      "x": 26,
+      "y": 16
     },
     {
       "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",

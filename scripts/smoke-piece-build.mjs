@@ -1,17 +1,34 @@
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const tmp = mkdtempSync(join(tmpdir(), 'asha-procgen-piece-build-'));
+const selection = JSON.parse(
+  readFileSync('artifacts/samples/batch-v2/selection-report.json', 'utf8'),
+);
+const source = selection.accepted.find((entry) => (
+  typeof entry.artifactRef === 'string'
+  && typeof entry.intermediateBreakdownRef === 'string'
+  && typeof entry.geometryRef === 'string'
+));
+if (source === undefined) {
+  throw new Error('piece build smoke requires an accepted candidate with geometry inputs');
+}
+const acceptedArtifact = JSON.parse(readFileSync(source.artifactRef, 'utf8'));
+if (acceptedArtifact.candidate?.kind !== 'asha_procgen.candidate.v1') {
+  throw new Error('accepted piece build source does not contain a candidate');
+}
 
 const paths = {
+  candidate: join(tmp, 'candidate.json'),
   catalogReport: join(tmp, 'shape-catalog.report.json'),
   piecePlan: join(tmp, 'piece-plan.json'),
   shapeMatch: join(tmp, 'piece-shape-match.json'),
   placement: join(tmp, 'piece-placement.json'),
   validation: join(tmp, 'piece-placement.validation.json'),
 };
+writeFileSync(paths.candidate, `${JSON.stringify(acceptedArtifact.candidate, null, 2)}\n`);
 
 function runProcgen(args) {
   const result = spawnSync('npm', ['run', 'procgen', '--', ...args], {
@@ -38,11 +55,11 @@ runProcgen([
   'build',
   'emit-piece-plan',
   '--candidate',
-  'artifacts/samples/batch-v2/candidate-001/candidate-003-boss_preparation_loop.json',
+  paths.candidate,
   '--intermediate',
-  'artifacts/samples/batch-v2/candidate-001/intermediate-breakdown.json',
+  source.intermediateBreakdownRef,
   '--geometry',
-  'artifacts/samples/batch-v2/candidate-001/geometry-2d.json',
+  source.geometryRef,
   '--out',
   paths.piecePlan,
 ]);

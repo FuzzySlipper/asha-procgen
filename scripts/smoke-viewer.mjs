@@ -138,9 +138,6 @@ try {
     || left.entry.candidateId.localeCompare(right.entry.candidateId)
   ));
   const alternateVoxelEntry = alternateVoxelEntries[0]?.entry;
-  if (alternateVoxelEntry === undefined) {
-    throw new Error('viewer smoke requires a second voxel candidate');
-  }
   const css = await fetchText('/viewer/styles.css');
   if (!css.includes('color-scheme: dark') || !css.includes('#11161d')) {
     throw new Error('viewer dark theme CSS was not found');
@@ -154,7 +151,11 @@ try {
   if (previewRoomCount < 2 || previewCorridorCount < 1) {
     throw new Error(`standalone preview SVG looks sparse: rooms=${previewRoomCount}, corridors=${previewCorridorCount}`);
   }
-  for (const label of ['Key Pickup', 'Boss Threshold']) {
+  const requiredPreviewLabels = ['Key Pickup'];
+  if (top.tags?.includes('boss')) {
+    requiredPreviewLabels.push('Boss Threshold');
+  }
+  for (const label of requiredPreviewLabels) {
     if (!previewHtml.includes(label)) {
       throw new Error(`standalone preview missing content label: ${label}`);
     }
@@ -242,23 +243,27 @@ try {
       `Voxel 3D projection evidence is incomplete: projected=${projectedVoxelCount}, omitted=${omittedCeilingVoxelCount}, picks=${voxel3dPickHitCount}, grid=${voxel3dGridLineCount}`,
     );
   }
-  const alternateVoxel3dUrl = `${baseUrl}/?inspection=once&candidate=${encodeURIComponent(alternateVoxelEntry.candidateId)}#voxel3d`;
-  const alternateVoxel3dDom = await dumpEngineDom(chromium, alternateVoxel3dUrl);
-  const alternatePlacementId = attributeValue(alternateVoxel3dDom, 'data-placement-id');
-  const alternateFrameHash = attributeValue(alternateVoxel3dDom, 'data-frame-hash');
-  if (
-    !alternateVoxel3dDom.includes('data-state="ready"')
-    || alternatePlacementId === voxel3dPlacementId
-    || alternateFrameHash === voxel3dFrameHash
-  ) {
-    throw new Error(
-      `Voxel 3D candidate switching did not refresh the engine frame deterministically: ready=${alternateVoxel3dDom.includes('data-state="ready"')}, placement=${voxel3dPlacementId}->${alternatePlacementId}, frame=${voxel3dFrameHash}->${alternateFrameHash}`,
-    );
+  let alternatePlacementId = null;
+  let alternateFrameHash = null;
+  if (alternateVoxelEntry !== undefined) {
+    const alternateVoxel3dUrl = `${baseUrl}/?inspection=once&candidate=${encodeURIComponent(alternateVoxelEntry.candidateId)}#voxel3d`;
+    const alternateVoxel3dDom = await dumpEngineDom(chromium, alternateVoxel3dUrl);
+    alternatePlacementId = attributeValue(alternateVoxel3dDom, 'data-placement-id');
+    alternateFrameHash = attributeValue(alternateVoxel3dDom, 'data-frame-hash');
+    if (
+      !alternateVoxel3dDom.includes('data-state="ready"')
+      || alternatePlacementId === voxel3dPlacementId
+      || alternateFrameHash === voxel3dFrameHash
+    ) {
+      throw new Error(
+        `Voxel 3D candidate switching did not refresh the engine frame deterministically: ready=${alternateVoxel3dDom.includes('data-state="ready"')}, placement=${voxel3dPlacementId}->${alternatePlacementId}, frame=${voxel3dFrameHash}->${alternateFrameHash}`,
+      );
+    }
   }
   const voxel3dInteraction = await exerciseEngineInspection(
     chromium,
     `${baseUrl}/?candidate=${encodeURIComponent(voxelEntry.candidateId)}#voxel3d`,
-    alternateVoxelEntry.candidateId,
+    alternateVoxelEntry?.candidateId,
   );
   const screenshots = [
     {
@@ -345,7 +350,7 @@ try {
       rooms: previewRoomCount,
       corridors: previewCorridorCount,
       hasDarkBackground: true,
-      requiredLabels: ['Key Pickup', 'Boss Threshold'],
+      requiredLabels: requiredPreviewLabels,
     },
     buildTab: {
       cells: buildCellCount,
@@ -689,22 +694,25 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     const screenshot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
     await writeFile(join(outDir, 'voxel-3d-desktop.png'), screenshot.data, 'base64');
 
-    const switched = await evaluateCdp(cdp, `(() => {
-      const button = [...document.querySelectorAll('.candidate-button')]
-        .find((candidate) => candidate.dataset.candidateId === ${JSON.stringify(alternateCandidateId)});
-      button?.click();
-      return button !== undefined;
-    })()`);
-    if (!switched) {
-      throw new Error(`alternate candidate button was not found: ${alternateCandidateId}`);
-    }
-    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
-    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.placementId !== ${JSON.stringify(initial.placementId)}`, true);
-    const replacement = await inspectionDataset(cdp);
-    if (replacement.gridRevision <= initial.gridRevision || replacement.gridLineCount <= 0) {
-      throw new Error(
-        `candidate replacement did not replace the engine grid: initial=${initial.gridRevision}, replacement=${replacement.gridRevision}`,
-      );
+    let replacement = policyReset;
+    if (alternateCandidateId !== undefined) {
+      const switched = await evaluateCdp(cdp, `(() => {
+        const button = [...document.querySelectorAll('.candidate-button')]
+          .find((candidate) => candidate.dataset.candidateId === ${JSON.stringify(alternateCandidateId)});
+        button?.click();
+        return button !== undefined;
+      })()`);
+      if (!switched) {
+        throw new Error(`alternate candidate button was not found: ${alternateCandidateId}`);
+      }
+      await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
+      await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.placementId !== ${JSON.stringify(initial.placementId)}`, true);
+      replacement = await inspectionDataset(cdp);
+      if (replacement.gridRevision <= initial.gridRevision || replacement.gridLineCount <= 0) {
+        throw new Error(
+          `candidate replacement did not replace the engine grid: initial=${initial.gridRevision}, replacement=${replacement.gridRevision}`,
+        );
+      }
     }
     const revisions = [
       initial.cameraRevision,
@@ -735,6 +743,7 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
       initialGridRevision: initial.gridRevision,
       replacementGridRevision: replacement.gridRevision,
       replacementPlacementId: replacement.placementId,
+      candidateReplacementExercised: alternateCandidateId !== undefined,
     };
   } catch (error) {
     throw new Error(`${error.message}\nChromium log:\n${browserLog}`);

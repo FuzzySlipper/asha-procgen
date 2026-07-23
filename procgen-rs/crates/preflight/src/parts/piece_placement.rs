@@ -516,6 +516,49 @@ fn derive_gate_portals(
     Ok(portals)
 }
 
+type SectionRoomEndpoints =
+    BTreeMap<String, BTreeMap<String, Vec<(GridCell, String)>>>;
+type RoutedSections = BTreeMap<(i32, i32), BTreeSet<String>>;
+
+fn collect_section_room_endpoints(placement: &PiecePlacement) -> SectionRoomEndpoints {
+    let room_instances = placement
+        .instances
+        .iter()
+        .filter(|instance| {
+            instance
+                .source_refs
+                .iter()
+                .any(|reference| reference.starts_with("geometryRoom:"))
+        })
+        .map(|instance| instance.instance_id.as_str())
+        .collect::<BTreeSet<_>>();
+    let mut section_room_endpoints = SectionRoomEndpoints::new();
+    for glued in &placement.glued_exits {
+        for (instance, cell, direction) in [
+            (
+                glued.from_instance.as_str(),
+                &glued.from_cell,
+                glued.from_direction.as_str(),
+            ),
+            (
+                glued.to_instance.as_str(),
+                &glued.to_cell,
+                glued.to_direction.as_str(),
+            ),
+        ] {
+            if room_instances.contains(instance) {
+                section_room_endpoints
+                    .entry(glued.source_section.clone())
+                    .or_default()
+                    .entry(instance.to_owned())
+                    .or_default()
+                    .push((cell.clone(), direction.to_owned()));
+            }
+        }
+    }
+    section_room_endpoints
+}
+
 fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCellRef>, String> {
     let instances = placement
         .instances
@@ -532,8 +575,10 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
         .iter()
         .map(|cell| (cell.x, cell.y))
         .collect::<BTreeSet<_>>();
+    let section_room_endpoints = collect_section_room_endpoints(placement);
     let bounds = placement_route_bounds(placement);
     let mut cells = Vec::new();
+    let mut routed_sections = RoutedSections::new();
     for glued in &placement.glued_exits {
         let Some(from) = instances.get(glued.from_instance.as_str()) else {
             continue;
@@ -542,17 +587,15 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
             continue;
         };
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
-        // Route each link independently: sections that terminate in the same room are
-        // allowed to meet. The complete section graph is checked immediately afterward,
-        // and unrelated section overlap/contact remains fatal.
         let bridge = route_instance_connection(
             glued,
             placement.grid_connectivity,
             &occupied_by_cell,
             &reserved,
             placement.placement_policy.wall_thickness_cells,
-            0,
-            &BTreeMap::new(),
+            placement.placement_policy.minimum_clearance_cells,
+            &routed_sections,
+            &section_room_endpoints,
             bounds,
         )
         .ok_or_else(|| {
@@ -562,6 +605,10 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
             )
         })?;
         for cell in bridge {
+            routed_sections
+                .entry((cell.x, cell.y))
+                .or_default()
+                .insert(glued.source_section.clone());
             cells.push(PlacementCellRef {
                 instance_id: instance_id.clone(),
                 x: cell.x,
@@ -579,7 +626,8 @@ fn route_instance_connection(
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
     corridor_clearance: i32,
-    routed_sections: &BTreeMap<(i32, i32), String>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     route_bridge_cells(
@@ -595,6 +643,7 @@ fn route_instance_connection(
         wall_clearance,
         corridor_clearance,
         routed_sections,
+        section_room_endpoints,
         glued.source_section.as_str(),
         bounds,
     )
@@ -644,7 +693,8 @@ fn route_bridge_cells(
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
     corridor_clearance: i32,
-    routed_sections: &BTreeMap<(i32, i32), String>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
     source_section: &str,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
@@ -677,6 +727,7 @@ fn route_bridge_cells(
                     wall_clearance,
                     corridor_clearance,
                     routed_sections,
+                    section_room_endpoints,
                     source_section,
                 )
             {
@@ -721,7 +772,8 @@ fn bridge_position_available(
     reserved: &BTreeSet<(i32, i32)>,
     wall_clearance: i32,
     corridor_clearance: i32,
-    routed_sections: &BTreeMap<(i32, i32), String>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
     source_section: &str,
 ) -> bool {
     if occupied_by_cell.contains_key(&position) || reserved.contains(&position) {
@@ -751,9 +803,24 @@ fn bridge_position_available(
             if dx.abs() + dy.abs() > corridor_clearance {
                 continue;
             }
-            if let Some(other_section) = routed_sections.get(&(position.0 + dx, position.1 + dy)) {
-                if other_section != source_section {
-                    return false;
+            let nearby = (position.0 + dx, position.1 + dy);
+            if let Some(other_sections) = routed_sections.get(&nearby) {
+                for other_section in other_sections {
+                    if other_section != source_section
+                        && !connection_contact_at_shared_room(
+                            source_section,
+                            other_section,
+                            position,
+                            nearby,
+                            section_room_endpoints,
+                            shared_room_approach_length(
+                                corridor_clearance,
+                                wall_clearance,
+                            ),
+                        )
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -930,34 +997,7 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             )
         })
         .collect::<BTreeMap<_, _>>();
-    let room_instances = placement
-        .instances
-        .iter()
-        .filter(|instance| {
-            instance
-                .source_refs
-                .iter()
-                .any(|reference| reference.starts_with("geometryRoom:"))
-        })
-        .map(|instance| instance.instance_id.as_str())
-        .collect::<BTreeSet<_>>();
-    let mut section_room_endpoints =
-        BTreeMap::<&str, BTreeMap<&str, Vec<(i32, i32)>>>::new();
-    for glued in &placement.glued_exits {
-        for (instance, cell) in [
-            (glued.from_instance.as_str(), &glued.from_cell),
-            (glued.to_instance.as_str(), &glued.to_cell),
-        ] {
-            if room_instances.contains(instance) {
-                section_room_endpoints
-                    .entry(glued.source_section.as_str())
-                    .or_default()
-                    .entry(instance)
-                    .or_default()
-                    .push((cell.x, cell.y));
-            }
-        }
-    }
+    let section_room_endpoints = collect_section_room_endpoints(placement);
     let mut connection_by_owner: BTreeMap<&str, BTreeSet<(i32, i32)>> = BTreeMap::new();
     let mut used_connection_owners = BTreeSet::new();
     for cell in &placement.connection_cells {
@@ -1092,7 +1132,13 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                         if connection_contact_at_shared_room(
                             glued.source_section.as_str(),
                             nearby_glued.source_section.as_str(),
+                            *position,
+                            nearby,
                             &section_room_endpoints,
+                            shared_room_approach_length(
+                                corridor_clearance,
+                                placement.placement_policy.wall_thickness_cells,
+                            ),
                         ) {
                             continue;
                         }
@@ -1181,7 +1227,10 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
 fn connection_contact_at_shared_room(
     left_section: &str,
     right_section: &str,
-    section_room_endpoints: &BTreeMap<&str, BTreeMap<&str, Vec<(i32, i32)>>>,
+    left_position: (i32, i32),
+    right_position: (i32, i32),
+    section_room_endpoints: &SectionRoomEndpoints,
+    approach_length: i32,
 ) -> bool {
     let Some(left_rooms) = section_room_endpoints.get(left_section) else {
         return false;
@@ -1189,7 +1238,53 @@ fn connection_contact_at_shared_room(
     let Some(right_rooms) = section_room_endpoints.get(right_section) else {
         return false;
     };
-    left_rooms.keys().any(|room| right_rooms.contains_key(room))
+    left_rooms.iter().any(|(room, left_endpoints)| {
+        let Some(right_endpoints) = right_rooms.get(room) else {
+            return false;
+        };
+        left_endpoints.iter().any(|(cell, direction)| {
+            endpoint_approach_contains(
+                left_position,
+                cell,
+                direction.as_str(),
+                approach_length,
+            )
+        }) && right_endpoints.iter().any(|(cell, direction)| {
+            endpoint_approach_contains(
+                right_position,
+                cell,
+                direction.as_str(),
+                approach_length,
+            )
+        })
+    })
+}
+
+fn shared_room_approach_length(
+    minimum_clearance: i32,
+    wall_thickness: i32,
+) -> i32 {
+    // Adjacent room exits may fan out through the protected doorway approach and
+    // one wall buffer. Both section cells must independently remain in this
+    // bounded region; sharing the room alone never grants a route-wide exemption.
+    minimum_clearance + wall_thickness * 2
+}
+
+fn endpoint_approach_contains(
+    position: (i32, i32),
+    exit: &GridCell,
+    direction: &str,
+    approach_length: i32,
+) -> bool {
+    let (direction_x, direction_y) = direction_vector(direction);
+    if direction_x == 0 && direction_y == 0 {
+        return false;
+    }
+    let relative_x = position.0 - exit.x;
+    let relative_y = position.1 - exit.y;
+    let forward = relative_x * direction_x + relative_y * direction_y;
+    let distance = relative_x.abs() + relative_y.abs();
+    forward >= 0 && distance <= approach_length
 }
 
 fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Diagnostic>) {

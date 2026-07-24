@@ -627,7 +627,7 @@ struct GeometryCorridor {
     points: Vec<GeometryPoint>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct GeometryPoint {
     x: i32,
@@ -653,6 +653,8 @@ struct PieceBuildPlan {
     plan_id: String,
     candidate_id: String,
     geometry_id: String,
+    #[serde(default)]
+    corridor_realization: CorridorRealization,
     source_candidate_ref: String,
     source_intermediate_ref: String,
     source_geometry_ref: String,
@@ -700,6 +702,8 @@ struct PieceLink {
     traversal: String,
     required_item: Option<String>,
     tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    route_points: Vec<GeometryPoint>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -785,6 +789,8 @@ struct PiecePlacement {
     plan_id: String,
     catalog_id: String,
     match_id: String,
+    #[serde(default)]
+    corridor_realization: CorridorRealization,
     source_plan_ref: String,
     source_catalog_ref: String,
     source_match_ref: String,
@@ -853,6 +859,8 @@ struct GluedExit {
     traversal: String,
     required_item: Option<String>,
     tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    route_points: Vec<GeometryPoint>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

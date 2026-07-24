@@ -74,6 +74,26 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (url.pathname === '/api/experiments/corridor-realization') {
+    if (request.method !== 'POST') {
+      response.setHeader('Allow', 'POST');
+      sendJson(response, 405, { error: 'method_not_allowed', detail: 'Use POST.' });
+      return;
+    }
+    try {
+      const payload = await readJsonRequest(request, 16_384);
+      const result = await runCorridorRealizationExperiment(payload);
+      sendJson(response, 200, result);
+    } catch (error) {
+      const statusCode = error instanceof ExperimentError ? error.statusCode : 500;
+      sendJson(response, statusCode, {
+        error: error instanceof ExperimentError ? error.code : 'experiment_failed',
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    }
+    return;
+  }
+
   if (url.pathname === '/api/artifacts/by-path') {
     const requestedPath = url.searchParams.get('path');
     const filePath = requestedPath === null ? null : resolve(repoRoot, requestedPath);
@@ -398,6 +418,137 @@ async function runGeometryLayoutPolicyExperiment(payload) {
       ? 'geometry_search_exhausted'
       : 'geometry_generation_failed';
     throw new ExperimentError(422, code, detail);
+  } finally {
+    await rm(experimentDir, { recursive: true, force: true });
+  }
+}
+
+async function runCorridorRealizationExperiment(payload) {
+  assertExactKeys(payload, ['candidateId', 'corridorRealization'], 'request');
+  if (typeof payload.candidateId !== 'string' || payload.candidateId.length === 0) {
+    throw new ExperimentError(400, 'invalid_candidate', 'candidateId must be a non-empty string.');
+  }
+  if (payload.corridorRealization !== 'catalog' && payload.corridorRealization !== 'procedural') {
+    throw new ExperimentError(
+      400,
+      'invalid_corridor_realization',
+      'corridorRealization must be catalog or procedural.',
+    );
+  }
+  const selection = JSON.parse(await readFile(selectionReportPath, 'utf8'));
+  const entry = selection.accepted?.find((candidate) => candidate.candidateId === payload.candidateId);
+  if (entry === undefined) {
+    throw new ExperimentError(404, 'candidate_not_found', `Unknown accepted candidate ${payload.candidateId}.`);
+  }
+  for (const ref of [
+    'artifactRef',
+    'intermediateBreakdownRef',
+    'geometryRef',
+    'shapeCatalogRef',
+    'shapeMatchRef',
+  ]) {
+    if (typeof entry[ref] !== 'string') {
+      throw new ExperimentError(422, 'candidate_missing_build_refs', `Selected candidate has no ${ref}.`);
+    }
+  }
+  const acceptedPath = safeExperimentSourcePath(entry.artifactRef, 'artifacts/samples');
+  const intermediatePath = safeExperimentSourcePath(entry.intermediateBreakdownRef, 'artifacts/samples');
+  const geometryPath = safeExperimentSourcePath(entry.geometryRef, 'artifacts/samples');
+  const catalogPath = safeExperimentSourcePath(entry.shapeCatalogRef, 'fixtures');
+  const committedMatchPath = safeExperimentSourcePath(entry.shapeMatchRef, 'artifacts/samples');
+  const accepted = JSON.parse(await readFile(acceptedPath, 'utf8'));
+  const committedMatch = JSON.parse(await readFile(committedMatchPath, 'utf8'));
+  if (accepted?.candidate?.candidateId !== payload.candidateId) {
+    throw new ExperimentError(422, 'candidate_artifact_mismatch', 'Accepted artifact does not contain the selected candidate.');
+  }
+  if (!Number.isInteger(committedMatch.seed)) {
+    throw new ExperimentError(422, 'candidate_missing_seed', 'Committed shape match has no deterministic seed.');
+  }
+
+  const experimentDir = await mkdtemp(join(tmpdir(), 'asha-procgen-corridor-realization-'));
+  const candidatePath = join(experimentDir, 'candidate.json');
+  const piecePlanPath = join(experimentDir, 'piece-plan.json');
+  const shapeMatchPath = join(experimentDir, 'piece-shape-match.json');
+  const placementPath = join(experimentDir, 'piece-placement.json');
+  const placementValidationPath = join(experimentDir, 'piece-placement.validation.json');
+  const builtFlowValidationPath = join(experimentDir, 'built-flow.validation.json');
+  try {
+    await writeFile(candidatePath, `${JSON.stringify(accepted.candidate, null, 2)}\n`, 'utf8');
+    await runProcgen([
+      'build', 'emit-piece-plan',
+      '--candidate', candidatePath,
+      '--intermediate', intermediatePath,
+      '--geometry', geometryPath,
+      '--corridor-realization', payload.corridorRealization,
+      '--out', piecePlanPath,
+    ]);
+    await runProcgen([
+      'build', 'match-shapes',
+      '--catalog', catalogPath,
+      '--piece-plan', piecePlanPath,
+      '--seed', String(committedMatch.seed),
+      '--out', shapeMatchPath,
+    ]);
+    await runProcgen([
+      'build', 'assemble',
+      '--catalog', catalogPath,
+      '--piece-plan', piecePlanPath,
+      '--shape-match', shapeMatchPath,
+      '--connectivity', 'four-way',
+      '--out', placementPath,
+    ]);
+    await runProcgen([
+      'build', 'validate-placement',
+      '--state', placementPath,
+      '--out', placementValidationPath,
+    ]);
+    await runProcgen([
+      'build', 'validate-flow',
+      '--candidate', candidatePath,
+      '--geometry', geometryPath,
+      '--piece-plan', piecePlanPath,
+      '--piece-placement', placementPath,
+      '--out', builtFlowValidationPath,
+    ]);
+    const placement = JSON.parse(await readFile(placementPath, 'utf8'));
+    const placementValidation = JSON.parse(await readFile(placementValidationPath, 'utf8'));
+    const builtFlowValidation = JSON.parse(await readFile(builtFlowValidationPath, 'utf8'));
+    placement.sourcePlanRef = `experiment:${entry.candidateId}:${payload.corridorRealization}`;
+    placement.sourceCatalogRef = entry.shapeCatalogRef;
+    placement.sourceMatchRef = `experiment:${entry.candidateId}:${payload.corridorRealization}`;
+    builtFlowValidation.candidateRef = entry.artifactRef;
+    builtFlowValidation.geometryRef = entry.geometryRef;
+    builtFlowValidation.piecePlanRef = `experiment:${entry.candidateId}:${payload.corridorRealization}:piece-plan`;
+    builtFlowValidation.piecePlacementRef = `experiment:${entry.candidateId}:${payload.corridorRealization}:placement`;
+    const metrics = {
+      prefabInstances: placement.instances.length,
+      corridorPrefabInstances: placement.instances.filter((instance) =>
+        ['connector', 'corridor', 'bend'].includes(instance.requirementKind)).length,
+      routedCorridorCells: placement.connectionCells.length,
+    };
+    const experimentId = createHash('sha256')
+      .update(JSON.stringify({
+        candidateId: payload.candidateId,
+        corridorRealization: payload.corridorRealization,
+        placement,
+        builtFlowValidation,
+      }))
+      .digest('hex');
+    return {
+      kind: 'asha_procgen.corridor_realization_experiment.v1',
+      experimentId,
+      candidateId: payload.candidateId,
+      corridorRealization: payload.corridorRealization,
+      placement,
+      placementValidation,
+      builtFlowValidation,
+      metrics,
+      persisted: false,
+      nativeAuthority: false,
+    };
+  } catch (error) {
+    const detail = error?.stderr?.trim() || error?.stdout?.trim() || (error instanceof Error ? error.message : String(error));
+    throw new ExperimentError(422, 'corridor_realization_failed', detail);
   } finally {
     await rm(experimentDir, { recursive: true, force: true });
   }

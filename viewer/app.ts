@@ -351,6 +351,7 @@ interface PiecePlacement {
   readonly planId: string;
   readonly catalogId: string;
   readonly matchId: string;
+  readonly corridorRealization?: CorridorRealization;
   readonly sourceCatalogRef?: string;
   readonly cellSize: number;
   readonly gridConnectivity: 'four_way' | 'eight_way';
@@ -498,6 +499,25 @@ interface GeometryLayoutPolicyExperimentResponse {
   readonly nativeAuthority: false;
 }
 
+type CorridorRealization = 'catalog' | 'procedural';
+
+interface CorridorRealizationExperimentResponse {
+  readonly kind: 'asha_procgen.corridor_realization_experiment.v1';
+  readonly experimentId: string;
+  readonly candidateId: string;
+  readonly corridorRealization: CorridorRealization;
+  readonly placement: PiecePlacement;
+  readonly placementValidation: ValidationReport;
+  readonly builtFlowValidation: BuiltFlowValidationReport;
+  readonly metrics: {
+    readonly prefabInstances: number;
+    readonly corridorPrefabInstances: number;
+    readonly routedCorridorCells: number;
+  };
+  readonly persisted: false;
+  readonly nativeAuthority: false;
+}
+
 const svg = document.querySelector<SVGSVGElement>('#layout');
 const summary = document.querySelector<HTMLElement>('#summary');
 const batchList = document.querySelector<HTMLElement>('#batch-list');
@@ -527,6 +547,14 @@ const geometryPolicyValidationElement = document.querySelector<HTMLElement>('#ge
 const geometryPolicyImpactElement = document.querySelector<HTMLElement>('#geometry-policy-impact');
 const geometryPolicyStatusElement = document.querySelector<HTMLElement>('#geometry-policy-status');
 const geometryPolicyPresetsElements = document.querySelectorAll<HTMLButtonElement>('[data-geometry-policy-preset]');
+const corridorRealizationPanelElement = document.querySelector<HTMLElement>('#corridor-realization-panel');
+const corridorRealizationFormElement = document.querySelector<HTMLFormElement>('#corridor-realization-form');
+const corridorRealizationSelectElement = document.querySelector<HTMLSelectElement>('#corridor-realization-select');
+const corridorRealizationApplyElement = document.querySelector<HTMLButtonElement>('#corridor-realization-apply');
+const corridorRealizationResetElement = document.querySelector<HTMLButtonElement>('#corridor-realization-reset');
+const corridorRealizationModeElement = document.querySelector<HTMLElement>('#corridor-realization-mode');
+const corridorRealizationImpactElement = document.querySelector<HTMLElement>('#corridor-realization-impact');
+const corridorRealizationStatusElement = document.querySelector<HTMLElement>('#corridor-realization-status');
 const policyPanel = document.querySelector<HTMLElement>('#placement-policy-panel');
 const policyForm = document.querySelector<HTMLFormElement>('#placement-policy-form');
 const policyClearance = document.querySelector<HTMLInputElement>('#placement-policy-clearance');
@@ -567,6 +595,14 @@ if (
   || geometryPolicyValidationElement === null
   || geometryPolicyImpactElement === null
   || geometryPolicyStatusElement === null
+  || corridorRealizationPanelElement === null
+  || corridorRealizationFormElement === null
+  || corridorRealizationSelectElement === null
+  || corridorRealizationApplyElement === null
+  || corridorRealizationResetElement === null
+  || corridorRealizationModeElement === null
+  || corridorRealizationImpactElement === null
+  || corridorRealizationStatusElement === null
   || policyPanel === null
   || policyForm === null
   || policyClearance === null
@@ -611,6 +647,14 @@ const geometryPolicyValidation = geometryPolicyValidationElement;
 const geometryPolicyImpact = geometryPolicyImpactElement;
 const geometryPolicyStatus = geometryPolicyStatusElement;
 const geometryPolicyPresets = geometryPolicyPresetsElements;
+const corridorRealizationPanel = corridorRealizationPanelElement;
+const corridorRealizationForm = corridorRealizationFormElement;
+const corridorRealizationSelect = corridorRealizationSelectElement;
+const corridorRealizationApply = corridorRealizationApplyElement;
+const corridorRealizationReset = corridorRealizationResetElement;
+const corridorRealizationMode = corridorRealizationModeElement;
+const corridorRealizationImpact = corridorRealizationImpactElement;
+const corridorRealizationStatus = corridorRealizationStatusElement;
 const placementPolicyPanel = policyPanel;
 const placementPolicyForm = policyForm;
 const placementPolicyClearance = policyClearance;
@@ -651,6 +695,9 @@ let policyExperimentBusy = false;
 let currentGeometryExperimentId: string | null = null;
 let geometryExperimentRevision = 0;
 let geometryExperimentBusy = false;
+let currentCorridorExperimentId: string | null = null;
+let corridorExperimentRevision = 0;
+let corridorExperimentBusy = false;
 let voxelInspectionSurface: AshaRendererInspectionSurface | null = null;
 let voxelInspectionMount: Promise<AshaRendererInspectionSurface> | null = null;
 let voxelInspectionRevision = 0;
@@ -670,6 +717,11 @@ geometryPolicyForm.addEventListener('submit', (event) => {
   event.preventDefault();
   void applyGeometryPolicyExperiment();
 });
+corridorRealizationForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  void applyCorridorRealizationExperiment();
+});
+corridorRealizationReset.addEventListener('click', resetCorridorRealizationExperiment);
 geometryPolicyReset.addEventListener('click', resetGeometryPolicyExperiment);
 for (const input of geometryPolicyInputs()) {
   input.addEventListener('input', validateGeometryPolicyControls);
@@ -692,6 +744,7 @@ for (const preset of placementPolicyPresets) {
 window.addEventListener('pagehide', () => {
   policyExperimentRevision += 1;
   geometryExperimentRevision += 1;
+  corridorExperimentRevision += 1;
   voxelInspectionRevision += 1;
   stopVoxelInspectionReadoutSync();
   voxelInspectionSurface?.dispose();
@@ -729,7 +782,9 @@ if (initialSelection === null) {
   committedBuiltFlowValidation = null;
   currentPolicyExperimentId = null;
   currentGeometryExperimentId = null;
+  currentCorridorExperimentId = null;
   syncGeometryPolicyControls();
+  syncCorridorRealizationControls();
   syncPlacementPolicyControls();
   syncVoxelDoorStateControls();
   renderBatchList(batchPanel, batch, null, selectEntry);
@@ -751,8 +806,10 @@ if (initialSelection === null) {
 async function selectEntry(entry: SelectionEntry): Promise<void> {
   const selectionRevision = ++policyExperimentRevision;
   geometryExperimentRevision += 1;
+  corridorExperimentRevision += 1;
   policyExperimentBusy = false;
   geometryExperimentBusy = false;
+  corridorExperimentBusy = false;
   const artifact = await fetchArtifact(artifactUrl(entry.artifactRef));
   const validation = await fetchValidation(artifactUrl(entry.validationRef));
   const intermediate = await fetchIntermediateContext(entry);
@@ -785,8 +842,10 @@ async function selectEntry(entry: SelectionEntry): Promise<void> {
   committedBuiltFlowValidation = builtFlowValidation;
   currentPolicyExperimentId = null;
   currentGeometryExperimentId = null;
+  currentCorridorExperimentId = null;
   syncVoxelDoorStateControls();
   syncGeometryPolicyControls();
+  syncCorridorRealizationControls();
   syncPlacementPolicyControls();
   renderBatchList(batchPanel, batch, entry.candidateId, selectEntry);
   renderSummary(summaryPanel, artifact, entry, batch);
@@ -810,6 +869,10 @@ function geometryPolicyInputs(): readonly HTMLInputElement[] {
 
 async function applyGeometryPolicyExperiment(): Promise<void> {
   const selection = currentSelection;
+  if (currentCorridorExperimentId !== null) {
+    setGeometryPolicyStatus('error', 'Reset the temporary corridor realization before changing geometry.');
+    return;
+  }
   if (selection === null || committedGeometry === null || committedPlacement === null) {
     setGeometryPolicyStatus('error', 'Select a generated candidate with committed geometry first.');
     return;
@@ -821,6 +884,7 @@ async function applyGeometryPolicyExperiment(): Promise<void> {
   }
   const revision = ++geometryExperimentRevision;
   policyExperimentRevision += 1;
+  corridorExperimentRevision += 1;
   setGeometryPolicyBusy(true);
   setGeometryPolicyStatus(
     'loading',
@@ -858,8 +922,10 @@ async function applyGeometryPolicyExperiment(): Promise<void> {
     currentBuiltFlowValidation = result.builtFlowValidation;
     currentGeometryExperimentId = result.experimentId;
     currentPolicyExperimentId = null;
+    currentCorridorExperimentId = null;
     syncVoxelDoorStateControls();
     syncGeometryPolicyControls();
+    syncCorridorRealizationControls();
     syncPlacementPolicyControls();
     const search = result.geometry.layoutSearch;
     setGeometryPolicyStatus(
@@ -881,22 +947,27 @@ async function applyGeometryPolicyExperiment(): Promise<void> {
 function resetGeometryPolicyExperiment(): void {
   geometryExperimentRevision += 1;
   policyExperimentRevision += 1;
+  corridorExperimentRevision += 1;
   currentGeometry = committedGeometry;
   currentPlacement = committedPlacement;
   currentPlacementValidation = committedPlacementValidation;
   currentBuiltFlowValidation = committedBuiltFlowValidation;
   currentGeometryExperimentId = null;
   currentPolicyExperimentId = null;
+  currentCorridorExperimentId = null;
   syncVoxelDoorStateControls();
   setGeometryPolicyBusy(false);
   syncGeometryPolicyControls();
+  syncCorridorRealizationControls();
   syncPlacementPolicyControls();
   renderActiveView();
 }
 
 function syncGeometryPolicyControls(): void {
   const geometry = currentGeometry;
-  const enabled = geometry !== null && currentSelection !== null;
+  const enabled = geometry !== null
+    && currentSelection !== null
+    && currentCorridorExperimentId === null;
   if (geometry !== null) {
     const policy = geometry.layoutPolicy;
     geometryPolicyInitialMargin.value = String(policy.initialRoomMargin);
@@ -929,7 +1000,9 @@ function syncGeometryPolicyControls(): void {
   for (const preset of geometryPolicyPresets) {
     preset.disabled = !enabled || geometryExperimentBusy;
   }
-  if (!enabled) {
+  if (currentCorridorExperimentId !== null) {
+    setGeometryPolicyStatus('idle', 'Reset the temporary corridor realization before changing geometry.');
+  } else if (!enabled) {
     setGeometryPolicyStatus('idle', 'Select a generated candidate to experiment.');
   } else if (experimentActive) {
     setGeometryPolicyStatus('ready', 'Temporary Rust geometry active. Not persisted; no native authority claim.');
@@ -1027,6 +1100,7 @@ function validateGeometryPolicyControls(): boolean {
   geometryPolicyApply.disabled = currentSelection === null
     || committedGeometry === null
     || geometryExperimentBusy
+    || currentCorridorExperimentId !== null
     || !valid;
   return valid;
 }
@@ -1083,8 +1157,174 @@ function setGeometryPolicyStatus(state: 'idle' | 'loading' | 'ready' | 'error', 
   geometryPolicyStatus.textContent = message;
 }
 
+async function applyCorridorRealizationExperiment(): Promise<void> {
+  const selection = currentSelection;
+  if (currentGeometryExperimentId !== null || currentPolicyExperimentId !== null) {
+    setCorridorRealizationStatus(
+      'error',
+      'Reset the temporary geometry or placement policy before changing corridor realization.',
+    );
+    return;
+  }
+  if (selection === null || committedPlacement === null) {
+    setCorridorRealizationStatus('error', 'Select a generated candidate with a committed placement first.');
+    return;
+  }
+  const corridorRealization = corridorRealizationSelect.value;
+  if (corridorRealization !== 'catalog' && corridorRealization !== 'procedural') {
+    setCorridorRealizationStatus('error', 'Choose catalog pieces or procedural lanes.');
+    return;
+  }
+  const revision = ++corridorExperimentRevision;
+  setCorridorRealizationBusy(true);
+  setCorridorRealizationStatus(
+    'loading',
+    `Rebuilding ${selection.candidateId} with ${corridorRealization} corridors…`,
+  );
+  try {
+    const response = await fetch('/api/experiments/corridor-realization', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        candidateId: selection.candidateId,
+        corridorRealization,
+      }),
+    });
+    const result = (await response.json()) as
+      | CorridorRealizationExperimentResponse
+      | PlacementPolicyExperimentError;
+    if (revision !== corridorExperimentRevision) {
+      return;
+    }
+    if (!response.ok || 'error' in result) {
+      throw new Error('detail' in result ? result.detail : `experiment request failed with ${response.status}`);
+    }
+    if (
+      result.kind !== 'asha_procgen.corridor_realization_experiment.v1'
+      || result.candidateId !== selection.candidateId
+      || result.corridorRealization !== corridorRealization
+      || result.persisted !== false
+      || result.nativeAuthority !== false
+      || result.placementValidation.ok !== true
+      || result.builtFlowValidation.ok !== true
+    ) {
+      throw new Error('corridor-realization experiment returned an invalid response envelope');
+    }
+    currentPlacement = result.placement;
+    currentPlacementValidation = result.placementValidation;
+    currentBuiltFlowValidation = result.builtFlowValidation;
+    currentCorridorExperimentId = result.experimentId;
+    syncVoxelDoorStateControls();
+    syncCorridorRealizationControls();
+    syncGeometryPolicyControls();
+    syncPlacementPolicyControls();
+    setCorridorRealizationStatus(
+      'ready',
+      `Temporary ${corridorRealization} realization applied: ${result.metrics.corridorPrefabInstances} corridor prefabs and ${result.metrics.routedCorridorCells} routed cells. Placement and built flow verified; not persisted.`,
+    );
+    renderActiveView();
+  } catch (error) {
+    if (revision === corridorExperimentRevision) {
+      setCorridorRealizationStatus('error', `Corridor experiment failed: ${describeError(error)}`);
+    }
+  } finally {
+    if (revision === corridorExperimentRevision) {
+      setCorridorRealizationBusy(false);
+    }
+  }
+}
+
+function resetCorridorRealizationExperiment(): void {
+  corridorExperimentRevision += 1;
+  currentPlacement = committedPlacement;
+  currentPlacementValidation = committedPlacementValidation;
+  currentBuiltFlowValidation = committedBuiltFlowValidation;
+  currentCorridorExperimentId = null;
+  syncVoxelDoorStateControls();
+  setCorridorRealizationBusy(false);
+  syncCorridorRealizationControls();
+  syncGeometryPolicyControls();
+  syncPlacementPolicyControls();
+  renderActiveView();
+}
+
+function corridorRealizationFor(placement: PiecePlacement): CorridorRealization {
+  return placement.corridorRealization ?? 'catalog';
+}
+
+function corridorPrefabCount(placement: PiecePlacement): number {
+  return placement.instances.filter((instance) =>
+    instance.requirementKind === 'connector'
+      || instance.requirementKind === 'corridor'
+      || instance.requirementKind === 'bend').length;
+}
+
+function syncCorridorRealizationControls(): void {
+  const enabled = currentSelection !== null
+    && committedPlacement !== null
+    && currentGeometryExperimentId === null
+    && currentPolicyExperimentId === null;
+  const active = currentCorridorExperimentId !== null;
+  const placement = currentPlacement ?? committedPlacement;
+  if (placement !== null) {
+    corridorRealizationSelect.value = corridorRealizationFor(placement);
+    corridorRealizationPanel.dataset.corridorRealization = corridorRealizationFor(placement);
+  }
+  corridorRealizationPanel.dataset.mode = active ? 'experiment' : 'committed';
+  corridorRealizationPanel.dataset.experimentId = currentCorridorExperimentId ?? '';
+  corridorRealizationMode.dataset.mode = active ? 'experiment' : 'committed';
+  corridorRealizationMode.textContent = active ? 'Temporary experiment' : 'Committed mode';
+  corridorRealizationSelect.disabled = !enabled || corridorExperimentBusy;
+  corridorRealizationApply.disabled = !enabled || corridorExperimentBusy;
+  corridorRealizationReset.disabled = !active || corridorExperimentBusy;
+  if (currentGeometryExperimentId !== null || currentPolicyExperimentId !== null) {
+    setCorridorRealizationStatus('idle', 'Reset the other temporary experiment before changing corridor realization.');
+  } else if (!enabled) {
+    setCorridorRealizationStatus('idle', 'Select a generated candidate to experiment.');
+  } else if (active) {
+    setCorridorRealizationStatus('ready', 'Temporary corridor realization active. Not persisted.');
+  } else {
+    setCorridorRealizationStatus('idle', 'Committed corridor realization active. Choose a mode and rebuild.');
+  }
+  updateCorridorRealizationImpact();
+}
+
+function setCorridorRealizationBusy(busy: boolean): void {
+  corridorExperimentBusy = busy;
+  corridorRealizationSelect.disabled = busy || currentSelection === null;
+  corridorRealizationApply.disabled = busy || currentSelection === null;
+  corridorRealizationReset.disabled = busy || currentCorridorExperimentId === null;
+}
+
+function updateCorridorRealizationImpact(): void {
+  if (committedPlacement === null) {
+    corridorRealizationImpact.textContent = 'Waiting for a committed placement.';
+    return;
+  }
+  const committedMode = corridorRealizationFor(committedPlacement);
+  const committedPrefabs = corridorPrefabCount(committedPlacement);
+  const committedCells = committedPlacement.connectionCells.length;
+  if (currentCorridorExperimentId === null || currentPlacement === null) {
+    corridorRealizationImpact.textContent = `Committed ${committedMode}: ${committedPrefabs} corridor prefabs; ${committedCells.toLocaleString()} routed corridor cells.`;
+    return;
+  }
+  corridorRealizationImpact.textContent = `Comparison: ${committedMode} ${committedPrefabs} prefabs / ${committedCells.toLocaleString()} routed cells → ${corridorRealizationFor(currentPlacement)} ${corridorPrefabCount(currentPlacement)} prefabs / ${currentPlacement.connectionCells.length.toLocaleString()} routed cells.`;
+}
+
+function setCorridorRealizationStatus(
+  state: 'idle' | 'loading' | 'ready' | 'error',
+  message: string,
+): void {
+  corridorRealizationStatus.dataset.state = state;
+  corridorRealizationStatus.textContent = message;
+}
+
 async function applyPlacementPolicyExperiment(): Promise<void> {
   const selection = currentSelection;
+  if (currentCorridorExperimentId !== null) {
+    setPlacementPolicyStatus('error', 'Reset the temporary corridor realization before changing placement policy.');
+    return;
+  }
   if (currentGeometryExperimentId !== null) {
     setPlacementPolicyStatus('error', 'Reset the temporary geometry before changing downstream piece placement.');
     return;
@@ -1131,6 +1371,7 @@ async function applyPlacementPolicyExperiment(): Promise<void> {
     currentBuiltFlowValidation = null;
     currentPolicyExperimentId = result.experimentId;
     syncVoxelDoorStateControls();
+    syncCorridorRealizationControls();
     syncPlacementPolicyControls();
     setPlacementPolicyStatus(
       'ready',
@@ -1156,6 +1397,7 @@ function resetPlacementPolicyExperiment(): void {
   currentPolicyExperimentId = null;
   syncVoxelDoorStateControls();
   setPlacementPolicyBusy(false);
+  syncCorridorRealizationControls();
   syncPlacementPolicyControls();
   renderActiveView();
 }
@@ -1228,7 +1470,8 @@ function syncPlacementPolicyControls(): void {
   const placement = currentPlacement;
   const enabled = placement !== null
     && currentSelection !== null
-    && currentGeometryExperimentId === null;
+    && currentGeometryExperimentId === null
+    && currentCorridorExperimentId === null;
   if (placement !== null) {
     placementPolicyClearance.value = String(placement.placementPolicy.minimumClearanceCells);
     placementPolicyWallThickness.value = String(placement.placementPolicy.wallThicknessCells);
@@ -1251,8 +1494,8 @@ function syncPlacementPolicyControls(): void {
   for (const preset of placementPolicyPresets) {
     preset.disabled = !enabled || policyExperimentBusy;
   }
-  if (currentGeometryExperimentId !== null) {
-    setPlacementPolicyStatus('idle', 'Temporary geometry active. Reset it before changing downstream placement policy.');
+  if (currentGeometryExperimentId !== null || currentCorridorExperimentId !== null) {
+    setPlacementPolicyStatus('idle', 'Reset the other temporary experiment before changing downstream placement policy.');
   } else if (!enabled) {
     setPlacementPolicyStatus('idle', 'Select a generated candidate to experiment.');
   } else if (experimentActive) {
@@ -1304,6 +1547,9 @@ function validatePlacementPolicyControls(): boolean {
     : clearanceIssue || wallIssue;
   placementPolicyApply.disabled = currentSelection === null || committedPlacement === null || policyExperimentBusy;
   if (currentGeometryExperimentId !== null) {
+    placementPolicyApply.disabled = true;
+  }
+  if (currentCorridorExperimentId !== null) {
     placementPolicyApply.disabled = true;
   }
   return valid;
@@ -1815,6 +2061,7 @@ function renderActiveView(): void {
   layoutSvg.style.height = '';
   layoutSvg.style.minWidth = '';
   geometryPolicyPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
+  corridorRealizationPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
   placementPolicyPanel.hidden = activeView !== 'build' && activeView !== 'voxel' && activeView !== 'voxel3d';
   const inspectionActive = activeView === 'voxel3d';
   layoutSvg.style.display = inspectionActive ? 'none' : '';
@@ -1837,7 +2084,9 @@ function renderActiveView(): void {
       layoutSvg,
       currentPlacement,
       voxelEvidence,
-      currentPolicyExperimentId !== null || currentGeometryExperimentId !== null,
+      currentPolicyExperimentId !== null
+        || currentGeometryExperimentId !== null
+        || currentCorridorExperimentId !== null,
     );
     return;
   }
@@ -1890,7 +2139,9 @@ async function renderVoxelInspection(): Promise<void> {
   voxelInspectionPanel.dataset.unlockedDoorCount = String(projection.unlockedDoorCount);
   voxelInspectionPanel.dataset.doorPreviewState = doorPreviewLabel;
   voxelInspectionPanel.dataset.ceilingY = String(projection.ceilingY);
-  const activeExperimentId = currentGeometryExperimentId ?? currentPolicyExperimentId;
+  const activeExperimentId = currentGeometryExperimentId
+    ?? currentPolicyExperimentId
+    ?? currentCorridorExperimentId;
   voxelInspectionPanel.dataset.policyMode = activeExperimentId === null ? 'committed' : 'experiment';
   voxelInspectionPanel.dataset.policyExperimentId = activeExperimentId ?? '';
   setVoxelInspectionDiagnostic('loading', `Mounting engine projection for ${projection.placementId}…`);

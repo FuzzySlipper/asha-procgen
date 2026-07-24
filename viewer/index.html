@@ -89,6 +89,37 @@
           <p id="geometry-policy-impact" class="placement-policy-impact">Waiting for committed geometry.</p>
           <p id="geometry-policy-status" class="placement-policy-status" role="status">Select a generated candidate to experiment.</p>
         </section>
+        <section id="corridor-realization-panel" class="placement-policy-panel corridor-realization-panel" aria-label="Corridor realization experiment" hidden>
+          <div class="placement-policy-heading">
+            <div>
+              <h2>Corridor realization experiment</h2>
+              <p>Compare catalog corridor prefabs plus routed joins with direct procedural routing constrained to the planned geometry lanes. Room and feature prefabs remain catalog-backed in both modes.</p>
+            </div>
+            <p class="placement-policy-mode" id="corridor-realization-mode">Committed mode</p>
+          </div>
+          <form id="corridor-realization-form" class="placement-policy-form corridor-realization-form">
+            <label>
+              <span>Corridor realization</span>
+              <select id="corridor-realization-select">
+                <option value="catalog">Catalog pieces</option>
+                <option value="procedural">Procedural lanes</option>
+              </select>
+              <small>Applies one mode to every physical section; modes are never mixed automatically.</small>
+            </label>
+            <div class="placement-policy-locked" aria-label="Corridor realization safety invariants">
+              <span>Shared invariants</span>
+              <code>planned geometry lanes</code>
+              <code>exclusive sections</code>
+              <code>verified portals</code>
+            </div>
+            <div class="placement-policy-actions">
+              <button id="corridor-realization-apply" type="submit">Apply and rebuild</button>
+              <button id="corridor-realization-reset" type="button">Reset committed</button>
+            </div>
+          </form>
+          <p id="corridor-realization-impact" class="placement-policy-impact">Waiting for a committed placement.</p>
+          <p id="corridor-realization-status" class="placement-policy-status" role="status">Select a generated candidate to experiment.</p>
+        </section>
         <section id="placement-policy-panel" class="placement-policy-panel" aria-label="Placement policy experiment" hidden>
           <div class="placement-policy-heading">
             <div>

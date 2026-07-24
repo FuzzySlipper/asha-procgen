@@ -102,16 +102,23 @@ fn emit_piece_build_plan(
             .get(corridor.source_connector.as_str())
             .copied();
         let edge = edges_by_id.get(corridor.source_edge.as_str()).copied();
-        let corridor_pieces =
-            emit_corridor_piece_requirements(corridor, connector, edge, &mut requirements);
-        link_piece_chain(
-            corridor,
-            edge,
-            &from_piece,
-            &to_piece,
-            &corridor_pieces,
-            &mut links,
-        );
+        match args.corridor_realization {
+            CorridorRealization::Catalog => {
+                let corridor_pieces =
+                    emit_corridor_piece_requirements(corridor, connector, edge, &mut requirements);
+                link_piece_chain(
+                    corridor,
+                    edge,
+                    &from_piece,
+                    &to_piece,
+                    &corridor_pieces,
+                    &mut links,
+                );
+            }
+            CorridorRealization::Procedural => {
+                link_procedural_corridor(corridor, edge, &from_piece, &to_piece, &mut links);
+            }
+        }
     }
 
     Ok(PieceBuildPlan {
@@ -120,6 +127,7 @@ fn emit_piece_build_plan(
         plan_id: format!("piece_plan.{}", geometry.geometry_id),
         candidate_id: candidate.candidate_id.clone(),
         geometry_id: geometry.geometry_id.clone(),
+        corridor_realization: args.corridor_realization,
         source_candidate_ref: display_path(&args.candidate),
         source_intermediate_ref: display_path(&args.intermediate),
         source_geometry_ref: display_path(&args.geometry),
@@ -513,8 +521,46 @@ fn link_piece_chain(
                 .unwrap_or_else(|| corridor.traversal_hint.clone()),
             required_item: edge.and_then(|source_edge| source_edge.required_item.clone()),
             tags: dedupe_strings(corridor.semantic_tags.clone()),
+            route_points: Vec::new(),
         });
     }
+}
+
+fn link_procedural_corridor(
+    corridor: &GeometryCorridor,
+    edge: Option<&Edge>,
+    from_piece: &str,
+    to_piece: &str,
+    links: &mut Vec<PieceLink>,
+) {
+    links.push(PieceLink {
+        id: format!(
+            "piece_link.{}.procedural",
+            slugify_label(corridor.id.as_str())
+        ),
+        from_piece: from_piece.to_owned(),
+        from_exit: room_corridor_exit_id(corridor, true),
+        to_piece: to_piece.to_owned(),
+        to_exit: room_corridor_exit_id(corridor, false),
+        source_section: corridor.physical_section.clone(),
+        source_corridor: corridor.id.clone(),
+        source_edge: corridor.source_edge.clone(),
+        source_edges: corridor.source_edges.clone(),
+        traversal_refs: corridor.traversal_refs.clone(),
+        source_ref: format!(
+            "physicalSection:{};geometryCorridor:{};connector:{};edge:{}",
+            corridor.physical_section,
+            corridor.id,
+            corridor.source_connector,
+            corridor.source_edge
+        ),
+        traversal: edge
+            .map(|source_edge| source_edge.traversal.as_str().to_owned())
+            .unwrap_or_else(|| corridor.traversal_hint.clone()),
+        required_item: edge.and_then(|source_edge| source_edge.required_item.clone()),
+        tags: dedupe_strings(corridor.semantic_tags.clone()),
+        route_points: corridor.points.clone(),
+    });
 }
 
 fn room_corridor_exit_id(corridor: &GeometryCorridor, start: bool) -> String {

@@ -83,10 +83,13 @@ Exit directions use a 2D vocabulary now:
 Later 3D catalogs may add `up`, `down`, or vector-style exits. The 2D matcher
 must reject unsupported 3D exits until placement validation can prove them.
 
-Two exits can glue when the build plan links their pieces, their mapped
-directions are opposite, their widths are compatible, and required tags are
-satisfied. Placement then owns the physical route between the separated
-footprints; catalog exit compatibility does not grant arbitrary cell contact.
+Two catalog-piece exits can glue when the build plan links their pieces, their
+mapped directions are opposite, their widths are compatible, and required tags
+are satisfied. A procedural room-to-room link instead preserves each room
+exit's authored outward direction and the geometry lane joining them; the two
+room exits need not face opposite directions when the lane bends. Placement
+owns the physical route between separated footprints in either mode, and exit
+compatibility does not grant arbitrary cell contact.
 
 Placement is a bounded deterministic search rather than a one-pass atlas
 layout. Room-shaped requirements are placed first, room-facing connector
@@ -116,6 +119,7 @@ Important fields:
 - `planId`: stable generated id.
 - `candidateId`: source candidate id.
 - `geometryId`: source geometry id.
+- `corridorRealization`: exactly `catalog` or `procedural`.
 - `sourceCandidateRef`: source candidate ref.
 - `sourceGeometryRef`: source `geometry_2d` ref.
 - `sourceIntermediateRef`: source intermediate breakdown ref.
@@ -138,14 +142,26 @@ Important requirement fields:
 - `placementHints`: optional non-authoritative hints, such as preferred
   approximate cell span or corridor length band.
 
-Corridors are first-class requirements. A geometry corridor may expand into:
+In `catalog` mode, corridors are first-class shape requirements. A geometry
+corridor may expand into:
 
 ```text
 connector piece -> straight corridor piece -> bend piece -> straight corridor piece -> connector piece
 ```
 
-or into a shorter equivalent. The important rule is that corridor space is not
-an invisible runtime side effect. It is explicit catalog-matched build data.
+or into a shorter equivalent.
+
+In `procedural` mode, room and feature requirements remain catalog matched, but
+connector/corridor/bend requirements are omitted. Each geometry corridor emits
+one direct room-to-room link carrying the complete planned polyline. Placement
+routes cells only inside a deterministic bounded envelope around that lane and
+continues to enforce room clearance, exclusive physical-section ownership,
+portal provenance, and built-flow equivalence. It may adjust within the
+envelope to reach transformed room exits; it may not invent an unrelated
+shortest path. Unknown modes reject during typed deserialization.
+
+The mode applies to the whole build. Automatic per-corridor mixing is not part
+of this contract.
 
 ## Piece Shape Match Artifact
 

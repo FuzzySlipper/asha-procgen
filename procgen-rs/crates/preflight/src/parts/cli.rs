@@ -344,8 +344,19 @@ struct BuildEmitPiecePlanArgs {
     intermediate: PathBuf,
     #[arg(long)]
     geometry: PathBuf,
+    #[arg(long, value_enum, default_value_t = CorridorRealization::Catalog)]
+    corridor_realization: CorridorRealization,
     #[arg(long)]
     out: PathBuf,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize, ValueEnum)]
+#[value(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+enum CorridorRealization {
+    #[default]
+    Catalog,
+    Procedural,
 }
 
 #[derive(Args)]

@@ -1,0 +1,134 @@
+import { spawn } from 'node:child_process';
+
+const host = '127.0.0.1';
+const port = Number(process.env.CORRIDOR_SMOKE_PORT ?? 5194);
+const baseUrl = `http://${host}:${port}`;
+const server = spawn(process.execPath, ['scripts/serve-viewer.mjs', '--host', host, '--port', String(port)], {
+  cwd: process.cwd(),
+  stdio: ['ignore', 'pipe', 'pipe'],
+});
+
+let serverLog = '';
+server.stdout.on('data', (chunk) => {
+  serverLog += chunk.toString();
+});
+server.stderr.on('data', (chunk) => {
+  serverLog += chunk.toString();
+});
+
+try {
+  await waitForHealth();
+  const batch = await fetchJson('/api/batches/v2');
+  const candidateIds = batch.accepted?.map((entry) => entry.candidateId) ?? [];
+  const candidateId = candidateIds[0];
+  if (typeof candidateId !== 'string') {
+    throw new Error('corridor realization smoke requires one accepted batch candidate');
+  }
+  const procedural = await postExperiment({ candidateId, corridorRealization: 'procedural' }, 200);
+  const repeated = await postExperiment({ candidateId, corridorRealization: 'procedural' }, 200);
+  if (
+    procedural.kind !== 'asha_procgen.corridor_realization_experiment.v1'
+    || procedural.experimentId !== repeated.experimentId
+    || JSON.stringify(procedural.placement) !== JSON.stringify(repeated.placement)
+    || procedural.placement?.corridorRealization !== 'procedural'
+    || procedural.placementValidation?.ok !== true
+    || procedural.builtFlowValidation?.ok !== true
+    || procedural.metrics?.corridorPrefabInstances !== 0
+    || procedural.metrics?.routedCorridorCells < 1
+    || procedural.persisted !== false
+    || procedural.nativeAuthority !== false
+  ) {
+    throw new Error('procedural corridor realization was not deterministic, validated, and prefab-free');
+  }
+  const proceduralMetrics = [[candidateId, procedural.metrics.routedCorridorCells]];
+  for (const acceptedCandidateId of candidateIds.slice(1)) {
+    const candidate = await postExperiment({
+      candidateId: acceptedCandidateId,
+      corridorRealization: 'procedural',
+    }, 200);
+    if (
+      candidate.placement?.corridorRealization !== 'procedural'
+      || candidate.metrics?.corridorPrefabInstances !== 0
+      || candidate.placementValidation?.ok !== true
+      || candidate.builtFlowValidation?.ok !== true
+    ) {
+      throw new Error(`procedural corridor realization failed accepted candidate ${acceptedCandidateId}`);
+    }
+    proceduralMetrics.push([acceptedCandidateId, candidate.metrics.routedCorridorCells]);
+  }
+  const catalog = await postExperiment({ candidateId, corridorRealization: 'catalog' }, 200);
+  if (
+    catalog.placement?.corridorRealization !== 'catalog'
+    || catalog.metrics?.corridorPrefabInstances < 1
+    || catalog.placementValidation?.ok !== true
+    || catalog.builtFlowValidation?.ok !== true
+  ) {
+    throw new Error('catalog corridor realization did not preserve the committed piece-backed path');
+  }
+  await postExperiment({ candidateId, corridorRealization: 'hybrid' }, 400, 'invalid_corridor_realization');
+  await postExperiment({ candidateId: 'candidate.unknown', corridorRealization: 'procedural' }, 404, 'candidate_not_found');
+  await postExperiment({
+    candidateId,
+    corridorRealization: 'procedural',
+    path: '/etc/passwd',
+  }, 400, 'invalid_request_fields');
+  const methodResponse = await fetch(`${baseUrl}/api/experiments/corridor-realization`);
+  if (methodResponse.status !== 405) {
+    throw new Error(`corridor realization GET expected 405, received ${methodResponse.status}`);
+  }
+  console.log(
+    `corridor realization smoke passed; ${proceduralMetrics.map(([id, cells]) => `${id}:${cells}`).join(', ')}, catalog ${catalog.metrics.corridorPrefabInstances} corridor prefabs`,
+  );
+} finally {
+  server.kill('SIGTERM');
+  await waitForChildExit(server);
+}
+
+async function postExperiment(payload, expectedStatus, expectedError) {
+  const response = await fetch(`${baseUrl}/api/experiments/corridor-realization`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const result = await response.json();
+  if (response.status !== expectedStatus) {
+    throw new Error(
+      `corridor realization expected ${expectedStatus}, received ${response.status}: ${JSON.stringify(result)}`,
+    );
+  }
+  if (expectedError !== undefined && result.error !== expectedError) {
+    throw new Error(`corridor realization expected ${expectedError}, received ${JSON.stringify(result)}`);
+  }
+  return result;
+}
+
+async function fetchJson(path) {
+  const response = await fetch(`${baseUrl}${path}`);
+  if (!response.ok) {
+    throw new Error(`failed to fetch ${path}: ${response.status}`);
+  }
+  return await response.json();
+}
+
+async function waitForHealth() {
+  const started = Date.now();
+  while (Date.now() - started < 10_000) {
+    try {
+      const response = await fetch(`${baseUrl}/health`);
+      if (response.ok) {
+        return;
+      }
+    } catch {
+      // Server is still starting.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`corridor realization smoke server did not start:\n${serverLog}`);
+}
+
+async function waitForChildExit(child) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return;
+  }
+  await new Promise((resolve) => child.once('exit', resolve));
+}

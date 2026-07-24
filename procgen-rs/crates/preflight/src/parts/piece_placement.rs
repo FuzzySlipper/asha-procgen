@@ -236,13 +236,17 @@ fn assemble_piece_placement_attempt(
         plan_id: plan.plan_id.clone(),
         catalog_id: catalog.catalog_id.clone(),
         match_id: shape_match.match_id.clone(),
+        corridor_realization: plan.corridor_realization,
         source_plan_ref: display_path(&args.piece_plan),
         source_catalog_ref: display_path(&args.catalog),
         source_match_ref: display_path(&args.shape_match),
         cell_size: catalog.cell_size,
         grid_connectivity: args.connectivity,
         placement_policy: catalog.placement_policy.clone(),
-        realization_search: PieceRealizationSearchEvidence::default(),
+        realization_search: PieceRealizationSearchEvidence {
+            realization_scale_tier: (scale_multiplier - 1) as u32,
+            ..PieceRealizationSearchEvidence::default()
+        },
         instances,
         glued_exits: Vec::new(),
         gate_portals: Vec::new(),
@@ -545,7 +549,9 @@ fn derive_glued_exits(
             .ok_or_else(|| format!("link {} references missing to piece {}", link.id, link.to_piece))?;
         let from_exit = required_instance_exit(from, link.from_exit.as_str(), link.id.as_str())?;
         let to_exit = required_instance_exit(to, link.to_exit.as_str(), link.id.as_str())?;
-        if opposite_direction(from_exit.direction.as_str()) != to_exit.direction {
+        if link.route_points.is_empty()
+            && opposite_direction(from_exit.direction.as_str()) != to_exit.direction
+        {
             return Err(format!(
                 "link {} exit directions do not oppose: {} {} vs {} {}",
                 link.id, link.from_exit, from_exit.direction, link.to_exit, to_exit.direction
@@ -581,6 +587,7 @@ fn derive_glued_exits(
             traversal: link.traversal.clone(),
             required_item: link.required_item.clone(),
             tags: link.tags.clone(),
+            route_points: link.route_points.clone(),
         });
     }
     Ok(glued)
@@ -799,25 +806,21 @@ fn try_derive_connection_cells(
             continue;
         };
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
-        let bridge = route_instance_connection(
+        let bridge = route_connection_for_mode(
+            placement,
             glued,
-            placement.grid_connectivity,
             &occupied_by_cell,
             &reserved,
-            placement.placement_policy.wall_thickness_cells,
-            placement.placement_policy.minimum_clearance_cells,
             &routed_sections,
             &section_room_endpoints,
             bounds,
         );
         let Some(bridge) = bridge else {
-            let without_routed_sections = route_instance_connection(
+            let without_routed_sections = route_connection_for_mode(
+                placement,
                 glued,
-                placement.grid_connectivity,
                 &occupied_by_cell,
                 &reserved,
-                placement.placement_policy.wall_thickness_cells,
-                placement.placement_policy.minimum_clearance_cells,
                 &RoutedSections::new(),
                 &section_room_endpoints,
                 bounds,
@@ -854,6 +857,284 @@ fn try_derive_connection_cells(
         }
     }
     Ok(cells)
+}
+
+fn route_connection_for_mode(
+    placement: &PiecePlacement,
+    glued: &GluedExit,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
+    bounds: (i32, i32, i32, i32),
+) -> Option<Vec<GridCell>> {
+    if placement.corridor_realization == CorridorRealization::Procedural {
+        realize_procedural_connection(
+            glued,
+            occupied_by_cell,
+            reserved,
+            placement.placement_policy.wall_thickness_cells,
+            placement.placement_policy.minimum_clearance_cells,
+            routed_sections,
+            section_room_endpoints,
+        )
+    } else {
+        route_instance_connection(
+            glued,
+            placement.grid_connectivity,
+            occupied_by_cell,
+            reserved,
+            placement.placement_policy.wall_thickness_cells,
+            placement.placement_policy.minimum_clearance_cells,
+            routed_sections,
+            section_room_endpoints,
+            bounds,
+        )
+    }
+}
+
+fn realize_procedural_connection(
+    glued: &GluedExit,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    wall_clearance: i32,
+    corridor_clearance: i32,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
+) -> Option<Vec<GridCell>> {
+    let waypoints = map_geometry_lane_to_room_exits(glued)?;
+    let lane = rasterize_orthogonal_waypoints(&waypoints)?;
+    let lane_positions = lane
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    let envelope = corridor_clearance * 2 + wall_clearance;
+    let lane_distances = build_lane_distance_map(&lane_positions, envelope);
+    route_bridge_cells_in_lane(
+        glued,
+        occupied_by_cell,
+        reserved,
+        wall_clearance,
+        corridor_clearance,
+        routed_sections,
+        section_room_endpoints,
+        &lane_distances,
+    )
+}
+
+fn build_lane_distance_map(
+    lane_positions: &BTreeSet<(i32, i32)>,
+    envelope: i32,
+) -> BTreeMap<(i32, i32), u32> {
+    let mut distances = BTreeMap::new();
+    for lane in lane_positions {
+        for dy in -envelope..=envelope {
+            for dx in -envelope..=envelope {
+                let distance = dx.abs() + dy.abs();
+                if distance > envelope {
+                    continue;
+                }
+                distances
+                    .entry((lane.0 + dx, lane.1 + dy))
+                    .and_modify(|existing: &mut u32| {
+                        *existing = (*existing).min(distance as u32);
+                    })
+                    .or_insert(distance as u32);
+            }
+        }
+    }
+    distances
+}
+
+fn map_geometry_lane_to_room_exits(glued: &GluedExit) -> Option<Vec<GridCell>> {
+    let source_start = glued.route_points.first()?;
+    let source_end = glued.route_points.last()?;
+    if glued.route_points.len() < 2 {
+        return None;
+    }
+    let source_dx = source_end.x - source_start.x;
+    let source_dy = source_end.y - source_start.y;
+    let target_dx = glued.to_cell.x - glued.from_cell.x;
+    let target_dy = glued.to_cell.y - glued.from_cell.y;
+    let mut waypoints = Vec::new();
+    for point in &glued.route_points {
+        let x = if source_dx == 0 {
+            glued.from_cell.x + (point.x - source_start.x) / 8
+        } else {
+            glued.from_cell.x
+                + rounded_ratio(point.x - source_start.x, target_dx, source_dx)
+        };
+        let y = if source_dy == 0 {
+            glued.from_cell.y + (point.y - source_start.y) / 8
+        } else {
+            glued.from_cell.y
+                + rounded_ratio(point.y - source_start.y, target_dy, source_dy)
+        };
+        let cell = GridCell { x, y };
+        if waypoints.last() != Some(&cell) {
+            waypoints.push(cell);
+        }
+    }
+    waypoints[0] = glued.from_cell.clone();
+    let last = waypoints.len() - 1;
+    waypoints[last] = glued.to_cell.clone();
+    normalize_orthogonal_waypoints(&mut waypoints, glued);
+    Some(waypoints)
+}
+
+fn rounded_ratio(value: i32, numerator: i32, denominator: i32) -> i32 {
+    let product = i64::from(value) * i64::from(numerator);
+    let denominator = i64::from(denominator);
+    let quotient = product / denominator;
+    let remainder = product % denominator;
+    let rounded = if remainder.abs() * 2 >= denominator.abs() {
+        quotient
+            + if product.signum() == denominator.signum() {
+                1
+            } else {
+                -1
+            }
+    } else {
+        quotient
+    };
+    rounded.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+}
+
+fn normalize_orthogonal_waypoints(waypoints: &mut Vec<GridCell>, glued: &GluedExit) {
+    let mut normalized = vec![waypoints[0].clone()];
+    for (index, to) in waypoints.iter().enumerate().skip(1) {
+        let from = normalized.last().expect("normalized has a start");
+        if from.x != to.x && from.y != to.y {
+            let source_from = &glued.route_points[index - 1];
+            let source_to = &glued.route_points[index];
+            let bend = if source_from.y == source_to.y {
+                GridCell {
+                    x: to.x,
+                    y: from.y,
+                }
+            } else {
+                GridCell {
+                    x: from.x,
+                    y: to.y,
+                }
+            };
+            if normalized.last() != Some(&bend) {
+                normalized.push(bend);
+            }
+        }
+        if normalized.last() != Some(to) {
+            normalized.push(to.clone());
+        }
+    }
+    *waypoints = normalized;
+}
+
+fn rasterize_orthogonal_waypoints(waypoints: &[GridCell]) -> Option<Vec<GridCell>> {
+    let first = waypoints.first()?.clone();
+    let mut cells = vec![first];
+    for pair in waypoints.windows(2) {
+        let from = &pair[0];
+        let to = &pair[1];
+        if from.x != to.x && from.y != to.y {
+            return None;
+        }
+        let step_x = (to.x - from.x).signum();
+        let step_y = (to.y - from.y).signum();
+        let mut cursor = from.clone();
+        while cursor != *to {
+            cursor.x += step_x;
+            cursor.y += step_y;
+            if cells.last() != Some(&cursor) {
+                cells.push(cursor.clone());
+            }
+        }
+    }
+    Some(cells)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn route_bridge_cells_in_lane(
+    glued: &GluedExit,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    wall_clearance: i32,
+    corridor_clearance: i32,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
+    lane_distances: &BTreeMap<(i32, i32), u32>,
+) -> Option<Vec<GridCell>> {
+    let start = (glued.from_cell.x, glued.from_cell.y);
+    let end = (glued.to_cell.x, glued.to_cell.y);
+    let mut queue = VecDeque::from([start]);
+    let mut previous = BTreeMap::new();
+    let mut seen = BTreeSet::from([start]);
+    while let Some(position) = queue.pop_front() {
+        if position == end {
+            break;
+        }
+        let mut neighbors = grid_neighbors(position, GridConnectivity::FourWay);
+        neighbors.sort_by_key(|neighbor| {
+            lane_distances
+                .get(neighbor)
+                .copied()
+                .unwrap_or(u32::MAX)
+                .saturating_mul(1_000)
+                .saturating_add(neighbor.0.abs_diff(end.0) + neighbor.1.abs_diff(end.1))
+        });
+        for neighbor in neighbors {
+            if !seen.insert(neighbor) || (neighbor != end && !lane_distances.contains_key(&neighbor))
+            {
+                continue;
+            }
+            if neighbor != end
+                && !bridge_position_available(
+                    neighbor,
+                    glued.from_instance.as_str(),
+                    glued.to_instance.as_str(),
+                    &glued.from_cell,
+                    glued.from_direction.as_str(),
+                    &glued.to_cell,
+                    glued.to_direction.as_str(),
+                    occupied_by_cell,
+                    reserved,
+                    wall_clearance,
+                    corridor_clearance,
+                    routed_sections,
+                    section_room_endpoints,
+                    glued.source_section.as_str(),
+                )
+            {
+                continue;
+            }
+            previous.insert(neighbor, position);
+            queue.push_back(neighbor);
+        }
+    }
+    if !seen.contains(&end) {
+        return None;
+    }
+    let mut path = vec![GridCell { x: end.0, y: end.1 }];
+    let mut cursor = end;
+    while cursor != start {
+        cursor = *previous.get(&cursor)?;
+        path.push(GridCell {
+            x: cursor.0,
+            y: cursor.1,
+        });
+    }
+    path.reverse();
+    Some(path)
+}
+
+fn distance_to_lane(
+    position: (i32, i32),
+    lane_positions: &BTreeSet<(i32, i32)>,
+) -> u32 {
+    lane_positions
+        .iter()
+        .map(|lane| position.0.abs_diff(lane.0) + position.1.abs_diff(lane.1))
+        .min()
+        .unwrap_or(u32::MAX)
 }
 
 fn route_instance_connection(
@@ -1097,6 +1378,7 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
         ));
     }
     validate_piece_placement_policy(&placement.placement_policy, &mut diagnostics);
+    validate_corridor_realization(placement, &mut diagnostics);
     if placement.realization_search.realization_attempts == 0
         || placement.realization_search.realization_attempts > 2
         || placement.realization_search.realization_scale_tier
@@ -1129,6 +1411,56 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
         ok: fatal_count == 0,
         fatal_count,
         diagnostics,
+    }
+}
+
+fn validate_corridor_realization(
+    placement: &PiecePlacement,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    match placement.corridor_realization {
+        CorridorRealization::Catalog => {
+            if placement
+                .glued_exits
+                .iter()
+                .any(|glued| !glued.route_points.is_empty())
+            {
+                diagnostics.push(fatal(
+                    "piece_catalog_corridor_has_procedural_lane",
+                    None,
+                    None,
+                    "Catalog corridor realization must not carry procedural geometry lanes.",
+                ));
+            }
+        }
+        CorridorRealization::Procedural => {
+            let corridor_instances = placement.instances.iter().filter(|instance| {
+                matches!(
+                    instance.requirement_kind.as_str(),
+                    "connector" | "corridor" | "bend"
+                )
+            });
+            if corridor_instances.count() > 0 {
+                diagnostics.push(fatal(
+                    "piece_procedural_corridor_has_catalog_instance",
+                    None,
+                    None,
+                    "Procedural corridor realization must not place connector, corridor, or bend prefab instances.",
+                ));
+            }
+            if placement
+                .glued_exits
+                .iter()
+                .any(|glued| glued.route_points.len() < 2)
+            {
+                diagnostics.push(fatal(
+                    "piece_procedural_corridor_lane_missing",
+                    None,
+                    None,
+                    "Every procedural physical section must preserve a geometry lane with at least two points.",
+                ));
+            }
+        }
     }
 }
 
@@ -1474,6 +1806,30 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 format!("Connection {owner} is not one connected declared-exit route."),
             ));
         }
+        if placement.corridor_realization == CorridorRealization::Procedural {
+            let lane = map_geometry_lane_to_room_exits(glued)
+                .and_then(|waypoints| rasterize_orthogonal_waypoints(&waypoints))
+                .unwrap_or_default()
+                .into_iter()
+                .map(|cell| (cell.x, cell.y))
+                .collect::<BTreeSet<_>>();
+            let envelope = placement.placement_policy.minimum_clearance_cells * 2
+                + placement.placement_policy.wall_thickness_cells;
+            if lane.is_empty()
+                || owner_cells
+                    .iter()
+                    .any(|cell| distance_to_lane(*cell, &lane) > envelope as u32)
+            {
+                diagnostics.push(fatal(
+                    "piece_procedural_corridor_left_geometry_lane",
+                    None,
+                    Some(glued.source_edge.as_str()),
+                    format!(
+                        "Procedural connection {owner} leaves its planned geometry lane envelope."
+                    ),
+                ));
+            }
+        }
     }
 }
 
@@ -1638,7 +1994,9 @@ fn validate_placement_links(placement: &PiecePlacement, diagnostics: &mut Vec<Di
         }
         validate_instance_exit_geometry(from, from_exit, glued.id.as_str(), diagnostics);
         validate_instance_exit_geometry(to, to_exit, glued.id.as_str(), diagnostics);
-        if opposite_direction(from_exit.direction.as_str()) != to_exit.direction {
+        if glued.route_points.is_empty()
+            && opposite_direction(from_exit.direction.as_str()) != to_exit.direction
+        {
             diagnostics.push(fatal(
                 "piece_glued_exit_incompatible",
                 None,

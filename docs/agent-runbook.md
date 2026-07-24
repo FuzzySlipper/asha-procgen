@@ -448,6 +448,17 @@ switching restores the committed placement. The endpoint accepts no browser
 filesystem paths and does not mutate fixtures, samples, RuntimeSession, or
 native voxel evidence.
 
+The same tabs show a corridor-realization experiment panel with exactly
+`catalog` and `procedural` modes. Catalog mode keeps corridor prefabs and their
+routed joins. Procedural mode reruns piece planning, shape matching, assembly,
+placement validation, and built-flow validation while keeping room/feature
+prefabs and omitting connector/corridor/bend instances. Its direct
+physical-section routes remain inside the planned geometry-lane envelope.
+Reset or candidate switching restores the committed catalog placement. The
+comparison readout reports corridor-prefab and routed-cell counts, and a
+successful procedural experiment supplies a matching built-flow report so the
+Voxel 3D door progression controls remain available.
+
 Those tabs also show a separate geometry-layout experiment panel. It edits the
 versioned compact-first room margin, column/row gaps, per-tier growth, tier
 count, and room-order attempts. The route-attempt budget is shown explicitly

@@ -5,6 +5,7 @@
   "planId": "piece_plan.geometry.candidate.first_slice.6001.14309",
   "catalogId": "shape_catalog.2d_basic.v1",
   "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.6001.14309.14340.alternative_0",
+  "corridorRealization": "catalog",
   "sourcePlanRef": "artifacts/samples/batch-v2/candidate-008/piece-plan.json",
   "sourceCatalogRef": "fixtures/shape-catalogs/2d-basic.json",
   "sourceMatchRef": "artifacts/samples/batch-v2/candidate-008/piece-shape-match.json",

@@ -109,6 +109,14 @@ fn validate_flow_identity(
             ),
         ));
     }
+    if placement.corridor_realization != plan.corridor_realization {
+        diagnostics.push(fatal(
+            "built_flow_corridor_realization_mismatch",
+            None,
+            None,
+            "Piece placement corridor realization mode does not match its piece plan.",
+        ));
+    }
 }
 
 fn validate_source_edge_chains(
@@ -199,6 +207,10 @@ fn validate_source_edge_chains(
             if link.source_corridor != corridor.id
                 || link.source_section != corridor.physical_section
                 || !link.source_edges.contains(&edge.id)
+                || match plan.corridor_realization {
+                    CorridorRealization::Catalog => !link.route_points.is_empty(),
+                    CorridorRealization::Procedural => link.route_points != corridor.points,
+                }
                 || traversal_ref.is_none_or(|reference| {
                     reference.traversal != edge.traversal.as_str()
                         || reference.required_item != edge.required_item
@@ -239,6 +251,7 @@ fn validate_source_edge_chains(
                 || glued.source_corridor != corridor.id
                 || glued.from_exit != link.from_exit
                 || glued.to_exit != link.to_exit
+                || glued.route_points != link.route_points
             {
                 diagnostics.push(fatal(
                     "built_flow_glued_join_mismatch",

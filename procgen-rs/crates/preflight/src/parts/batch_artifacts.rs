@@ -490,6 +490,7 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
         candidate: artifact_path.clone(),
         intermediate: intermediate_path,
         geometry: geometry_path.clone(),
+        corridor_realization: CorridorRealization::Catalog,
         out: piece_plan_path.clone(),
     };
     let piece_plan = emit_piece_build_plan(

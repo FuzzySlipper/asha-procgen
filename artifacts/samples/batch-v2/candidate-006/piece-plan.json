@@ -4,6 +4,7 @@
   "planId": "piece_plan.geometry.candidate.first_slice.5801.14310",
   "candidateId": "candidate.first_slice.5801",
   "geometryId": "geometry.candidate.first_slice.5801.14310",
+  "corridorRealization": "catalog",
   "sourceCandidateRef": "artifacts/samples/batch-v2/candidate-006/accepted.json",
   "sourceIntermediateRef": "artifacts/samples/batch-v2/candidate-006/intermediate-breakdown.json",
   "sourceGeometryRef": "artifacts/samples/batch-v2/candidate-006/geometry-2d.json",

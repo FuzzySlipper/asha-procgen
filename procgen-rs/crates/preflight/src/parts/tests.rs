@@ -1462,6 +1462,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             geometry: PathBuf::from("artifacts/test/geometry.json"),
+            corridor_realization: CorridorRealization::Catalog,
             out: PathBuf::from("artifacts/test/piece-plan.json"),
         };
         let plan = emit_piece_build_plan(&candidate, &intermediate, &geometry, &args)
@@ -1542,6 +1543,142 @@ mod tests {
                 .iter()
                 .any(|source_ref| source_ref.starts_with("edge:"))
         );
+    }
+
+    #[test]
+    fn procedural_corridor_realization_uses_geometry_lanes_without_corridor_prefabs() {
+        let (candidate, intermediate, geometry) = full_stack_geometry_inputs(853);
+        let plan_args = BuildEmitPiecePlanArgs {
+            candidate: PathBuf::from("artifacts/test/candidate.json"),
+            intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
+            geometry: PathBuf::from("artifacts/test/geometry.json"),
+            corridor_realization: CorridorRealization::Procedural,
+            out: PathBuf::from("artifacts/test/procedural-piece-plan.json"),
+        };
+        let plan = emit_piece_build_plan(&candidate, &intermediate, &geometry, &plan_args)
+            .expect("procedural piece plan should emit");
+        assert_eq!(
+            plan.corridor_realization,
+            CorridorRealization::Procedural
+        );
+        assert!(plan.requirements.iter().all(|requirement| {
+            !matches!(
+                requirement.kind.as_str(),
+                "connector" | "corridor" | "bend"
+            )
+        }));
+        assert_eq!(plan.links.len(), geometry.corridors.len());
+        assert!(plan
+            .links
+            .iter()
+            .all(|link| link.route_points.len() >= 2));
+
+        let catalog_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../..")
+            .join(DEFAULT_SHAPE_CATALOG);
+        let catalog: ShapeCatalog = read_json(&catalog_path).expect("shape catalog");
+        let match_args = BuildMatchShapesArgs {
+            catalog: PathBuf::from(DEFAULT_SHAPE_CATALOG),
+            piece_plan: plan_args.out.clone(),
+            seed: 884,
+            out: PathBuf::from("artifacts/test/procedural-shape-match.json"),
+        };
+        let shape_match = match_shapes(&catalog, &plan, &match_args);
+        assert!(shape_match.ok);
+        let assemble_args = BuildAssembleArgs {
+            catalog: PathBuf::from(DEFAULT_SHAPE_CATALOG),
+            piece_plan: plan_args.out.clone(),
+            shape_match: match_args.out,
+            connectivity: GridConnectivity::FourWay,
+            out: PathBuf::from("artifacts/test/procedural-placement.json"),
+        };
+        let placement =
+            assemble_piece_placement(&catalog, &plan, &shape_match, &assemble_args)
+                .expect("procedural corridors should realize inside geometry lanes");
+        let repeated =
+            assemble_piece_placement(&catalog, &plan, &shape_match, &assemble_args)
+                .expect("procedural realization should repeat");
+        assert_eq!(
+            serde_json::to_value(&placement).expect("placement value"),
+            serde_json::to_value(&repeated).expect("repeated placement value")
+        );
+        assert_eq!(
+            placement.corridor_realization,
+            CorridorRealization::Procedural
+        );
+        assert!(placement.instances.iter().all(|instance| {
+            !matches!(
+                instance.requirement_kind.as_str(),
+                "connector" | "corridor" | "bend"
+            )
+        }));
+        assert!(validate_piece_placement(&placement).ok);
+
+        let flow_args = BuildValidateFlowArgs {
+            candidate: plan_args.candidate,
+            geometry: plan_args.geometry,
+            piece_plan: plan_args.out,
+            piece_placement: assemble_args.out,
+            out: PathBuf::from("artifacts/test/procedural-built-flow.json"),
+        };
+        let flow = validate_built_flow(&candidate, &geometry, &plan, &placement, &flow_args);
+        assert!(flow.ok);
+
+        let mut diverted_plan = plan.clone();
+        diverted_plan.links[0].route_points[1].x += 8;
+        let diverted_flow =
+            validate_built_flow(&candidate, &geometry, &diverted_plan, &placement, &flow_args);
+        assert!(diverted_flow.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "built_flow_link_provenance_mismatch"
+        }));
+
+        let mut outside_lane = placement;
+        let first_owner = outside_lane.connection_cells[0].instance_id.clone();
+        let first_glued = outside_lane
+            .glued_exits
+            .iter()
+            .find(|glued| {
+                format!("connection.{}", slugify_label(glued.id.as_str())) == first_owner
+            })
+            .expect("glued exit for connection owner")
+            .clone();
+        let moved = outside_lane
+            .connection_cells
+            .iter_mut()
+            .find(|cell| {
+                cell.instance_id == first_owner
+                    && (cell.x != first_glued.from_cell.x
+                        || cell.y != first_glued.from_cell.y)
+                    && (cell.x != first_glued.to_cell.x
+                        || cell.y != first_glued.to_cell.y)
+            })
+            .expect("non-endpoint connection cell");
+        moved.x += 10_000;
+        let report = validate_piece_placement(&outside_lane);
+        assert!(report.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "piece_procedural_corridor_left_geometry_lane"
+        }));
+    }
+
+    #[test]
+    fn corridor_realization_rejects_unknown_serialized_modes() {
+        let value = serde_json::json!({
+            "kind": "asha_procgen.piece_build_plan.v1",
+            "schemaVersion": 1,
+            "planId": "piece_plan.invalid",
+            "candidateId": "candidate.invalid",
+            "geometryId": "geometry.invalid",
+            "corridorRealization": "hybrid",
+            "sourceCandidateRef": "candidate.json",
+            "sourceIntermediateRef": "intermediate.json",
+            "sourceGeometryRef": "geometry.json",
+            "requirements": [],
+            "links": [],
+            "contentRequirements": []
+        });
+        let error = serde_json::from_value::<PieceBuildPlan>(value)
+            .expect_err("unknown realization mode must fail closed");
+        assert!(error.to_string().contains("unknown variant"));
     }
 
     #[test]
@@ -1844,6 +1981,7 @@ mod tests {
             candidate: geometry_args.candidate.clone(),
             intermediate: geometry_args.intermediate.clone(),
             geometry: geometry_args.out.clone(),
+            corridor_realization: CorridorRealization::Catalog,
             out: PathBuf::from("artifacts/test/piece-plan.json"),
         };
         let plan =
@@ -2355,6 +2493,7 @@ mod tests {
             candidate: PathBuf::from("artifacts/test/candidate.json"),
             intermediate: PathBuf::from("artifacts/test/intermediate-breakdown.json"),
             geometry: PathBuf::from("artifacts/test/geometry.json"),
+            corridor_realization: CorridorRealization::Catalog,
             out: PathBuf::from("artifacts/test/piece-plan.json"),
         };
         let piece_plan = emit_piece_build_plan(
@@ -2515,6 +2654,7 @@ mod tests {
             plan_id: "piece_plan.test".to_owned(),
             candidate_id: "candidate.test".to_owned(),
             geometry_id: "geometry.test".to_owned(),
+            corridor_realization: CorridorRealization::Catalog,
             source_candidate_ref: "artifacts/test/candidate.json".to_owned(),
             source_intermediate_ref: "artifacts/test/intermediate.json".to_owned(),
             source_geometry_ref: "artifacts/test/geometry.json".to_owned(),

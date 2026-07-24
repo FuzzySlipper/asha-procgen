@@ -325,6 +325,21 @@ body {
   padding: 6px 8px;
 }
 
+.placement-policy-form select {
+  min-height: 34px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-strong);
+  color: #eff8ff;
+  font: inherit;
+  padding: 6px 8px;
+}
+
+.corridor-realization-form {
+  grid-template-columns: minmax(190px, 240px) minmax(280px, 1fr) auto;
+}
+
 .placement-policy-form input:focus {
   border-color: var(--border-strong);
   outline: none;
@@ -413,6 +428,7 @@ body {
 
 .placement-policy-actions button:disabled,
 .placement-policy-form input:disabled,
+.placement-policy-form select:disabled,
 .placement-policy-presets button:disabled {
   cursor: not-allowed;
   opacity: 0.5;

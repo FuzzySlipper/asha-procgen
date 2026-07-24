@@ -76,6 +76,40 @@ assert.equal(offsetPlan.openingCellCount, 7);
 assert.ok(hasSolid(offsetPlan, 2, 1, 1, 1), 'nearer non-exit wall on room A was opened');
 assert.ok(hasSolid(offsetPlan, 4, 1, 3, 1), 'nearer non-exit wall on room B was opened');
 
+const turningProceduralPlacement = {
+  ...placement,
+  placementId: 'piece_placement.turning_procedural_smoke',
+  corridorRealization: 'procedural',
+  occupiedCells: [
+    ...ownedSquare('instance.room_a', 0, 0),
+    ...ownedSquare('instance.room_b', 5, 5),
+  ],
+  connectionCells: [
+    { instanceId: connectionOwner, x: 2, y: 0 },
+    { instanceId: connectionOwner, x: 3, y: 0 },
+    { instanceId: connectionOwner, x: 4, y: 0 },
+    { instanceId: connectionOwner, x: 4, y: 1 },
+    { instanceId: connectionOwner, x: 4, y: 2 },
+    { instanceId: connectionOwner, x: 4, y: 3 },
+    { instanceId: connectionOwner, x: 4, y: 4 },
+    { instanceId: connectionOwner, x: 5, y: 4 },
+  ],
+  gluedExits: [{
+    ...placement.gluedExits[0],
+    toCell: { x: 5, y: 4 },
+    toDirection: 'north',
+  }],
+};
+const turningProceduralPlan = compilePlacementExtrusion(turningProceduralPlacement);
+assert.equal(turningProceduralPlan.openingCellCount, 8);
+assert.throws(
+  () => compilePlacementExtrusion({
+    ...turningProceduralPlacement,
+    corridorRealization: 'catalog',
+  }),
+  /incompatible directions/,
+);
+
 assert.throws(
   () => compilePlacementExtrusion({
     ...placement,

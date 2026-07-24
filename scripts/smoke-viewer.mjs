@@ -610,6 +610,62 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     await waitForCdpValue(cdp, `document.querySelector('#geometry-policy-panel')?.dataset.mode`, 'committed');
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'committed');
 
+    const submittedCorridorRealization = await evaluateCdp(cdp, `(() => {
+      const form = document.querySelector('#corridor-realization-form');
+      const select = document.querySelector('#corridor-realization-select');
+      if (!(form instanceof HTMLFormElement) || !(select instanceof HTMLSelectElement)) {
+        return false;
+      }
+      select.value = 'procedural';
+      form.requestSubmit();
+      return true;
+    })()`);
+    if (!submittedCorridorRealization) {
+      throw new Error('corridor realization controls were not available in Voxel 3D');
+    }
+    await waitForCdpValue(
+      cdp,
+      `document.querySelector('#corridor-realization-status')?.dataset.state`,
+      'ready',
+      30_000,
+    );
+    await waitForCdpValue(cdp, `document.querySelector('#corridor-realization-panel')?.dataset.mode`, 'experiment');
+    await waitForCdpValue(cdp, `document.querySelector('#corridor-realization-panel')?.dataset.corridorRealization`, 'procedural');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'experiment');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash !== ${JSON.stringify(initial.frameHash)}`, true);
+    const corridorExperimentReadout = await evaluateCdp(cdp, `(() => {
+      const panel = document.querySelector('#corridor-realization-panel');
+      const status = document.querySelector('#corridor-realization-status');
+      const impact = document.querySelector('#corridor-realization-impact');
+      const doorState = document.querySelector('#voxel-3d-door-state');
+      return {
+        mode: panel?.dataset.mode,
+        realization: panel?.dataset.corridorRealization,
+        experimentId: panel?.dataset.experimentId,
+        status: status?.textContent,
+        impact: impact?.textContent,
+        doorStateDisabled: doorState instanceof HTMLSelectElement ? doorState.disabled : null,
+      };
+    })()`);
+    if (
+      corridorExperimentReadout.realization !== 'procedural'
+      || typeof corridorExperimentReadout.experimentId !== 'string'
+      || corridorExperimentReadout.experimentId.length === 0
+      || !String(corridorExperimentReadout.status).includes('Placement and built flow verified')
+      || !String(corridorExperimentReadout.impact).includes('→ procedural 0 prefabs')
+      || corridorExperimentReadout.doorStateDisabled !== false
+    ) {
+      throw new Error(`corridor realization readout was incomplete: ${JSON.stringify(corridorExperimentReadout)}`);
+    }
+    await evaluateCdp(cdp, `document.querySelector('[data-view="voxel"]')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#layout')?.textContent.includes('no native authority receipt')`, true);
+    await evaluateCdp(cdp, `document.querySelector('[data-view="voxel3d"]')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-diagnostic')?.dataset.state`, 'ready');
+    await evaluateCdp(cdp, `document.querySelector('#corridor-realization-reset')?.click()`);
+    await waitForCdpValue(cdp, `document.querySelector('#corridor-realization-panel')?.dataset.mode`, 'committed');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'committed');
+    await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash`, initial.frameHash);
+
     const invalidPolicyReadout = await evaluateCdp(cdp, `(() => {
       const clearance = document.querySelector('#placement-policy-clearance');
       const validation = document.querySelector('#placement-policy-validation');

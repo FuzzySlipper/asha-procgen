@@ -161,6 +161,16 @@ than rendered wall width. The viewer auto-fits each result, so the panel reports
 before/after grid bounds and routed-cell counts and provides presets with
 meaningfully different scales.
 
+A separate corridor-realization panel compares two explicit whole-build modes.
+`catalog` retains the current connector/corridor/bend prefab chain and routed
+joins. `procedural` keeps catalog-backed room and feature pieces but replaces
+every corridor prefab chain with one direct physical-section route constrained
+to the planned geometry polyline's bounded lane envelope. Both modes preserve
+section provenance, exclusive routing, portals, placement validation, and
+built-flow validation; they are never mixed automatically. The panel reports
+corridor-prefab and routed-cell counts, and the temporary procedural result is
+used by Build, Voxel, and Voxel 3D, including verified door progression.
+
 A separate geometry-layout panel controls the earlier room distribution pass:
 initial outer/column/row spacing, per-tier growth, spacing-tier count, and room
 ordering attempts. Apply reruns geometry, piece placement, and built-flow

@@ -50,6 +50,7 @@ export interface PlacementGatePortal {
 export interface PiecePlacementForExtrusion {
   readonly kind: string;
   readonly placementId: string;
+  readonly corridorRealization?: 'catalog' | 'procedural';
   readonly gridConnectivity: 'four_way' | 'eight_way';
   readonly placementPolicy: PiecePlacementPolicy;
   readonly occupiedCells: readonly PlacementOwnedCell[];
@@ -232,6 +233,13 @@ function validatePlacement(placement: PiecePlacementForExtrusion): void {
   if (placement.kind !== 'asha_procgen.piece_placement.v1') {
     throw new Error(`unsupported placement kind: ${placement.kind}`);
   }
+  if (
+    placement.corridorRealization !== undefined
+    && placement.corridorRealization !== 'catalog'
+    && placement.corridorRealization !== 'procedural'
+  ) {
+    throw new Error(`unsupported corridor realization: ${String(placement.corridorRealization)}`);
+  }
   if (placement.gridConnectivity !== 'four_way') {
     throw new Error(`first voxel extrusion proof requires four_way connectivity, got ${placement.gridConnectivity}`);
   }
@@ -376,7 +384,10 @@ function declaredOpeningCells(
     ) {
       throw new Error('piece placement glued exits require valid width-1 transformed endpoints');
     }
-    if (oppositeDirection(glued.fromDirection) !== glued.toDirection) {
+    if (
+      (placement.corridorRealization ?? 'catalog') !== 'procedural'
+      && oppositeDirection(glued.fromDirection) !== glued.toDirection
+    ) {
       throw new Error(`piece placement glued exit ${glued.id} has incompatible directions`);
     }
     validateEndpointGeometry(glued.id, glued.fromInstance, glued.fromCell, glued.fromDirection, occupiedByCell);

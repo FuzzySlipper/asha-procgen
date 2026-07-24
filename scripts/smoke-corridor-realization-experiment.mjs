@@ -25,14 +25,21 @@ try {
     throw new Error('corridor realization smoke requires one accepted batch candidate');
   }
   const procedural = await postExperiment({ candidateId, corridorRealization: 'procedural' }, 200);
-  const repeated = await postExperiment({ candidateId, corridorRealization: 'procedural' }, 200);
+  const repeatedProcedural = await postExperiment({
+    candidateId,
+    corridorRealization: 'procedural',
+  }, 200);
   if (
     procedural.kind !== 'asha_procgen.corridor_realization_experiment.v1'
-    || procedural.experimentId !== repeated.experimentId
-    || JSON.stringify(procedural.placement) !== JSON.stringify(repeated.placement)
+    || procedural.experimentId !== repeatedProcedural.experimentId
+    || JSON.stringify(procedural.placement) !== JSON.stringify(repeatedProcedural.placement)
+    || JSON.stringify(procedural.builtFlowValidation)
+      !== JSON.stringify(repeatedProcedural.builtFlowValidation)
     || procedural.placement?.corridorRealization !== 'procedural'
     || procedural.placementValidation?.ok !== true
     || procedural.builtFlowValidation?.ok !== true
+    || typeof procedural.builtFlowValidation?.validationId !== 'string'
+    || procedural.builtFlowValidation.validationId.length === 0
     || procedural.metrics?.corridorPrefabInstances !== 0
     || procedural.metrics?.routedCorridorCells < 1
     || procedural.persisted !== false
@@ -45,6 +52,8 @@ try {
     planId: procedural.placement.planId,
     matchId: procedural.placement.matchId,
     placementId: procedural.placement.placementId,
+    validationId: procedural.builtFlowValidation.validationId,
+    experimentId: procedural.experimentId,
   }]]);
   for (const acceptedCandidateId of candidateIds.slice(1)) {
     const candidate = await postExperiment({
@@ -56,6 +65,8 @@ try {
       || candidate.metrics?.corridorPrefabInstances !== 0
       || candidate.placementValidation?.ok !== true
       || candidate.builtFlowValidation?.ok !== true
+      || typeof candidate.builtFlowValidation?.validationId !== 'string'
+      || candidate.builtFlowValidation.validationId.length === 0
     ) {
       throw new Error(`procedural corridor realization failed accepted candidate ${acceptedCandidateId}`);
     }
@@ -64,6 +75,8 @@ try {
       planId: candidate.placement.planId,
       matchId: candidate.placement.matchId,
       placementId: candidate.placement.placementId,
+      validationId: candidate.builtFlowValidation.validationId,
+      experimentId: candidate.experimentId,
     });
   }
   const catalogMetrics = new Map();
@@ -81,8 +94,24 @@ try {
       || catalog.metrics?.footprintHeight < 1
       || catalog.placementValidation?.ok !== true
       || catalog.builtFlowValidation?.ok !== true
+      || typeof catalog.builtFlowValidation?.validationId !== 'string'
+      || catalog.builtFlowValidation.validationId.length === 0
     ) {
       throw new Error(`catalog corridor realization failed accepted candidate ${acceptedCandidateId}`);
+    }
+    if (acceptedCandidateId === candidateId) {
+      const repeatedCatalog = await postExperiment({
+        candidateId: acceptedCandidateId,
+        corridorRealization: 'catalog',
+      }, 200);
+      if (
+        catalog.experimentId !== repeatedCatalog.experimentId
+        || JSON.stringify(catalog.placement) !== JSON.stringify(repeatedCatalog.placement)
+        || JSON.stringify(catalog.builtFlowValidation)
+          !== JSON.stringify(repeatedCatalog.builtFlowValidation)
+      ) {
+        throw new Error('catalog corridor realization was not deterministic');
+      }
     }
     if (
       catalog.metrics.routedCorridorCells
@@ -97,6 +126,8 @@ try {
       catalog.placement.planId === proceduralIdentity.planId
       || catalog.placement.matchId === proceduralIdentity.matchId
       || catalog.placement.placementId === proceduralIdentity.placementId
+      || catalog.builtFlowValidation.validationId === proceduralIdentity.validationId
+      || catalog.experimentId === proceduralIdentity.experimentId
     ) {
       throw new Error(
         `catalog and procedural identities collided for ${acceptedCandidateId}`,

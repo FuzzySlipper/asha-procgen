@@ -286,15 +286,7 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         match write_selection_preview_artifacts(&mut entry, args.seed + 9_100 + index as u64) {
             Ok(()) => enriched.push(entry),
             Err(error) => {
-                let code = if error.starts_with("geometry search exhausted") {
-                    "selection_geometry_search_exhausted"
-                } else if error.starts_with("piece realization search exhausted")
-                    || error.starts_with("shape and piece realization search exhausted")
-                {
-                    "selection_piece_realization_search_exhausted"
-                } else {
-                    "selection_physical_nonembeddable"
-                };
+                let code = selection_rejection_code(error.as_str());
                 rejected.push(SelectionRejection {
                     candidate_id: entry.candidate_id,
                     profile_sequence: entry.profile_sequence,
@@ -333,6 +325,58 @@ fn batch_generate_command(args: BatchGenerateArgs) -> Result<(), String> {
         args.out_dir.display()
     );
     Ok(())
+}
+
+fn selection_rejection_code(error: &str) -> &'static str {
+    if error.starts_with("geometry search exhausted") {
+        "selection_geometry_route_search_exhausted"
+    } else if error.starts_with("invalid physical geometry plan")
+        || error.contains("unsupported physical section topology")
+    {
+        "selection_physical_section_plan_incompatible"
+    } else if error.contains("port") && error.contains("exhausted") {
+        "selection_geometry_port_allocation_exhausted"
+    } else if error.starts_with("catalog shape/transform search exhausted") {
+        "selection_catalog_shape_transform_exhausted"
+    } else if error.starts_with("global shape/piece search budget exhausted") {
+        "selection_global_search_budget_exhausted"
+    } else if error.starts_with("piece realization search exhausted")
+        || error.starts_with("piece route search exhausted")
+    {
+        "selection_piece_route_clearance_exhausted"
+    } else {
+        "selection_physical_embedding_validation_failed"
+    }
+}
+
+fn search_shape_realizations<T>(
+    catalog: &ShapeCatalog,
+    piece_plan: &PieceBuildPlan,
+    match_args: &BuildMatchShapesArgs,
+    max_alternatives: u32,
+    mut realize: impl FnMut(&PieceShapeMatchReport) -> Result<T, String>,
+) -> Result<(PieceShapeMatchReport, T), String> {
+    let mut last_realization_error = "no shape alternative was attempted".to_owned();
+    for alternative_attempt in 0..max_alternatives {
+        let shape_match =
+            match_shapes_with_attempt(catalog, piece_plan, match_args, alternative_attempt);
+        if !shape_match.ok {
+            return Err(format!(
+                "catalog shape/transform search exhausted with {} unmatched requirement(s) at alternative {alternative_attempt}",
+                shape_match.unmatched_count
+            ));
+        }
+        match realize(&shape_match) {
+            Ok(realization) => return Ok((shape_match, realization)),
+            Err(error) if error.starts_with("piece realization search exhausted") => {
+                last_realization_error = error;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Err(format!(
+        "global shape/piece search budget exhausted after {max_alternatives} shape/transform alternative(s); last realization failure: {last_realization_error}"
+    ))
 }
 
 fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> Result<(), String> {
@@ -470,33 +514,15 @@ fn write_selection_preview_artifacts(entry: &mut SelectionEntry, seed: u64) -> R
         out: placement_path.clone(),
     };
     const SHAPE_ALTERNATIVE_ATTEMPTS: u32 = 4;
-    let mut selected = None;
-    let mut last_realization_error = "no shape alternative was attempted".to_owned();
-    for alternative_attempt in 0..SHAPE_ALTERNATIVE_ATTEMPTS {
-        let shape_match =
-            match_shapes_with_attempt(&catalog, &piece_plan, &match_args, alternative_attempt);
-        if !shape_match.ok {
-            return Err(format!(
-                "selection {} shape matching failed with {} unmatched requirement(s)",
-                entry.candidate_id, shape_match.unmatched_count
-            ));
-        }
-        match assemble_piece_placement(&catalog, &piece_plan, &shape_match, &assemble_args) {
-            Ok(placement) => {
-                selected = Some((shape_match, placement));
-                break;
-            }
-            Err(error) if error.starts_with("piece realization search exhausted") => {
-                last_realization_error = error;
-            }
-            Err(error) => return Err(error),
-        }
-    }
-    let Some((shape_match, placement)) = selected else {
-        return Err(format!(
-            "shape and piece realization search exhausted after {SHAPE_ALTERNATIVE_ATTEMPTS} shape/transform alternative(s); last realization failure: {last_realization_error}"
-        ));
-    };
+    let (shape_match, placement) = search_shape_realizations(
+        &catalog,
+        &piece_plan,
+        &match_args,
+        SHAPE_ALTERNATIVE_ATTEMPTS,
+        |shape_match| {
+            assemble_piece_placement(&catalog, &piece_plan, shape_match, &assemble_args)
+        },
+    )?;
     write_json(&shape_match_path, &shape_match)?;
     write_json(&placement_path, &placement)?;
 

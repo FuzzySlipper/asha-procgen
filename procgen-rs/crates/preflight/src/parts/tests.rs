@@ -1696,7 +1696,7 @@ mod tests {
             1,
         );
         let repeated_alternative = match_shapes_with_attempt(
-            &test_shape_catalog(vec![right, left]),
+            &test_shape_catalog(vec![right.clone(), left.clone()]),
             &plan,
             &test_match_args(42),
             1,
@@ -1709,6 +1709,32 @@ mod tests {
             alternative.matches[0].shape_id,
             repeated_alternative.matches[0].shape_id
         );
+
+        let catalog = test_shape_catalog(vec![left, right]);
+        let match_args = test_match_args(42);
+        let mut attempted_alternatives = Vec::new();
+        let (recovered_match, recovered_shape) = search_shape_realizations(
+            &catalog,
+            &plan,
+            &match_args,
+            2,
+            |shape_match| {
+                attempted_alternatives.push(shape_match.alternative_attempt);
+                if shape_match.alternative_attempt == 0 {
+                    Err(
+                        "piece realization search exhausted after 2 scale tier(s)"
+                            .to_owned(),
+                    )
+                } else {
+                    Ok(shape_match.matches[0].shape_id.clone())
+                }
+            },
+        )
+        .expect("downstream realization failure should backtrack shape choice");
+        assert_eq!(attempted_alternatives, vec![0, 1]);
+        assert_eq!(recovered_match.alternative_attempt, 1);
+        assert_eq!(recovered_match.matches[0].candidate_rank, 1);
+        assert_eq!(recovered_shape, recovered_match.matches[0].shape_id);
     }
 
     #[test]
@@ -1780,6 +1806,40 @@ mod tests {
             geometry_args.seed,
         )
         .expect("nested-boss geometry should embed");
+        let specs = ordered_geometry_region_specs(&candidate, &intermediate);
+        let spacing = geometry_spacing_for_tier(&geometry.layout_policy, 0)
+            .expect("nested-boss first spacing tier");
+        let fixed_order_error = place_and_route_physical_geometry_attempt(
+            &specs,
+            &connection_plan,
+            &spacing,
+            geometry_args.seed,
+            0,
+            2,
+        )
+        .expect_err("the original fixed room/route decision should reject");
+        assert!(matches!(
+            fixed_order_error,
+            GeometryPlacementAttemptError::RoutesUnavailable { .. }
+        ));
+        assert_eq!(geometry.layout_search.room_order_attempt, 2);
+        assert_eq!(geometry.layout_search.port_order_attempt, 0);
+
+        let mut incompatible_plan = connection_plan.clone();
+        incompatible_plan.sections[0].topology = "junction_3".to_owned();
+        let incompatible_error = emit_geometry_2d(
+            &candidate,
+            &intermediate,
+            &incompatible_plan,
+            &geometry_args,
+            geometry_args.seed,
+        )
+        .expect_err("unsupported physical topology must fail closed");
+        assert!(incompatible_error.starts_with("invalid physical geometry plan"));
+        assert_eq!(
+            selection_rejection_code(incompatible_error.as_str()),
+            "selection_physical_section_plan_incompatible"
+        );
         let plan_args = BuildEmitPiecePlanArgs {
             candidate: geometry_args.candidate.clone(),
             intermediate: geometry_args.intermediate.clone(),
@@ -2549,6 +2609,42 @@ mod tests {
         );
         let cycled = batch_profile_sequence(&profile, 7).expect("cycled sequence");
         assert_eq!(cycled.label, "hub-merge");
+    }
+
+    #[test]
+    fn selection_rejection_taxonomy_keeps_exhaustion_distinct_from_incompatibility() {
+        for (error, expected) in [
+            (
+                "geometry search exhausted after 80 route attempt(s)",
+                "selection_geometry_route_search_exhausted",
+            ),
+            (
+                "invalid physical geometry plan: unsupported physical section topology",
+                "selection_physical_section_plan_incompatible",
+            ),
+            (
+                "room port allocation exhausted after 2 alternatives",
+                "selection_geometry_port_allocation_exhausted",
+            ),
+            (
+                "catalog shape/transform search exhausted with 1 unmatched requirement",
+                "selection_catalog_shape_transform_exhausted",
+            ),
+            (
+                "piece realization search exhausted after 2 scale tier(s)",
+                "selection_piece_route_clearance_exhausted",
+            ),
+            (
+                "global shape/piece search budget exhausted after 4 alternatives",
+                "selection_global_search_budget_exhausted",
+            ),
+        ] {
+            assert_eq!(selection_rejection_code(error), expected);
+        }
+        assert_eq!(
+            selection_rejection_code("piece placement validation failed"),
+            "selection_physical_embedding_validation_failed"
+        );
     }
 
     #[test]

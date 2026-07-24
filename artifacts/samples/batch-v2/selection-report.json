@@ -229,11 +229,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-005/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_gate_locked_1.region_key_deep_2.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_gate_locked_1.region_key_deep_2.open"
         }
       ]
     },
@@ -244,11 +244,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-003/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_goal.region_hub_central_1.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_goal.region_hub_central_1.open"
         }
       ]
     },
@@ -259,11 +259,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-000/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_hub_central_1.region_junction_merge_1.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_hub_central_1.region_junction_merge_1.open"
         }
       ]
     },
@@ -274,11 +274,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-007/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_hazard_watch_1.region_hub_central_1.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_hazard_watch_1.region_hub_central_1.open"
         }
       ]
     },
@@ -289,11 +289,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-002/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_key_treasure_1.region_start.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_key_treasure_1.region_start.open"
         }
       ]
     },
@@ -304,11 +304,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-009/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_gate_locked_1.region_key_gate_1.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_gate_locked_1.region_key_gate_1.open"
         }
       ]
     },
@@ -319,11 +319,11 @@
       "physicalConnectionPlanRef": "artifacts/samples/batch-v2/candidate-004/physical-connection-plan.json",
       "diagnostics": [
         {
-          "code": "selection_geometry_search_exhausted",
+          "code": "selection_geometry_route_search_exhausted",
           "severity": "fatal",
           "node": null,
           "edge": null,
-          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s); initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_junction_merge_1.region_treasure_gated_1.open"
+          "detail": "Physical connection planning or exclusive placement failed: geometry search exhausted after 80 route attempt(s) across 5 spacing tier(s), 4 room order(s) per tier, 2 port allocation(s) per room order, and up to 2 route order(s) per port allocation; initial spacing margin/column/row=96/144/64, final spacing=288/432/224; last route failure: single-floor route unavailable for physical section section.region_junction_merge_1.region_treasure_gated_1.open"
         }
       ]
     }

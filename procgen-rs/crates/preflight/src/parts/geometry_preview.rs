@@ -1355,8 +1355,10 @@ fn place_and_route_physical_geometry(
         }
     }
     Err(format!(
-        "geometry search exhausted after {search_attempts} route attempt(s) across {} spacing tier(s); initial spacing margin/column/row={}/{}/{}, final spacing={}/{}/{}; last route failure: {last_error}",
+        "geometry search exhausted after {search_attempts} route attempt(s) across {} spacing tier(s), {} room order(s) per tier, {GEOMETRY_PORT_ORDER_COUNT} port allocation(s) per room order, and up to {} route order(s) per port allocation; initial spacing margin/column/row={}/{}/{}, final spacing={}/{}/{}; last route failure: {last_error}",
         spacing_tiers_attempted,
+        policy.room_order_attempts_per_tier,
+        GEOMETRY_ROUTE_ORDER_COUNT / GEOMETRY_PORT_ORDER_COUNT,
         policy.initial_room_margin,
         policy.initial_column_gap,
         policy.initial_row_gap,

@@ -88,6 +88,22 @@ directions are opposite, their widths are compatible, and required tags are
 satisfied. Placement then owns the physical route between the separated
 footprints; catalog exit compatibility does not grant arbitrary cell contact.
 
+Placement is a bounded deterministic search rather than a one-pass atlas
+layout. Room-shaped requirements are placed first, room-facing connector
+pieces are anchored from their matched exit coordinates, and interior
+corridor/bend pieces retain the source geometry lane hints. Connection routes
+then try four documented orderings without relaxing occupancy, wall,
+clearance, section-crossing, or shared-room approach checks. If the compact
+realization cannot route, one expanded scale tier is tried before the candidate
+is rejected. Batch realization additionally tries four deterministic
+shape/transform alternatives, changing one requirement at a time and recording
+the selected candidate rank/count instead of silently replacing the match.
+
+Every successful `piece_placement` records `realizationSearch`, including the
+selected scale tier, realization attempts, route-order attempt, and route
+attempt count. Repeating the same candidate, catalog, match report, and seed
+must reproduce this evidence and the complete placement byte-for-byte.
+
 ## Piece Build Plan Artifact
 
 Kind: `asha_procgen.piece_build_plan.v1`

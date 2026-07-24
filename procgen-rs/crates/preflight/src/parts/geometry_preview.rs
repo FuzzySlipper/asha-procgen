@@ -454,6 +454,7 @@ fn validate_geometry_2d(geometry: &Geometry2dArtifact) -> ValidationReport {
             if search.spacing_tier >= geometry.layout_policy.max_spacing_tiers
                 || search.room_order_attempt
                     >= geometry.layout_policy.room_order_attempts_per_tier
+                || search.port_order_attempt >= GEOMETRY_PORT_ORDER_COUNT
                 || search.route_order_attempt >= GEOMETRY_ROUTE_ORDER_COUNT
                 || search.search_attempts == 0
                 || search.search_attempts > geometry.layout_policy.max_search_attempts
@@ -1042,6 +1043,7 @@ const GEOMETRY_PORT_MARGIN: i32 = 32;
 const GEOMETRY_PORT_SPACING: i32 = 48;
 const GEOMETRY_CORRIDOR_SEPARATION: i32 = 8;
 const GEOMETRY_ROUTE_ORDER_COUNT: u32 = 4;
+const GEOMETRY_PORT_ORDER_COUNT: u32 = 2;
 
 #[derive(Clone, Debug)]
 struct PhysicalPortDemand {
@@ -1312,9 +1314,18 @@ fn place_and_route_physical_geometry(
                 &specs,
                 connection_plan,
                 &spacing,
+                seed,
+                room_order_attempt,
                 remaining_attempts.min(GEOMETRY_ROUTE_ORDER_COUNT),
             ) {
-                Ok((rooms, corridors, bounds, route_order_attempt, attempted_orders)) => {
+                Ok((
+                    rooms,
+                    corridors,
+                    bounds,
+                    port_order_attempt,
+                    route_order_attempt,
+                    attempted_orders,
+                )) => {
                     search_attempts += attempted_orders;
                     return Ok(GeometryPlacementResult {
                         rooms,
@@ -1323,6 +1334,7 @@ fn place_and_route_physical_geometry(
                         search: GeometryLayoutSearchEvidence {
                             spacing_tier,
                             room_order_attempt,
+                            port_order_attempt,
                             route_order_attempt,
                             search_attempts,
                             effective_spacing: spacing,
@@ -1368,12 +1380,15 @@ fn place_and_route_physical_geometry_attempt(
     region_specs: &[(usize, String, String, &IntermediateRegion)],
     connection_plan: &PhysicalConnectionPlan,
     spacing: &GeometrySpacing,
+    seed: u64,
+    room_order_attempt: u32,
     max_route_attempts: u32,
 ) -> Result<
     (
         Vec<GeometryRoom>,
         Vec<GeometryCorridor>,
         GeometryBounds,
+        u32,
         u32,
         u32,
     ),
@@ -1383,13 +1398,78 @@ fn place_and_route_physical_geometry_attempt(
         .iter()
         .map(|(depth, _, _, region)| (region.id.as_str(), *depth))
         .collect::<BTreeMap<_, _>>();
-    let region_orders = region_specs
-        .iter()
-        .enumerate()
-        .map(|(index, (_, _, _, region))| (region.id.as_str(), index))
-        .collect::<BTreeMap<_, _>>();
-    let port_demands = physical_port_demands(connection_plan, &region_depths, &region_orders)
+    let mut next_order_by_depth = BTreeMap::new();
+    let mut region_orders = BTreeMap::new();
+    for (depth, _, _, region) in region_specs {
+        let order = next_order_by_depth.entry(*depth).or_insert(0_usize);
+        region_orders.insert(region.id.as_str(), *order);
+        *order += 1;
+    }
+    let canonical_attempts = max_route_attempts.min(2);
+    let port_attempts = [
+        (0_u32, canonical_attempts),
+        (1_u32, max_route_attempts.saturating_sub(canonical_attempts)),
+    ];
+    let mut attempted_orders = 0_u32;
+    let mut last_error = "no physical route order was attempted".to_owned();
+    for (port_order_attempt, route_attempt_limit) in port_attempts {
+        if route_attempt_limit == 0 {
+            continue;
+        }
+        let port_demands = physical_port_demands(
+            connection_plan,
+            &region_depths,
+            &region_orders,
+            seed,
+            port_order_attempt,
+        )
         .map_err(GeometryPlacementAttemptError::Invalid)?;
+        let (rooms, bounds) =
+            place_geometry_rooms(region_specs, spacing, &port_demands)?;
+        match route_physical_sections(
+            connection_plan,
+            &rooms,
+            &bounds,
+            seed,
+            room_order_attempt
+                .saturating_mul(GEOMETRY_PORT_ORDER_COUNT)
+                .saturating_add(port_order_attempt),
+            route_attempt_limit,
+        ) {
+            Ok((corridors, route_order_attempt, routes_tried)) => {
+                attempted_orders += routes_tried;
+                return Ok((
+                    rooms,
+                    corridors,
+                    bounds,
+                    port_order_attempt,
+                    route_order_attempt,
+                    attempted_orders,
+                ));
+            }
+            Err(GeometryPlacementAttemptError::Invalid(error)) => {
+                return Err(GeometryPlacementAttemptError::Invalid(error));
+            }
+            Err(GeometryPlacementAttemptError::RoutesUnavailable {
+                attempted_orders: routes_tried,
+                last_error: error,
+            }) => {
+                attempted_orders += routes_tried;
+                last_error = error;
+            }
+        }
+    }
+    Err(GeometryPlacementAttemptError::RoutesUnavailable {
+        attempted_orders,
+        last_error,
+    })
+}
+
+fn place_geometry_rooms(
+    region_specs: &[(usize, String, String, &IntermediateRegion)],
+    spacing: &GeometrySpacing,
+    port_demands: &BTreeMap<String, Vec<PhysicalPortDemand>>,
+) -> Result<(Vec<GeometryRoom>, GeometryBounds), GeometryPlacementAttemptError> {
     let mut column_widths = BTreeMap::<usize, i32>::new();
     for (depth, _, _, region) in region_specs {
         let (width, _) = connection_aware_room_size(
@@ -1444,24 +1524,18 @@ fn place_and_route_physical_geometry_attempt(
             style_tags: geometry_room_style_tags(region),
         });
     }
-    assign_physical_room_ports(&mut rooms, &port_demands)
+    assign_physical_room_ports(&mut rooms, port_demands)
         .map_err(GeometryPlacementAttemptError::Invalid)?;
     let bounds = geometry_bounds(&rooms, GEOMETRY_ROUTE_GRID, spacing.room_margin);
-    let (corridors, route_order_attempt, attempted_orders) =
-        route_physical_sections(connection_plan, &rooms, &bounds, max_route_attempts)?;
-    Ok((
-        rooms,
-        corridors,
-        bounds,
-        route_order_attempt,
-        attempted_orders,
-    ))
+    Ok((rooms, bounds))
 }
 
 fn physical_port_demands(
     plan: &PhysicalConnectionPlan,
     depths: &BTreeMap<&str, usize>,
     orders: &BTreeMap<&str, usize>,
+    seed: u64,
+    port_order_attempt: u32,
 ) -> Result<BTreeMap<String, Vec<PhysicalPortDemand>>, String> {
     let mut demands = BTreeMap::<String, Vec<PhysicalPortDemand>>::new();
     for section in &plan.sections {
@@ -1474,15 +1548,15 @@ fn physical_port_demands(
         let right_depth = depths.get(right).copied().unwrap_or(0);
         let left_order = orders.get(left).copied().unwrap_or(0);
         let right_order = orders.get(right).copied().unwrap_or(0);
-        let (left_side, right_side) = if left_depth < right_depth {
-            ("east", "west")
-        } else if left_depth > right_depth {
-            ("west", "east")
-        } else if left_order <= right_order {
-            ("south", "north")
-        } else {
-            ("north", "south")
-        };
+        let (left_side, right_side) = physical_port_sides(
+            left_depth,
+            right_depth,
+            left_order,
+            right_order,
+            seed,
+            port_order_attempt,
+            section.id.as_str(),
+        );
         demands.entry(left.to_owned()).or_default().push(PhysicalPortDemand {
             section_id: section.id.clone(),
             side: left_side.to_owned(),
@@ -1498,13 +1572,88 @@ fn physical_port_demands(
     }
     for room_demands in demands.values_mut() {
         room_demands.sort_by(|left, right| {
-            left.side
-                .cmp(&right.side)
-                .then_with(|| left.opposite_order.cmp(&right.opposite_order))
-                .then_with(|| left.section_id.cmp(&right.section_id))
+            left.side.cmp(&right.side).then_with(|| {
+                compare_physical_port_demands(left, right, seed, port_order_attempt)
+            })
         });
     }
     Ok(demands)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn physical_port_sides(
+    left_depth: usize,
+    right_depth: usize,
+    left_order: usize,
+    right_order: usize,
+    seed: u64,
+    attempt: u32,
+    section_id: &str,
+) -> (&'static str, &'static str) {
+    let vertical = if left_order <= right_order {
+        ("south", "north")
+    } else {
+        ("north", "south")
+    };
+    let horizontal = if left_depth <= right_depth {
+        ("east", "west")
+    } else {
+        ("west", "east")
+    };
+    if attempt == 0 {
+        return if left_depth == right_depth {
+            vertical
+        } else {
+            horizontal
+        };
+    }
+
+    let variant = geometry_layout_order_key(section_id, seed, u64::from(attempt)) % 3;
+    if left_depth == right_depth {
+        match variant {
+            0 => horizontal,
+            1 => (vertical.0, horizontal.1),
+            _ => (horizontal.0, vertical.1),
+        }
+    } else {
+        match variant {
+            0 => vertical,
+            1 => (horizontal.0, vertical.1),
+            _ => (vertical.0, horizontal.1),
+        }
+    }
+}
+
+fn compare_physical_port_demands(
+    left: &PhysicalPortDemand,
+    right: &PhysicalPortDemand,
+    seed: u64,
+    attempt: u32,
+) -> Ordering {
+    match attempt % GEOMETRY_PORT_ORDER_COUNT {
+        0 => left
+            .opposite_order
+            .cmp(&right.opposite_order)
+            .then_with(|| left.section_id.cmp(&right.section_id)),
+        1 => right
+            .opposite_order
+            .cmp(&left.opposite_order)
+            .then_with(|| left.section_id.cmp(&right.section_id)),
+        2 => geometry_layout_order_key(left.section_id.as_str(), seed, u64::from(attempt))
+            .cmp(&geometry_layout_order_key(
+                right.section_id.as_str(),
+                seed,
+                u64::from(attempt),
+            ))
+            .then_with(|| left.section_id.cmp(&right.section_id)),
+        _ => geometry_layout_order_key(right.section_id.as_str(), seed, u64::from(attempt))
+            .cmp(&geometry_layout_order_key(
+                left.section_id.as_str(),
+                seed,
+                u64::from(attempt),
+            ))
+            .then_with(|| left.section_id.cmp(&right.section_id)),
+    }
 }
 
 fn connection_aware_room_size(
@@ -1654,6 +1803,8 @@ fn route_physical_sections(
     plan: &PhysicalConnectionPlan,
     rooms: &[GeometryRoom],
     bounds: &GeometryBounds,
+    seed: u64,
+    order_nonce: u32,
     max_attempts: u32,
 ) -> Result<(Vec<GeometryCorridor>, u32, u32), GeometryPlacementAttemptError> {
     let rooms_by_region = rooms
@@ -1676,11 +1827,19 @@ fn route_physical_sections(
     let mut reversed = sections.clone();
     reversed.reverse();
     orders.push(reversed);
-    let mut by_id = sections.clone();
-    by_id.sort_by(|left, right| left.id.cmp(&right.id));
-    orders.push(by_id.clone());
-    by_id.reverse();
-    orders.push(by_id);
+    let mut seeded = sections.clone();
+    seeded.sort_by(|left, right| {
+        geometry_layout_order_key(left.id.as_str(), seed, u64::from(order_nonce))
+            .cmp(&geometry_layout_order_key(
+                right.id.as_str(),
+                seed,
+                u64::from(order_nonce),
+            ))
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    orders.push(seeded.clone());
+    seeded.reverse();
+    orders.push(seeded);
     let mut attempted_orders = 0_u32;
     let mut last_error = "no physical route order was attempted".to_owned();
     for (index, order) in orders.into_iter().take(max_attempts as usize).enumerate() {

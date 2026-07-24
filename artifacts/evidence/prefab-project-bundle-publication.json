@@ -23,7 +23,7 @@
       "provider": "asha-procgen.prefab-publisher",
       "seed": 14341,
       "version": 1,
-      "params": "{\"candidateRef\":\"artifacts/samples/batch-v2/candidate-006/candidate-001-lock_key_loop.json\",\"catalogId\":\"shape_catalog.2d_basic.v1\",\"matchId\":\"piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341\",\"placementId\":\"piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341\"}"
+      "params": "{\"candidateRef\":\"artifacts/samples/batch-v2/candidate-006/candidate-001-lock_key_loop.json\",\"catalogId\":\"shape_catalog.2d_basic.v1\",\"matchId\":\"piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0\",\"placementId\":\"piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0\"}"
     },
     "artifacts": [
       {
@@ -346,9 +346,9 @@
     "catalogRef": "fixtures/shape-catalogs/2d-basic.json",
     "planId": "piece_plan.geometry.candidate.first_slice.5801.14310",
     "planRef": "artifacts/samples/batch-v2/candidate-006/piece-plan.json",
-    "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+    "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
     "matchRef": "artifacts/samples/batch-v2/candidate-006/piece-shape-match.json",
-    "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+    "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
     "instances": [
       {
         "procgenInstanceId": "instance.piece_room_room_region_start",

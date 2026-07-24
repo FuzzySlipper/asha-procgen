@@ -560,6 +560,7 @@ struct GeometrySpacing {
 struct GeometryLayoutSearchEvidence {
     spacing_tier: u32,
     room_order_attempt: u32,
+    port_order_attempt: u32,
     route_order_attempt: u32,
     search_attempts: u32,
     effective_spacing: GeometrySpacing,
@@ -722,6 +723,7 @@ struct PieceShapeMatchReport {
     plan_id: String,
     catalog_id: String,
     seed: u64,
+    alternative_attempt: u32,
     source_plan_ref: String,
     source_catalog_ref: String,
     ok: bool,
@@ -739,6 +741,8 @@ struct MatchedPiece {
     shape_id: String,
     transform: String,
     score: i32,
+    candidate_rank: usize,
+    candidate_count: usize,
     source_requirement_ref: String,
     exit_map: Vec<MatchedExit>,
     socket_map: Vec<MatchedSocket>,
@@ -787,6 +791,7 @@ struct PiecePlacement {
     cell_size: i32,
     grid_connectivity: GridConnectivity,
     placement_policy: PiecePlacementPolicy,
+    realization_search: PieceRealizationSearchEvidence,
     instances: Vec<PieceInstance>,
     glued_exits: Vec<GluedExit>,
     gate_portals: Vec<GatePortal>,
@@ -794,6 +799,15 @@ struct PiecePlacement {
     connection_cells: Vec<PlacementCellRef>,
     reserved_cells: Vec<PlacementCellRef>,
     dangling_exits: Vec<DanglingExit>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PieceRealizationSearchEvidence {
+    realization_scale_tier: u32,
+    realization_attempts: u32,
+    route_order_attempt: u32,
+    route_attempts: u32,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

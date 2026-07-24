@@ -1,10 +1,11 @@
 {
   "kind": "asha_procgen.piece_shape_match.v1",
   "schemaVersion": 1,
-  "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+  "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
   "planId": "piece_plan.geometry.candidate.first_slice.5801.14310",
   "catalogId": "shape_catalog.2d_basic.v1",
   "seed": 14341,
+  "alternativeAttempt": 0,
   "sourcePlanRef": "artifacts/samples/batch-v2/candidate-006/piece-plan.json",
   "sourceCatalogRef": "fixtures/shape-catalogs/2d-basic.json",
   "ok": true,
@@ -16,6 +17,8 @@
       "shapeId": "shape.room.flow_junction.36_exit",
       "transform": "identity",
       "score": 895,
+      "candidateRank": 0,
+      "candidateCount": 1,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_start",
       "exitMap": [
         {
@@ -49,6 +52,8 @@
       "shapeId": "shape.room.flow_junction.36_exit",
       "transform": "identity",
       "score": 920,
+      "candidateRank": 0,
+      "candidateCount": 1,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_gate_locked_1",
       "exitMap": [
         {
@@ -90,6 +95,8 @@
       "shapeId": "shape.room.flow_junction.36_exit",
       "transform": "identity",
       "score": 895,
+      "candidateRank": 0,
+      "candidateCount": 1,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_key_gate_1",
       "exitMap": [
         {
@@ -123,6 +130,8 @@
       "shapeId": "shape.room.standard.1_exit",
       "transform": "rotate180",
       "score": 1049,
+      "candidateRank": 0,
+      "candidateCount": 6,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_goal",
       "exitMap": [
         {
@@ -148,6 +157,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "score": 1040,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.start",
       "exitMap": [
         {
@@ -175,6 +186,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "identity",
       "score": 1040,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.bridge_1",
       "exitMap": [
         {
@@ -202,6 +215,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate180",
       "score": 1040,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.end",
       "exitMap": [
         {
@@ -229,6 +244,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate90",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.start",
       "exitMap": [
         {
@@ -256,6 +273,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_key_gate_1_open.bridge_1",
       "exitMap": [
         {
@@ -283,6 +302,8 @@
       "shapeId": "shape.connector.shortcut_return",
       "transform": "rotate270",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.end",
       "exitMap": [
         {
@@ -310,6 +331,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_start_open.start",
       "exitMap": [
         {
@@ -337,6 +360,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_start_open.bridge_1",
       "exitMap": [
         {
@@ -364,6 +389,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_start_open.end",
       "exitMap": [
         {
@@ -391,6 +418,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_key_gate_1_region_start_open.start",
       "exitMap": [
         {
@@ -418,6 +447,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.bridge_1",
       "exitMap": [
         {
@@ -445,6 +476,8 @@
       "shapeId": "shape.corridor.straight.3",
       "transform": "identity",
       "score": 1044,
+      "candidateRank": 0,
+      "candidateCount": 3,
       "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_key_gate_1_region_start_open.end",
       "exitMap": [
         {

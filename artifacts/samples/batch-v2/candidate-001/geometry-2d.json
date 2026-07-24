@@ -24,6 +24,7 @@
   "layoutSearch": {
     "spacingTier": 0,
     "roomOrderAttempt": 2,
+    "portOrderAttempt": 0,
     "routeOrderAttempt": 1,
     "searchAttempts": 10,
     "effectiveSpacing": {

@@ -10,12 +10,35 @@ fn match_shapes(
     plan: &PieceBuildPlan,
     args: &BuildMatchShapesArgs,
 ) -> PieceShapeMatchReport {
+    match_shapes_with_attempt(catalog, plan, args, 0)
+}
+
+fn match_shapes_with_attempt(
+    catalog: &ShapeCatalog,
+    plan: &PieceBuildPlan,
+    args: &BuildMatchShapesArgs,
+    alternative_attempt: u32,
+) -> PieceShapeMatchReport {
     let mut matches = Vec::new();
     let mut rejections = Vec::new();
     let mut diagnostics = Vec::new();
 
-    for requirement in &plan.requirements {
-        let result = match_requirement(catalog, requirement, plan, args.seed);
+    let alternative_requirement = if alternative_attempt == 0 || plan.requirements.is_empty() {
+        None
+    } else {
+        Some(
+            geometry_layout_order_key(
+                plan.plan_id.as_str(),
+                args.seed,
+                u64::from(alternative_attempt),
+            ) as usize
+                % plan.requirements.len(),
+        )
+    };
+    for (requirement_index, requirement) in plan.requirements.iter().enumerate() {
+        let candidate_rank = usize::from(alternative_requirement == Some(requirement_index));
+        let result =
+            match_requirement(catalog, requirement, plan, args.seed, candidate_rank);
         rejections.extend(result.rejections);
         if let Some(piece_match) = result.selected {
             matches.push(piece_match);
@@ -41,10 +64,14 @@ fn match_shapes(
     PieceShapeMatchReport {
         kind: "asha_procgen.piece_shape_match.v1".to_owned(),
         schema_version: 1,
-        match_id: format!("piece_shape_match.{}.{}", plan.plan_id, args.seed),
+        match_id: format!(
+            "piece_shape_match.{}.{}.alternative_{}",
+            plan.plan_id, args.seed, alternative_attempt
+        ),
         plan_id: plan.plan_id.clone(),
         catalog_id: catalog.catalog_id.clone(),
         seed: args.seed,
+        alternative_attempt,
         source_plan_ref: display_path(&args.piece_plan),
         source_catalog_ref: display_path(&args.catalog),
         ok: unmatched_count == 0,
@@ -71,6 +98,7 @@ fn match_requirement(
     requirement: &PieceRequirement,
     plan: &PieceBuildPlan,
     seed: u64,
+    candidate_rank: usize,
 ) -> RequirementMatchResult {
     let mut candidates = Vec::new();
     let mut rejections = Vec::new();
@@ -108,6 +136,8 @@ fn match_requirement(
                     shape_id: shape.shape_id.clone(),
                     transform: transform.clone(),
                     score,
+                    candidate_rank: 0,
+                    candidate_count: 0,
                     source_requirement_ref: format!(
                         "piecePlan:{};requirement:{}",
                         plan.plan_id, requirement.piece_id
@@ -137,8 +167,14 @@ fn match_requirement(
                     .cmp(&right.matched_piece.transform)
             })
     });
+    let candidate_count = candidates.len();
+    let selected_rank = candidate_rank.min(candidate_count.saturating_sub(1));
     RequirementMatchResult {
-        selected: candidates.into_iter().next().map(|candidate| candidate.matched_piece),
+        selected: candidates.into_iter().nth(selected_rank).map(|mut candidate| {
+            candidate.matched_piece.candidate_rank = selected_rank;
+            candidate.matched_piece.candidate_count = candidate_count;
+            candidate.matched_piece
+        }),
         rejections,
     }
 }

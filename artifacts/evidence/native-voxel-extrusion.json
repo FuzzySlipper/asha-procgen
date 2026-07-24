@@ -1,9 +1,9 @@
 {
   "kind": "asha_procgen.evidence.native_voxel_extrusion.v1",
   "sourcePlacement": "artifacts/samples/batch-v2/candidate-006/piece-placement.json",
-  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
   "backend": "native_rust_runtime_session_voxel_commands",
-  "ashaEngineCommit": "2ad710123793433488fad37a73414155903fe140",
+  "ashaEngineCommit": "6462a6de20d48ea1a3b7456826804bd9507860a5",
   "coordinateMapping": "placement_x_y_to_voxel_x_z",
   "placementPolicy": {
     "schemaVersion": 1,
@@ -25,24 +25,24 @@
     "ceilingMaterial": 3
   },
   "counts": {
-    "walkableCells": 534,
-    "declaredOpeningCells": 246,
-    "boundaryCells": 556,
-    "solidVoxels": 2736,
-    "requiredChunksForDirectCommandLane": 835,
-    "sourceVertices": 8208,
-    "sourceTriangles": 2736
+    "walkableCells": 478,
+    "declaredOpeningCells": 190,
+    "boundaryCells": 471,
+    "solidVoxels": 2369,
+    "requiredChunksForDirectCommandLane": 732,
+    "sourceVertices": 7107,
+    "sourceTriangles": 2369
   },
   "buildBounds": {
     "min": {
-      "x": 13,
+      "x": 15,
       "y": 0,
       "z": 12
     },
     "maxExclusive": {
-      "x": 109,
+      "x": 108,
       "y": 5,
-      "z": 52
+      "z": 50
     }
   },
   "authority": {
@@ -50,29 +50,29 @@
     "phases": [
       {
         "name": "generate_chunks_1",
-        "submitted": 835,
-        "accepted": 835,
+        "submitted": 732,
+        "accepted": 732,
         "rejected": 0
       },
       {
         "name": "clear_chunks_1",
-        "submitted": 835,
-        "accepted": 835,
+        "submitted": 732,
+        "accepted": 732,
         "rejected": 0
       },
       {
         "name": "set_solids_1",
-        "submitted": 2736,
-        "accepted": 2736,
+        "submitted": 2369,
+        "accepted": 2369,
         "rejected": 0
       }
     ],
-    "submittedCommands": 4406,
-    "acceptedCommands": 4406,
+    "submittedCommands": 3833,
+    "acceptedCommands": 3833,
     "rejectedCommands": 0,
     "historyEntryCount": 3,
-    "voxelStateHash": "fnv1a64:c77dafbad355b5e6",
-    "deterministicRepeatHash": "fnv1a64:c77dafbad355b5e6",
+    "voxelStateHash": "fnv1a64:fde3d693c64198fb",
+    "deterministicRepeatHash": "fnv1a64:fde3d693c64198fb",
     "deterministic": true,
     "rejectedUnknownMaterialWithoutMutation": true,
     "unknownMaterialRejection": {
@@ -83,54 +83,54 @@
   "conversionComparison": {
     "role": "bounded_model_readback_comparison_only",
     "registered": true,
-    "plannedOutputVoxels": 2736,
-    "previewVoxelCount": 2736,
-    "appliedVoxelCount": 2736,
-    "residentVoxelCount": 2736,
+    "plannedOutputVoxels": 2369,
+    "previewVoxelCount": 2369,
+    "appliedVoxelCount": 2369,
+    "residentVoxelCount": 2369,
     "materialCounts": [
       {
         "material": 1,
-        "voxelCount": 1668
+        "voxelCount": 1413
       },
       {
         "material": 2,
-        "voxelCount": 534
+        "voxelCount": 478
       },
       {
         "material": 3,
-        "voxelCount": 534
+        "voxelCount": 478
       }
     ],
     "boundedReadbackSamples": [
       {
         "coord": {
-          "x": 13,
+          "x": 15,
           "y": 1,
-          "z": 15
+          "z": 16
         },
         "occupied": true,
         "material": 1
       },
       {
         "coord": {
-          "x": 14,
+          "x": 16,
           "y": 0,
-          "z": 15
+          "z": 16
         },
         "occupied": true,
         "material": 2
       },
       {
         "coord": {
-          "x": 14,
+          "x": 16,
           "y": 4,
-          "z": 15
+          "z": 16
         },
         "occupied": true,
         "material": 3
       }
     ],
-    "outputHash": "fnv1a64:3b8386b54687aed7",
+    "outputHash": "fnv1a64:09ea27632b67f913",
     "rejectedStalePreviewWithoutMutation": true
   },
   "nonClaims": [

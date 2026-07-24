@@ -1,19 +1,19 @@
 {
   "kind": "asha_procgen.validation.built_flow.v1",
   "schemaVersion": 1,
-  "validationId": "built_flow_validation.piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+  "validationId": "built_flow_validation.piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
   "candidateId": "candidate.first_slice.5801",
   "geometryId": "geometry.candidate.first_slice.5801.14310",
   "planId": "piece_plan.geometry.candidate.first_slice.5801.14310",
-  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
   "candidateRef": "artifacts/samples/batch-v2/candidate-006/accepted.json",
   "geometryRef": "artifacts/samples/batch-v2/candidate-006/geometry-2d.json",
   "piecePlanRef": "artifacts/samples/batch-v2/candidate-006/piece-plan.json",
   "piecePlacementRef": "artifacts/samples/batch-v2/candidate-006/piece-placement.json",
   "walkableProjection": {
     "source": "piecePlacement.occupiedCells+connectionCells minus closed gatePortal.cells",
-    "cellCount": 534,
-    "projectionHash": "fnv1a64:19bbd4b0a50db9e9"
+    "cellCount": 478,
+    "projectionHash": "fnv1a64:1f7dd7e549da11b3"
   },
   "progression": [
     {

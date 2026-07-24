@@ -248,6 +248,7 @@ mod tests {
             layout_search: GeometryLayoutSearchEvidence {
                 spacing_tier: 0,
                 room_order_attempt: 0,
+                port_order_attempt: 0,
                 route_order_attempt: 0,
                 search_attempts: 1,
                 effective_spacing: geometry_spacing_for_tier(
@@ -1678,7 +1679,7 @@ mod tests {
             &test_match_args(42),
         );
         let report_b = match_shapes(
-            &test_shape_catalog(vec![right, left]),
+            &test_shape_catalog(vec![right.clone(), left.clone()]),
             &plan,
             &test_match_args(42),
         );
@@ -1687,6 +1688,27 @@ mod tests {
         assert!(report_b.ok);
         assert_eq!(report_a.matches[0].shape_id, report_b.matches[0].shape_id);
         assert_eq!(report_a.matches[0].transform, report_b.matches[0].transform);
+
+        let alternative = match_shapes_with_attempt(
+            &test_shape_catalog(vec![left.clone(), right.clone()]),
+            &plan,
+            &test_match_args(42),
+            1,
+        );
+        let repeated_alternative = match_shapes_with_attempt(
+            &test_shape_catalog(vec![right, left]),
+            &plan,
+            &test_match_args(42),
+            1,
+        );
+        assert_eq!(alternative.alternative_attempt, 1);
+        assert_eq!(alternative.matches[0].candidate_rank, 1);
+        assert_eq!(alternative.matches[0].candidate_count, 2);
+        assert_ne!(alternative.matches[0].shape_id, report_a.matches[0].shape_id);
+        assert_eq!(
+            alternative.matches[0].shape_id,
+            repeated_alternative.matches[0].shape_id
+        );
     }
 
     #[test]
@@ -1725,6 +1747,86 @@ mod tests {
             assert!(routed.contains(&(glued.to_cell.x, glued.to_cell.y)));
         }
         assert!(placement.dangling_exits.is_empty());
+    }
+
+    #[test]
+    fn piece_realization_backtracks_routes_repeatably_and_fails_closed() {
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..");
+        let run_dir = repo_root.join("artifacts/samples/batch-v2/candidate-001");
+        let candidate: Candidate =
+            read_json(&run_dir.join("candidate-003-boss_preparation_loop.json"))
+                .expect("nested-boss candidate");
+        let intermediate: IntermediateBreakdown =
+            read_json(&run_dir.join("intermediate-breakdown.json"))
+                .expect("nested-boss intermediate");
+        let connection_plan: PhysicalConnectionPlan =
+            read_json(&run_dir.join("physical-connection-plan.json"))
+                .expect("nested-boss connection plan");
+        let geometry_args = GeometryEmit2dArgs {
+            candidate: run_dir.join("candidate-003-boss_preparation_loop.json"),
+            intermediate: run_dir.join("intermediate-breakdown.json"),
+            connection_plan: run_dir.join("physical-connection-plan.json"),
+            layout_policy: Some(
+                repo_root.join("fixtures/geometry-layout-policies/compact-first-v1.json"),
+            ),
+            seed: 14_308,
+            out: PathBuf::from("artifacts/test/geometry.json"),
+        };
+        let geometry = emit_geometry_2d(
+            &candidate,
+            &intermediate,
+            &connection_plan,
+            &geometry_args,
+            geometry_args.seed,
+        )
+        .expect("nested-boss geometry should embed");
+        let plan_args = BuildEmitPiecePlanArgs {
+            candidate: geometry_args.candidate.clone(),
+            intermediate: geometry_args.intermediate.clone(),
+            geometry: geometry_args.out.clone(),
+            out: PathBuf::from("artifacts/test/piece-plan.json"),
+        };
+        let plan =
+            emit_piece_build_plan(&candidate, &intermediate, &geometry, &plan_args)
+                .expect("nested-boss piece plan");
+        let catalog: ShapeCatalog =
+            read_json(&repo_root.join(DEFAULT_SHAPE_CATALOG)).expect("shape catalog");
+        let shape_match = match_shapes(&catalog, &plan, &test_match_args(14_339));
+        assert!(shape_match.ok);
+        let assemble_args = BuildAssembleArgs {
+            catalog: PathBuf::from(DEFAULT_SHAPE_CATALOG),
+            piece_plan: plan_args.out,
+            shape_match: PathBuf::from("artifacts/test/piece-shape-match.json"),
+            connectivity: GridConnectivity::FourWay,
+            out: PathBuf::from("artifacts/test/piece-placement.json"),
+        };
+        let first = assemble_piece_placement(&catalog, &plan, &shape_match, &assemble_args)
+            .expect("route backtracking should recover nested-boss realization");
+        let repeated =
+            assemble_piece_placement(&catalog, &plan, &shape_match, &assemble_args)
+                .expect("repeated realization should recover");
+        assert!(first.realization_search.route_attempts > 1);
+        assert_eq!(first.realization_search, repeated.realization_search);
+        assert_eq!(
+            serde_json::to_value(&first).expect("serialize first placement"),
+            serde_json::to_value(&repeated).expect("serialize repeated placement")
+        );
+        assert!(validate_piece_placement(&first).ok);
+
+        let mut impossible = first;
+        impossible.glued_exits[0].from_cell = GridCell {
+            x: -10_000,
+            y: -10_000,
+        };
+        impossible.glued_exits[0].to_cell = GridCell {
+            x: 10_000,
+            y: 10_000,
+        };
+        let error = derive_connection_cells(&impossible)
+            .expect_err("out-of-bounds glued exits must exhaust bounded route search");
+        assert!(error.starts_with(
+            "piece route search exhausted after 4 deterministic order attempt(s)"
+        ));
     }
 
     #[test]

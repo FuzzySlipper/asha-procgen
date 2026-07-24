@@ -170,8 +170,11 @@ the route grid and exclusive corridor separation remain fixed safety
 invariants. The current 10-layout corpus remains 3 accepted / 7 exhausted, but
 accepted frames shrink from 2160×720 to 1392×480 for the nested-boss layouts
 and from 1328×688 to 848×480 for the lock-key baseline. The unchanged rejection
-count shows that those seven cases need richer placement/port-side search, not
-merely larger fixed gaps.
+count shows that those seven cases need broader topology-aware room/port
+embedding alternatives, not merely larger fixed gaps. The three accepted
+placements include deterministic realization-search evidence; both
+non-baseline nested-boss layouts require route-order backtracking and retain
+zero-fatal built-flow reports.
 
 ## ASHA Boundary
 

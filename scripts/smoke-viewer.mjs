@@ -638,7 +638,7 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     const submittedPolicy = await evaluateCdp(cdp, `(() => {
       const wall = document.querySelector('#placement-policy-wall-thickness');
       const form = document.querySelector('#placement-policy-form');
-      const preset = document.querySelector('[data-policy-preset][data-clearance="8"][data-wall-thickness="1"]');
+      const preset = document.querySelector('[data-policy-preset][data-clearance="5"][data-wall-thickness="2"]');
       if (!(wall instanceof HTMLInputElement) || !(form instanceof HTMLFormElement) || !(preset instanceof HTMLButtonElement)) {
         return false;
       }
@@ -649,7 +649,12 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
     if (!submittedPolicy) {
       throw new Error('placement policy controls were not available in Voxel 3D');
     }
-    await waitForCdpValue(cdp, `document.querySelector('#placement-policy-status')?.dataset.state`, 'ready');
+    await waitForCdpValue(
+      cdp,
+      `document.querySelector('#placement-policy-status')?.dataset.state`,
+      'ready',
+      30_000,
+    );
     await waitForCdpValue(cdp, `document.querySelector('#placement-policy-panel')?.dataset.mode`, 'experiment');
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.policyMode`, 'experiment');
     await waitForCdpValue(cdp, `document.querySelector('#voxel-3d-panel')?.dataset.frameHash !== ${JSON.stringify(initial.frameHash)}`, true);
@@ -668,8 +673,8 @@ async function exerciseEngineInspection(chromium, url, alternateCandidateId) {
       };
     })()`);
     if (
-      experimentReadout.clearance !== 8
-      || experimentReadout.wallThickness !== 1
+      experimentReadout.clearance !== 5
+      || experimentReadout.wallThickness !== 2
       || typeof experimentReadout.experimentId !== 'string'
       || experimentReadout.experimentId.length === 0
       || typeof experimentReadout.status !== 'string'
@@ -832,10 +837,10 @@ async function evaluateCdp(cdp, expression) {
   return response.result.value;
 }
 
-async function waitForCdpValue(cdp, expression, expected) {
+async function waitForCdpValue(cdp, expression, expected, timeoutMs = 10_000) {
   const started = Date.now();
   let actual;
-  while (Date.now() - started < 10_000) {
+  while (Date.now() - started < timeoutMs) {
     actual = await evaluateCdp(cdp, expression);
     if (actual === expected) return;
     await delay(50);

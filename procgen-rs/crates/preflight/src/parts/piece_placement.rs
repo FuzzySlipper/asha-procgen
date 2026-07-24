@@ -26,6 +26,48 @@ fn assemble_piece_placement(
     shape_match: &PieceShapeMatchReport,
     args: &BuildAssembleArgs,
 ) -> Result<PiecePlacement, String> {
+    const REALIZATION_SCALE_MULTIPLIERS: [i32; 2] = [1, 2];
+    let mut last_error = "no piece realization was attempted".to_owned();
+    for (realization_scale_tier, scale_multiplier) in
+        REALIZATION_SCALE_MULTIPLIERS.into_iter().enumerate()
+    {
+        match assemble_piece_placement_attempt(
+            catalog,
+            plan,
+            shape_match,
+            args,
+            scale_multiplier,
+        ) {
+            Ok(mut placement) => {
+                placement
+                    .realization_search
+                    .realization_scale_tier = realization_scale_tier as u32;
+                placement.realization_search.realization_attempts =
+                    realization_scale_tier as u32 + 1;
+                return Ok(placement);
+            }
+            Err(error)
+                if error.starts_with("piece route search exhausted")
+                    || error.starts_with("no placement origin satisfies") =>
+            {
+                last_error = error;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Err(format!(
+        "piece realization search exhausted after {} scale tier(s); last realization failure: {last_error}",
+        REALIZATION_SCALE_MULTIPLIERS.len()
+    ))
+}
+
+fn assemble_piece_placement_attempt(
+    catalog: &ShapeCatalog,
+    plan: &PieceBuildPlan,
+    shape_match: &PieceShapeMatchReport,
+    args: &BuildAssembleArgs,
+    scale_multiplier: i32,
+) -> Result<PiecePlacement, String> {
     let mut policy_diagnostics = Vec::new();
     validate_piece_placement_policy(&catalog.placement_policy, &mut policy_diagnostics);
     if policy_diagnostics
@@ -77,7 +119,13 @@ fn assemble_piece_placement(
     let mut occupied_positions: BTreeMap<(i32, i32), String> = BTreeMap::new();
     let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
     let mut exit_protected_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
-    for (index, matched) in shape_match.matches.iter().enumerate() {
+    let mut ordered_matches = shape_match.matches.iter().collect::<Vec<_>>();
+    ordered_matches.sort_by_key(|matched| match matched.requirement_kind.as_str() {
+        "connector" => 1_u8,
+        "corridor" | "bend" => 2_u8,
+        _ => 0_u8,
+    });
+    for (index, matched) in ordered_matches.into_iter().enumerate() {
         let Some(requirement) = requirements.get(matched.piece_id.as_str()).copied() else {
             return Err(format!(
                 "shape match references missing requirement {}",
@@ -91,10 +139,20 @@ fn assemble_piece_placement(
             ));
         };
         let instance_id = format!("instance.{}", slugify_label(matched.piece_id.as_str()));
-        let desired_origin = scaled_desired_origin(
-            desired_origin_for_requirement(requirement, index),
+        let desired_origin = linked_piece_origin(
+            plan,
+            matched,
+            requirement,
+            &instances,
             &catalog.placement_policy,
-        );
+        )
+        .unwrap_or_else(|| {
+            scaled_desired_origin(
+                desired_origin_for_requirement(requirement, index),
+                &catalog.placement_policy,
+                scale_multiplier,
+            )
+        });
         let origin = find_available_origin(
             shape,
             &matched.exit_map,
@@ -184,6 +242,7 @@ fn assemble_piece_placement(
         cell_size: catalog.cell_size,
         grid_connectivity: args.connectivity,
         placement_policy: catalog.placement_policy.clone(),
+        realization_search: PieceRealizationSearchEvidence::default(),
         instances,
         glued_exits: Vec::new(),
         gate_portals: Vec::new(),
@@ -194,12 +253,102 @@ fn assemble_piece_placement(
     };
     placement.glued_exits = derive_glued_exits(plan, &placement.instances)?;
     placement.gate_portals = derive_gate_portals(plan, &placement.glued_exits)?;
-    placement.connection_cells = derive_connection_cells(&placement)?;
+    let (connection_cells, route_search) = derive_connection_cells(&placement)?;
+    placement.connection_cells = connection_cells;
+    placement.realization_search.route_order_attempt = route_search.route_order_attempt;
+    placement.realization_search.route_attempts = route_search.route_attempts;
     Ok(placement)
 }
 
-fn scaled_desired_origin(origin: GridCell, policy: &PiecePlacementPolicy) -> GridCell {
-    let scale = policy.minimum_clearance_cells + policy.wall_thickness_cells;
+fn linked_piece_origin(
+    plan: &PieceBuildPlan,
+    matched: &MatchedPiece,
+    requirement: &PieceRequirement,
+    instances: &[PieceInstance],
+    policy: &PiecePlacementPolicy,
+) -> Option<GridCell> {
+    if requirement.kind != "connector" {
+        return None;
+    }
+    let instances_by_piece = instances
+        .iter()
+        .map(|instance| (instance.piece_id.as_str(), instance))
+        .collect::<BTreeMap<_, _>>();
+    let gap = policy.minimum_clearance_cells + policy.wall_thickness_cells + 1;
+    let prefer_room_neighbor = requirement
+        .placement_hints
+        .iter()
+        .any(|hint| hint == "glue:from_room" || hint == "glue:to_room");
+    let mut anchors = Vec::new();
+    for link in &plan.links {
+        let (neighbor_piece, neighbor_exit_id, current_exit_id) =
+            if link.to_piece == matched.piece_id {
+                (
+                    link.from_piece.as_str(),
+                    link.from_exit.as_str(),
+                    link.to_exit.as_str(),
+                )
+            } else if link.from_piece == matched.piece_id {
+                (
+                    link.to_piece.as_str(),
+                    link.to_exit.as_str(),
+                    link.from_exit.as_str(),
+                )
+            } else {
+                continue;
+            };
+        let Some(neighbor) = instances_by_piece.get(neighbor_piece).copied() else {
+            continue;
+        };
+        let Some(neighbor_exit) = neighbor
+            .exit_map
+            .iter()
+            .find(|exit| exit.requirement_exit_id == neighbor_exit_id)
+        else {
+            continue;
+        };
+        let Some(current_exit) = matched
+            .exit_map
+            .iter()
+            .find(|exit| exit.requirement_exit_id == current_exit_id)
+        else {
+            continue;
+        };
+        if opposite_direction(neighbor_exit.direction.as_str()) != current_exit.direction {
+            continue;
+        }
+        let (direction_x, direction_y) = direction_vector(neighbor_exit.direction.as_str());
+        let room_neighbor = neighbor
+            .source_refs
+            .iter()
+            .any(|source_ref| source_ref.starts_with("geometryRoom:"));
+        anchors.push((
+            room_neighbor,
+            link.id.as_str(),
+            GridCell {
+                x: neighbor_exit.x + direction_x * gap - current_exit.x,
+                y: neighbor_exit.y + direction_y * gap - current_exit.y,
+            },
+        ));
+    }
+    anchors.sort_by(|left, right| {
+        if prefer_room_neighbor {
+            right.0.cmp(&left.0)
+        } else {
+            left.0.cmp(&right.0)
+        }
+        .then_with(|| left.1.cmp(right.1))
+    });
+    anchors.into_iter().next().map(|(_, _, origin)| origin)
+}
+
+fn scaled_desired_origin(
+    origin: GridCell,
+    policy: &PiecePlacementPolicy,
+    scale_multiplier: i32,
+) -> GridCell {
+    let scale = (policy.minimum_clearance_cells + policy.wall_thickness_cells)
+        .saturating_mul(scale_multiplier);
     GridCell {
         x: origin.x.saturating_mul(scale),
         y: origin.y.saturating_mul(scale),
@@ -559,7 +708,70 @@ fn collect_section_room_endpoints(placement: &PiecePlacement) -> SectionRoomEndp
     section_room_endpoints
 }
 
-fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCellRef>, String> {
+const PIECE_ROUTE_ORDER_COUNT: u32 = 4;
+
+fn derive_connection_cells(
+    placement: &PiecePlacement,
+) -> Result<(Vec<PlacementCellRef>, PieceRealizationSearchEvidence), String> {
+    let mut base_order = placement.glued_exits.iter().collect::<Vec<_>>();
+    let mut orders = Vec::new();
+    orders.push(base_order.clone());
+
+    let mut reversed = base_order.clone();
+    reversed.reverse();
+    orders.push(reversed);
+
+    base_order.sort_by(|left, right| {
+        right
+            .from_cell
+            .x
+            .abs_diff(right.to_cell.x)
+            .saturating_add(right.from_cell.y.abs_diff(right.to_cell.y))
+            .cmp(
+                &left
+                    .from_cell
+                    .x
+                    .abs_diff(left.to_cell.x)
+                    .saturating_add(left.from_cell.y.abs_diff(left.to_cell.y)),
+            )
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    orders.push(base_order.clone());
+    base_order.reverse();
+    orders.push(base_order);
+
+    let mut last_error = "no piece route order was attempted".to_owned();
+    let mut route_attempts = 0_u32;
+    for (route_order_attempt, order) in orders
+        .into_iter()
+        .take(PIECE_ROUTE_ORDER_COUNT as usize)
+        .enumerate()
+    {
+        route_attempts += 1;
+        match try_derive_connection_cells(placement, &order) {
+            Ok(cells) => {
+                return Ok((
+                    cells,
+                    PieceRealizationSearchEvidence {
+                        realization_scale_tier: 0,
+                        realization_attempts: 0,
+                        route_order_attempt: route_order_attempt as u32,
+                        route_attempts,
+                    },
+                ));
+            }
+            Err(error) => last_error = error,
+        }
+    }
+    Err(format!(
+        "piece route search exhausted after {route_attempts} deterministic order attempt(s); last route failure: {last_error}"
+    ))
+}
+
+fn try_derive_connection_cells(
+    placement: &PiecePlacement,
+    glued_order: &[&GluedExit],
+) -> Result<Vec<PlacementCellRef>, String> {
     let instances = placement
         .instances
         .iter()
@@ -579,7 +791,7 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
     let bounds = placement_route_bounds(placement);
     let mut cells = Vec::new();
     let mut routed_sections = RoutedSections::new();
-    for glued in &placement.glued_exits {
+    for glued in glued_order {
         let Some(from) = instances.get(glued.from_instance.as_str()) else {
             continue;
         };
@@ -597,13 +809,38 @@ fn derive_connection_cells(placement: &PiecePlacement) -> Result<Vec<PlacementCe
             &routed_sections,
             &section_room_endpoints,
             bounds,
-        )
-        .ok_or_else(|| {
-            format!(
-                "no clearance-safe connection route exists for glued exit {} between {} and {}",
-                glued.id, from.instance_id, to.instance_id
+        );
+        let Some(bridge) = bridge else {
+            let without_routed_sections = route_instance_connection(
+                glued,
+                placement.grid_connectivity,
+                &occupied_by_cell,
+                &reserved,
+                placement.placement_policy.wall_thickness_cells,
+                placement.placement_policy.minimum_clearance_cells,
+                &RoutedSections::new(),
+                &section_room_endpoints,
+                bounds,
             )
-        })?;
+            .is_some();
+            return Err(format!(
+                "no clearance-safe connection route exists for glued exit {} between {} at {},{} ({}) and {} at {},{} ({}); {}",
+                glued.id,
+                from.instance_id,
+                glued.from_cell.x,
+                glued.from_cell.y,
+                glued.from_direction,
+                to.instance_id,
+                glued.to_cell.x,
+                glued.to_cell.y,
+                glued.to_direction,
+                if without_routed_sections {
+                    "blocked by previously routed physical sections"
+                } else {
+                    "piece occupancy or reservations block every route"
+                },
+            ));
+        };
         for cell in bridge {
             routed_sections
                 .entry((cell.x, cell.y))
@@ -860,6 +1097,22 @@ fn validate_piece_placement(placement: &PiecePlacement) -> ValidationReport {
         ));
     }
     validate_piece_placement_policy(&placement.placement_policy, &mut diagnostics);
+    if placement.realization_search.realization_attempts == 0
+        || placement.realization_search.realization_attempts > 2
+        || placement.realization_search.realization_scale_tier
+            >= placement.realization_search.realization_attempts
+        || placement.realization_search.route_attempts == 0
+        || placement.realization_search.route_attempts > PIECE_ROUTE_ORDER_COUNT
+        || placement.realization_search.route_order_attempt
+            >= placement.realization_search.route_attempts
+    {
+        diagnostics.push(fatal(
+            "piece_realization_search_evidence_invalid",
+            None,
+            None,
+            "Piece realization search evidence exceeds its scale-tier or deterministic route-order bounds.",
+        ));
+    }
     validate_placement_cells(placement, &mut diagnostics);
     validate_placement_links(placement, &mut diagnostics);
     validate_placement_unplanned_contacts(placement, &mut diagnostics);

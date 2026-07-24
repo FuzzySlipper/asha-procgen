@@ -208,7 +208,9 @@ fn validate_source_edge_chains(
                 || link.source_section != corridor.physical_section
                 || !link.source_edges.contains(&edge.id)
                 || match plan.corridor_realization {
-                    CorridorRealization::Catalog => !link.route_points.is_empty(),
+                    CorridorRealization::Catalog => {
+                        catalog_link_route_mismatch(corridor, &links, index)
+                    }
                     CorridorRealization::Procedural => link.route_points != corridor.points,
                 }
                 || traversal_ref.is_none_or(|reference| {
@@ -374,14 +376,26 @@ fn validate_gate_portals(
 }
 
 fn validate_physical_routes(placement: &PiecePlacement, diagnostics: &mut Vec<Diagnostic>) {
+    let section_instances = collect_catalog_section_instances(placement);
     for glued in &placement.glued_exits {
         let owner = format!("connection.{}", slugify_label(glued.id.as_str()));
-        let cells = placement
+        let mut cells = placement
             .connection_cells
             .iter()
             .filter(|cell| cell.instance_id == owner)
             .map(|cell| (cell.x, cell.y))
             .collect::<BTreeSet<_>>();
+        if placement.corridor_realization == CorridorRealization::Catalog {
+            if let Some(instances) = section_instances.get(glued.source_section.as_str()) {
+                cells.extend(
+                    placement
+                        .occupied_cells
+                        .iter()
+                        .filter(|cell| instances.contains(&cell.instance_id))
+                        .map(|cell| (cell.x, cell.y)),
+                );
+            }
+        }
         if !cells.contains(&(glued.from_cell.x, glued.from_cell.y))
             || !cells.contains(&(glued.to_cell.x, glued.to_cell.y))
             || !cells_connected(&cells, placement.grid_connectivity)
@@ -522,6 +536,35 @@ fn portal_open_for_items(portal: &GatePortal, items: &BTreeSet<String>) -> bool 
         .as_ref()
         .map(|item| items.contains(item))
         .unwrap_or(true)
+}
+
+fn catalog_link_route_mismatch(
+    corridor: &GeometryCorridor,
+    links: &[&PieceLink],
+    index: usize,
+) -> bool {
+    let link = links[index];
+    if link.route_points.len() < 2 {
+        return true;
+    }
+    let distances = link
+        .route_points
+        .iter()
+        .map(|point| corridor_distance_at_point(corridor, point))
+        .collect::<Option<Vec<_>>>();
+    let Some(distances) = distances else {
+        return true;
+    };
+    if distances.windows(2).any(|pair| pair[0] > pair[1]) {
+        return true;
+    }
+    if index == 0 && link.route_points.first() != corridor.points.first() {
+        return true;
+    }
+    if index + 1 == links.len() && link.route_points.last() != corridor.points.last() {
+        return true;
+    }
+    index > 0 && links[index - 1].route_points.last() != link.route_points.first()
 }
 
 fn physical_reachable_nodes(

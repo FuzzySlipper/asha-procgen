@@ -512,7 +512,10 @@ interface CorridorRealizationExperimentResponse {
   readonly metrics: {
     readonly prefabInstances: number;
     readonly corridorPrefabInstances: number;
+    readonly corridorPrefabCells: number;
     readonly routedCorridorCells: number;
+    readonly footprintWidth: number;
+    readonly footprintHeight: number;
   };
   readonly persisted: false;
   readonly nativeAuthority: false;
@@ -1256,7 +1259,8 @@ function corridorPrefabCount(placement: PiecePlacement): number {
   return placement.instances.filter((instance) =>
     instance.requirementKind === 'connector'
       || instance.requirementKind === 'corridor'
-      || instance.requirementKind === 'bend').length;
+      || instance.requirementKind === 'bend'
+      || instance.requirementKind === 'junction').length;
 }
 
 function syncCorridorRealizationControls(): void {
@@ -1304,11 +1308,13 @@ function updateCorridorRealizationImpact(): void {
   const committedMode = corridorRealizationFor(committedPlacement);
   const committedPrefabs = corridorPrefabCount(committedPlacement);
   const committedCells = committedPlacement.connectionCells.length;
+  const committedFootprint = placementPolicyMetrics(committedPlacement);
   if (currentCorridorExperimentId === null || currentPlacement === null) {
-    corridorRealizationImpact.textContent = `Committed ${committedMode}: ${committedPrefabs} corridor prefabs; ${committedCells.toLocaleString()} routed corridor cells.`;
+    corridorRealizationImpact.textContent = `Committed ${committedMode}: ${committedPrefabs} corridor prefabs; ${committedCells.toLocaleString()} routed corridor cells; ${committedFootprint.width} × ${committedFootprint.height} footprint.`;
     return;
   }
-  corridorRealizationImpact.textContent = `Comparison: ${committedMode} ${committedPrefabs} prefabs / ${committedCells.toLocaleString()} routed cells → ${corridorRealizationFor(currentPlacement)} ${corridorPrefabCount(currentPlacement)} prefabs / ${currentPlacement.connectionCells.length.toLocaleString()} routed cells.`;
+  const experimentFootprint = placementPolicyMetrics(currentPlacement);
+  corridorRealizationImpact.textContent = `Comparison: ${committedMode} ${committedPrefabs} prefabs / ${committedCells.toLocaleString()} routed cells / ${committedFootprint.width} × ${committedFootprint.height} → ${corridorRealizationFor(currentPlacement)} ${corridorPrefabCount(currentPlacement)} prefabs / ${currentPlacement.connectionCells.length.toLocaleString()} routed cells / ${experimentFootprint.width} × ${experimentFootprint.height}.`;
 }
 
 function setCorridorRealizationStatus(

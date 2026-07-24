@@ -520,11 +520,21 @@ async function runCorridorRealizationExperiment(payload) {
     builtFlowValidation.geometryRef = entry.geometryRef;
     builtFlowValidation.piecePlanRef = `experiment:${entry.candidateId}:${payload.corridorRealization}:piece-plan`;
     builtFlowValidation.piecePlacementRef = `experiment:${entry.candidateId}:${payload.corridorRealization}:placement`;
+    const corridorInstances = placement.instances.filter((instance) =>
+      ['connector', 'corridor', 'bend', 'junction'].includes(instance.requirementKind));
+    const footprintCells = [...placement.occupiedCells, ...placement.connectionCells];
+    const xs = footprintCells.map((cell) => cell.x);
+    const ys = footprintCells.map((cell) => cell.y);
     const metrics = {
       prefabInstances: placement.instances.length,
-      corridorPrefabInstances: placement.instances.filter((instance) =>
-        ['connector', 'corridor', 'bend'].includes(instance.requirementKind)).length,
+      corridorPrefabInstances: corridorInstances.length,
+      corridorPrefabCells: corridorInstances.reduce(
+        (total, instance) => total + instance.occupiedCells.length,
+        0,
+      ),
       routedCorridorCells: placement.connectionCells.length,
+      footprintWidth: xs.length === 0 ? 0 : Math.max(...xs) - Math.min(...xs) + 1,
+      footprintHeight: ys.length === 0 ? 0 : Math.max(...ys) - Math.min(...ys) + 1,
     };
     const experimentId = createHash('sha256')
       .update(JSON.stringify({

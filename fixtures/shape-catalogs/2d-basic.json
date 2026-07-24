@@ -102,9 +102,25 @@
       "tags": ["large", "hub", "landmark", "choice"]
     },
     {
-      "shapeId": "shape.corridor.straight.3",
-      "label": "Straight corridor, length three",
+      "shapeId": "shape.corridor.straight.1",
+      "label": "Straight corridor, short length one",
       "pieceKinds": ["corridor", "connector"],
+      "footprint": [
+        {"x": 0, "y": 0}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 1, "y": 0, "direction": "east", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90"],
+      "featureSockets": [],
+      "tags": ["corridor", "straight", "span_short"]
+    },
+    {
+      "shapeId": "shape.corridor.straight.3",
+      "label": "Straight corridor, medium length three",
+      "pieceKinds": ["corridor"],
       "footprint": [
         {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}
       ],
@@ -115,12 +131,29 @@
       ],
       "allowedTransforms": ["identity", "rotate90"],
       "featureSockets": [],
-      "tags": ["corridor", "straight"]
+      "tags": ["corridor", "straight", "span_medium"]
+    },
+    {
+      "shapeId": "shape.corridor.straight.7",
+      "label": "Straight corridor, long length seven",
+      "pieceKinds": ["corridor"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0},
+        {"x": 4, "y": 0}, {"x": 5, "y": 0}, {"x": 6, "y": 0}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.east", "x": 7, "y": 0, "direction": "east", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90"],
+      "featureSockets": [],
+      "tags": ["corridor", "straight", "span_long"]
     },
     {
       "shapeId": "shape.corridor.bend.2x2",
-      "label": "Bend corridor, two by two",
-      "pieceKinds": ["corridor", "bend"],
+      "label": "Bend corridor, small two by two",
+      "pieceKinds": ["bend"],
       "footprint": [
         {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 1, "y": 1}
       ],
@@ -131,7 +164,62 @@
       ],
       "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
       "featureSockets": [],
-      "tags": ["corridor", "bend"]
+      "tags": ["corridor", "bend", "bend_small"]
+    },
+    {
+      "shapeId": "shape.corridor.bend.4x4",
+      "label": "Bend corridor, large four by four",
+      "pieceKinds": ["bend"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0},
+        {"x": 3, "y": 1}, {"x": 3, "y": 2}, {"x": 3, "y": 3}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["standard"]},
+        {"id": "exit.south", "x": 3, "y": 4, "direction": "south", "width": 1, "tags": ["standard"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [],
+      "tags": ["corridor", "bend", "bend_large"]
+    },
+    {
+      "shapeId": "shape.corridor.junction.t",
+      "label": "Owned T junction",
+      "pieceKinds": ["junction"],
+      "footprint": [
+        {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0}, {"x": 3, "y": 0}, {"x": 4, "y": 0},
+        {"x": 2, "y": 1}, {"x": 2, "y": 2}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.west", "x": -1, "y": 0, "direction": "west", "width": 1, "tags": ["owned_junction"]},
+        {"id": "exit.east", "x": 5, "y": 0, "direction": "east", "width": 1, "tags": ["owned_junction"]},
+        {"id": "exit.south", "x": 2, "y": 3, "direction": "south", "width": 1, "tags": ["owned_junction"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [],
+      "tags": ["corridor", "planned_junction", "junction_t"]
+    },
+    {
+      "shapeId": "shape.corridor.junction.cross",
+      "label": "Owned cross junction",
+      "pieceKinds": ["junction"],
+      "footprint": [
+        {"x": 2, "y": 0}, {"x": 2, "y": 1},
+        {"x": 0, "y": 2}, {"x": 1, "y": 2}, {"x": 2, "y": 2}, {"x": 3, "y": 2}, {"x": 4, "y": 2},
+        {"x": 2, "y": 3}, {"x": 2, "y": 4}
+      ],
+      "reservedCells": [],
+      "exits": [
+        {"id": "exit.north", "x": 2, "y": -1, "direction": "north", "width": 1, "tags": ["owned_junction"]},
+        {"id": "exit.east", "x": 5, "y": 2, "direction": "east", "width": 1, "tags": ["owned_junction"]},
+        {"id": "exit.south", "x": 2, "y": 5, "direction": "south", "width": 1, "tags": ["owned_junction"]},
+        {"id": "exit.west", "x": -1, "y": 2, "direction": "west", "width": 1, "tags": ["owned_junction"]}
+      ],
+      "allowedTransforms": ["identity", "rotate90", "rotate180", "rotate270"],
+      "featureSockets": [],
+      "tags": ["corridor", "planned_junction", "junction_cross"]
     },
     {
       "shapeId": "shape.threshold.locked_gate",

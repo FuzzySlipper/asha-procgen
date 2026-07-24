@@ -20,6 +20,7 @@ export interface PiecePlacementPolicy {
 
 export interface PlacementGluedExit {
   readonly id: string;
+  readonly sourceSection?: string;
   readonly fromInstance: string;
   readonly fromCell: PlacementCell;
   readonly fromDirection: 'north' | 'east' | 'south' | 'west';
@@ -28,6 +29,12 @@ export interface PlacementGluedExit {
   readonly toCell: PlacementCell;
   readonly toDirection: 'north' | 'east' | 'south' | 'west';
   readonly toWidth: number;
+  readonly routePoints?: readonly PlacementCell[];
+}
+
+export interface PlacementInstance {
+  readonly instanceId: string;
+  readonly sourceRefs: readonly string[];
 }
 
 export interface PlacementGatePortal {
@@ -53,6 +60,7 @@ export interface PiecePlacementForExtrusion {
   readonly corridorRealization?: 'catalog' | 'procedural';
   readonly gridConnectivity: 'four_way' | 'eight_way';
   readonly placementPolicy: PiecePlacementPolicy;
+  readonly instances?: readonly PlacementInstance[];
   readonly occupiedCells: readonly PlacementOwnedCell[];
   readonly connectionCells: readonly PlacementOwnedCell[];
   readonly reservedCells: readonly PlacementOwnedCell[];
@@ -134,8 +142,19 @@ export function compilePlacementExtrusion(
 
   const occupiedByCell = ownedCellsByPosition(placement.occupiedCells, 'occupied');
   const reservedByCell = ownedCellsByPosition(placement.reservedCells, 'reserved');
-  validateOwnedClearance(occupiedByCell, placement.placementPolicy);
-  const opening = declaredOpeningCells(placement, occupiedByCell, reservedByCell);
+  const contactSections = catalogContactSections(placement);
+  validateOwnedClearance(
+    placement,
+    occupiedByCell,
+    placement.placementPolicy,
+    contactSections,
+  );
+  const opening = declaredOpeningCells(
+    placement,
+    occupiedByCell,
+    reservedByCell,
+    contactSections,
+  );
   const walkable = new Map<string, PlacementCell>();
   for (const cell of placement.occupiedCells) {
     walkable.set(cellKey(cell.x, cell.y), cell);
@@ -339,8 +358,10 @@ function ownedCellsByPosition(
 }
 
 function validateOwnedClearance(
+  placement: PiecePlacementForExtrusion,
   occupiedByCell: ReadonlyMap<string, PlacementOwnedCell>,
   policy: PiecePlacementPolicy,
+  contactSections: ReadonlyMap<string, ReadonlySet<string>>,
 ): void {
   const clearance = policy.minimumClearanceCells;
   for (const cell of occupiedByCell.values()) {
@@ -352,6 +373,12 @@ function validateOwnedClearance(
         }
         const other = occupiedByCell.get(cellKey(cell.x + dx, cell.y + dy));
         if (other !== undefined && other.instanceId !== cell.instanceId) {
+          const sameOwnedSection = placement.corridorRealization === 'catalog'
+            && [...contactSections.values()].some((instances) =>
+              instances.has(cell.instanceId) && instances.has(other.instanceId));
+          if (sameOwnedSection) {
+            continue;
+          }
           throw new Error(
             `piece boundary clearance ${clearance} violated by ${cell.instanceId} and ${other.instanceId}`,
           );
@@ -361,10 +388,38 @@ function validateOwnedClearance(
   }
 }
 
+function catalogContactSections(
+  placement: PiecePlacementForExtrusion,
+): ReadonlyMap<string, ReadonlySet<string>> {
+  const sections = new Map<string, Set<string>>();
+  for (const instance of placement.instances ?? []) {
+    for (const sourceRef of instance.sourceRefs) {
+      if (!sourceRef.startsWith('physicalSection:')) {
+        continue;
+      }
+      const section = sourceRef.slice('physicalSection:'.length);
+      const instances = sections.get(section) ?? new Set<string>();
+      instances.add(instance.instanceId);
+      sections.set(section, instances);
+    }
+  }
+  for (const glued of placement.gluedExits) {
+    if (typeof glued.sourceSection !== 'string' || glued.sourceSection.length === 0) {
+      continue;
+    }
+    const instances = sections.get(glued.sourceSection) ?? new Set<string>();
+    instances.add(glued.fromInstance);
+    instances.add(glued.toInstance);
+    sections.set(glued.sourceSection, instances);
+  }
+  return sections;
+}
+
 function declaredOpeningCells(
   placement: PiecePlacementForExtrusion,
   occupiedByCell: ReadonlyMap<string, PlacementOwnedCell>,
   reservedByCell: ReadonlyMap<string, PlacementOwnedCell>,
+  contactSections: ReadonlyMap<string, ReadonlySet<string>>,
 ): ReadonlyMap<string, PlacementCell> {
   const openingsByOwner = new Map<string, PlacementGluedExit>();
   for (const glued of placement.gluedExits) {
@@ -386,6 +441,7 @@ function declaredOpeningCells(
     }
     if (
       (placement.corridorRealization ?? 'catalog') !== 'procedural'
+      && (glued.routePoints?.length ?? 0) < 2
       && oppositeDirection(glued.fromDirection) !== glued.toDirection
     ) {
       throw new Error(`piece placement glued exit ${glued.id} has incompatible directions`);
@@ -432,6 +488,9 @@ function declaredOpeningCells(
       glued,
       occupiedByCell,
       placement.placementPolicy.wallThicknessCells,
+      placement.corridorRealization === 'catalog'
+        ? contactSections.get(glued.sourceSection ?? '')
+        : undefined,
     );
     openings.set(key, cell);
   }
@@ -445,6 +504,17 @@ function declaredOpeningCells(
     if (!route.has(fromKey) || !route.has(toKey)) {
       throw new Error(`declared glued exit ${owner} route does not include both transformed exit cells`);
     }
+    const sameSectionInstances = placement.corridorRealization === 'catalog'
+      ? contactSections.get(glued.sourceSection ?? '')
+      : undefined;
+    const traversable = new Map(route);
+    if (sameSectionInstances !== undefined) {
+      for (const occupied of occupiedByCell.values()) {
+        if (sameSectionInstances.has(occupied.instanceId)) {
+          traversable.set(cellKey(occupied.x, occupied.y), occupied);
+        }
+      }
+    }
     const reachable = new Set<string>([fromKey]);
     const queue = [glued.fromCell];
     while (queue.length > 0) {
@@ -452,13 +522,13 @@ function declaredOpeningCells(
       if (position === undefined) break;
       for (const neighbor of cardinalNeighbors(position)) {
         const neighborKey = cellKey(neighbor.x, neighbor.y);
-        if (route.has(neighborKey) && !reachable.has(neighborKey)) {
+        if (traversable.has(neighborKey) && !reachable.has(neighborKey)) {
           reachable.add(neighborKey);
           queue.push(neighbor);
         }
       }
     }
-    if (!reachable.has(toKey) || reachable.size !== route.size) {
+    if (!reachable.has(toKey) || [...route.keys()].some((key) => !reachable.has(key))) {
       throw new Error(`declared glued exit ${owner} route is disconnected`);
     }
   }
@@ -470,6 +540,7 @@ function validateOpeningWallClearance(
   glued: PlacementGluedExit,
   occupiedByCell: ReadonlyMap<string, PlacementOwnedCell>,
   wallThickness: number,
+  sameSectionInstances: ReadonlySet<string> | undefined,
 ): void {
   for (let dy = -wallThickness; dy <= wallThickness; dy += 1) {
     for (let dx = -wallThickness; dx <= wallThickness; dx += 1) {
@@ -482,7 +553,7 @@ function validateOpeningWallClearance(
         ? endpointTunnelContains(opened, glued.fromCell, glued.fromDirection, wallThickness)
         : occupied.instanceId === glued.toInstance
           ? endpointTunnelContains(opened, glued.toCell, glued.toDirection, wallThickness)
-          : false;
+          : sameSectionInstances?.has(occupied.instanceId) === true;
       if (!allowed) {
         throw new Error(
           `doorway ${glued.id} enters non-exit wall clearance of piece ${occupied.instanceId}`,

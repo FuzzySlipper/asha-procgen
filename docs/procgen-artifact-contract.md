@@ -335,6 +335,8 @@ rooms are all first-class pieces. Corridors are not hidden runtime negotiation.
 The top-level artifact records `planId`, `candidateId`, `geometryId`,
 `sourceCandidateRef`, `sourceIntermediateRef`, `sourceGeometryRef`,
 `requirements`, `links`, and `contentRequirements`.
+Requirements may carry `requiredShapeTags` when a route planner needs an exact
+compatible catalog family rather than a soft tag score.
 
 ## Piece Shape Match Artifact
 
@@ -359,9 +361,10 @@ diagonal contact counts as reachable. They are the first artifact layer that
 owns occupancy, while still stopping before mesh, voxel, renderer, collision,
 or ASHA runtime integration.
 
-Validation rejects configured-clearance violations between all distinct piece
-instances. Linked pieces remain separate and connect only through
-glued-exit-owned route cells. Routes may share cells, but may not cross
+Validation rejects configured-clearance violations between unrelated piece
+instances. Catalog pieces with the same physical-section provenance may
+approach without overlap, and glued-exit-owned route cells fill the gaps
+between their occupied footprints. Unrelated routes may not cross
 occupied/reserved cells, enter a non-exit wall, or omit their exact transformed
 catalog exit endpoints.
 

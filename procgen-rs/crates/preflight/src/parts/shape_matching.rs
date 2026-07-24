@@ -205,6 +205,18 @@ fn static_shape_rejection_reasons(
     if !missing_sockets.is_empty() {
         reasons.push(format!("missing_sockets: {}", missing_sockets.join(",")));
     }
+    let missing_shape_tags = requirement
+        .required_shape_tags
+        .iter()
+        .filter(|required_tag| !shape.tags.contains(required_tag))
+        .cloned()
+        .collect::<Vec<_>>();
+    if !missing_shape_tags.is_empty() {
+        reasons.push(format!(
+            "missing_shape_tags: {}",
+            missing_shape_tags.join(",")
+        ));
+    }
     let required_exits = &requirement.required_exits;
     if shape.exits.len() < required_exits.len() {
         reasons.push(format!(

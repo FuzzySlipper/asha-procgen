@@ -118,7 +118,7 @@ fn assemble_piece_placement_attempt(
     let mut reserved_cells = Vec::new();
     let mut occupied_positions: BTreeMap<(i32, i32), String> = BTreeMap::new();
     let mut reserved_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
-    let mut exit_protected_positions: BTreeSet<(i32, i32)> = BTreeSet::new();
+    let mut exit_protected_positions: BTreeMap<(i32, i32), BTreeSet<String>> = BTreeMap::new();
     let mut ordered_matches = shape_match.matches.iter().collect::<Vec<_>>();
     ordered_matches.sort_by_key(|matched| match matched.requirement_kind.as_str() {
         "connector" => 1_u8,
@@ -139,13 +139,18 @@ fn assemble_piece_placement_attempt(
             ));
         };
         let instance_id = format!("instance.{}", slugify_label(matched.piece_id.as_str()));
-        let desired_origin = linked_piece_origin(
-            plan,
-            matched,
-            requirement,
-            &instances,
-            &catalog.placement_policy,
-        )
+        let allowed_contact_instances =
+            catalog_section_contact_instances(plan, requirement, &instances);
+        let desired_origin = catalog_route_piece_origin(plan, matched, requirement, &instances)
+            .or_else(|| {
+                linked_piece_origin(
+                    plan,
+                    matched,
+                    requirement,
+                    &instances,
+                    &catalog.placement_policy,
+                )
+            })
         .unwrap_or_else(|| {
             scaled_desired_origin(
                 desired_origin_for_requirement(requirement, index),
@@ -162,6 +167,7 @@ fn assemble_piece_placement_attempt(
             &occupied_positions,
             &reserved_positions,
             &exit_protected_positions,
+            &allowed_contact_instances,
         )
         .ok_or_else(|| {
             format!(
@@ -186,7 +192,12 @@ fn assemble_piece_placement_attempt(
         for cell in &reserved {
             reserved_positions.insert((cell.x, cell.y));
         }
-        exit_protected_positions.extend(exit_protection);
+        for position in exit_protection {
+            exit_protected_positions
+                .entry(position)
+                .or_default()
+                .insert(instance_id.clone());
+        }
 
         occupied_cells.extend(occupied.iter().map(|cell| PlacementCellRef {
             instance_id: instance_id.clone(),
@@ -262,6 +273,142 @@ fn assemble_piece_placement_attempt(
     placement.realization_search.route_order_attempt = route_search.route_order_attempt;
     placement.realization_search.route_attempts = route_search.route_attempts;
     Ok(placement)
+}
+
+fn catalog_section_contact_instances(
+    plan: &PieceBuildPlan,
+    requirement: &PieceRequirement,
+    instances: &[PieceInstance],
+) -> BTreeSet<String> {
+    if plan.corridor_realization != CorridorRealization::Catalog
+        || !matches!(requirement.kind.as_str(), "corridor" | "bend" | "junction")
+    {
+        return BTreeSet::new();
+    }
+    let Some(source_section) = requirement
+        .source_refs
+        .iter()
+        .find_map(|reference| reference.strip_prefix("physicalSection:"))
+    else {
+        return BTreeSet::new();
+    };
+    let endpoint_pieces = plan
+        .links
+        .iter()
+        .filter(|link| link.source_section == source_section)
+        .flat_map(|link| [link.from_piece.as_str(), link.to_piece.as_str()])
+        .collect::<BTreeSet<_>>();
+    instances
+        .iter()
+        .filter(|instance| {
+            endpoint_pieces.contains(instance.piece_id.as_str())
+                || instance
+                    .source_refs
+                    .iter()
+                    .any(|reference| reference == &format!("physicalSection:{source_section}"))
+        })
+        .map(|instance| instance.instance_id.clone())
+        .collect()
+}
+
+fn catalog_route_piece_origin(
+    plan: &PieceBuildPlan,
+    matched: &MatchedPiece,
+    requirement: &PieceRequirement,
+    instances: &[PieceInstance],
+) -> Option<GridCell> {
+    if plan.corridor_realization != CorridorRealization::Catalog
+        || !matches!(requirement.kind.as_str(), "corridor" | "bend" | "junction")
+    {
+        return None;
+    }
+    let source_section = requirement
+        .source_refs
+        .iter()
+        .find_map(|reference| reference.strip_prefix("physicalSection:"))?;
+    let links = plan
+        .links
+        .iter()
+        .filter(|link| link.source_section == source_section)
+        .collect::<Vec<_>>();
+    let first_link = links.first()?;
+    let last_link = links.last()?;
+    let instances_by_piece = instances
+        .iter()
+        .map(|instance| (instance.piece_id.as_str(), instance))
+        .collect::<BTreeMap<_, _>>();
+    let from_room = instances_by_piece.get(first_link.from_piece.as_str())?;
+    let to_room = instances_by_piece.get(last_link.to_piece.as_str())?;
+    let from_exit = from_room
+        .exit_map
+        .iter()
+        .find(|exit| exit.requirement_exit_id == first_link.from_exit)?;
+    let to_exit = to_room
+        .exit_map
+        .iter()
+        .find(|exit| exit.requirement_exit_id == last_link.to_exit)?;
+    let mut route_points = Vec::new();
+    for link in &links {
+        for point in &link.route_points {
+            if route_points.last() != Some(point) {
+                route_points.push(point.clone());
+            }
+        }
+    }
+    let source_start = route_points.first()?;
+    let source_end = route_points.last()?;
+    let anchor = requirement.placement_hints.iter().find_map(|hint| {
+        let values = parse_i32_parts(hint.strip_prefix("point:")?);
+        (values.len() == 2).then(|| GeometryPoint {
+            x: values[0],
+            y: values[1],
+        })
+    })?;
+    let target = map_source_point_to_target(
+        &anchor,
+        source_start,
+        source_end,
+        &GridCell {
+            x: from_exit.x,
+            y: from_exit.y,
+        },
+        &GridCell {
+            x: to_exit.x,
+            y: to_exit.y,
+        },
+    );
+    let exit_count = matched.exit_map.len().max(1) as i32;
+    let local_anchor_x = matched.exit_map.iter().map(|exit| exit.x).sum::<i32>() / exit_count;
+    let local_anchor_y = matched.exit_map.iter().map(|exit| exit.y).sum::<i32>() / exit_count;
+    Some(GridCell {
+        x: target.x - local_anchor_x,
+        y: target.y - local_anchor_y,
+    })
+}
+
+fn map_source_point_to_target(
+    point: &GeometryPoint,
+    source_start: &GeometryPoint,
+    source_end: &GeometryPoint,
+    target_start: &GridCell,
+    target_end: &GridCell,
+) -> GridCell {
+    let source_dx = source_end.x - source_start.x;
+    let source_dy = source_end.y - source_start.y;
+    let target_dx = target_end.x - target_start.x;
+    let target_dy = target_end.y - target_start.y;
+    GridCell {
+        x: if source_dx == 0 {
+            target_start.x + (point.x - source_start.x) / 8
+        } else {
+            target_start.x + rounded_ratio(point.x - source_start.x, target_dx, source_dx)
+        },
+        y: if source_dy == 0 {
+            target_start.y + (point.y - source_start.y) / 8
+        } else {
+            target_start.y + rounded_ratio(point.y - source_start.y, target_dy, source_dy)
+        },
+    }
 }
 
 fn linked_piece_origin(
@@ -411,7 +558,8 @@ fn find_available_origin(
     policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
-    exit_protected_positions: &BTreeSet<(i32, i32)>,
+    exit_protected_positions: &BTreeMap<(i32, i32), BTreeSet<String>>,
+    allowed_contact_instances: &BTreeSet<String>,
 ) -> Option<GridCell> {
     for radius in 0_i32..=120 {
         for dy in -radius..=radius {
@@ -432,6 +580,7 @@ fn find_available_origin(
                     occupied_positions,
                     reserved_positions,
                     exit_protected_positions,
+                    allowed_contact_instances,
                 ) {
                     return Some(origin);
                 }
@@ -449,7 +598,8 @@ fn origin_available(
     policy: &PiecePlacementPolicy,
     occupied_positions: &BTreeMap<(i32, i32), String>,
     reserved_positions: &BTreeSet<(i32, i32)>,
-    exit_protected_positions: &BTreeSet<(i32, i32)>,
+    exit_protected_positions: &BTreeMap<(i32, i32), BTreeSet<String>>,
+    allowed_contact_instances: &BTreeSet<String>,
 ) -> bool {
     let occupied = transform_cells(&shape.footprint, transform, origin);
     let reserved = transform_cells(&shape.reserved_cells, transform, origin);
@@ -457,20 +607,29 @@ fn origin_available(
     occupied.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
-            && !exit_protected_positions.contains(&(cell.x, cell.y))
+            && exit_protected_positions
+                .get(&(cell.x, cell.y))
+                .is_none_or(|owners| owners.iter().all(|owner| allowed_contact_instances.contains(owner)))
             && clearance_available(
                 (cell.x, cell.y),
                 policy.minimum_clearance_cells,
                 occupied_positions,
+                allowed_contact_instances,
             )
     }) && reserved.iter().all(|cell| {
         !occupied_positions.contains_key(&(cell.x, cell.y))
             && !reserved_positions.contains(&(cell.x, cell.y))
-            && !exit_protected_positions.contains(&(cell.x, cell.y))
+            && exit_protected_positions
+                .get(&(cell.x, cell.y))
+                .is_none_or(|owners| owners.iter().all(|owner| allowed_contact_instances.contains(owner)))
     }) && exit_protection.iter().all(|position| {
-        !occupied_positions.contains_key(position)
+        occupied_positions
+            .get(position)
+            .is_none_or(|owner| allowed_contact_instances.contains(owner))
             && !reserved_positions.contains(position)
-            && !exit_protected_positions.contains(position)
+            && exit_protected_positions
+                .get(position)
+                .is_none_or(|owners| owners.iter().all(|owner| allowed_contact_instances.contains(owner)))
     })
 }
 
@@ -514,13 +673,17 @@ fn clearance_available(
     cell: (i32, i32),
     minimum_clearance_cells: i32,
     occupied_positions: &BTreeMap<(i32, i32), String>,
+    allowed_contact_instances: &BTreeSet<String>,
 ) -> bool {
     for dy in -minimum_clearance_cells..=minimum_clearance_cells {
         for dx in -minimum_clearance_cells..=minimum_clearance_cells {
             if dx.abs() + dy.abs() > minimum_clearance_cells {
                 continue;
             }
-            if occupied_positions.contains_key(&(cell.0 + dx, cell.1 + dy)) {
+            if occupied_positions
+                .get(&(cell.0 + dx, cell.1 + dy))
+                .is_some_and(|owner| !allowed_contact_instances.contains(owner))
+            {
                 return false;
             }
         }
@@ -549,7 +712,8 @@ fn derive_glued_exits(
             .ok_or_else(|| format!("link {} references missing to piece {}", link.id, link.to_piece))?;
         let from_exit = required_instance_exit(from, link.from_exit.as_str(), link.id.as_str())?;
         let to_exit = required_instance_exit(to, link.to_exit.as_str(), link.id.as_str())?;
-        if link.route_points.is_empty()
+        if plan.corridor_realization == CorridorRealization::Catalog
+            && link.route_points.is_empty()
             && opposite_direction(from_exit.direction.as_str()) != to_exit.direction
         {
             return Err(format!(
@@ -795,6 +959,8 @@ fn try_derive_connection_cells(
         .map(|cell| (cell.x, cell.y))
         .collect::<BTreeSet<_>>();
     let section_room_endpoints = collect_section_room_endpoints(placement);
+    let section_instances = collect_catalog_section_instances(placement);
+    let no_section_instances = BTreeSet::new();
     let bounds = placement_route_bounds(placement);
     let mut cells = Vec::new();
     let mut routed_sections = RoutedSections::new();
@@ -806,6 +972,9 @@ fn try_derive_connection_cells(
             continue;
         };
         let instance_id = format!("connection.{}", slugify_label(glued.id.as_str()));
+        let same_section_instances = section_instances
+            .get(glued.source_section.as_str())
+            .unwrap_or(&no_section_instances);
         let bridge = route_connection_for_mode(
             placement,
             glued,
@@ -813,9 +982,10 @@ fn try_derive_connection_cells(
             &reserved,
             &routed_sections,
             &section_room_endpoints,
+            same_section_instances,
             bounds,
         );
-        let Some(bridge) = bridge else {
+        let Some(mut bridge) = bridge else {
             let without_routed_sections = route_connection_for_mode(
                 placement,
                 glued,
@@ -823,6 +993,7 @@ fn try_derive_connection_cells(
                 &reserved,
                 &RoutedSections::new(),
                 &section_room_endpoints,
+                same_section_instances,
                 bounds,
             )
             .is_some();
@@ -844,11 +1015,35 @@ fn try_derive_connection_cells(
                 },
             ));
         };
+        if placement.corridor_realization == CorridorRealization::Catalog {
+            bridge = stitch_catalog_section_pieces(
+                placement,
+                glued,
+                bridge,
+                &occupied_by_cell,
+                &reserved,
+                &routed_sections,
+                &section_room_endpoints,
+                same_section_instances,
+            )
+            .ok_or_else(|| {
+                format!(
+                    "catalog physical section {} could not connect every planned prefab to its route",
+                    glued.source_section
+                )
+            })?;
+        }
         for cell in bridge {
             routed_sections
                 .entry((cell.x, cell.y))
                 .or_default()
                 .insert(glued.source_section.clone());
+            if occupied_by_cell
+                .get(&(cell.x, cell.y))
+                .is_some_and(|owner| same_section_instances.contains(*owner))
+            {
+                continue;
+            }
             cells.push(PlacementCellRef {
                 instance_id: instance_id.clone(),
                 x: cell.x,
@@ -859,6 +1054,202 @@ fn try_derive_connection_cells(
     Ok(cells)
 }
 
+#[allow(clippy::too_many_arguments)]
+fn stitch_catalog_section_pieces(
+    placement: &PiecePlacement,
+    glued: &GluedExit,
+    mut bridge: Vec<GridCell>,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
+) -> Option<Vec<GridCell>> {
+    let waypoints = map_geometry_lane_to_room_exits(glued)?;
+    let lane = rasterize_orthogonal_waypoints(&waypoints)?;
+    let lane_positions = lane
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    let envelope = placement.placement_policy.minimum_clearance_cells * 2
+        + placement.placement_policy.wall_thickness_cells;
+    let lane_distances = build_lane_distance_map(&lane_positions, envelope);
+    let mut connected = bridge
+        .iter()
+        .map(|cell| (cell.x, cell.y))
+        .collect::<BTreeSet<_>>();
+    for instance_id in same_section_instances {
+        let starts = occupied_by_cell
+            .iter()
+            .filter(|(_, owner)| **owner == instance_id)
+            .map(|(position, _)| *position)
+            .collect::<BTreeSet<_>>();
+        if starts.is_empty()
+            || starts.iter().any(|position| {
+                connected.contains(position)
+                    || grid_neighbors(*position, GridConnectivity::FourWay)
+                        .iter()
+                        .any(|neighbor| connected.contains(neighbor))
+            })
+        {
+            connected.extend(starts);
+            continue;
+        }
+        let stitch = route_catalog_stitch(
+            placement,
+            glued,
+            &starts,
+            &connected,
+            occupied_by_cell,
+            reserved,
+            routed_sections,
+            section_room_endpoints,
+            same_section_instances,
+            &lane_distances,
+        )?;
+        for cell in stitch {
+            let position = (cell.x, cell.y);
+            if connected.insert(position) {
+                bridge.push(cell);
+            }
+        }
+        connected.extend(starts);
+    }
+    Some(bridge)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn route_catalog_stitch(
+    placement: &PiecePlacement,
+    glued: &GluedExit,
+    starts: &BTreeSet<(i32, i32)>,
+    connected: &BTreeSet<(i32, i32)>,
+    occupied_by_cell: &BTreeMap<(i32, i32), &str>,
+    reserved: &BTreeSet<(i32, i32)>,
+    routed_sections: &RoutedSections,
+    section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
+    lane_distances: &BTreeMap<(i32, i32), u32>,
+) -> Option<Vec<GridCell>> {
+    let min_x = connected.iter().map(|position| position.0).min()?;
+    let max_x = connected.iter().map(|position| position.0).max()?;
+    let min_y = connected.iter().map(|position| position.1).min()?;
+    let max_y = connected.iter().map(|position| position.1).max()?;
+    let distance_to_connected_bounds = |position: (i32, i32)| {
+        let dx = if position.0 < min_x {
+            position.0.abs_diff(min_x)
+        } else if position.0 > max_x {
+            position.0.abs_diff(max_x)
+        } else {
+            0
+        };
+        let dy = if position.1 < min_y {
+            position.1.abs_diff(min_y)
+        } else if position.1 > max_y {
+            position.1.abs_diff(max_y)
+        } else {
+            0
+        };
+        dx + dy
+    };
+    let mut frontier = BinaryHeap::new();
+    let mut best_cost = HashMap::new();
+    let mut previous = HashMap::new();
+    for start in starts {
+        let heuristic = distance_to_connected_bounds(*start);
+        frontier.push(Reverse((heuristic, 0_u32, start.0, start.1)));
+        best_cost.insert(*start, 0_u32);
+    }
+    let mut target = None;
+    while let Some(Reverse((_, cost, x, y))) = frontier.pop() {
+        let position = (x, y);
+        if cost > best_cost.get(&position).copied().unwrap_or(u32::MAX) {
+            continue;
+        }
+        if connected.contains(&position) {
+            target = Some(position);
+            break;
+        }
+        for neighbor in grid_neighbors(position, GridConnectivity::FourWay) {
+            let Some(lane_distance) = lane_distances.get(&neighbor).copied() else {
+                continue;
+            };
+            if !connected.contains(&neighbor)
+                && !bridge_position_available(
+                    neighbor,
+                    glued.from_instance.as_str(),
+                    glued.to_instance.as_str(),
+                    &glued.from_cell,
+                    glued.from_direction.as_str(),
+                    &glued.to_cell,
+                    glued.to_direction.as_str(),
+                    occupied_by_cell,
+                    reserved,
+                    placement.placement_policy.wall_thickness_cells,
+                    placement.placement_policy.minimum_clearance_cells,
+                    routed_sections,
+                    section_room_endpoints,
+                    glued.source_section.as_str(),
+                    same_section_instances,
+                )
+            {
+                continue;
+            }
+            let next_cost = cost.saturating_add(1 + lane_distance);
+            if next_cost >= best_cost.get(&neighbor).copied().unwrap_or(u32::MAX) {
+                continue;
+            }
+            best_cost.insert(neighbor, next_cost);
+            previous.insert(neighbor, position);
+            let priority = next_cost.saturating_add(distance_to_connected_bounds(neighbor));
+            frontier.push(Reverse((priority, next_cost, neighbor.0, neighbor.1)));
+        }
+    }
+    let mut cursor = target?;
+    let mut route = vec![GridCell {
+        x: cursor.0,
+        y: cursor.1,
+    }];
+    while !starts.contains(&cursor) {
+        cursor = *previous.get(&cursor)?;
+        route.push(GridCell {
+            x: cursor.0,
+            y: cursor.1,
+        });
+    }
+    route.reverse();
+    Some(route)
+}
+
+fn collect_catalog_section_instances(
+    placement: &PiecePlacement,
+) -> BTreeMap<String, BTreeSet<String>> {
+    let mut sections = BTreeMap::new();
+    for instance in &placement.instances {
+        for source_ref in &instance.source_refs {
+            if let Some(section) = source_ref.strip_prefix("physicalSection:") {
+                sections
+                    .entry(section.to_owned())
+                    .or_insert_with(BTreeSet::new)
+                    .insert(instance.instance_id.clone());
+            }
+        }
+    }
+    sections
+}
+
+fn collect_catalog_section_contact_instances(
+    placement: &PiecePlacement,
+) -> BTreeMap<String, BTreeSet<String>> {
+    let mut sections = collect_catalog_section_instances(placement);
+    for glued in &placement.glued_exits {
+        let instances = sections.entry(glued.source_section.clone()).or_default();
+        instances.insert(glued.from_instance.clone());
+        instances.insert(glued.to_instance.clone());
+    }
+    sections
+}
+
 fn route_connection_for_mode(
     placement: &PiecePlacement,
     glued: &GluedExit,
@@ -866,10 +1257,11 @@ fn route_connection_for_mode(
     reserved: &BTreeSet<(i32, i32)>,
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
-    if placement.corridor_realization == CorridorRealization::Procedural {
-        realize_procedural_connection(
+    if !glued.route_points.is_empty() {
+        realize_planned_lane_connection(
             glued,
             occupied_by_cell,
             reserved,
@@ -877,6 +1269,7 @@ fn route_connection_for_mode(
             placement.placement_policy.minimum_clearance_cells,
             routed_sections,
             section_room_endpoints,
+            same_section_instances,
         )
     } else {
         route_instance_connection(
@@ -888,12 +1281,13 @@ fn route_connection_for_mode(
             placement.placement_policy.minimum_clearance_cells,
             routed_sections,
             section_room_endpoints,
+            same_section_instances,
             bounds,
         )
     }
 }
 
-fn realize_procedural_connection(
+fn realize_planned_lane_connection(
     glued: &GluedExit,
     occupied_by_cell: &BTreeMap<(i32, i32), &str>,
     reserved: &BTreeSet<(i32, i32)>,
@@ -901,6 +1295,7 @@ fn realize_procedural_connection(
     corridor_clearance: i32,
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
 ) -> Option<Vec<GridCell>> {
     let waypoints = map_geometry_lane_to_room_exits(glued)?;
     let lane = rasterize_orthogonal_waypoints(&waypoints)?;
@@ -918,6 +1313,7 @@ fn realize_procedural_connection(
         corridor_clearance,
         routed_sections,
         section_room_endpoints,
+        same_section_instances,
         &lane_distances,
     )
 }
@@ -1061,6 +1457,7 @@ fn route_bridge_cells_in_lane(
     corridor_clearance: i32,
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
     lane_distances: &BTreeMap<(i32, i32), u32>,
 ) -> Option<Vec<GridCell>> {
     let start = (glued.from_cell.x, glued.from_cell.y);
@@ -1102,6 +1499,7 @@ fn route_bridge_cells_in_lane(
                     routed_sections,
                     section_room_endpoints,
                     glued.source_section.as_str(),
+                    same_section_instances,
                 )
             {
                 continue;
@@ -1146,6 +1544,7 @@ fn route_instance_connection(
     corridor_clearance: i32,
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
+    same_section_instances: &BTreeSet<String>,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     route_bridge_cells(
@@ -1163,6 +1562,7 @@ fn route_instance_connection(
         routed_sections,
         section_room_endpoints,
         glued.source_section.as_str(),
+        same_section_instances,
         bounds,
     )
 }
@@ -1214,6 +1614,7 @@ fn route_bridge_cells(
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
     source_section: &str,
+    same_section_instances: &BTreeSet<String>,
     bounds: (i32, i32, i32, i32),
 ) -> Option<Vec<GridCell>> {
     let start_position = (start.x, start.y);
@@ -1247,6 +1648,7 @@ fn route_bridge_cells(
                     routed_sections,
                     section_room_endpoints,
                     source_section,
+                    same_section_instances,
                 )
             {
                 continue;
@@ -1293,8 +1695,14 @@ fn bridge_position_available(
     routed_sections: &RoutedSections,
     section_room_endpoints: &SectionRoomEndpoints,
     source_section: &str,
+    same_section_instances: &BTreeSet<String>,
 ) -> bool {
-    if occupied_by_cell.contains_key(&position) || reserved.contains(&position) {
+    if let Some(owner) = occupied_by_cell.get(&position) {
+        if !same_section_instances.contains(*owner) {
+            return false;
+        }
+    }
+    if reserved.contains(&position) {
         return false;
     }
     for dy in -wall_clearance..=wall_clearance {
@@ -1307,6 +1715,8 @@ fn bridge_position_available(
                     endpoint_tunnel_contains(position, from_exit, from_direction, wall_clearance)
                 } else if *owner == to_instance {
                     endpoint_tunnel_contains(position, to_exit, to_direction, wall_clearance)
+                } else if same_section_instances.contains(*owner) {
+                    true
                 } else {
                     false
                 };
@@ -1423,13 +1833,13 @@ fn validate_corridor_realization(
             if placement
                 .glued_exits
                 .iter()
-                .any(|glued| !glued.route_points.is_empty())
+                .any(|glued| glued.route_points.len() < 2)
             {
                 diagnostics.push(fatal(
-                    "piece_catalog_corridor_has_procedural_lane",
+                    "piece_catalog_corridor_lane_missing",
                     None,
                     None,
-                    "Catalog corridor realization must not carry procedural geometry lanes.",
+                    "Every catalog corridor join must preserve its planned route slice.",
                 ));
             }
         }
@@ -1437,7 +1847,7 @@ fn validate_corridor_realization(
             let corridor_instances = placement.instances.iter().filter(|instance| {
                 matches!(
                     instance.requirement_kind.as_str(),
-                    "connector" | "corridor" | "bend"
+                    "connector" | "corridor" | "bend" | "junction"
                 )
             });
             if corridor_instances.count() > 0 {
@@ -1445,7 +1855,7 @@ fn validate_corridor_realization(
                     "piece_procedural_corridor_has_catalog_instance",
                     None,
                     None,
-                    "Procedural corridor realization must not place connector, corridor, or bend prefab instances.",
+                    "Procedural corridor realization must not place connector, corridor, bend, or junction prefab instances.",
                 ));
             }
             if placement
@@ -1474,6 +1884,7 @@ fn validate_placement_unplanned_contacts(
         .map(|cell| ((cell.x, cell.y), cell.instance_id.as_str()))
         .collect::<BTreeMap<_, _>>();
     let mut reported_pairs = BTreeSet::new();
+    let section_instances = collect_catalog_section_contact_instances(placement);
     let clearance = placement.placement_policy.minimum_clearance_cells;
     for cell in &placement.occupied_cells {
         for dy in -clearance..=clearance {
@@ -1487,6 +1898,14 @@ fn validate_placement_unplanned_contacts(
                     continue;
                 };
                 if *other_instance == cell.instance_id {
+                    continue;
+                }
+                if placement.corridor_realization == CorridorRealization::Catalog
+                    && section_instances.values().any(|instances| {
+                        instances.contains(&cell.instance_id)
+                            && instances.contains(*other_instance)
+                    })
+                {
                     continue;
                 }
                 let pair = sorted_pair(cell.instance_id.as_str(), other_instance);
@@ -1583,6 +2002,7 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
         })
         .collect::<BTreeMap<_, _>>();
     let section_room_endpoints = collect_section_room_endpoints(placement);
+    let section_instances = collect_catalog_section_instances(placement);
     let mut connection_by_owner: BTreeMap<&str, BTreeSet<(i32, i32)>> = BTreeMap::new();
     let mut used_connection_owners = BTreeSet::new();
     for cell in &placement.connection_cells {
@@ -1656,6 +2076,12 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                             glued.to_direction.as_str(),
                             wall_clearance,
                         )
+                    } else if placement.corridor_realization == CorridorRealization::Catalog
+                        && section_instances
+                            .get(glued.source_section.as_str())
+                            .is_some_and(|instances| instances.contains(*occupier))
+                    {
+                        true
                     } else {
                         false
                     };
@@ -1789,16 +2215,30 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
             ));
             continue;
         }
+        let mut traversable = owner_cells.clone();
+        if placement.corridor_realization == CorridorRealization::Catalog {
+            if let Some(instances) = section_instances.get(glued.source_section.as_str()) {
+                traversable.extend(
+                    placement
+                        .occupied_cells
+                        .iter()
+                        .filter(|cell| instances.contains(&cell.instance_id))
+                        .map(|cell| (cell.x, cell.y)),
+                );
+            }
+        }
         let mut reachable = BTreeSet::from([from_position]);
         let mut queue = VecDeque::from([from_position]);
         while let Some(position) = queue.pop_front() {
             for neighbor in grid_neighbors(position, placement.grid_connectivity) {
-                if owner_cells.contains(&neighbor) && reachable.insert(neighbor) {
+                if traversable.contains(&neighbor) && reachable.insert(neighbor) {
                     queue.push_back(neighbor);
                 }
             }
         }
-        if !reachable.contains(&to_position) || reachable.len() != owner_cells.len() {
+        if !reachable.contains(&to_position)
+            || owner_cells.iter().any(|cell| !reachable.contains(cell))
+        {
             diagnostics.push(fatal(
                 "piece_connection_route_disconnected",
                 None,
@@ -1806,7 +2246,7 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                 format!("Connection {owner} is not one connected declared-exit route."),
             ));
         }
-        if placement.corridor_realization == CorridorRealization::Procedural {
+        if !glued.route_points.is_empty() {
             let lane = map_geometry_lane_to_room_exits(glued)
                 .and_then(|waypoints| rasterize_orthogonal_waypoints(&waypoints))
                 .unwrap_or_default()
@@ -1821,11 +2261,15 @@ fn validate_placement_cells(placement: &PiecePlacement, diagnostics: &mut Vec<Di
                     .any(|cell| distance_to_lane(*cell, &lane) > envelope as u32)
             {
                 diagnostics.push(fatal(
-                    "piece_procedural_corridor_left_geometry_lane",
+                    if placement.corridor_realization == CorridorRealization::Procedural {
+                        "piece_procedural_corridor_left_geometry_lane"
+                    } else {
+                        "piece_catalog_corridor_left_planned_lane"
+                    },
                     None,
                     Some(glued.source_edge.as_str()),
                     format!(
-                        "Procedural connection {owner} leaves its planned geometry lane envelope."
+                        "Connection {owner} leaves its planned geometry lane envelope."
                     ),
                 ));
             }

@@ -40,7 +40,12 @@ try {
   ) {
     throw new Error('procedural corridor realization was not deterministic, validated, and prefab-free');
   }
-  const proceduralMetrics = [[candidateId, procedural.metrics.routedCorridorCells]];
+  const proceduralMetrics = new Map([[candidateId, procedural.metrics]]);
+  const proceduralIdentities = new Map([[candidateId, {
+    planId: procedural.placement.planId,
+    matchId: procedural.placement.matchId,
+    placementId: procedural.placement.placementId,
+  }]]);
   for (const acceptedCandidateId of candidateIds.slice(1)) {
     const candidate = await postExperiment({
       candidateId: acceptedCandidateId,
@@ -54,16 +59,50 @@ try {
     ) {
       throw new Error(`procedural corridor realization failed accepted candidate ${acceptedCandidateId}`);
     }
-    proceduralMetrics.push([acceptedCandidateId, candidate.metrics.routedCorridorCells]);
+    proceduralMetrics.set(acceptedCandidateId, candidate.metrics);
+    proceduralIdentities.set(acceptedCandidateId, {
+      planId: candidate.placement.planId,
+      matchId: candidate.placement.matchId,
+      placementId: candidate.placement.placementId,
+    });
   }
-  const catalog = await postExperiment({ candidateId, corridorRealization: 'catalog' }, 200);
-  if (
-    catalog.placement?.corridorRealization !== 'catalog'
-    || catalog.metrics?.corridorPrefabInstances < 1
-    || catalog.placementValidation?.ok !== true
-    || catalog.builtFlowValidation?.ok !== true
-  ) {
-    throw new Error('catalog corridor realization did not preserve the committed piece-backed path');
+  const catalogMetrics = new Map();
+  for (const acceptedCandidateId of candidateIds) {
+    const catalog = await postExperiment({
+      candidateId: acceptedCandidateId,
+      corridorRealization: 'catalog',
+    }, 200);
+    if (
+      catalog.placement?.corridorRealization !== 'catalog'
+      || catalog.metrics?.corridorPrefabInstances < 1
+      || catalog.metrics?.corridorPrefabCells < catalog.metrics.corridorPrefabInstances
+      || catalog.metrics?.routedCorridorCells < 1
+      || catalog.metrics?.footprintWidth < 1
+      || catalog.metrics?.footprintHeight < 1
+      || catalog.placementValidation?.ok !== true
+      || catalog.builtFlowValidation?.ok !== true
+    ) {
+      throw new Error(`catalog corridor realization failed accepted candidate ${acceptedCandidateId}`);
+    }
+    if (
+      catalog.metrics.routedCorridorCells
+      >= proceduralMetrics.get(acceptedCandidateId).routedCorridorCells
+    ) {
+      throw new Error(
+        `catalog corridor coverage did not reduce routed join cells for ${acceptedCandidateId}`,
+      );
+    }
+    const proceduralIdentity = proceduralIdentities.get(acceptedCandidateId);
+    if (
+      catalog.placement.planId === proceduralIdentity.planId
+      || catalog.placement.matchId === proceduralIdentity.matchId
+      || catalog.placement.placementId === proceduralIdentity.placementId
+    ) {
+      throw new Error(
+        `catalog and procedural identities collided for ${acceptedCandidateId}`,
+      );
+    }
+    catalogMetrics.set(acceptedCandidateId, catalog.metrics);
   }
   await postExperiment({ candidateId, corridorRealization: 'hybrid' }, 400, 'invalid_corridor_realization');
   await postExperiment({ candidateId: 'candidate.unknown', corridorRealization: 'procedural' }, 404, 'candidate_not_found');
@@ -77,7 +116,11 @@ try {
     throw new Error(`corridor realization GET expected 405, received ${methodResponse.status}`);
   }
   console.log(
-    `corridor realization smoke passed; ${proceduralMetrics.map(([id, cells]) => `${id}:${cells}`).join(', ')}, catalog ${catalog.metrics.corridorPrefabInstances} corridor prefabs`,
+    `corridor realization smoke passed; ${candidateIds.map((id) => {
+      const proceduralResult = proceduralMetrics.get(id);
+      const catalogResult = catalogMetrics.get(id);
+      return `${id}: procedural ${proceduralResult.routedCorridorCells} routed; catalog ${catalogResult.corridorPrefabInstances} prefabs/${catalogResult.corridorPrefabCells} prefab cells/${catalogResult.routedCorridorCells} routed/${catalogResult.footprintWidth}x${catalogResult.footprintHeight}`;
+    }).join(', ')}`,
   );
 } finally {
   server.kill('SIGTERM');

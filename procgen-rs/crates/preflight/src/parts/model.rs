@@ -672,6 +672,8 @@ struct PieceRequirement {
     source_refs: Vec<String>,
     required_exits: Vec<PieceExitRequirement>,
     required_sockets: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    required_shape_tags: Vec<String>,
     tags: Vec<String>,
     placement_hints: Vec<String>,
 }

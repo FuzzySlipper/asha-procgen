@@ -72,6 +72,19 @@ fn inspect_shape_catalog(catalog: &ShapeCatalog, catalog_path: &Path) -> Catalog
                 format!("Shape {} has no allowed transforms.", shape.shape_id),
             ));
         }
+        if shape.piece_kinds.iter().any(|kind| kind == "junction")
+            && !shape.tags.iter().any(|tag| tag == "planned_junction")
+        {
+            diagnostics.push(fatal(
+                "catalog_junction_ownership_tag_missing",
+                None,
+                None,
+                format!(
+                    "Junction shape {} must be explicitly tagged planned_junction.",
+                    shape.shape_id
+                ),
+            ));
+        }
 
         piece_kinds.extend(shape.piece_kinds.iter().cloned());
         transforms.extend(shape.allowed_transforms.iter().cloned());

@@ -116,7 +116,8 @@ geometry artifact into explicit pieces and connectors for catalog matching.
 
 Important fields:
 
-- `planId`: stable generated id.
+- `planId`: stable generated id that includes the whole-build corridor mode, so
+  catalog and procedural artifacts cannot collide.
 - `candidateId`: source candidate id.
 - `geometryId`: source geometry id.
 - `corridorRealization`: exactly `catalog` or `procedural`.
@@ -138,18 +139,31 @@ Important requirement fields:
   geometry room/corridor refs.
 - `requiredExits`: abstract exits the selected shape must provide.
 - `requiredSockets`: feature sockets needed for contents or gameplay beats.
+- `requiredShapeTags`: fail-closed catalog-family constraints, such as
+  `span_short`, `span_medium`, `span_long`, `bend_small`, or `bend_large`.
 - `tags`: matching hints and validation semantics.
 - `placementHints`: optional non-authoritative hints, such as preferred
   approximate cell span or corridor length band.
 
-In `catalog` mode, corridors are first-class shape requirements. A geometry
-corridor may expand into:
+In `catalog` mode, corridors are first-class shape requirements. Each
+orthogonal geometry segment is deterministically covered with a bounded greedy
+selection of short, medium, and long straight pieces, while each planned turn
+gets a small or large bend:
 
 ```text
-connector piece -> straight corridor piece -> bend piece -> straight corridor piece -> connector piece
+room -> straight pieces -> bend piece -> straight pieces -> room
 ```
 
-or into a shorter equivalent.
+The physical section still owns one room-to-room link carrying the complete
+planned polyline. Its connection cells fill only the gaps that are not covered
+by the placed catalog footprints, and bounded same-section stitches make every
+selected prefab part of the walkable section. Same-section pieces may approach
+their own endpoint rooms and sibling corridor pieces; unrelated pieces and
+physical sections retain the full overlap, wall, and clearance exclusions.
+Catalog junction shapes use the dedicated `junction` kind and
+`planned_junction` tag, so ordinary corridor requirements cannot select them.
+No junction is emitted until a physical-section plan explicitly owns shared
+junction topology.
 
 In `procedural` mode, room and feature requirements remain catalog matched, but
 connector/corridor/bend requirements are omitted. Each geometry corridor emits
@@ -227,13 +241,16 @@ Important fields:
 - `danglingExits`: exits intentionally left open or invalid exits found during
   validation.
 
-Occupied cells from different build pieces must remain beyond the configured
-minimum clearance even when the pieces are linked. A glued exit is represented
-only by owned `connectionCells`; it is not blanket permission for two
-footprints to touch. The route search rejects occupied/reserved crossings and
-keeps every route outside the wall envelope of unrelated pieces. If no origin
-or route satisfies those constraints, assembly fails instead of falling back
-to an unsafe straight bridge.
+Occupied cells from unrelated build pieces must remain beyond the configured
+minimum clearance. Catalog corridor pieces carrying the same physical-section
+provenance may approach their sibling pieces and their own endpoint rooms;
+they may never overlap. The section's owned `connectionCells` fill uncovered
+route gaps and may traverse same-section prefab footprint cells internally,
+but serialized connection cells never duplicate occupied cells. Route search
+rejects occupied/reserved crossings and keeps every route outside the wall
+envelope of unrelated pieces. If no origin, lane route, or bounded prefab
+stitch satisfies those constraints, assembly fails instead of falling back to
+an unsafe straight bridge.
 
 Each glued exit carries both placed endpoint cells, directions, and widths.
 Its owned connection route must include both endpoint cells, remain connected,

@@ -1,10 +1,10 @@
 {
   "kind": "asha_procgen.piece_placement.v1",
   "schemaVersion": 1,
-  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
-  "planId": "piece_plan.geometry.candidate.first_slice.5801.14310",
+  "placementId": "piece_placement.piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.catalog.14341.alternative_0",
+  "planId": "piece_plan.geometry.candidate.first_slice.5801.14310.catalog",
   "catalogId": "shape_catalog.2d_basic.v1",
-  "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.14341.alternative_0",
+  "matchId": "piece_shape_match.piece_plan.geometry.candidate.first_slice.5801.14310.catalog.14341.alternative_0",
   "corridorRealization": "catalog",
   "sourcePlanRef": "artifacts/samples/batch-v2/candidate-006/piece-plan.json",
   "sourceCatalogRef": "fixtures/shape-catalogs/2d-basic.json",
@@ -22,8 +22,8 @@
   "realizationSearch": {
     "realizationScaleTier": 0,
     "realizationAttempts": 1,
-    "routeOrderAttempt": 1,
-    "routeAttempts": 2
+    "routeOrderAttempt": 0,
+    "routeAttempts": 1
   },
   "instances": [
     {
@@ -389,7 +389,7 @@
           "kind": "marker"
         }
       ],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_start",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.room.room_region_start",
       "sourceRefs": [
         "geometryRoom:room.region_start",
         "region:region.start",
@@ -776,7 +776,7 @@
           "kind": "gate_line"
         }
       ],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_gate_locked_1",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.room.room_region_gate_locked_1",
       "sourceRefs": [
         "geometryRoom:room.region_gate_locked_1",
         "region:region.gate_locked_1",
@@ -1155,7 +1155,7 @@
           "kind": "key_pickup"
         }
       ],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_key_gate_1",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.room.room_region_key_gate_1",
       "sourceRefs": [
         "geometryRoom:room.region_key_gate_1",
         "region:region.key_gate_1",
@@ -1246,7 +1246,7 @@
           "kind": "marker"
         }
       ],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.room.room_region_goal",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.room.room_region_goal",
       "sourceRefs": [
         "geometryRoom:room.region_goal",
         "region:region.goal",
@@ -1262,51 +1262,67 @@
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.start",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.connector.shortcut_return",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.segment_01.tile_01",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.7",
       "transform": "identity",
       "origin": {
-        "x": 72,
-        "y": 13
+        "x": 75,
+        "y": 16
       },
       "occupiedCells": [
         {
-          "x": 72,
-          "y": 13
+          "x": 75,
+          "y": 16
         },
         {
-          "x": 73,
-          "y": 13
+          "x": 76,
+          "y": 16
         },
         {
-          "x": 74,
-          "y": 13
+          "x": 77,
+          "y": 16
+        },
+        {
+          "x": 78,
+          "y": 16
+        },
+        {
+          "x": 79,
+          "y": 16
+        },
+        {
+          "x": 80,
+          "y": 16
+        },
+        {
+          "x": 81,
+          "y": 16
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.east",
-          "x": 75,
-          "y": 13,
-          "direction": "east",
+          "requirementExitId": "exit.segment_01.tile_01.in",
+          "catalogExitId": "exit.west",
+          "x": 74,
+          "y": 16,
+          "direction": "west",
           "width": 1
         },
         {
-          "requirementExitId": "exit.room",
-          "catalogExitId": "exit.west",
-          "x": 71,
-          "y": 13,
-          "direction": "west",
+          "requirementExitId": "exit.segment_01.tile_01.out",
+          "catalogExitId": "exit.east",
+          "x": 82,
+          "y": 16,
+          "direction": "east",
           "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.start",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.segment_01.tile_01",
       "sourceRefs": [
         "connector:connector.edge_gate_1_goal",
         "constraint:preserve_gated_connector:edge.gate_1.goal",
@@ -1327,55 +1343,191 @@
         "locked_threshold",
         "preview_line",
         "requires:item.gate_key_1",
+        "span_long",
+        "straight",
         "visible_before_reachable"
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.end",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.connector.shortcut_return",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_02",
+      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.segment_01.tile_02",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.1",
+      "transform": "identity",
+      "origin": {
+        "x": 88,
+        "y": 16
+      },
+      "occupiedCells": [
+        {
+          "x": 88,
+          "y": 16
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.segment_01.tile_02.in",
+          "catalogExitId": "exit.west",
+          "x": 87,
+          "y": 16,
+          "direction": "west",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_01.tile_02.out",
+          "catalogExitId": "exit.east",
+          "x": 89,
+          "y": 16,
+          "direction": "east",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.segment_01.tile_02",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_goal",
+        "constraint:preserve_gated_connector:edge.gate_1.goal",
+        "constraint:preserve_lock_preview:edge.gate_1.goal",
+        "edge:edge.gate_1.goal",
+        "geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
+        "graphEdge:gate.locked_1:goal",
+        "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
+        "room:room.region_gate_locked_1",
+        "room:room.region_goal"
+      ],
+      "tags": [
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "lock",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.gate_key_1",
+        "span_short",
+        "straight",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_01",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.turn_01",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "identity",
+      "origin": {
+        "x": 97,
+        "y": 15
+      },
+      "occupiedCells": [
+        {
+          "x": 97,
+          "y": 15
+        },
+        {
+          "x": 98,
+          "y": 15
+        },
+        {
+          "x": 98,
+          "y": 16
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.turn_01.in",
+          "catalogExitId": "exit.west",
+          "x": 96,
+          "y": 15,
+          "direction": "west",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.turn_01.out",
+          "catalogExitId": "exit.south",
+          "x": 98,
+          "y": 17,
+          "direction": "south",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.turn_01",
+      "sourceRefs": [
+        "connector:connector.edge_gate_1_goal",
+        "constraint:preserve_gated_connector:edge.gate_1.goal",
+        "constraint:preserve_lock_preview:edge.gate_1.goal",
+        "edge:edge.gate_1.goal",
+        "geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
+        "graphEdge:gate.locked_1:goal",
+        "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
+        "room:room.region_gate_locked_1",
+        "room:room.region_goal"
+      ],
+      "tags": [
+        "bend",
+        "bend_small",
+        "critical_path",
+        "explicit_corridor_piece",
+        "gated_connector",
+        "lock",
+        "locked",
+        "locked_threshold",
+        "preview_line",
+        "requires:item.gate_key_1",
+        "visible_before_reachable"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_02",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.turn_02",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
       "transform": "rotate180",
       "origin": {
-        "x": 92,
-        "y": 14
+        "x": 96,
+        "y": 17
       },
       "occupiedCells": [
         {
-          "x": 94,
-          "y": 14
+          "x": 97,
+          "y": 18
         },
         {
-          "x": 93,
-          "y": 14
+          "x": 96,
+          "y": 18
         },
         {
-          "x": 92,
-          "y": 14
+          "x": 96,
+          "y": 17
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.east",
-          "x": 91,
-          "y": 14,
-          "direction": "west",
+          "requirementExitId": "exit.turn_02.in",
+          "catalogExitId": "exit.south",
+          "x": 96,
+          "y": 16,
+          "direction": "north",
           "width": 1
         },
         {
-          "requirementExitId": "exit.room",
+          "requirementExitId": "exit.turn_02.out",
           "catalogExitId": "exit.west",
-          "x": 95,
-          "y": 14,
+          "x": 98,
+          "y": 18,
           "direction": "east",
           "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.end",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.turn_02",
       "sourceRefs": [
         "connector:connector.edge_gate_1_goal",
         "constraint:preserve_gated_connector:edge.gate_1.goal",
@@ -1388,6 +1540,8 @@
         "room:room.region_goal"
       ],
       "tags": [
+        "bend",
+        "bend_small",
         "critical_path",
         "explicit_corridor_piece",
         "gated_connector",
@@ -1400,51 +1554,43 @@
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.start",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.connector.shortcut_return",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_segment_01_tile_01",
+      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_key_gate_1_open.segment_01.tile_01",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.1",
       "transform": "rotate90",
       "origin": {
-        "x": 57,
-        "y": 28
+        "x": 60,
+        "y": 30
       },
       "occupiedCells": [
         {
-          "x": 57,
-          "y": 28
-        },
-        {
-          "x": 57,
-          "y": 29
-        },
-        {
-          "x": 57,
+          "x": 60,
           "y": 30
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
+          "requirementExitId": "exit.segment_01.tile_01.in",
+          "catalogExitId": "exit.west",
+          "x": 60,
+          "y": 29,
+          "direction": "north",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_01.tile_01.out",
           "catalogExitId": "exit.east",
-          "x": 57,
+          "x": 60,
           "y": 31,
           "direction": "south",
           "width": 1
-        },
-        {
-          "requirementExitId": "exit.room",
-          "catalogExitId": "exit.west",
-          "x": 57,
-          "y": 27,
-          "direction": "north",
-          "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.start",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_key_gate_1_open.segment_01.tile_01",
       "sourceRefs": [
         "connector:connector.edge_key_1_gate_1",
         "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
@@ -1461,55 +1607,124 @@
         "merge_rejoin_clarity",
         "open",
         "rejoin_corridor",
-        "return"
+        "return",
+        "span_short",
+        "straight"
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.end",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.connector.shortcut_return",
-      "transform": "rotate270",
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_01",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_key_gate_1_open.turn_01",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "rotate90",
       "origin": {
-        "x": 63,
-        "y": 31
+        "x": 60,
+        "y": 36
       },
       "occupiedCells": [
         {
-          "x": 63,
-          "y": 33
+          "x": 61,
+          "y": 36
         },
         {
-          "x": 63,
-          "y": 32
+          "x": 61,
+          "y": 37
         },
         {
-          "x": 63,
-          "y": 31
+          "x": 60,
+          "y": 37
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.east",
-          "x": 63,
-          "y": 30,
+          "requirementExitId": "exit.turn_01.in",
+          "catalogExitId": "exit.west",
+          "x": 61,
+          "y": 35,
           "direction": "north",
           "width": 1
         },
         {
-          "requirementExitId": "exit.room",
+          "requirementExitId": "exit.turn_01.out",
+          "catalogExitId": "exit.south",
+          "x": 59,
+          "y": 37,
+          "direction": "west",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_key_gate_1_open.turn_01",
+      "sourceRefs": [
+        "connector:connector.edge_key_1_gate_1",
+        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
+        "edge:edge.key_1.gate_1",
+        "geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open",
+        "graphEdge:key.gate_1:gate.locked_1",
+        "physicalSection:section.region_gate_locked_1.region_key_gate_1.open",
+        "room:room.region_gate_locked_1",
+        "room:room.region_key_gate_1"
+      ],
+      "tags": [
+        "bend",
+        "bend_small",
+        "explicit_corridor_piece",
+        "key_branch",
+        "merge_rejoin_clarity",
+        "open",
+        "rejoin_corridor",
+        "return"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_02",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_key_gate_1_open.turn_02",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "rotate270",
+      "origin": {
+        "x": 59,
+        "y": 35
+      },
+      "occupiedCells": [
+        {
+          "x": 59,
+          "y": 36
+        },
+        {
+          "x": 59,
+          "y": 35
+        },
+        {
+          "x": 60,
+          "y": 35
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.turn_02.in",
+          "catalogExitId": "exit.south",
+          "x": 61,
+          "y": 35,
+          "direction": "east",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.turn_02.out",
           "catalogExitId": "exit.west",
-          "x": 63,
-          "y": 34,
+          "x": 59,
+          "y": 37,
           "direction": "south",
           "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.end",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_key_gate_1_open.turn_02",
       "sourceRefs": [
         "connector:connector.edge_key_1_gate_1",
         "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
@@ -1521,6 +1736,8 @@
         "room:room.region_key_gate_1"
       ],
       "tags": [
+        "bend",
+        "bend_small",
         "explicit_corridor_piece",
         "key_branch",
         "merge_rejoin_clarity",
@@ -1530,51 +1747,67 @@
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_start_open.start",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.corridor.straight.3",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_start_open.segment_01.tile_01",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.7",
       "transform": "identity",
       "origin": {
-        "x": 48,
-        "y": 13
+        "x": 46,
+        "y": 16
       },
       "occupiedCells": [
         {
+          "x": 46,
+          "y": 16
+        },
+        {
+          "x": 47,
+          "y": 16
+        },
+        {
           "x": 48,
-          "y": 13
+          "y": 16
         },
         {
           "x": 49,
-          "y": 13
+          "y": 16
         },
         {
           "x": 50,
-          "y": 13
+          "y": 16
+        },
+        {
+          "x": 51,
+          "y": 16
+        },
+        {
+          "x": 52,
+          "y": 16
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.west",
-          "x": 47,
-          "y": 13,
-          "direction": "west",
+          "requirementExitId": "exit.segment_01.tile_01.in",
+          "catalogExitId": "exit.east",
+          "x": 53,
+          "y": 16,
+          "direction": "east",
           "width": 1
         },
         {
-          "requirementExitId": "exit.room",
-          "catalogExitId": "exit.east",
-          "x": 51,
-          "y": 13,
-          "direction": "east",
+          "requirementExitId": "exit.segment_01.tile_01.out",
+          "catalogExitId": "exit.west",
+          "x": 45,
+          "y": 16,
+          "direction": "west",
           "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_start_open.start",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_start_open.segment_01.tile_01",
       "sourceRefs": [
         "connector:connector.edge_start_gate_1",
         "edge:edge.start.gate_1",
@@ -1589,378 +1822,114 @@
         "corridor",
         "critical_path",
         "explicit_corridor_piece",
-        "open"
+        "open",
+        "span_long",
+        "straight"
       ]
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "pieceId": "piece.connector.corridor_section_region_gate_locked_1_region_start_open.end",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.corridor.straight.3",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_02",
+      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_start_open.segment_01.tile_02",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.1",
       "transform": "identity",
+      "origin": {
+        "x": 39,
+        "y": 16
+      },
+      "occupiedCells": [
+        {
+          "x": 39,
+          "y": 16
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.segment_01.tile_02.in",
+          "catalogExitId": "exit.east",
+          "x": 40,
+          "y": 16,
+          "direction": "east",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_01.tile_02.out",
+          "catalogExitId": "exit.west",
+          "x": 38,
+          "y": 16,
+          "direction": "west",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_start_open.segment_01.tile_02",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.section_region_gate_locked_1_region_start_open",
+        "graphEdge:start:gate.locked_1",
+        "physicalSection:section.region_gate_locked_1.region_start.open",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "approach",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open",
+        "span_short",
+        "straight"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_01",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_start_open.turn_01",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "rotate180",
       "origin": {
         "x": 28,
-        "y": 13
+        "y": 16
       },
       "occupiedCells": [
-        {
-          "x": 28,
-          "y": 13
-        },
         {
           "x": 29,
-          "y": 13
+          "y": 17
         },
         {
-          "x": 30,
-          "y": 13
+          "x": 28,
+          "y": 17
+        },
+        {
+          "x": 28,
+          "y": 16
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.east",
-          "x": 31,
-          "y": 13,
-          "direction": "east",
-          "width": 1
-        },
-        {
-          "requirementExitId": "exit.room",
-          "catalogExitId": "exit.west",
-          "x": 27,
-          "y": 13,
-          "direction": "west",
-          "width": 1
-        }
-      ],
-      "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_gate_locked_1_region_start_open.end",
-      "sourceRefs": [
-        "connector:connector.edge_start_gate_1",
-        "edge:edge.start.gate_1",
-        "geometryCorridor:corridor.section_region_gate_locked_1_region_start_open",
-        "graphEdge:start:gate.locked_1",
-        "physicalSection:section.region_gate_locked_1.region_start.open",
-        "room:room.region_gate_locked_1",
-        "room:room.region_start"
-      ],
-      "tags": [
-        "approach",
-        "corridor",
-        "critical_path",
-        "explicit_corridor_piece",
-        "open"
-      ]
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "pieceId": "piece.connector.corridor_section_region_key_gate_1_region_start_open.start",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.corridor.straight.3",
-      "transform": "identity",
-      "origin": {
-        "x": 48,
-        "y": 37
-      },
-      "occupiedCells": [
-        {
-          "x": 48,
-          "y": 37
-        },
-        {
-          "x": 49,
-          "y": 37
-        },
-        {
-          "x": 50,
-          "y": 37
-        }
-      ],
-      "reservedCells": [],
-      "exitMap": [
-        {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.west",
-          "x": 47,
-          "y": 37,
-          "direction": "west",
-          "width": 1
-        },
-        {
-          "requirementExitId": "exit.room",
-          "catalogExitId": "exit.east",
-          "x": 51,
-          "y": 37,
-          "direction": "east",
-          "width": 1
-        }
-      ],
-      "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_key_gate_1_region_start_open.start",
-      "sourceRefs": [
-        "connector:connector.edge_start_key_1",
-        "edge:edge.start.key_1",
-        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
-        "graphEdge:start:key.gate_1",
-        "physicalSection:section.region_key_gate_1.region_start.open",
-        "room:room.region_key_gate_1",
-        "room:room.region_start"
-      ],
-      "tags": [
-        "branch",
-        "corridor",
-        "explicit_corridor_piece",
-        "key_branch",
-        "open"
-      ]
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "pieceId": "piece.connector.corridor_section_region_key_gate_1_region_start_open.end",
-      "requirementKind": "connector",
-      "role": "corridor_connector",
-      "shapeId": "shape.corridor.straight.3",
-      "transform": "identity",
-      "origin": {
-        "x": 31,
-        "y": 20
-      },
-      "occupiedCells": [
-        {
-          "x": 31,
-          "y": 20
-        },
-        {
-          "x": 32,
-          "y": 20
-        },
-        {
-          "x": 33,
-          "y": 20
-        }
-      ],
-      "reservedCells": [],
-      "exitMap": [
-        {
-          "requirementExitId": "exit.corridor",
-          "catalogExitId": "exit.east",
-          "x": 34,
-          "y": 20,
-          "direction": "east",
-          "width": 1
-        },
-        {
-          "requirementExitId": "exit.room",
+          "requirementExitId": "exit.turn_01.in",
           "catalogExitId": "exit.west",
           "x": 30,
-          "y": 20,
-          "direction": "west",
-          "width": 1
-        }
-      ],
-      "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.connector.corridor_section_region_key_gate_1_region_start_open.end",
-      "sourceRefs": [
-        "connector:connector.edge_start_key_1",
-        "edge:edge.start.key_1",
-        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
-        "graphEdge:start:key.gate_1",
-        "physicalSection:section.region_key_gate_1.region_start.open",
-        "room:room.region_key_gate_1",
-        "room:room.region_start"
-      ],
-      "tags": [
-        "branch",
-        "corridor",
-        "explicit_corridor_piece",
-        "key_branch",
-        "open"
-      ]
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.bridge_1",
-      "requirementKind": "corridor",
-      "role": "corridor_segment",
-      "shapeId": "shape.connector.shortcut_return",
-      "transform": "identity",
-      "origin": {
-        "x": 92,
-        "y": 20
-      },
-      "occupiedCells": [
-        {
-          "x": 92,
-          "y": 20
-        },
-        {
-          "x": 93,
-          "y": 20
-        },
-        {
-          "x": 94,
-          "y": 20
-        }
-      ],
-      "reservedCells": [],
-      "exitMap": [
-        {
-          "requirementExitId": "exit.bridge_1.in",
-          "catalogExitId": "exit.west",
-          "x": 91,
-          "y": 20,
-          "direction": "west",
-          "width": 1
-        },
-        {
-          "requirementExitId": "exit.bridge_1.out",
-          "catalogExitId": "exit.east",
-          "x": 95,
-          "y": 20,
+          "y": 17,
           "direction": "east",
           "width": 1
-        }
-      ],
-      "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.bridge_1",
-      "sourceRefs": [
-        "connector:connector.edge_gate_1_goal",
-        "constraint:preserve_gated_connector:edge.gate_1.goal",
-        "constraint:preserve_lock_preview:edge.gate_1.goal",
-        "edge:edge.gate_1.goal",
-        "geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-        "graphEdge:gate.locked_1:goal",
-        "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
-        "room:room.region_gate_locked_1",
-        "room:room.region_goal"
-      ],
-      "tags": [
-        "critical_path",
-        "explicit_corridor_piece",
-        "gated_connector",
-        "lock",
-        "locked",
-        "locked_threshold",
-        "preview_line",
-        "requires:item.gate_key_1",
-        "visible_before_reachable"
-      ]
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_key_gate_1_open.bridge_1",
-      "requirementKind": "corridor",
-      "role": "corridor_segment",
-      "shapeId": "shape.connector.shortcut_return",
-      "transform": "rotate270",
-      "origin": {
-        "x": 67,
-        "y": 31
-      },
-      "occupiedCells": [
-        {
-          "x": 67,
-          "y": 33
         },
         {
-          "x": 67,
-          "y": 32
-        },
-        {
-          "x": 67,
-          "y": 31
-        }
-      ],
-      "reservedCells": [],
-      "exitMap": [
-        {
-          "requirementExitId": "exit.bridge_1.in",
-          "catalogExitId": "exit.east",
-          "x": 67,
-          "y": 30,
+          "requirementExitId": "exit.turn_01.out",
+          "catalogExitId": "exit.south",
+          "x": 28,
+          "y": 15,
           "direction": "north",
           "width": 1
-        },
-        {
-          "requirementExitId": "exit.bridge_1.out",
-          "catalogExitId": "exit.west",
-          "x": 67,
-          "y": 34,
-          "direction": "south",
-          "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_key_gate_1_open.bridge_1",
-      "sourceRefs": [
-        "connector:connector.edge_key_1_gate_1",
-        "constraint:preserve_rejoin_clarity:edge.key_1.gate_1",
-        "edge:edge.key_1.gate_1",
-        "geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open",
-        "graphEdge:key.gate_1:gate.locked_1",
-        "physicalSection:section.region_gate_locked_1.region_key_gate_1.open",
-        "room:room.region_gate_locked_1",
-        "room:room.region_key_gate_1"
-      ],
-      "tags": [
-        "explicit_corridor_piece",
-        "key_branch",
-        "merge_rejoin_clarity",
-        "open",
-        "rejoin_corridor",
-        "return"
-      ]
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "pieceId": "piece.corridor.corridor_section_region_gate_locked_1_region_start_open.bridge_1",
-      "requirementKind": "corridor",
-      "role": "corridor_segment",
-      "shapeId": "shape.corridor.straight.3",
-      "transform": "identity",
-      "origin": {
-        "x": 48,
-        "y": 20
-      },
-      "occupiedCells": [
-        {
-          "x": 48,
-          "y": 20
-        },
-        {
-          "x": 49,
-          "y": 20
-        },
-        {
-          "x": 50,
-          "y": 20
-        }
-      ],
-      "reservedCells": [],
-      "exitMap": [
-        {
-          "requirementExitId": "exit.bridge_1.in",
-          "catalogExitId": "exit.east",
-          "x": 51,
-          "y": 20,
-          "direction": "east",
-          "width": 1
-        },
-        {
-          "requirementExitId": "exit.bridge_1.out",
-          "catalogExitId": "exit.west",
-          "x": 47,
-          "y": 20,
-          "direction": "west",
-          "width": 1
-        }
-      ],
-      "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_gate_locked_1_region_start_open.bridge_1",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_start_open.turn_01",
       "sourceRefs": [
         "connector:connector.edge_start_gate_1",
         "edge:edge.start.gate_1",
@@ -1972,6 +1941,8 @@
       ],
       "tags": [
         "approach",
+        "bend",
+        "bend_small",
         "corridor",
         "critical_path",
         "explicit_corridor_piece",
@@ -1979,51 +1950,132 @@
       ]
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
-      "pieceId": "piece.corridor.corridor_section_region_key_gate_1_region_start_open.bridge_1",
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_02",
+      "pieceId": "piece.bend.corridor_section_region_gate_locked_1_region_start_open.turn_02",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "identity",
+      "origin": {
+        "x": 29,
+        "y": 15
+      },
+      "occupiedCells": [
+        {
+          "x": 29,
+          "y": 15
+        },
+        {
+          "x": 30,
+          "y": 15
+        },
+        {
+          "x": 30,
+          "y": 16
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.turn_02.in",
+          "catalogExitId": "exit.south",
+          "x": 30,
+          "y": 17,
+          "direction": "south",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.turn_02.out",
+          "catalogExitId": "exit.west",
+          "x": 28,
+          "y": 15,
+          "direction": "west",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_gate_locked_1_region_start_open.turn_02",
+      "sourceRefs": [
+        "connector:connector.edge_start_gate_1",
+        "edge:edge.start.gate_1",
+        "geometryCorridor:corridor.section_region_gate_locked_1_region_start_open",
+        "graphEdge:start:gate.locked_1",
+        "physicalSection:section.region_gate_locked_1.region_start.open",
+        "room:room.region_gate_locked_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "approach",
+        "bend",
+        "bend_small",
+        "corridor",
+        "critical_path",
+        "explicit_corridor_piece",
+        "open"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "pieceId": "piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_01.tile_01",
       "requirementKind": "corridor",
       "role": "corridor_segment",
-      "shapeId": "shape.corridor.straight.3",
+      "shapeId": "shape.corridor.straight.7",
       "transform": "identity",
       "origin": {
         "x": 45,
-        "y": 33
+        "y": 40
       },
       "occupiedCells": [
         {
           "x": 45,
-          "y": 33
+          "y": 40
         },
         {
           "x": 46,
-          "y": 33
+          "y": 40
         },
         {
           "x": 47,
-          "y": 33
+          "y": 40
+        },
+        {
+          "x": 48,
+          "y": 40
+        },
+        {
+          "x": 49,
+          "y": 40
+        },
+        {
+          "x": 50,
+          "y": 40
+        },
+        {
+          "x": 51,
+          "y": 40
         }
       ],
       "reservedCells": [],
       "exitMap": [
         {
-          "requirementExitId": "exit.bridge_1.in",
+          "requirementExitId": "exit.segment_01.tile_01.in",
           "catalogExitId": "exit.east",
-          "x": 48,
-          "y": 33,
+          "x": 52,
+          "y": 40,
           "direction": "east",
           "width": 1
         },
         {
-          "requirementExitId": "exit.bridge_1.out",
+          "requirementExitId": "exit.segment_01.tile_01.out",
           "catalogExitId": "exit.west",
           "x": 44,
-          "y": 33,
+          "y": 40,
           "direction": "west",
           "width": 1
         }
       ],
       "featurePlacements": [],
-      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.bridge_1",
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_01.tile_01",
       "sourceRefs": [
         "connector:connector.edge_start_key_1",
         "edge:edge.start.key_1",
@@ -2034,6 +2086,333 @@
         "room:room.region_start"
       ],
       "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open",
+        "span_long",
+        "straight"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_02",
+      "pieceId": "piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_01.tile_02",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.1",
+      "transform": "identity",
+      "origin": {
+        "x": 39,
+        "y": 40
+      },
+      "occupiedCells": [
+        {
+          "x": 39,
+          "y": 40
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.segment_01.tile_02.in",
+          "catalogExitId": "exit.east",
+          "x": 40,
+          "y": 40,
+          "direction": "east",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_01.tile_02.out",
+          "catalogExitId": "exit.west",
+          "x": 38,
+          "y": 40,
+          "direction": "west",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_01.tile_02",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
+        "graphEdge:start:key.gate_1",
+        "physicalSection:section.region_key_gate_1.region_start.open",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open",
+        "span_short",
+        "straight"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "pieceId": "piece.bend.corridor_section_region_key_gate_1_region_start_open.turn_01",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.4x4",
+      "transform": "rotate180",
+      "origin": {
+        "x": 27,
+        "y": 39
+      },
+      "occupiedCells": [
+        {
+          "x": 30,
+          "y": 42
+        },
+        {
+          "x": 29,
+          "y": 42
+        },
+        {
+          "x": 28,
+          "y": 42
+        },
+        {
+          "x": 27,
+          "y": 42
+        },
+        {
+          "x": 27,
+          "y": 41
+        },
+        {
+          "x": 27,
+          "y": 40
+        },
+        {
+          "x": 27,
+          "y": 39
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.turn_01.in",
+          "catalogExitId": "exit.west",
+          "x": 31,
+          "y": 42,
+          "direction": "east",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.turn_01.out",
+          "catalogExitId": "exit.south",
+          "x": 27,
+          "y": 38,
+          "direction": "north",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_key_gate_1_region_start_open.turn_01",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
+        "graphEdge:start:key.gate_1",
+        "physicalSection:section.region_key_gate_1.region_start.open",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "bend",
+        "bend_large",
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_01",
+      "pieceId": "piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_02.tile_01",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.3",
+      "transform": "rotate90",
+      "origin": {
+        "x": 29,
+        "y": 31
+      },
+      "occupiedCells": [
+        {
+          "x": 29,
+          "y": 31
+        },
+        {
+          "x": 29,
+          "y": 32
+        },
+        {
+          "x": 29,
+          "y": 33
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.segment_02.tile_01.in",
+          "catalogExitId": "exit.east",
+          "x": 29,
+          "y": 34,
+          "direction": "south",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_02.tile_01.out",
+          "catalogExitId": "exit.west",
+          "x": 29,
+          "y": 30,
+          "direction": "north",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_02.tile_01",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
+        "graphEdge:start:key.gate_1",
+        "physicalSection:section.region_key_gate_1.region_start.open",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open",
+        "span_medium",
+        "straight"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_02",
+      "pieceId": "piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_02.tile_02",
+      "requirementKind": "corridor",
+      "role": "corridor_segment",
+      "shapeId": "shape.corridor.straight.1",
+      "transform": "rotate90",
+      "origin": {
+        "x": 27,
+        "y": 23
+      },
+      "occupiedCells": [
+        {
+          "x": 27,
+          "y": 23
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.segment_02.tile_02.in",
+          "catalogExitId": "exit.east",
+          "x": 27,
+          "y": 24,
+          "direction": "south",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.segment_02.tile_02.out",
+          "catalogExitId": "exit.west",
+          "x": 27,
+          "y": 22,
+          "direction": "north",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.corridor.corridor_section_region_key_gate_1_region_start_open.segment_02.tile_02",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
+        "graphEdge:start:key.gate_1",
+        "physicalSection:section.region_key_gate_1.region_start.open",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "branch",
+        "corridor",
+        "explicit_corridor_piece",
+        "key_branch",
+        "open",
+        "span_short",
+        "straight"
+      ]
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_02",
+      "pieceId": "piece.bend.corridor_section_region_key_gate_1_region_start_open.turn_02",
+      "requirementKind": "bend",
+      "role": "corridor_bend",
+      "shapeId": "shape.corridor.bend.2x2",
+      "transform": "identity",
+      "origin": {
+        "x": 25,
+        "y": 19
+      },
+      "occupiedCells": [
+        {
+          "x": 25,
+          "y": 19
+        },
+        {
+          "x": 26,
+          "y": 19
+        },
+        {
+          "x": 26,
+          "y": 20
+        }
+      ],
+      "reservedCells": [],
+      "exitMap": [
+        {
+          "requirementExitId": "exit.turn_02.in",
+          "catalogExitId": "exit.south",
+          "x": 26,
+          "y": 21,
+          "direction": "south",
+          "width": 1
+        },
+        {
+          "requirementExitId": "exit.turn_02.out",
+          "catalogExitId": "exit.west",
+          "x": 24,
+          "y": 19,
+          "direction": "west",
+          "width": 1
+        }
+      ],
+      "featurePlacements": [],
+      "sourceRequirementRef": "piecePlan:piece_plan.geometry.candidate.first_slice.5801.14310.catalog;requirement:piece.bend.corridor_section_region_key_gate_1_region_start_open.turn_02",
+      "sourceRefs": [
+        "connector:connector.edge_start_key_1",
+        "edge:edge.start.key_1",
+        "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
+        "graphEdge:start:key.gate_1",
+        "physicalSection:section.region_key_gate_1.region_start.open",
+        "room:room.region_key_gate_1",
+        "room:room.region_start"
+      ],
+      "tags": [
+        "bend",
+        "bend_small",
         "branch",
         "corridor",
         "explicit_corridor_piece",
@@ -2044,151 +2423,13 @@
   ],
   "gluedExits": [
     {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.1",
+      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.catalog",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
       "fromExit": "exit.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.east",
       "fromCell": {
         "x": 69,
         "y": 16
-      },
-      "fromDirection": "east",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "toExit": "exit.room",
-      "toCell": {
-        "x": 71,
-        "y": 13
-      },
-      "toDirection": "west",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-      "sourceEdge": "edge.gate_1.goal",
-      "sourceEdges": [
-        "edge.gate_1.goal"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_gate_1_goal",
-          "edgeId": "edge.gate_1.goal",
-          "fromRegion": "region.gate_locked_1",
-          "toRegion": "region.goal",
-          "traversal": "locked",
-          "requiredItem": "item.gate_key_1"
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal;geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal;connector:connector.edge_gate_1_goal;edge:edge.gate_1.goal",
-      "traversal": "locked",
-      "requiredItem": "item.gate_key_1",
-      "tags": [
-        "gated_connector",
-        "locked",
-        "locked_threshold",
-        "preview_line",
-        "visible_before_reachable"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.2",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "fromExit": "exit.corridor",
-      "fromCell": {
-        "x": 75,
-        "y": 13
-      },
-      "fromDirection": "east",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "toExit": "exit.bridge_1.in",
-      "toCell": {
-        "x": 91,
-        "y": 20
-      },
-      "toDirection": "west",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-      "sourceEdge": "edge.gate_1.goal",
-      "sourceEdges": [
-        "edge.gate_1.goal"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_gate_1_goal",
-          "edgeId": "edge.gate_1.goal",
-          "fromRegion": "region.gate_locked_1",
-          "toRegion": "region.goal",
-          "traversal": "locked",
-          "requiredItem": "item.gate_key_1"
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal;geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal;connector:connector.edge_gate_1_goal;edge:edge.gate_1.goal",
-      "traversal": "locked",
-      "requiredItem": "item.gate_key_1",
-      "tags": [
-        "gated_connector",
-        "locked",
-        "locked_threshold",
-        "preview_line",
-        "visible_before_reachable"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.3",
-      "fromInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "fromExit": "exit.bridge_1.out",
-      "fromCell": {
-        "x": 95,
-        "y": 20
-      },
-      "fromDirection": "east",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "toExit": "exit.corridor",
-      "toCell": {
-        "x": 91,
-        "y": 14
-      },
-      "toDirection": "west",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-      "sourceEdge": "edge.gate_1.goal",
-      "sourceEdges": [
-        "edge.gate_1.goal"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_gate_1_goal",
-          "edgeId": "edge.gate_1.goal",
-          "fromRegion": "region.gate_locked_1",
-          "toRegion": "region.goal",
-          "traversal": "locked",
-          "requiredItem": "item.gate_key_1"
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal;geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal;connector:connector.edge_gate_1_goal;edge:edge.gate_1.goal",
-      "traversal": "locked",
-      "requiredItem": "item.gate_key_1",
-      "tags": [
-        "gated_connector",
-        "locked",
-        "locked_threshold",
-        "preview_line",
-        "visible_before_reachable"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.4",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "fromExit": "exit.room",
-      "fromCell": {
-        "x": 95,
-        "y": 14
       },
       "fromDirection": "east",
       "fromWidth": 1,
@@ -2225,148 +2466,34 @@
         "locked_threshold",
         "preview_line",
         "visible_before_reachable"
+      ],
+      "routePoints": [
+        {
+          "x": 480,
+          "y": 136
+        },
+        {
+          "x": 600,
+          "y": 136
+        },
+        {
+          "x": 600,
+          "y": 144
+        },
+        {
+          "x": 624,
+          "y": 144
+        }
       ]
     },
     {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.1",
+      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.catalog",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
       "fromExit": "exit.corridor_section_region_gate_locked_1_region_key_gate_1_open.south",
       "fromCell": {
         "x": 60,
         "y": 25
-      },
-      "fromDirection": "south",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "toExit": "exit.room",
-      "toCell": {
-        "x": 57,
-        "y": 27
-      },
-      "toDirection": "north",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_key_gate_1.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_key_gate_1_open",
-      "sourceEdge": "edge.key_1.gate_1",
-      "sourceEdges": [
-        "edge.key_1.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_key_1_gate_1",
-          "edgeId": "edge.key_1.gate_1",
-          "fromRegion": "region.key_gate_1",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_key_gate_1.open;geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "merge_rejoin_clarity",
-        "open",
-        "rejoin_corridor"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.2",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "fromExit": "exit.corridor",
-      "fromCell": {
-        "x": 57,
-        "y": 31
-      },
-      "fromDirection": "south",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "toExit": "exit.bridge_1.in",
-      "toCell": {
-        "x": 67,
-        "y": 30
-      },
-      "toDirection": "north",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_key_gate_1.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_key_gate_1_open",
-      "sourceEdge": "edge.key_1.gate_1",
-      "sourceEdges": [
-        "edge.key_1.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_key_1_gate_1",
-          "edgeId": "edge.key_1.gate_1",
-          "fromRegion": "region.key_gate_1",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_key_gate_1.open;geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "merge_rejoin_clarity",
-        "open",
-        "rejoin_corridor"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.3",
-      "fromInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "fromExit": "exit.bridge_1.out",
-      "fromCell": {
-        "x": 67,
-        "y": 34
-      },
-      "fromDirection": "south",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "toExit": "exit.corridor",
-      "toCell": {
-        "x": 63,
-        "y": 30
-      },
-      "toDirection": "north",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_key_gate_1.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_key_gate_1_open",
-      "sourceEdge": "edge.key_1.gate_1",
-      "sourceEdges": [
-        "edge.key_1.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_key_1_gate_1",
-          "edgeId": "edge.key_1.gate_1",
-          "fromRegion": "region.key_gate_1",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_key_gate_1.open;geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open;connector:connector.edge_key_1_gate_1;edge:edge.key_1.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "merge_rejoin_clarity",
-        "open",
-        "rejoin_corridor"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.4",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "fromExit": "exit.room",
-      "fromCell": {
-        "x": 63,
-        "y": 34
       },
       "fromDirection": "south",
       "fromWidth": 1,
@@ -2401,145 +2528,34 @@
         "merge_rejoin_clarity",
         "open",
         "rejoin_corridor"
+      ],
+      "routePoints": [
+        {
+          "x": 424,
+          "y": 176
+        },
+        {
+          "x": 424,
+          "y": 224
+        },
+        {
+          "x": 416,
+          "y": 224
+        },
+        {
+          "x": 416,
+          "y": 240
+        }
       ]
     },
     {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.1",
+      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.catalog",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
       "fromExit": "exit.corridor_section_region_gate_locked_1_region_start_open.west",
       "fromCell": {
         "x": 59,
         "y": 16
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "toExit": "exit.room",
-      "toCell": {
-        "x": 51,
-        "y": 13
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_start_open",
-      "sourceEdge": "edge.start.gate_1",
-      "sourceEdges": [
-        "edge.start.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_gate_1",
-          "edgeId": "edge.start.gate_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_start.open;geometryCorridor:corridor.section_region_gate_locked_1_region_start_open;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.2",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "fromExit": "exit.corridor",
-      "fromCell": {
-        "x": 47,
-        "y": 13
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "toExit": "exit.bridge_1.in",
-      "toCell": {
-        "x": 51,
-        "y": 20
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_start_open",
-      "sourceEdge": "edge.start.gate_1",
-      "sourceEdges": [
-        "edge.start.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_gate_1",
-          "edgeId": "edge.start.gate_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_start.open;geometryCorridor:corridor.section_region_gate_locked_1_region_start_open;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.3",
-      "fromInstance": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "fromExit": "exit.bridge_1.out",
-      "fromCell": {
-        "x": 47,
-        "y": 20
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "toExit": "exit.corridor",
-      "toCell": {
-        "x": 31,
-        "y": 13
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_gate_locked_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_gate_locked_1_region_start_open",
-      "sourceEdge": "edge.start.gate_1",
-      "sourceEdges": [
-        "edge.start.gate_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_gate_1",
-          "edgeId": "edge.start.gate_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.gate_locked_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_gate_locked_1.region_start.open;geometryCorridor:corridor.section_region_gate_locked_1_region_start_open;connector:connector.edge_start_gate_1;edge:edge.start.gate_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.4",
-      "fromInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "fromExit": "exit.room",
-      "fromCell": {
-        "x": 27,
-        "y": 13
       },
       "fromDirection": "west",
       "fromWidth": 1,
@@ -2573,145 +2589,34 @@
       "tags": [
         "corridor",
         "open"
+      ],
+      "routePoints": [
+        {
+          "x": 368,
+          "y": 136
+        },
+        {
+          "x": 240,
+          "y": 136
+        },
+        {
+          "x": 240,
+          "y": 128
+        },
+        {
+          "x": 224,
+          "y": 128
+        }
       ]
     },
     {
-      "id": "glue.piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.1",
+      "id": "glue.piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.catalog",
       "fromInstance": "instance.piece_room_room_region_key_gate_1",
       "fromExit": "exit.corridor_section_region_key_gate_1_region_start_open.west",
       "fromCell": {
         "x": 59,
         "y": 40
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "toExit": "exit.room",
-      "toCell": {
-        "x": 51,
-        "y": 37
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_key_gate_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_key_gate_1_region_start_open",
-      "sourceEdge": "edge.start.key_1",
-      "sourceEdges": [
-        "edge.start.key_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_key_1",
-          "edgeId": "edge.start.key_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.key_gate_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_key_gate_1.region_start.open;geometryCorridor:corridor.section_region_key_gate_1_region_start_open;connector:connector.edge_start_key_1;edge:edge.start.key_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.2",
-      "fromInstance": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "fromExit": "exit.corridor",
-      "fromCell": {
-        "x": 47,
-        "y": 37
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
-      "toExit": "exit.bridge_1.in",
-      "toCell": {
-        "x": 48,
-        "y": 33
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_key_gate_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_key_gate_1_region_start_open",
-      "sourceEdge": "edge.start.key_1",
-      "sourceEdges": [
-        "edge.start.key_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_key_1",
-          "edgeId": "edge.start.key_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.key_gate_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_key_gate_1.region_start.open;geometryCorridor:corridor.section_region_key_gate_1_region_start_open;connector:connector.edge_start_key_1;edge:edge.start.key_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.3",
-      "fromInstance": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
-      "fromExit": "exit.bridge_1.out",
-      "fromCell": {
-        "x": 44,
-        "y": 33
-      },
-      "fromDirection": "west",
-      "fromWidth": 1,
-      "toInstance": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "toExit": "exit.corridor",
-      "toCell": {
-        "x": 34,
-        "y": 20
-      },
-      "toDirection": "east",
-      "toWidth": 1,
-      "sourceSection": "section.region_key_gate_1.region_start.open",
-      "sourceCorridor": "corridor.section_region_key_gate_1_region_start_open",
-      "sourceEdge": "edge.start.key_1",
-      "sourceEdges": [
-        "edge.start.key_1"
-      ],
-      "traversalRefs": [
-        {
-          "connectorId": "connector.edge_start_key_1",
-          "edgeId": "edge.start.key_1",
-          "fromRegion": "region.start",
-          "toRegion": "region.key_gate_1",
-          "traversal": "open",
-          "requiredItem": null
-        }
-      ],
-      "sourceRef": "physicalSection:section.region_key_gate_1.region_start.open;geometryCorridor:corridor.section_region_key_gate_1_region_start_open;connector:connector.edge_start_key_1;edge:edge.start.key_1",
-      "traversal": "open",
-      "requiredItem": null,
-      "tags": [
-        "corridor",
-        "open"
-      ]
-    },
-    {
-      "id": "glue.piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.4",
-      "fromInstance": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "fromExit": "exit.room",
-      "fromCell": {
-        "x": 30,
-        "y": 20
       },
       "fromDirection": "west",
       "fromWidth": 1,
@@ -2745,6 +2650,24 @@
       "tags": [
         "corridor",
         "open"
+      ],
+      "routePoints": [
+        {
+          "x": 368,
+          "y": 280
+        },
+        {
+          "x": 240,
+          "y": 280
+        },
+        {
+          "x": 240,
+          "y": 176
+        },
+        {
+          "x": 224,
+          "y": 176
+        }
       ]
     }
   ],
@@ -2767,11 +2690,11 @@
         }
       ],
       "sourceCorridor": "corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.1",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.catalog",
       "fromPiece": "piece.room.room_region_gate_locked_1",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
-      "toPiece": "piece.connector.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.start",
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
+      "toPiece": "piece.room.room_region_goal",
+      "toInstance": "instance.piece_room_room_region_goal",
       "cells": [
         {
           "x": 69,
@@ -2786,8 +2709,8 @@
         "physicalSection:section.region_gate_locked_1.region_goal.connector_edge_gate_1_goal",
         "edges:edge.gate_1.goal",
         "geometryCorridor:corridor.section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal",
-        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.1",
-        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1"
+        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal.catalog",
+        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog"
       ]
     },
     {
@@ -2808,11 +2731,11 @@
         }
       ],
       "sourceCorridor": "corridor.section_region_gate_locked_1_region_key_gate_1_open",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.1",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.catalog",
       "fromPiece": "piece.room.room_region_gate_locked_1",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
-      "toPiece": "piece.connector.corridor_section_region_gate_locked_1_region_key_gate_1_open.start",
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
+      "toPiece": "piece.room.room_region_key_gate_1",
+      "toInstance": "instance.piece_room_room_region_key_gate_1",
       "cells": [
         {
           "x": 60,
@@ -2827,8 +2750,8 @@
         "physicalSection:section.region_gate_locked_1.region_key_gate_1.open",
         "edges:edge.key_1.gate_1",
         "geometryCorridor:corridor.section_region_gate_locked_1_region_key_gate_1_open",
-        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.1",
-        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1"
+        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_key_gate_1_open.catalog",
+        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog"
       ]
     },
     {
@@ -2849,11 +2772,11 @@
         }
       ],
       "sourceCorridor": "corridor.section_region_gate_locked_1_region_start_open",
-      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.1",
+      "linkId": "piece_link.corridor_section_region_gate_locked_1_region_start_open.catalog",
       "fromPiece": "piece.room.room_region_gate_locked_1",
       "fromInstance": "instance.piece_room_room_region_gate_locked_1",
-      "toPiece": "piece.connector.corridor_section_region_gate_locked_1_region_start_open.start",
-      "toInstance": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
+      "toPiece": "piece.room.room_region_start",
+      "toInstance": "instance.piece_room_room_region_start",
       "cells": [
         {
           "x": 59,
@@ -2868,8 +2791,8 @@
         "physicalSection:section.region_gate_locked_1.region_start.open",
         "edges:edge.start.gate_1",
         "geometryCorridor:corridor.section_region_gate_locked_1_region_start_open",
-        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_start_open.1",
-        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_1"
+        "pieceLink:piece_link.corridor_section_region_gate_locked_1_region_start_open.catalog",
+        "gluedExit:glue.piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog"
       ]
     },
     {
@@ -2890,11 +2813,11 @@
         }
       ],
       "sourceCorridor": "corridor.section_region_key_gate_1_region_start_open",
-      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.1",
+      "linkId": "piece_link.corridor_section_region_key_gate_1_region_start_open.catalog",
       "fromPiece": "piece.room.room_region_key_gate_1",
       "fromInstance": "instance.piece_room_room_region_key_gate_1",
-      "toPiece": "piece.connector.corridor_section_region_key_gate_1_region_start_open.start",
-      "toInstance": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
+      "toPiece": "piece.room.room_region_start",
+      "toInstance": "instance.piece_room_room_region_start",
       "cells": [
         {
           "x": 59,
@@ -2909,8 +2832,8 @@
         "physicalSection:section.region_key_gate_1.region_start.open",
         "edges:edge.start.key_1",
         "geometryCorridor:corridor.section_region_key_gate_1_region_start_open",
-        "pieceLink:piece_link.corridor_section_region_key_gate_1_region_start_open.1",
-        "gluedExit:glue.piece_link_corridor_section_region_key_gate_1_region_start_open_1"
+        "pieceLink:piece_link.corridor_section_region_key_gate_1_region_start_open.catalog",
+        "gluedExit:glue.piece_link_corridor_section_region_key_gate_1_region_start_open_catalog"
       ]
     }
   ],
@@ -4176,1166 +4099,861 @@
       "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "x": 72,
-      "y": 13
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 75,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "x": 73,
-      "y": 13
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 76,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_start",
-      "x": 74,
-      "y": 13
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 77,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "x": 94,
-      "y": 14
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 78,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "x": 93,
-      "y": 14
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 79,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_end",
-      "x": 92,
-      "y": 14
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 80,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "x": 57,
-      "y": 28
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_01",
+      "x": 81,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "x": 57,
-      "y": 29
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_segment_01_tile_02",
+      "x": 88,
+      "y": 16
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_start",
-      "x": 57,
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_01",
+      "x": 97,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_01",
+      "x": 98,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_01",
+      "x": 98,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_02",
+      "x": 97,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_02",
+      "x": 96,
+      "y": 18
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_turn_02",
+      "x": 96,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_segment_01_tile_01",
+      "x": 60,
       "y": 30
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "x": 63,
-      "y": 33
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_01",
+      "x": 61,
+      "y": 36
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "x": 63,
-      "y": 32
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_key_gate_1_open_end",
-      "x": 63,
-      "y": 31
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "x": 48,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "x": 49,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_start",
-      "x": 50,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "x": 28,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "x": 29,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_gate_locked_1_region_start_open_end",
-      "x": 30,
-      "y": 13
-    },
-    {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "x": 48,
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_01",
+      "x": 61,
       "y": 37
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "x": 49,
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_01",
+      "x": 60,
       "y": 37
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_start",
-      "x": 50,
-      "y": 37
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_02",
+      "x": 59,
+      "y": 36
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "x": 31,
-      "y": 20
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_02",
+      "x": 59,
+      "y": 35
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "x": 32,
-      "y": 20
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_key_gate_1_open_turn_02",
+      "x": 60,
+      "y": 35
     },
     {
-      "instanceId": "instance.piece_connector_corridor_section_region_key_gate_1_region_start_open_end",
-      "x": 33,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "x": 92,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "x": 93,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_bridge_1",
-      "x": 94,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "x": 67,
-      "y": 33
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "x": 67,
-      "y": 32
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_key_gate_1_open_bridge_1",
-      "x": 67,
-      "y": 31
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "x": 48,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "x": 49,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_bridge_1",
-      "x": 50,
-      "y": 20
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
-      "x": 45,
-      "y": 33
-    },
-    {
-      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
       "x": 46,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 47,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 48,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 49,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 50,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 51,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_01",
+      "x": 52,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_gate_locked_1_region_start_open_segment_01_tile_02",
+      "x": 39,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_01",
+      "x": 29,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_01",
+      "x": 28,
+      "y": 17
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_01",
+      "x": 28,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_02",
+      "x": 29,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_02",
+      "x": 30,
+      "y": 15
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_gate_locked_1_region_start_open_turn_02",
+      "x": 30,
+      "y": 16
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 45,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 46,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 47,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 48,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 49,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 50,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_01",
+      "x": 51,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_01_tile_02",
+      "x": 39,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 30,
+      "y": 42
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 29,
+      "y": 42
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 28,
+      "y": 42
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 27,
+      "y": 42
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 27,
+      "y": 41
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 27,
+      "y": 40
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_01",
+      "x": 27,
+      "y": 39
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_01",
+      "x": 29,
+      "y": 31
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_01",
+      "x": 29,
+      "y": 32
+    },
+    {
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_01",
+      "x": 29,
       "y": 33
     },
     {
-      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_bridge_1",
-      "x": 47,
-      "y": 33
+      "instanceId": "instance.piece_corridor_corridor_section_region_key_gate_1_region_start_open_segment_02_tile_02",
+      "x": 27,
+      "y": 23
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_02",
+      "x": 25,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_02",
+      "x": 26,
+      "y": 19
+    },
+    {
+      "instanceId": "instance.piece_bend_corridor_section_region_key_gate_1_region_start_open_turn_02",
+      "x": 26,
+      "y": 20
     }
   ],
   "connectionCells": [
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 30,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 29,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 28,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 27,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 26,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_4",
-      "x": 25,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 44,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 43,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 42,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 41,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 40,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 39,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 38,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 37,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 36,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 35,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 32
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 28
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 27
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 26
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 25
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 24
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 23
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 22
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 21
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_3",
-      "x": 34,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 47,
-      "y": 37
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 47,
-      "y": 36
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 47,
-      "y": 35
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 48,
-      "y": 35
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 48,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_2",
-      "x": 48,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 59,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 58,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 57,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 56,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 55,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 54,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 53,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 52,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 51,
-      "y": 40
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 51,
-      "y": 39
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 51,
-      "y": 38
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_1",
-      "x": 51,
-      "y": 37
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 27,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 26,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 25,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 25,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 25,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_4",
-      "x": 25,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 47,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 46,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 45,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 44,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 43,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 42,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 41,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 40,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 39,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 38,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 38,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 37,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 37,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 36,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 36,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 35,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 35,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 34,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 33,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 32,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 31,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 31,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 31,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_3",
-      "x": 31,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 47,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 47,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 47,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 48,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 49,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 50,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_2",
-      "x": 51,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 59,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 58,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 57,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 56,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 55,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 54,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 53,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 52,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 51,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 51,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 51,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_1",
-      "x": 51,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 63,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 62,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 61,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 35
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 36
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 37
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 38
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_4",
-      "x": 60,
-      "y": 39
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 67,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 66,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 65,
-      "y": 34
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 65,
-      "y": 33
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 65,
-      "y": 32
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 65,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 65,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 64,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_3",
-      "x": 63,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 57,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 58,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 59,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 60,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 61,
-      "y": 31
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 61,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 62,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 62,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 63,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 64,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 65,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 66,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 67,
-      "y": 29
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_2",
-      "x": 67,
-      "y": 30
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 60,
-      "y": 25
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 59,
-      "y": 25
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 58,
-      "y": 25
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 57,
-      "y": 25
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 57,
-      "y": 26
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_1",
-      "x": 57,
-      "y": 27
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 95,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 96,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 97,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 98,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 99,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 100,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 101,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 102,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 102,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 102,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 102,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_4",
-      "x": 103,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 95,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 95,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 95,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 94,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 93,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 92,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 91,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 91,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 91,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 91,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_3",
-      "x": 91,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 75,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 76,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 77,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 78,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 79,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 80,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 81,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 82,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 83,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 84,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 85,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 86,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 87,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 88,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 89,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 90,
-      "y": 13
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 90,
-      "y": 14
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 90,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 15
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 16
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 17
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 18
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 19
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_2",
-      "x": 91,
-      "y": 20
-    },
-    {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
       "x": 69,
       "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
       "x": 70,
       "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
       "x": 71,
       "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
-      "x": 71,
-      "y": 15
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 72,
+      "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
-      "x": 71,
-      "y": 14
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 73,
+      "y": 16
     },
     {
-      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_1",
-      "x": 71,
-      "y": 13
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 74,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 82,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 83,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 84,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 85,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 86,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 87,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 89,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 90,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 91,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 92,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 93,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 94,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 95,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 96,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 97,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 97,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 98,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 99,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 100,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 101,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 102,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_goal_connector_edge_gate_1_goal_catalog",
+      "x": 103,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 25
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 26
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 27
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 29
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 31
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 32
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 33
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 34
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 36
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 38
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_key_gate_1_open_catalog",
+      "x": 60,
+      "y": 39
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 59,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 58,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 57,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 56,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 55,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 54,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 53,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 45,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 44,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 43,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 42,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 41,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 40,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 38,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 37,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 36,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 35,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 34,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 33,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 32,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 31,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 29,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 27,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 26,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_gate_locked_1_region_start_open_catalog",
+      "x": 25,
+      "y": 16
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 59,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 58,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 57,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 56,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 55,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 54,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 53,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 52,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 44,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 43,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 42,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 41,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 40,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 38,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 37,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 36,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 35,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 34,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 33,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 32,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 31,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 30,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 40
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 39
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 38
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 37
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 36
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 35
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 34
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 30
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 29
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 28
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 27
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 26
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 25
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 24
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 23
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 22
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 21
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 29,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 28,
+      "y": 20
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 28,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 27,
+      "y": 19
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 27,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 26,
+      "y": 18
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 26,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 25,
+      "y": 17
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 28,
+      "y": 39
+    },
+    {
+      "instanceId": "connection.glue_piece_link_corridor_section_region_key_gate_1_region_start_open_catalog",
+      "x": 28,
+      "y": 23
     }
   ],
   "reservedCells": [

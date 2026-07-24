@@ -449,13 +449,16 @@ filesystem paths and does not mutate fixtures, samples, RuntimeSession, or
 native voxel evidence.
 
 The same tabs show a corridor-realization experiment panel with exactly
-`catalog` and `procedural` modes. Catalog mode keeps corridor prefabs and their
-routed joins. Procedural mode reruns piece planning, shape matching, assembly,
+`catalog` and `procedural` modes. Catalog mode greedily tiles each planned
+segment with bounded short/medium/long straight families and sized bends, then
+uses owned route cells only for the gaps between those footprints. Procedural
+mode reruns piece planning, shape matching, assembly,
 placement validation, and built-flow validation while keeping room/feature
 prefabs and omitting connector/corridor/bend instances. Its direct
 physical-section routes remain inside the planned geometry-lane envelope.
 Reset or candidate switching restores the committed catalog placement. The
-comparison readout reports corridor-prefab and routed-cell counts, and a
+comparison readout reports corridor-prefab, prefab-cell, routed-cell, and
+footprint metrics, and a
 successful procedural experiment supplies a matching built-flow report so the
 Voxel 3D door progression controls remain available.
 

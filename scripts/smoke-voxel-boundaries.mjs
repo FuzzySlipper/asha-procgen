@@ -102,6 +102,21 @@ const turningProceduralPlacement = {
 };
 const turningProceduralPlan = compilePlacementExtrusion(turningProceduralPlacement);
 assert.equal(turningProceduralPlan.openingCellCount, 8);
+const turningCatalogPlan = compilePlacementExtrusion({
+  ...turningProceduralPlacement,
+  placementId: 'piece_placement.turning_catalog_smoke',
+  corridorRealization: 'catalog',
+  gluedExits: [{
+    ...turningProceduralPlacement.gluedExits[0],
+    routePoints: [
+      { x: 2, y: 0 },
+      { x: 4, y: 0 },
+      { x: 4, y: 4 },
+      { x: 5, y: 4 },
+    ],
+  }],
+});
+assert.equal(turningCatalogPlan.openingCellCount, 8);
 assert.throws(
   () => compilePlacementExtrusion({
     ...turningProceduralPlacement,

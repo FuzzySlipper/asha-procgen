@@ -359,6 +359,15 @@ enum CorridorRealization {
     Procedural,
 }
 
+impl CorridorRealization {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Catalog => "catalog",
+            Self::Procedural => "procedural",
+        }
+    }
+}
+
 #[derive(Args)]
 struct BuildMatchShapesArgs {
     #[arg(long)]
